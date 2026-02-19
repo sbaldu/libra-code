@@ -14,56 +14,77 @@
     
 */
 
-
 #ifndef FT_H
 #define FT_H
 
 #include "CMATRIX.h"
 
+/// liblibra
+namespace liblibra {
 
+  using namespace std;
 
-/// liblibra 
-namespace liblibra{
+  /// liblinalg namespace
+  namespace liblinalg {
 
-using namespace std;
+    void solve_linsys(CMATRIX& C, CMATRIX& D, CMATRIX& X, double eps, int maxiter, double omega);
+    void solve_linsys1(CMATRIX& C, CMATRIX& X, double eps, int maxiter, double omega);
 
-/// liblinalg namespace
-namespace liblinalg{
+    //---------- Fourier transforms ----------------
+    void dft(CMATRIX& in, CMATRIX& out);
+    void inv_dft(CMATRIX& in, CMATRIX& out);
 
+    void cft(CMATRIX& in, CMATRIX& out, double xmin, double dx);
+    void inv_cft(CMATRIX& in, CMATRIX& out, double xmin, double dx);
 
-void solve_linsys(CMATRIX& C,CMATRIX& D, CMATRIX& X,double eps,int maxiter,double omega);
-void solve_linsys1(CMATRIX& C,CMATRIX& X,double eps,int maxiter,double omega);
+    void cft1(CMATRIX& in, CMATRIX& out, double xmin, double kmin, double dx);
+    void inv_cft1(CMATRIX& in, CMATRIX& out, double xmin, double kmin, double dx);
 
+    void cft2(CMATRIX& in, CMATRIX& out, double xmin, double kmin, double dx, double dk);
+    void inv_cft2(CMATRIX& in, CMATRIX& out, double xmin, double kmin, double dx, double dk);
 
-//---------- Fourier transforms ----------------
-void dft(CMATRIX& in,CMATRIX& out);
-void inv_dft(CMATRIX& in,CMATRIX& out);
+    void cft1_2D(CMATRIX& in,
+                 CMATRIX& out,
+                 double xmin,
+                 double ymin,
+                 double kxmin,
+                 double kymin,
+                 double dx,
+                 double dy);
+    void inv_cft1_2D(CMATRIX& in,
+                     CMATRIX& out,
+                     double xmin,
+                     double ymin,
+                     double kxmin,
+                     double kymin,
+                     double dx,
+                     double dy);
 
-void cft(CMATRIX& in,CMATRIX& out,double xmin,double dx);
-void inv_cft(CMATRIX& in,CMATRIX& out,double xmin,double dx);
+    void convolve(CMATRIX& f, CMATRIX& g, CMATRIX& conv, double dx);
+    void convolve_2D(CMATRIX& f, CMATRIX& g, CMATRIX& conv, double dx, double dy);
 
-void cft1(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx);
-void inv_cft1(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx);
+    //-------- Fast Fourier Transforms -------------
+    void cfft1(CMATRIX& in, CMATRIX& out, double xmin, double kmin, double dx);
+    void inv_cfft1(CMATRIX& in, CMATRIX& out, double xmin, double kmin, double dx);
 
-void cft2(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx,double dk);
-void inv_cft2(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx,double dk);
+    void cfft1_2D(CMATRIX& in,
+                  CMATRIX& out,
+                  double xmin,
+                  double ymin,
+                  double kxmin,
+                  double kymin,
+                  double dx,
+                  double dy);
+    void inv_cfft1_2D(CMATRIX& in,
+                      CMATRIX& out,
+                      double xmin,
+                      double ymin,
+                      double kxmin,
+                      double kymin,
+                      double dx,
+                      double dy);
 
-void cft1_2D(CMATRIX& in, CMATRIX& out,double xmin,double ymin, double kxmin, double kymin, double dx, double dy);
-void inv_cft1_2D(CMATRIX& in, CMATRIX& out,double xmin,double ymin, double kxmin, double kymin, double dx, double dy);
+  }  //namespace liblinalg
+}  // namespace liblibra
 
-void convolve(CMATRIX& f,CMATRIX& g, CMATRIX& conv,double dx);
-void convolve_2D(CMATRIX& f,CMATRIX& g, CMATRIX& conv,double dx,double dy);
-
-//-------- Fast Fourier Transforms -------------
-void cfft1(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx);  
-void inv_cfft1(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx);
-
-void cfft1_2D(CMATRIX& in, CMATRIX& out,double xmin,double ymin, double kxmin, double kymin, double dx, double dy);
-void inv_cfft1_2D(CMATRIX& in, CMATRIX& out,double xmin,double ymin, double kxmin, double kymin, double dx, double dy);
-
-
-
-}//namespace liblinalg
-}// namespace liblibra
-
-#endif // FT_H
+#endif  // FT_H

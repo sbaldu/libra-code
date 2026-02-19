@@ -15,16 +15,14 @@
 #include "SpecialFunctions.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libspecialfunctions namespace
-namespace libspecialfunctions{
+  /// libspecialfunctions namespace
+  namespace libspecialfunctions {
 
+    void export_SpecialFunctions_objects();
 
-void export_SpecialFunctions_objects();
+  }  // namespace libspecialfunctions
+}  // namespace liblibra
 
-
-}// libspecialfunctions
-}// liblibra
-
-#endif //LIB_SPECFUN_H
+#endif  //LIB_SPECFUN_H

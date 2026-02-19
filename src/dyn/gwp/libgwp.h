@@ -17,27 +17,21 @@
 #ifndef LIB_GWP_H
 #define LIB_GWP_H
 
-
 #include "gwp.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libgwp namespace
+    namespace libgwp {
 
-/// libgwp namespace
-namespace libgwp{
+      void export_gwp_objects();
 
+    }  // namespace libgwp
+  }  // namespace libdyn
+}  // namespace liblibra
 
-void export_gwp_objects();
-
-
-}// namespace libgwp
-}// namespace libdyn
-}// liblibra
-
-
-
-#endif// LIB_GWP_H
+#endif  // LIB_GWP_H

@@ -22,46 +22,82 @@
 #include "Hamiltonian_QM.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_qm namespace
-namespace libhamiltonian_qm{
+    /// libhamiltonian_qm namespace
+    namespace libhamiltonian_qm {
 
+      double scf(Electronic_Structure* el,
+                 System& syst,
+                 vector<AO>& basis_ao,
+                 Control_Parameters& prms,
+                 Model_Parameters& modprms,
+                 vector<vector<int> >& atom_to_ao_map,
+                 vector<int>& ao_to_atom_map,
+                 int BM);
+      double scf(Electronic_Structure& el,
+                 System& syst,
+                 vector<AO>& basis_ao,
+                 Control_Parameters& prms,
+                 Model_Parameters& modprms,
+                 vector<vector<int> >& atom_to_ao_map,
+                 vector<int>& ao_to_atom_map,
+                 int BM);
 
+      double scf_oda(Electronic_Structure* el,
+                     System& syst,
+                     vector<AO>& basis_ao,
+                     Control_Parameters& prms,
+                     Model_Parameters& modprms,
+                     vector<vector<int> >& atom_to_ao_map,
+                     vector<int>& ao_to_atom_map,
+                     int BM);
+      double scf_oda(Electronic_Structure& el,
+                     System& syst,
+                     vector<AO>& basis_ao,
+                     Control_Parameters& prms,
+                     Model_Parameters& modprms,
+                     vector<vector<int> >& atom_to_ao_map,
+                     vector<int>& ao_to_atom_map,
+                     int BM);
 
-double scf(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
-double scf(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
+      double scf_oda_disk(Electronic_Structure* el,
+                          System& syst,
+                          vector<AO>& basis_ao,
+                          Control_Parameters& prms,
+                          Model_Parameters& modprms,
+                          vector<vector<int> >& atom_to_ao_map,
+                          vector<int>& ao_to_atom_map,
+                          int BM);
+      double scf_oda_disk(Electronic_Structure& el,
+                          System& syst,
+                          vector<AO>& basis_ao,
+                          Control_Parameters& prms,
+                          Model_Parameters& modprms,
+                          vector<vector<int> >& atom_to_ao_map,
+                          vector<int>& ao_to_atom_map,
+                          int BM);
 
+      double scf_none(Electronic_Structure* el,
+                      System& syst,
+                      vector<AO>& basis_ao,
+                      Control_Parameters& prms,
+                      Model_Parameters& modprms,
+                      vector<vector<int> >& atom_to_ao_map,
+                      vector<int>& ao_to_atom_map,
+                      int BM);
+      double scf_none(Electronic_Structure& el,
+                      System& syst,
+                      vector<AO>& basis_ao,
+                      Control_Parameters& prms,
+                      Model_Parameters& modprms,
+                      vector<vector<int> >& atom_to_ao_map,
+                      vector<int>& ao_to_atom_map,
+                      int BM);
 
-double scf_oda(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
-double scf_oda(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
-
-double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
-double scf_oda_disk(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
-
-double scf_none(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
-double scf_none(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
-
-
-/*
+      /*
 double scf_diis_fock(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
            Control_Parameters& prms,Model_Parameters& modprms,
            vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
@@ -70,11 +106,8 @@ double scf_diis_dm(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
            vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM);
 */
 
+    }  // namespace libhamiltonian_qm
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-}// namespace libhamiltonian_qm
-}// namespace libatomistic
-}// liblibra
-
-
-
-#endif // SCF_H
+#endif  // SCF_H

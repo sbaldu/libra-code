@@ -15,7 +15,6 @@
   large number of auxiliary data.
 */
 
-
 #ifndef POTENTIALS_MB_VDW_H
 #define POTENTIALS_MB_VDW_H
 
@@ -26,105 +25,199 @@
 #include "Potentials_vdw.h"
 #include "Potentials_elec.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libcell;
-using namespace libspecialfunctions;
-using libcell::triple;
-using libcell::quartet;
-using libcell::excl_scale;
+  using namespace liblinalg;
+  using namespace libcell;
+  using namespace libspecialfunctions;
+  using libcell::excl_scale;
+  using libcell::quartet;
+  using libcell::triple;
 
+  namespace libpot {
 
-namespace libpot{
+    //--------------------- Many-body potentials ----------------------------------
 
-//--------------------- Many-body potentials ----------------------------------
+    double VdW_Ewald3D(vector<VECTOR>& r,
+                       vector<int>& types,
+                       int max_type,
+                       vector<double>& Bij,
+                       MATRIX3x3& box, /* Inputs */
+                       vector<VECTOR>& f,
+                       MATRIX3x3& at_stress, /* Outputs*/
+                       int rec_deg,
+                       int pbc_deg,
+                       double etha,
+                       double R_on,
+                       double R_off /* Parameters */
+    );
 
-double VdW_Ewald3D(vector<VECTOR>& r, vector<int>& types, int max_type, vector<double>& Bij, MATRIX3x3& box, /* Inputs */ 
-                   vector<VECTOR>& f, MATRIX3x3& at_stress,  /* Outputs*/
-                   int rec_deg,int pbc_deg, double etha, double R_on, double R_off    /* Parameters */                   
-                   );
+    double VdW_Ewald3D(vector<VECTOR>& r,
+                       vector<double>& q,
+                       MATRIX3x3& box, /* Inputs */
+                       vector<VECTOR>& f,
+                       MATRIX3x3& at_stress, /* Outputs*/
+                       int rec_deg,
+                       int pbc_deg,
+                       double etha,
+                       double R_on,
+                       double R_off /* Parameters */
+    );
 
-double VdW_Ewald3D(vector<VECTOR>& r, vector<double>& q, MATRIX3x3& box, /* Inputs */ 
-                   vector<VECTOR>& f, MATRIX3x3& at_stress,  /* Outputs*/
-                   int rec_deg,int pbc_deg, double etha, double R_on, double R_off    /* Parameters */
-                   );
+    double Elec_Ewald3D(VECTOR* r, /* Inputs */
+                        VECTOR* g,
+                        VECTOR* m,
+                        VECTOR* f,
+                        MATRIX3x3& at_stress,
+                        MATRIX3x3& fr_stress,
+                        MATRIX3x3& ml_stress, /* Outputs */
+                        int sz,
+                        double* q,
+                        int nexcl,
+                        int* excl1,
+                        int* excl2,
+                        double* scale,
+                        MATRIX3x3* box,
+                        int rec_deg,
+                        int pbc_deg,
+                        double etha,
+                        int is_cutoff,
+                        double R_on,
+                        double R_off,
+                        int& time,
+                        vector<vector<triple> >& images,
+                        vector<triple>& central_translation,
+                        double* dr2,
+                        double dT,
+                        int& is_update); /* Parameters */
 
+    double Vdw_LJ(VECTOR* r, /* Inputs */
+                  VECTOR* g,
+                  VECTOR* m,
+                  VECTOR* f,
+                  MATRIX3x3& at_stress,
+                  MATRIX3x3& fr_stress,
+                  MATRIX3x3& ml_stress, /* Outputs*/
+                  int sz,
+                  double* epsilon,
+                  double* sigma,
+                  int nexcl,
+                  int* excl1,
+                  int* excl2,
+                  double* scale,
+                  MATRIX3x3* box,
+                  int rec_deg,
+                  int pbc_deg,
+                  double etha,
+                  int is_cutoff,
+                  double R_on,
+                  double R_off,
+                  int& time,
+                  vector<vector<triple> >& images,
+                  vector<triple>& central_translation,
+                  double* dr2,
+                  double dT,
+                  int& is_update /* Parameters */
+    );
 
-double Elec_Ewald3D(VECTOR* r,         /* Inputs */
-                    VECTOR* g,
-                    VECTOR* m,
-                    VECTOR* f,
-                    MATRIX3x3& at_stress, MATRIX3x3& fr_stress, MATRIX3x3& ml_stress, /* Outputs */
-                    int sz,double* q,
-                    int nexcl, int* excl1, int* excl2, double* scale,
-                    MATRIX3x3* box,int rec_deg,int pbc_deg,
-                    double etha,int is_cutoff, double R_on, double R_off,
-                    int& time,vector< vector<triple> >& images, vector<triple>& central_translation,
-                    double* dr2,double dT, int& is_update);  /* Parameters */                  
+    double Vdw_LJ1(VECTOR* r, /* Inputs */
+                   VECTOR* g,
+                   VECTOR* m,
+                   VECTOR* f,
+                   MATRIX3x3& at_stress,
+                   MATRIX3x3& fr_stress,
+                   MATRIX3x3& ml_stress, /* Outputs*/
+                   int sz,
+                   double* epsilon,
+                   double* sigma,
+                   int nexcl,
+                   int* excl1,
+                   int* excl2,
+                   double* scale,
+                   MATRIX3x3* box,
+                   int rec_deg,
+                   int pbc_deg,
+                   double etha,
+                   int is_cutoff,
+                   double R_on,
+                   double R_off,
+                   int& time,
+                   vector<vector<quartet> >& images,
+                   vector<triple>& central_translation,
+                   double* dr2,
+                   double dT,
+                   int& is_update /* Parameters */
+    );
 
-double Vdw_LJ(VECTOR* r,                                               /* Inputs */
-              VECTOR* g,
-              VECTOR* m,
-              VECTOR* f,
-              MATRIX3x3& at_stress, MATRIX3x3& fr_stress, MATRIX3x3& ml_stress, /* Outputs*/
-              int sz,double* epsilon, double* sigma,
-              int nexcl, int* excl1, int* excl2, double* scale,
-              MATRIX3x3* box,int rec_deg,int pbc_deg,
-              double etha,int is_cutoff, double R_on, double R_off,
-              int& time, vector< vector<triple> >& images, vector<triple>& central_translation,
-              double* dr2, double dT, int& is_update     /* Parameters */
-             );
+    double Vdw_LJ2_no_excl(VECTOR* r, /* Inputs */
+                           VECTOR* g,
+                           VECTOR* m,
+                           VECTOR* f,
+                           MATRIX3x3& at_stress,
+                           MATRIX3x3& fr_stress,
+                           MATRIX3x3& ml_stress, /* Outputs*/
+                           int sz,
+                           double* epsilon,
+                           double* sigma,
+                           int nexcl,
+                           int* excl1,
+                           int* excl2,
+                           double* scale,
+                           MATRIX3x3* box,
+                           int rec_deg,
+                           int pbc_deg,
+                           double etha,
+                           int is_cutoff,
+                           double R_on,
+                           double R_off,
+                           int& time,
+                           vector<vector<excl_scale> >& excl_scales);
 
-double Vdw_LJ1(VECTOR* r,                                               /* Inputs */
-               VECTOR* g,
-               VECTOR* m,
-               VECTOR* f,
-               MATRIX3x3& at_stress, MATRIX3x3& fr_stress, MATRIX3x3& ml_stress, /* Outputs*/
-               int sz,double* epsilon, double* sigma,
-               int nexcl, int* excl1, int* excl2, double* scale,
-               MATRIX3x3* box,int rec_deg,int pbc_deg,
-               double etha,int is_cutoff, double R_on, double R_off,
-               int& time, vector< vector<quartet> >& images, vector<triple>& central_translation,
-               double* dr2, double dT, int& is_update     /* Parameters */
-             );
+    double Vdw_LJ2_excl(VECTOR* r, /* Inputs */
+                        VECTOR* g,
+                        VECTOR* m,
+                        VECTOR* f,
+                        MATRIX3x3& at_stress,
+                        MATRIX3x3& fr_stress,
+                        MATRIX3x3& ml_stress, /* Outputs*/
+                        int sz,
+                        double* epsilon,
+                        double* sigma,
+                        int nexcl,
+                        int* excl1,
+                        int* excl2,
+                        double* scale,
+                        MATRIX3x3* box,
+                        int rec_deg,
+                        int pbc_deg,
+                        double etha,
+                        int is_cutoff,
+                        double R_on,
+                        double R_off,
+                        int& time,
+                        vector<vector<excl_scale> >& excl_scales);
 
-double Vdw_LJ2_no_excl(VECTOR* r,                                               /* Inputs */
-                       VECTOR* g,
-                       VECTOR* m,
-                       VECTOR* f,
-                       MATRIX3x3& at_stress, MATRIX3x3& fr_stress, MATRIX3x3& ml_stress, /* Outputs*/
-                       int sz,double* epsilon, double* sigma,
-                       int nexcl, int* excl1, int* excl2, double* scale,
-                       MATRIX3x3* box,int rec_deg,int pbc_deg,
-                       double etha,int is_cutoff, double R_on, double R_off,
-                       int& time,vector< vector<excl_scale> >& excl_scales
-                      );
+    double LJ_Coulomb(VECTOR* r,
+                      VECTOR* g,
+                      VECTOR* m,
+                      VECTOR* f,
+                      MATRIX3x3& at_stress,
+                      MATRIX3x3& fr_stress,
+                      MATRIX3x3& ml_stress,
+                      int sz,
+                      double* epsilon,
+                      double* sigma,
+                      double* q,
+                      int is_cutoff,
+                      double R_on,
+                      double R_off,
+                      int nexcl,
+                      int* excl1,
+                      int* excl2,
+                      double* scale);
 
-double Vdw_LJ2_excl(VECTOR* r,                                               /* Inputs */
-                    VECTOR* g,
-                    VECTOR* m,
-                    VECTOR* f,
-                    MATRIX3x3& at_stress, MATRIX3x3& fr_stress, MATRIX3x3& ml_stress, /* Outputs*/
-                    int sz,double* epsilon, double* sigma,
-                    int nexcl, int* excl1, int* excl2, double* scale,
-                    MATRIX3x3* box,int rec_deg,int pbc_deg,
-                    double etha,int is_cutoff, double R_on, double R_off,
-                    int& time,vector< vector<excl_scale> >& excl_scales
-                   );
+  }  // namespace libpot
+}  // namespace liblibra
 
-
-double LJ_Coulomb(VECTOR* r, VECTOR* g, VECTOR* m, VECTOR* f,
-                  MATRIX3x3& at_stress, MATRIX3x3& fr_stress, MATRIX3x3& ml_stress,
-                  int sz,double* epsilon, double* sigma,double* q,int is_cutoff, double R_on, double R_off,
-                  int nexcl, int* excl1, int* excl2, double* scale);
-
-
-
-} // namespace libpot
-} //liblibra
-
-#endif // POTENTIALS_MB_VDW_H
-
+#endif  // POTENTIALS_MB_VDW_H

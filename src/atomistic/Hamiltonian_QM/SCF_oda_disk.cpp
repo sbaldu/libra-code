@@ -19,19 +19,22 @@
 #include "SCF.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_qm namespace
-namespace libhamiltonian_qm{
+    /// libhamiltonian_qm namespace
+    namespace libhamiltonian_qm {
 
-
-
-double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM){
-/**
+      double scf_oda_disk(Electronic_Structure* el,
+                          System& syst,
+                          vector<AO>& basis_ao,
+                          Control_Parameters& prms,
+                          Model_Parameters& modprms,
+                          vector<vector<int> >& atom_to_ao_map,
+                          vector<int>& ao_to_atom_map,
+                          int BM) {
+        /**
   This function implements the SCF based on the optimal damping algorithm (ODA)
   which uses fractional occupation numbers, leading to robust convergence in difficult cases
   See more details in: 
@@ -60,44 +63,45 @@ double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao
   Returns the converged total electronic energy 
 */
 
-  int i;
-  double lamb_min;
+        int i;
+        double lamb_min;
 
-  std::string eigen_method="generalized";
+        std::string eigen_method = "generalized";
 
+        //----------- Control parameters ---------
+        int iter = 0;
+        int Niter = prms.Niter;
 
+        int Norb = el->Norb;
+        int Nocc_alp = el->Nocc_alp;
+        int Nocc_bet = el->Nocc_bet;
 
-  //----------- Control parameters ---------
-  int iter = 0;
-  int Niter = prms.Niter;
+        double den_tol = prms.den_tol;
+        double den_err = 2.0 * den_tol;
 
-  int Norb = el->Norb;
-  int Nocc_alp = el->Nocc_alp;
-  int Nocc_bet = el->Nocc_bet;
+        double ene_tol = prms.etol;
+        double Eelec_prev = 0.0;
+        double Eelec = 0.0;
+        double dE = 0.0;
 
+        vector<Timer> bench_t(10);  // timers for different type of operations
+        vector<Timer> bench_t2(4);
 
-  double den_tol = prms.den_tol;  
-  double den_err = 2.0*den_tol;
+        if (BM) {
+          bench_t[5].start();
+        }
 
-  double ene_tol = prms.etol;
-  double Eelec_prev = 0.0;
-  double Eelec = 0.0;
-  double dE = 0.0;
+        //  exit(0);
 
-  vector<Timer> bench_t(10); // timers for different type of operations
-  vector<Timer> bench_t2(4);
+        // Only 3 auxiliary matrices
+        MATRIX* aux1;
+        aux1 = new MATRIX(Norb, Norb);
+        MATRIX* aux2;
+        aux2 = new MATRIX(Norb, Norb);
+        MATRIX* aux3;
+        aux3 = new MATRIX(Norb, Norb);
 
-
-  if(BM){ bench_t[5].start(); }
-
-//  exit(0);
-
-  // Only 3 auxiliary matrices
-  MATRIX* aux1;          aux1 = new MATRIX(Norb,Norb);
-  MATRIX* aux2;          aux2 = new MATRIX(Norb,Norb);
-  MATRIX* aux3;          aux3 = new MATRIX(Norb,Norb);
-
-/*
+        /*
   MATRIX* dP;           dP          = new MATRIX(Norb,Norb);  // dP = P_k+1 - P_k
   MATRIX* temp;         temp        = new MATRIX(Norb,Norb);
   MATRIX* P_old_alp;    P_old_alp   = new MATRIX(Norb,Norb);
@@ -119,221 +123,268 @@ double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao
   MATRIX* Fao_til_bet;  Fao_til_bet = new MATRIX(Norb,Norb);
 */
 
-  Electronic_Structure* el_tmp;   el_tmp = new Electronic_Structure(el);
+        Electronic_Structure* el_tmp;
+        el_tmp = new Electronic_Structure(el);
 
+        if (BM) {
+          bench_t[5].stop();
+        }
 
-  if(BM){ bench_t[5].stop(); }
+        // Interface
+        el->P->bin_dump("job__P.bin");
+        //*P = *el->P;
 
+        el->P_alp->bin_dump("job__P_alp.bin");
+        //*P_alp = *el->P_alp;
 
+        el->P_bet->bin_dump("job__P_bet.bin");
+        //*P_bet = *el->P_bet;
 
-  // Interface
-  el->P->bin_dump("job__P.bin");             
-  //*P = *el->P;
+        el->Fao_alp->bin_dump("job__Fao_alp.bin");
+        //*Fao_alp = *el->Fao_alp;
 
-  el->P_alp->bin_dump("job__P_alp.bin");     
-  //*P_alp = *el->P_alp;
+        el->Fao_bet->bin_dump("job__Fao_bet.bin");
+        //*Fao_bet = *el->Fao_bet;
 
-  el->P_bet->bin_dump("job__P_bet.bin");     
-  //*P_bet = *el->P_bet;
+        // Old
+        el->P_alp->bin_dump("job__P_old_alp.bin");
+        //*P_old_alp = *P_alp;
 
-  el->Fao_alp->bin_dump("job__Fao_alp.bin"); 
-  //*Fao_alp = *el->Fao_alp;
+        el->P_bet->bin_dump("job__P_old_bet.bin");
+        //*P_old_bet = *P_bet;
 
-  el->Fao_bet->bin_dump("job__Fao_bet.bin"); 
-  //*Fao_bet = *el->Fao_bet;
-  
-  // Old
-  el->P_alp->bin_dump("job__P_old_alp.bin"); 
-  //*P_old_alp = *P_alp;
+        el->P->bin_dump("job__P_old.bin");
+        //*P_old = *P;
 
-  el->P_bet->bin_dump("job__P_old_bet.bin"); 
-  //*P_old_bet = *P_bet;
+        // Tilda
+        // D~_0 = D_0
+        el->P_alp->bin_dump("job__P_til_alp.bin");
+        //*P_til_alp = *P_alp;
 
-  el->P->bin_dump("job__P_old.bin");         
-  //*P_old = *P;
+        el->P_bet->bin_dump("job__P_til_bet.bin");
+        //*P_til_bet = *P_bet;
 
-  // Tilda
-  // D~_0 = D_0
-  el->P_alp->bin_dump("job__P_til_alp.bin"); 
-  //*P_til_alp = *P_alp;
+        el->P->bin_dump("job__P_til.bin");
+        //*P_til = *P;
 
-  el->P_bet->bin_dump("job__P_til_bet.bin"); 
-  //*P_til_bet = *P_bet;
+        // Initialization:
+        // F_0 = F(D_0), F~_0 = F(D~_0) = F_0
+        if (BM) {
+          bench_t[1].start();
+        }
+        Hamiltonian_Fock(el_tmp, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map);
+        if (BM) {
+          bench_t[1].stop();
+        }
+        el_tmp->Fao_alp->bin_dump("job__Fao_til_alp.bin");
+        //*Fao_til_alp = *el_tmp->Fao_alp;
 
-  el->P->bin_dump("job__P_til.bin");         
-  //*P_til = *P;
-  
+        el_tmp->Fao_bet->bin_dump("job__Fao_til_bet.bin");
+        //*Fao_til_bet = *el_tmp->Fao_bet;
 
-  // Initialization:
-  // F_0 = F(D_0), F~_0 = F(D~_0) = F_0
-  if(BM){ bench_t[1].start(); }
-    Hamiltonian_Fock(el_tmp, syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map);
-  if(BM){ bench_t[1].stop(); }
-  el_tmp->Fao_alp->bin_dump("job__Fao_til_alp.bin"); 
-  //*Fao_til_alp = *el_tmp->Fao_alp;
+        if (BM) {
+          bench_t[0].start();
+        }
 
-  el_tmp->Fao_bet->bin_dump("job__Fao_til_bet.bin"); 
-  //*Fao_til_bet = *el_tmp->Fao_bet;
+        // Old!!!
+        //  Eelec_prev = ::energy_elec(Norb,el_tmp->P_alp,el_tmp->Hao,el_tmp->Fao_alp);
+        //  Eelec_prev+= ::energy_elec(Norb,el_tmp->P_bet,el_tmp->Hao,el_tmp->Fao_bet);
 
-  if(BM){ bench_t[0].start(); }
+        // New!!!
+        *aux1 = (*el_tmp->Fao_alp + *el_tmp->P_alp * *el_tmp->dFao_alp_dP_alp +
+                 *el_tmp->P_bet * *el_tmp->dFao_alp_dP_bet);
+        Eelec_prev = energy_elec(el_tmp->P_alp, el_tmp->Hao, aux1);
+        *aux1 = (*el_tmp->Fao_bet + *el_tmp->P_alp * *el_tmp->dFao_bet_dP_alp +
+                 *el_tmp->P_bet * *el_tmp->dFao_bet_dP_bet);
+        Eelec_prev += energy_elec(el_tmp->P_bet, el_tmp->Hao, aux1);
 
-// Old!!!
-//  Eelec_prev = ::energy_elec(Norb,el_tmp->P_alp,el_tmp->Hao,el_tmp->Fao_alp);
-//  Eelec_prev+= ::energy_elec(Norb,el_tmp->P_bet,el_tmp->Hao,el_tmp->Fao_bet);
+        //
+        if (BM) {
+          bench_t[0].stop();
+        }
 
-// New!!!
-  *aux1 = (*el_tmp->Fao_alp + *el_tmp->P_alp * *el_tmp->dFao_alp_dP_alp + *el_tmp->P_bet * *el_tmp->dFao_alp_dP_bet);
-  Eelec_prev = energy_elec(el_tmp->P_alp,el_tmp->Hao, aux1);
-  *aux1 = (*el_tmp->Fao_bet + *el_tmp->P_alp * *el_tmp->dFao_bet_dP_alp + *el_tmp->P_bet * *el_tmp->dFao_bet_dP_bet);
-  Eelec_prev+= energy_elec(el_tmp->P_bet,el_tmp->Hao, aux1);
+        // Debug:
+        //  cout<<"In SCF: initital density matrix: P = \n"<<*P<<endl;
 
+        //=========================== Now enter main SCF cycle ===========================================
+        ofstream f1("energy.txt", ios::out);
 
-//
-  if(BM){ bench_t[0].stop(); }
+        cout << "----------------------- Entering main SCF cycle for RHF calculations "
+                "--------------------\n";
 
+        do {
+          cout << "===============Iteration# " << iter << " =====================\n";
 
-// Debug:
-//  cout<<"In SCF: initital density matrix: P = \n"<<*P<<endl; 
-
-  //=========================== Now enter main SCF cycle ===========================================
-  ofstream f1("energy.txt",ios::out);
-
-  cout<<"----------------------- Entering main SCF cycle for RHF calculations --------------------\n"; 
-
-  do{
-
-    cout<<"===============Iteration# "<<iter<<" =====================\n";   
-
-    //---------- Obtain a new density for this iteration -------------------------
-    // ODA Step 1: Diagonalize F~_k, assemble D_{k+1} via aufbau (so forcibly set prms.pop_opt = 0) 
-    if(BM){ bench_t[2].start(); }
-    if(prms.use_damping==0){
-/*
+          //---------- Obtain a new density for this iteration -------------------------
+          // ODA Step 1: Diagonalize F~_k, assemble D_{k+1} via aufbau (so forcibly set prms.pop_opt = 0)
+          if (BM) {
+            bench_t[2].start();
+          }
+          if (prms.use_damping == 0) {
+            /*
       Fock_to_P(Norb, Nocc_alp, 1, Nocc_alp, eigen_method, 0, Fao_til_alp, el_tmp->Sao, el_tmp->C_alp, el_tmp->E_alp, el_tmp->bands_alp, el_tmp->occ_alp, P_alp, bench_t2);
       Fock_to_P(Norb, Nocc_bet, 1, Nocc_bet, eigen_method, 0, Fao_til_bet, el_tmp->Sao, el_tmp->C_bet, el_tmp->E_bet, el_tmp->bands_bet, el_tmp->occ_bet, P_bet, bench_t2);
       *P = *P_alp + *P_bet;
 */
-      exit(0);
-    }
-    else if(prms.use_damping==1){
+            exit(0);
+          } else if (prms.use_damping == 1) {
+            aux1->bin_load("job__Fao_til_alp.bin");
+            //      aux2->bin_load("job__P_alp.bin");
+            //      *Fao_til_alp = *aux1;
+            //      *aux1 = *Fao_til_alp;
+            Fock_to_P(Norb,
+                      Nocc_alp,
+                      1,
+                      Nocc_alp,
+                      eigen_method,
+                      prms.pop_opt,
+                      aux1,
+                      el_tmp->Sao,
+                      el_tmp->C_alp,
+                      el_tmp->E_alp,
+                      el_tmp->bands_alp,
+                      el_tmp->occ_alp,
+                      aux2,
+                      bench_t2);
+            aux2->bin_dump("job__P_alp.bin");
+            //      Fock_to_P(Norb, Nocc_alp, 1, Nocc_alp, eigen_method, prms.pop_opt, Fao_til_alp, el_tmp->Sao, el_tmp->C_alp, el_tmp->E_alp, el_tmp->bands_alp, el_tmp->occ_alp, P_alp, bench_t2);
 
+            aux1->bin_load("job__Fao_til_bet.bin");
+            //      aux3->bin_load("job__P_bet.bin");
+            Fock_to_P(Norb,
+                      Nocc_bet,
+                      1,
+                      Nocc_bet,
+                      eigen_method,
+                      prms.pop_opt,
+                      aux1,
+                      el_tmp->Sao,
+                      el_tmp->C_bet,
+                      el_tmp->E_bet,
+                      el_tmp->bands_bet,
+                      el_tmp->occ_bet,
+                      aux3,
+                      bench_t2);
+            aux3->bin_dump("job__P_bet.bin");
+            //      Fock_to_P(Norb, Nocc_bet, 1, Nocc_bet, eigen_method, prms.pop_opt, Fao_til_bet, el_tmp->Sao, el_tmp->C_bet, el_tmp->E_bet, el_tmp->bands_bet, el_tmp->occ_bet, P_bet, bench_t2);
 
-      aux1->bin_load("job__Fao_til_alp.bin");
-//      aux2->bin_load("job__P_alp.bin");
-//      *Fao_til_alp = *aux1;
-//      *aux1 = *Fao_til_alp;
-      Fock_to_P(Norb, Nocc_alp, 1, Nocc_alp, eigen_method, prms.pop_opt, aux1, el_tmp->Sao, el_tmp->C_alp, el_tmp->E_alp, el_tmp->bands_alp, el_tmp->occ_alp, aux2, bench_t2);
-      aux2->bin_dump("job__P_alp.bin");
-//      Fock_to_P(Norb, Nocc_alp, 1, Nocc_alp, eigen_method, prms.pop_opt, Fao_til_alp, el_tmp->Sao, el_tmp->C_alp, el_tmp->E_alp, el_tmp->bands_alp, el_tmp->occ_alp, P_alp, bench_t2);
+            *aux2 += *aux3;
+            aux2->bin_dump("job__P.bin");
+            //      *P = *P_alp + *P_bet;
+          }
+          if (BM) {
+            bench_t[2].stop();
+          }
 
+          //  exit(0);
 
-      aux1->bin_load("job__Fao_til_bet.bin");
-//      aux3->bin_load("job__P_bet.bin");
-      Fock_to_P(Norb, Nocc_bet, 1, Nocc_bet, eigen_method, prms.pop_opt, aux1, el_tmp->Sao, el_tmp->C_bet, el_tmp->E_bet, el_tmp->bands_bet, el_tmp->occ_bet, aux3, bench_t2);
-      aux3->bin_dump("job__P_bet.bin");
-//      Fock_to_P(Norb, Nocc_bet, 1, Nocc_bet, eigen_method, prms.pop_opt, Fao_til_bet, el_tmp->Sao, el_tmp->C_bet, el_tmp->E_bet, el_tmp->bands_bet, el_tmp->occ_bet, P_bet, bench_t2);
+          // Debug:
+          //    cout<<"D_{k+1} = D(F~_k) = \n"<<*P<<endl;
+          //    cout<<"D~_{k} = \n"<<*P_til<<endl;
+          if (BM) {
+            bench_t[3].start();
+          }
 
+          aux1->bin_load("job__P.bin");
+          cout << "Pmax = " << aux1->max_elt() << endl;
+          aux2->bin_load("job__P_old.bin");
+          cout << "Pold_max = " << aux2->max_elt() << endl;
+          *aux1 -= *aux2;
+          den_err = fabs(aux1->max_elt());
 
-      *aux2 += *aux3;
-      aux2->bin_dump("job__P.bin");
-//      *P = *P_alp + *P_bet;
+          //cout<<"Pmax = "<<P->max_elt()<<endl;
+          //cout<<"Pold_max = "<<P_old->max_elt()<<endl;
 
+          //    den_err = fabs((*P - *P_old).max_elt());
+          if (BM) {
+            bench_t[3].stop();
+          }
+          cout << "den_err = " << den_err << endl;
 
+          //  exit(0);
 
-    }
-    if(BM){ bench_t[2].stop(); }
+          if (BM) {
+            bench_t[3].start();
+          }
+          aux1->bin_load("job__P_alp.bin");
+          aux1->bin_dump("job__P_old_alp.bin");
+          //*P_old_alp = *P_alp;
 
+          aux1->bin_load("job__P_bet.bin");
+          aux1->bin_dump("job__P_old_bet.bin");
+          //*P_old_bet = *P_bet;
 
-//  exit(0);
+          aux1->bin_load("job__P.bin");
+          aux1->bin_dump("job__P_old.bin");
+          //*P_old = *P;
+          if (BM) {
+            bench_t[3].stop();
+          }
 
-// Debug:
-//    cout<<"D_{k+1} = D(F~_k) = \n"<<*P<<endl;
-//    cout<<"D~_{k} = \n"<<*P_til<<endl;
-    if(BM){ bench_t[3].start(); }
+          // ODA Step 2: Either terminate or continue with the search
+          // D_{k+1} - D~_k
+          if (den_err < den_tol && fabs(dE) < ene_tol) {
+            ;
+            ;
+          } else {
+            if (BM) {
+              bench_t[3].start();
+            }
 
+            aux1->bin_load("job__P.bin");
+            aux2->bin_load("job__P_til.bin");
+            *aux1 -= *aux2;
+            aux1->bin_dump("job__dP.bin");
+            //      *dP = *P - *P_til;
 
-    aux1->bin_load("job__P.bin");    cout<<"Pmax = "<<aux1->max_elt()<<endl;
-    aux2->bin_load("job__P_old.bin");cout<<"Pold_max = "<<aux2->max_elt()<<endl;
-    *aux1 -= *aux2;
-    den_err = fabs(aux1->max_elt());
+            // ODA Step 3: Assemble F_{k+1} = F(D_{k+1})
+            el_tmp->P_alp->bin_load("job__P_alp.bin");
+            //*el_tmp->P_alp = *P_alp;
 
+            el_tmp->P_bet->bin_load("job__P_bet.bin");
+            //*el_tmp->P_bet = *P_bet;
 
-//cout<<"Pmax = "<<P->max_elt()<<endl;    
-//cout<<"Pold_max = "<<P_old->max_elt()<<endl;
+            el_tmp->P->bin_load("job__P.bin");
+            //*el_tmp->P = *P;
+            if (BM) {
+              bench_t[3].stop();
+            }
 
-//    den_err = fabs((*P - *P_old).max_elt());      
-    if(BM){ bench_t[3].stop(); }
-    cout<<"den_err = "<<den_err<<endl;
+            if (BM) {
+              bench_t[1].start();
+            }
+            Hamiltonian_Fock(el_tmp, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map);
+            if (BM) {
+              bench_t[1].stop();
+            }
 
-//  exit(0);
+            if (BM) {
+              bench_t[3].start();
+            }
+            el_tmp->Fao_alp->bin_dump("job__Fao_alp.bin");
+            //*Fao_alp = *el_tmp->Fao_alp;
 
+            el_tmp->Fao_bet->bin_dump("job__Fao_bet.bin");
+            //*Fao_bet = *el_tmp->Fao_bet;
+            if (BM) {
+              bench_t[3].stop();
+            }
 
-    if(BM){ bench_t[3].start(); }
-    aux1->bin_load("job__P_alp.bin"); aux1->bin_dump("job__P_old_alp.bin");  
-    //*P_old_alp = *P_alp;
+            // ODA Step 4: Solve the line search problem (via interpolation) or use fixed step
+            lamb_min = 0.0;
+            if (prms.use_damping) {
+              if (iter <= prms.damping_start) {
+                lamb_min = 1.0;
+              } else {
+                lamb_min = prms.damping_const;
+              }
+              cout << "Using constant lamb_min = " << lamb_min << endl;
 
-    aux1->bin_load("job__P_bet.bin"); aux1->bin_dump("job__P_old_bet.bin");  
-    //*P_old_bet = *P_bet;
-
-    aux1->bin_load("job__P.bin");     aux1->bin_dump("job__P_old.bin");      
-    //*P_old = *P;
-    if(BM){ bench_t[3].stop(); }
-
-
-    // ODA Step 2: Either terminate or continue with the search
-    // D_{k+1} - D~_k
-    if(den_err<den_tol && fabs(dE)<ene_tol){  ;;  }  
-    else{
-
-      if(BM){ bench_t[3].start(); }
-
-      aux1->bin_load("job__P.bin");
-      aux2->bin_load("job__P_til.bin");
-      *aux1 -= *aux2;
-      aux1->bin_dump("job__dP.bin");
-//      *dP = *P - *P_til;
-
-      // ODA Step 3: Assemble F_{k+1} = F(D_{k+1})
-      el_tmp->P_alp->bin_load("job__P_alp.bin");  
-      //*el_tmp->P_alp = *P_alp;
-
-      el_tmp->P_bet->bin_load("job__P_bet.bin");  
-      //*el_tmp->P_bet = *P_bet;
-
-      el_tmp->P->bin_load("job__P.bin");          
-      //*el_tmp->P = *P;
-      if(BM){ bench_t[3].stop(); }
-
-
-      if(BM){ bench_t[1].start(); }
-      Hamiltonian_Fock(el_tmp, syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map);
-      if(BM){ bench_t[1].stop(); }
-
-
-      if(BM){ bench_t[3].start(); }
-      el_tmp->Fao_alp->bin_dump("job__Fao_alp.bin"); 
-      //*Fao_alp = *el_tmp->Fao_alp;   
-
-      el_tmp->Fao_bet->bin_dump("job__Fao_bet.bin"); 
-      //*Fao_bet = *el_tmp->Fao_bet;
-      if(BM){ bench_t[3].stop(); }
-
-  
-      // ODA Step 4: Solve the line search problem (via interpolation) or use fixed step
-      lamb_min = 0.0;
-      if(prms.use_damping){
-
-        if(iter<=prms.damping_start){  lamb_min = 1.0; }
-        else{
-          lamb_min = prms.damping_const;
-        }
-        cout<<"Using constant lamb_min = "<<lamb_min<<endl;
-
-      }else{
-
-        cout<<"In oda_scf:  SCF with ODA and storage of matrices to disk is not implemented yet\nExiting...\n";
-        exit(0);
-/*
+            } else {
+              cout << "In oda_scf:  SCF with ODA and storage of matrices to disk is not "
+                      "implemented yet\nExiting...\n";
+              exit(0);
+              /*
 
       !!!!!!!!!!!!!  Temporary disable !!!!!!!!!!!!!!!!
 
@@ -424,184 +475,236 @@ double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao
         }
 
 */
-      }// do not use damping
+            }  // do not use damping
 
-      // ODA Step 5:
-      // D~{k+1} = D~{k} + lamb_min * d_k = (1 - lamb_min)*D~_k + lamb_min * D_{k+1}
-      if(BM){ bench_t[3].start(); }
+            // ODA Step 5:
+            // D~{k+1} = D~{k} + lamb_min * d_k = (1 - lamb_min)*D~_k + lamb_min * D_{k+1}
+            if (BM) {
+              bench_t[3].start();
+            }
 
-      aux1->bin_load("job__P_til_alp.bin"); *aux1 *= (1.0 - lamb_min);
-      aux2->bin_load("job__P_alp.bin"); *aux2 *= lamb_min;
-      *aux1 += *aux2;
-      aux1->bin_dump("job__P_til_alp.bin");
+            aux1->bin_load("job__P_til_alp.bin");
+            *aux1 *= (1.0 - lamb_min);
+            aux2->bin_load("job__P_alp.bin");
+            *aux2 *= lamb_min;
+            *aux1 += *aux2;
+            aux1->bin_dump("job__P_til_alp.bin");
 
-//      *P_til_alp   = (1.0 - lamb_min) * (*P_til_alp) + lamb_min * (*P_alp);
+            //      *P_til_alp   = (1.0 - lamb_min) * (*P_til_alp) + lamb_min * (*P_alp);
 
+            aux1->bin_load("job__P_til_bet.bin");
+            *aux1 *= (1.0 - lamb_min);
+            aux2->bin_load("job__P_bet.bin");
+            *aux2 *= lamb_min;
+            *aux1 += *aux2;
+            aux1->bin_dump("job__P_til_bet.bin");
 
-      aux1->bin_load("job__P_til_bet.bin"); *aux1 *= (1.0 - lamb_min);
-      aux2->bin_load("job__P_bet.bin"); *aux2 *= lamb_min;
-      *aux1 += *aux2;
-      aux1->bin_dump("job__P_til_bet.bin");
+            //      *P_til_bet   = (1.0 - lamb_min) * (*P_til_bet) + lamb_min * (*P_bet);
 
-//      *P_til_bet   = (1.0 - lamb_min) * (*P_til_bet) + lamb_min * (*P_bet);    
+            aux1->bin_load("job__P_til_alp.bin");
+            aux2->bin_load("job__P_til_bet.bin");
+            *aux1 += *aux2;
+            aux1->bin_dump("job__P_til.bin");
 
+            //      *P_til       = *P_til_alp + *P_til_bet;
 
-      aux1->bin_load("job__P_til_alp.bin"); 
-      aux2->bin_load("job__P_til_bet.bin");
-      *aux1 += *aux2;
-      aux1->bin_dump("job__P_til.bin");
+            // F~{k+1} = (1 - lamb_min)*F~_k + lamb_min * F_{k+1}   - this is original approach, but less general
+            //      *Fao_til_alp = (1.0 - lamb_min) * (*Fao_til_alp) + lamb_min * (*Fao_alp);
+            //      *Fao_til_bet = (1.0 - lamb_min) * (*Fao_til_bet) + lamb_min * (*Fao_bet);
 
-//      *P_til       = *P_til_alp + *P_til_bet;
+            // in fact, F~{k+1} = F(D~_{k+1})  - this is more general approach
+            el_tmp->P->bin_load("job__P_til.bin");
+            //*el_tmp->P     = *P_til;
 
-      // F~{k+1} = (1 - lamb_min)*F~_k + lamb_min * F_{k+1}   - this is original approach, but less general
-//      *Fao_til_alp = (1.0 - lamb_min) * (*Fao_til_alp) + lamb_min * (*Fao_alp);
-//      *Fao_til_bet = (1.0 - lamb_min) * (*Fao_til_bet) + lamb_min * (*Fao_bet);
+            el_tmp->P_alp->bin_load("job__P_til_alp.bin");
+            //*el_tmp->P_alp = *P_til_alp;
 
+            el_tmp->P_bet->bin_load("job__P_til_bet.bin");
+            //*el_tmp->P_bet = *P_til_bet;
+            if (BM) {
+              bench_t[3].stop();
+            }
 
-      // in fact, F~{k+1} = F(D~_{k+1})  - this is more general approach
-      el_tmp->P->bin_load("job__P_til.bin");
-      //*el_tmp->P     = *P_til;    
+            if (BM) {
+              bench_t[1].start();
+            }
+            Hamiltonian_Fock(el_tmp, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map);
+            if (BM) {
+              bench_t[1].stop();
+            }
 
-      el_tmp->P_alp->bin_load("job__P_til_alp.bin");
-      //*el_tmp->P_alp = *P_til_alp;
+            el_tmp->Fao_alp->bin_dump("job__Fao_til_alp.bin");
+            //      *Fao_til_alp = *el_tmp->Fao_alp;
 
-      el_tmp->P_bet->bin_load("job__P_til_bet.bin");
-      //*el_tmp->P_bet = *P_til_bet;
-      if(BM){ bench_t[3].stop(); }
+            el_tmp->Fao_bet->bin_dump("job__Fao_til_bet.bin");
+            //      *Fao_til_bet = *el_tmp->Fao_bet;
 
+          }  // else: den_err>=den_tol
 
-      if(BM){ bench_t[1].start(); }
-        Hamiltonian_Fock(el_tmp, syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map);
-      if(BM){ bench_t[1].stop(); }
+          // Recompute current energy using extrapolated density matrix
+          if (BM) {
+            bench_t[3].start();
+          }
+          el_tmp->P->bin_load("job__P_til.bin");
+          //*el_tmp->P     = *P_til;//     + lamb_min * *dP;
 
+          el_tmp->P_alp->bin_load("job__P_til_alp.bin");
+          //*el_tmp->P_alp = *P_til_alp;// + lamb_min * (0.5* *dP);
 
-      el_tmp->Fao_alp->bin_dump("job__Fao_til_alp.bin"); 
-//      *Fao_til_alp = *el_tmp->Fao_alp;
+          el_tmp->P_bet->bin_load("job__P_til_bet.bin");
+          //*el_tmp->P_bet = *P_til_bet;// + lamb_min * (0.5* *dP);
+          if (BM) {
+            bench_t[3].stop();
+          }
 
-      el_tmp->Fao_bet->bin_dump("job__Fao_til_bet.bin"); 
-//      *Fao_til_bet = *el_tmp->Fao_bet;
+          if (BM) {
+            bench_t[1].start();
+          }
+          Hamiltonian_Fock(el_tmp, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map);
+          if (BM) {
+            bench_t[1].stop();
+          }
 
+          bench_t[0].start();
+          // Old !!!
+          //    Eelec = ::energy_elec(Norb,el_tmp->P_alp,el_tmp->Hao,el_tmp->Fao_alp);
+          //    Eelec+= ::energy_elec(Norb,el_tmp->P_bet,el_tmp->Hao,el_tmp->Fao_bet);
 
-      
-    }// else: den_err>=den_tol
+          // New!!!
+          *aux1 = (*el_tmp->Fao_alp + *el_tmp->P_alp * *el_tmp->dFao_alp_dP_alp +
+                   *el_tmp->P_bet * *el_tmp->dFao_alp_dP_bet);
+          Eelec = energy_elec(el_tmp->P_alp, el_tmp->Hao, aux1);
 
-   
-    // Recompute current energy using extrapolated density matrix
-    if(BM){ bench_t[3].start(); }
-    el_tmp->P->bin_load("job__P_til.bin");  
-    //*el_tmp->P     = *P_til;//     + lamb_min * *dP;
+          *aux1 = (*el_tmp->Fao_bet + *el_tmp->P_alp * *el_tmp->dFao_bet_dP_alp +
+                   *el_tmp->P_bet * *el_tmp->dFao_bet_dP_bet);
+          Eelec += energy_elec(el_tmp->P_bet, el_tmp->Hao, aux1);
 
-    el_tmp->P_alp->bin_load("job__P_til_alp.bin");
-    //*el_tmp->P_alp = *P_til_alp;// + lamb_min * (0.5* *dP);
+          bench_t[0].stop();
 
-    el_tmp->P_bet->bin_load("job__P_til_bet.bin");
-    //*el_tmp->P_bet = *P_til_bet;// + lamb_min * (0.5* *dP);
-    if(BM){ bench_t[3].stop(); }
+          dE = Eelec - Eelec_prev;
+          Eelec_prev = Eelec;
 
+          if (BM) {
+            bench_t[4].start();
+          }
 
-    if(BM){ bench_t[1].start(); }
-      Hamiltonian_Fock(el_tmp, syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map);
-    if(BM){ bench_t[1].stop(); }
+          if (0) {  // Suppress excessive output - it takes time
 
-    bench_t[0].start();
-// Old !!!
-//    Eelec = ::energy_elec(Norb,el_tmp->P_alp,el_tmp->Hao,el_tmp->Fao_alp);
-//    Eelec+= ::energy_elec(Norb,el_tmp->P_bet,el_tmp->Hao,el_tmp->Fao_bet);
+            show_bands(el_tmp->Norb, el_tmp->Nocc_alp, el_tmp->bands_alp, el_tmp->occ_alp);
+            show_bands(el_tmp->Norb, el_tmp->Nocc_bet, el_tmp->bands_bet, el_tmp->occ_bet);
 
-// New!!!
-    *aux1 = (*el_tmp->Fao_alp + *el_tmp->P_alp * *el_tmp->dFao_alp_dP_alp + *el_tmp->P_bet * *el_tmp->dFao_alp_dP_bet);
-    Eelec = energy_elec(el_tmp->P_alp,el_tmp->Hao, aux1);
+            cout << "Total electronic energy = " << Eelec << endl;
+            cout << "Mulliken scf orbital populations:\n";
+            for (i = 0; i < el_tmp->Norb; i++) {
+              cout << "i= " << i << "  pop(gross)= " << el_tmp->Mull_orb_pop_gross[i]
+                   << "  pop(net)= " << el_tmp->Mull_orb_pop_net[i] << endl;
+            }
+            cout << "Mulliken scf charges:\n";
+            for (i = 0; i < syst.Number_of_atoms; i++) {
+              cout << "i= " << i << "  q(gross)= " << syst.Atoms[i].Atom_mull_charge_gross
+                   << "  q(net)= " << syst.Atoms[i].Atom_mull_charge_net << endl;
+            }
+          }
 
-    *aux1 = (*el_tmp->Fao_bet + *el_tmp->P_alp * *el_tmp->dFao_bet_dP_alp + *el_tmp->P_bet * *el_tmp->dFao_bet_dP_bet);
-    Eelec+= energy_elec(el_tmp->P_bet,el_tmp->Hao, aux1);
+          f1 << iter << " Eelec= " << Eelec << " dE= " << dE << " den_err = " << den_err << endl;
+          //<<" Tr(S*D)= "<<(*el_tmp->Sao * *P_til).tr()<<endl;
+          if (BM) {
+            bench_t[4].stop();
+          }
 
+          iter++;
 
-    bench_t[0].stop();
+        } while (iter < Niter && (den_err > den_tol || fabs(dE) > ene_tol));
 
+        f1.close();
 
+        //  exit(0);
 
-    dE = Eelec - Eelec_prev;
-    Eelec_prev = Eelec;
+        if (prms.do_annihilate == 1) {
+          aux1->bin_load("job__P_til_alp.bin");
+          aux2->bin_load("job__P_til_bet.bin");
+          annihilate(Nocc_alp, Nocc_bet, aux1, aux2);
+          //annihilate(Nocc_alp,Nocc_bet,P_til_alp,P_til_bet);
+        }
 
-     
-    if(BM){ bench_t[4].start(); }    
+        if (BM) {
+          bench_t[3].start();
+        }
 
-    if(0){  // Suppress excessive output - it takes time
+        el->P_alp->bin_load("job__P_til_alp.bin");  //*el->P_alp = *P_til_alp;
+        el->P_bet->bin_load("job__P_til_bet.bin");  //*el->P_bet = *P_til_bet;
+        *el->P = *el->P_alp + *el->P_bet;
 
-      show_bands(el_tmp->Norb, el_tmp->Nocc_alp, el_tmp->bands_alp, el_tmp->occ_alp);
-      show_bands(el_tmp->Norb, el_tmp->Nocc_bet, el_tmp->bands_bet, el_tmp->occ_bet);
-        
-      cout<<"Total electronic energy = "<<Eelec<<endl;
-      cout<<"Mulliken scf orbital populations:\n";
-      for(i=0;i<el_tmp->Norb;i++){   cout<<"i= "<<i<<"  pop(gross)= "<<el_tmp->Mull_orb_pop_gross[i]<<"  pop(net)= "<<el_tmp->Mull_orb_pop_net[i]<<endl;  }
-      cout<<"Mulliken scf charges:\n";
-        for(i=0;i<syst.Number_of_atoms;i++){   cout<<"i= "<<i<<"  q(gross)= "<<syst.Atoms[i].Atom_mull_charge_gross<<"  q(net)= "<<syst.Atoms[i].Atom_mull_charge_net<<endl;  }
-    }
+        el->Fao_alp->bin_load("job__Fao_til_alp.bin");  //*el->Fao_alp = *Fao_til_alp;
+        el->Fao_bet->bin_load("job__Fao_til_bet.bin");  //*el->Fao_bet = *Fao_til_bet;
+        if (BM) {
+          bench_t[3].stop();
+        }
 
-    f1 << iter<<" Eelec= "<<Eelec<<" dE= "<<dE<<" den_err = "<<den_err<<endl;
-    //<<" Tr(S*D)= "<<(*el_tmp->Sao * *P_til).tr()<<endl;
-    if(BM){ bench_t[4].stop(); }    
+        if (BM) {
+          bench_t[1].start();
+        }
+        Hamiltonian_Fock(el, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map);
+        if (BM) {
+          bench_t[1].stop();
+        }
 
-    iter++;    
+        // Test: At this point F(P~) = F~, so it is valid to use P~ to construct F~ via normal rules
+        //cout<<"Difference of Fock matrices: \n"<<*el->Fao_alp - *Fao_til_alp<<endl;
 
- 
-  }while(iter<Niter && (den_err>den_tol || fabs(dE)>ene_tol) );
+        // Update eigenvalues and eigenvectors of final Fock matrix, but do not modify the density matrix:
+        if (BM) {
+          bench_t[2].start();
+        }
+        Fock_to_P(Norb,
+                  Nocc_alp,
+                  1,
+                  Nocc_alp,
+                  eigen_method,
+                  0,
+                  el->Fao_alp,
+                  el->Sao,
+                  el->C_alp,
+                  el->E_alp,
+                  el->bands_alp,
+                  el->occ_alp,
+                  aux1,
+                  bench_t2);
+        Fock_to_P(Norb,
+                  Nocc_bet,
+                  1,
+                  Nocc_bet,
+                  eigen_method,
+                  0,
+                  el->Fao_bet,
+                  el->Sao,
+                  el->C_bet,
+                  el->E_bet,
+                  el->bands_bet,
+                  el->occ_bet,
+                  aux1,
+                  bench_t2);
+        if (BM) {
+          bench_t[2].stop();
+        }
 
-  f1.close();
+        bench_t[0].start();
 
+        // Old!!!
+        //  Eelec = ::energy_elec(Norb,el->P_alp,el->Hao,el->Fao_alp) + ::energy_elec(Norb,el->P_bet,el->Hao,el->Fao_bet);
 
-//  exit(0);
+        // New!!!
+        *aux1 =
+            (*el->Fao_alp + *el->P_alp * *el->dFao_alp_dP_alp + *el->P_bet * *el->dFao_alp_dP_bet);
+        Eelec = energy_elec(el->P_alp, el->Hao, aux1);
 
+        *aux1 =
+            (*el->Fao_bet + *el->P_alp * *el->dFao_bet_dP_alp + *el->P_bet * *el->dFao_bet_dP_bet);
+        Eelec += energy_elec(el->P_bet, el->Hao, aux1);
 
+        bench_t[0].stop();
 
-  if(prms.do_annihilate==1){ 
-    aux1->bin_load("job__P_til_alp.bin");
-    aux2->bin_load("job__P_til_bet.bin");
-    annihilate(Nocc_alp,Nocc_bet,aux1,aux2);
-    //annihilate(Nocc_alp,Nocc_bet,P_til_alp,P_til_bet);
-  }
-
-  if(BM){ bench_t[3].start(); }
-
-  el->P_alp->bin_load("job__P_til_alp.bin");  //*el->P_alp = *P_til_alp;
-  el->P_bet->bin_load("job__P_til_bet.bin");  //*el->P_bet = *P_til_bet;
-  *el->P     = *el->P_alp + *el->P_bet;
-
-  el->Fao_alp->bin_load("job__Fao_til_alp.bin"); //*el->Fao_alp = *Fao_til_alp;
-  el->Fao_bet->bin_load("job__Fao_til_bet.bin"); //*el->Fao_bet = *Fao_til_bet;
-  if(BM){ bench_t[3].stop(); }
-
-
-  if(BM){ bench_t[1].start(); }
-    Hamiltonian_Fock(el, syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map);
-  if(BM){ bench_t[1].stop(); }
-
-  // Test: At this point F(P~) = F~, so it is valid to use P~ to construct F~ via normal rules
-  //cout<<"Difference of Fock matrices: \n"<<*el->Fao_alp - *Fao_til_alp<<endl;
-
-  // Update eigenvalues and eigenvectors of final Fock matrix, but do not modify the density matrix:
-  if(BM){ bench_t[2].start(); }
-  Fock_to_P(Norb, Nocc_alp, 1, Nocc_alp, eigen_method, 0, el->Fao_alp, el->Sao, el->C_alp, el->E_alp, el->bands_alp, el->occ_alp, aux1, bench_t2);  
-  Fock_to_P(Norb, Nocc_bet, 1, Nocc_bet, eigen_method, 0, el->Fao_bet, el->Sao, el->C_bet, el->E_bet, el->bands_bet, el->occ_bet, aux1, bench_t2);  
-  if(BM){ bench_t[2].stop(); }
-
-  bench_t[0].start();
-
-// Old!!!
-//  Eelec = ::energy_elec(Norb,el->P_alp,el->Hao,el->Fao_alp) + ::energy_elec(Norb,el->P_bet,el->Hao,el->Fao_bet);
-
-// New!!!
-    *aux1 = (*el->Fao_alp + *el->P_alp * *el->dFao_alp_dP_alp + *el->P_bet * *el->dFao_alp_dP_bet);
-    Eelec = energy_elec(el->P_alp,el->Hao, aux1);
-
-    *aux1 = (*el->Fao_bet + *el->P_alp * *el->dFao_bet_dP_alp + *el->P_bet * *el->dFao_bet_dP_bet);
-    Eelec+= energy_elec(el->P_bet,el->Hao, aux1);
-
-
-
-  bench_t[0].stop();
-
-/*  DEBUG
+        /*  DEBUG
   cout<<"In SCF:\n";
   cout<<"F*C = \n"<<*el->Fao_alp * *el->C_alp<<endl;
   cout<<"S*C*E = \n"<<*el->Sao * *el->C_alp * *el->E_alp<<endl;
@@ -630,10 +733,11 @@ double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao
   }
 */
 
-
-  // Clean up the memory
-  if(BM){ bench_t[5].start(); }
-/*
+        // Clean up the memory
+        if (BM) {
+          bench_t[5].start();
+        }
+        /*
   delete dP;
   delete temp;
   delete P_old_alp;  
@@ -655,56 +759,63 @@ double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao
   delete Fao_til_bet; 
 */
 
-  delete aux1;
-  delete aux2;
-  delete aux3;
- 
+        delete aux1;
+        delete aux2;
+        delete aux3;
 
-  el_tmp->~Electronic_Structure();
-  if(BM){ bench_t[5].stop(); }
+        el_tmp->~Electronic_Structure();
+        if (BM) {
+          bench_t[5].stop();
+        }
 
+        if (BM) {
+          cout << "Time for energy calculation = " << bench_t[0].show() << endl;
+          cout << "Time for Fock matrix formaion = " << bench_t[1].show() << endl;
+          cout << "Time for Fock diagonalization and density matrix formation = "
+               << bench_t[2].show() << endl;
+          cout << "   - eigensolver    = " << bench_t2[0].show() << endl;
+          cout << "   - sorting        = " << bench_t2[1].show() << endl;
+          cout << "   - populate       = " << bench_t2[2].show() << endl;
+          cout << "   - density matrix = " << bench_t2[3].show() << endl;
+          cout << "Time for matrix operations = " << bench_t[3].show() << endl;
+          cout << "Time for output = " << bench_t[4].show() << endl;
+          cout << "Time for allocation/deallocation = " << bench_t[5].show() << endl;
 
-  if(BM){
-    cout<<"Time for energy calculation = "<<bench_t[0].show()<<endl;
-    cout<<"Time for Fock matrix formaion = "<<bench_t[1].show()<<endl;
-    cout<<"Time for Fock diagonalization and density matrix formation = "<<bench_t[2].show()<<endl;
-    cout<<"   - eigensolver    = "<<bench_t2[0].show()<<endl;
-    cout<<"   - sorting        = "<<bench_t2[1].show()<<endl;
-    cout<<"   - populate       = "<<bench_t2[2].show()<<endl;
-    cout<<"   - density matrix = "<<bench_t2[3].show()<<endl;
-    cout<<"Time for matrix operations = "<<bench_t[3].show()<<endl;
-    cout<<"Time for output = "<<bench_t[4].show()<<endl;
-    cout<<"Time for allocation/deallocation = "<<bench_t[5].show()<<endl;
- 
-   
+        }  //
 
-  }//
+        if (fabs(den_err) > den_tol) {
+          cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                  "!!!!!!!!!!!\n";
+          cout << "!!!!! Error: Convergence in density is not achieved after " << Niter
+               << " iterations\n den_err = " << den_err << " !!!!!\n";
+          cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                  "!!!!!!!!!!!\n";
+          exit(0);
+        }
 
-  if(fabs(den_err)>den_tol){
-    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-    cout<<"!!!!! Error: Convergence in density is not achieved after "<<Niter<<" iterations\n den_err = "<<den_err<<" !!!!!\n";
-    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-    exit(0);
-  }
+        if (fabs(dE) > ene_tol) {
+          cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                  "!!!!!!!!!!!\n";
+          cout << "!!!!! Error: Convergence in energy is not achieved after " << Niter
+               << " iterations\n dE = " << dE << " !!!!!\n";
+          cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                  "!!!!!!!!!!!\n";
+          exit(0);
+        }
 
-  if(fabs(dE)>ene_tol){
-    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-    cout<<"!!!!! Error: Convergence in energy is not achieved after "<<Niter<<" iterations\n dE = "<<dE<<" !!!!!\n";
-    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-    exit(0);
-  }
+        return Eelec;
 
+      }  // oda_disc
 
-
-  return Eelec;
-
-} // oda_disc
-
-double scf_oda_disk(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM
-){
-/**
+      double scf_oda_disk(Electronic_Structure& el,
+                          System& syst,
+                          vector<AO>& basis_ao,
+                          Control_Parameters& prms,
+                          Model_Parameters& modprms,
+                          vector<vector<int> >& atom_to_ao_map,
+                          vector<int>& ao_to_atom_map,
+                          int BM) {
+        /**
   Python-friendly version
   This function implements the SCF based on the optimal damping algorithm (ODA)
   which uses fractional occupation numbers, leading to robust convergence in difficult cases
@@ -734,15 +845,9 @@ double scf_oda_disk(Electronic_Structure& el, System& syst, vector<AO>& basis_ao
   Returns the converged total electronic energy 
 */
 
-  return scf_oda_disk(&el,syst,basis_ao,  prms,modprms,  atom_to_ao_map,ao_to_atom_map, BM);
-}
+        return scf_oda_disk(&el, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map, BM);
+      }
 
-
-
-
-
-}// namespace libhamiltonian_qm
-}// namespace libatomistic
-}// liblibra
-
-
+    }  // namespace libhamiltonian_qm
+  }  // namespace libatomistic
+}  // namespace liblibra

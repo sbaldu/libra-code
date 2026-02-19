@@ -17,20 +17,17 @@
 #ifndef LIBOPERATORS_H
 #define LIBOPERATORS_H
 
-
 #include "Operators.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// liboperators namespace
-namespace liboperators{
+  /// liboperators namespace
+  namespace liboperators {
 
+    void export_Operators_objects();
 
-void export_Operators_objects();
+  }  // namespace liboperators
+}  // namespace liblibra
 
-
-}// namespace liboperators
-}// namespace liblibra
-
-#endif// LIBOPERATORS_H
+#endif  // LIBOPERATORS_H

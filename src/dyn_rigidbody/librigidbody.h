@@ -17,21 +17,17 @@
 #ifndef LIBRIGIDBODY_H
 #define LIBRIGIDBODY_H
 
-
 #include "RigidBody.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// librigidbody namespace
-namespace librigidbody{
+  /// librigidbody namespace
+  namespace librigidbody {
 
+    void export_RigidBody_objects();
 
-void export_RigidBody_objects();
+  }  // namespace librigidbody
+}  // namespace liblibra
 
-}// namespace librigidbody
-}// liblibra
-
-
-
-#endif//LIBRIGIDBODY_H
+#endif  //LIBRIGIDBODY_H

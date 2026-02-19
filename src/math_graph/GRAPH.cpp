@@ -15,40 +15,40 @@
 
 #include <vector>
 #include <algorithm>
-#endif 
+#endif
 
 #include "GRAPH.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace std;
+  using namespace std;
 
-/// libgraph namespace
-namespace libgraph{
+  /// libgraph namespace
+  namespace libgraph {
 
+    int merge_paths(Path& result, Path p1, Path p2) {
+      int sz1 = p1.size();
+      int sz2 = p2.size();
+      //cout<<"merge_paths of sizes "<<sz1<<" "<<sz2<<endl;
 
-int merge_paths(Path& result, Path p1, Path p2){
+      if ((sz1 > 0) && (sz2 > 0)) {
+        result = p1;
+        for (int i = 0; i < sz2; i++) {
+          result.push_back(p2[i]);
+        }
+      } else {
+        if (sz1 > 0) {
+          result = p1;
+        }
+        if (sz2 > 0) {
+          result = p2;
+        }
+      }
 
-   int sz1 = p1.size();
-   int sz2 = p2.size();
-   //cout<<"merge_paths of sizes "<<sz1<<" "<<sz2<<endl;
-
-   if((sz1>0)&&(sz2>0)){
-       result = p1;      
-       for(int i=0;i<sz2;i++){
-           result.push_back(p2[i]);
-       }
-   }
-   else{
-       if(sz1>0){ result = p1; }
-       if(sz2>0){ result = p2; }
-   }
-
-   return 0;
-}
-/*
+      return 0;
+    }
+    /*
 int is_included(Path& p,vector<Path>& P){
 // Check if the path p is included in set of paths P
 // Returns 0 (not included) or 1 (included)
@@ -81,46 +81,54 @@ int is_included(Path& p,vector<Path>& P){
    return res;
 }
 */
-int path_xor(Path& p1, Path& p2, Path& res){
-// res = p1 XOR p2
+    int path_xor(Path& p1, Path& p2, Path& res) {
+      // res = p1 XOR p2
 
-    if(res.size()>0) { res.clear(); }
-    int sz1 = p1.size();
-    int sz2 = p2.size();
+      if (res.size() > 0) {
+        res.clear();
+      }
+      int sz1 = p1.size();
+      int sz2 = p2.size();
 
-    for(int i=0;i<sz1;i++){
+      for (int i = 0; i < sz1; i++) {
         vector<int>::iterator it;
-        it = find(p2.begin(),p2.end(),p1[i]);
+        it = find(p2.begin(), p2.end(), p1[i]);
 
-        if(it==p2.end()) { res.push_back(p1[i]); }
-    }
+        if (it == p2.end()) {
+          res.push_back(p1[i]);
+        }
+      }
 
-    for(int i=0;i<sz2;i++){
+      for (int i = 0; i < sz2; i++) {
         vector<int>::iterator it;
-        it = find(p1.begin(),p1.end(),p2[i]);
+        it = find(p1.begin(), p1.end(), p2[i]);
 
-        if(it==p1.end()) { res.push_back(p2[i]); }
+        if (it == p1.end()) {
+          res.push_back(p2[i]);
+        }
+      }
+
+      return 0;
     }
+    int is_included(Path& p, Path& P) {
+      // Check if set p is included in set P (or equal to it)
 
-    return 0;
+      int res = 1;
+      int sz1, sz2;
+      sz1 = p.size();
+      sz2 = P.size();
 
-}
-int is_included(Path& p,Path& P){
-// Check if set p is included in set P (or equal to it)
+      for (int i = 0; i < sz1; i++) {
+        vector<int>::iterator it;
+        it = find(P.begin(), P.end(), p[i]);
+        if (it != P.end()) {
+          res *= 1;
+        } else {
+          res *= 0;
+        }
+      }
 
-   int res = 1;
-   int sz1,sz2;
-   sz1 = p.size();
-   sz2 = P.size();  
-   
-   for(int i=0;i<sz1;i++){
-       vector<int>::iterator it;
-       it = find(P.begin(), P.end(), p[i]);
-       if(it!=P.end()) { res *= 1; }
-       else{             res *= 0; }       
-   }
-
-  /*
+      /*
    else{
        for(int i=0;i<sz2;i++){
            vector<int>::iterator it;
@@ -130,51 +138,49 @@ int is_included(Path& p,Path& P){
    }// else
 
 */
-  
-   return res;
-}
 
-int is_included(Path& p,vector<Path>& P){
-// Check if any of P[i] or (P[i] XOR P[j]) is included in p
-    int res = 0;
-    for(int i=0;i<P.size();i++){
-        if(is_included(P[i],p)) { res = 1; }
-        for(int j=0;j<P.size();j++){
-            Path tmp;
-            path_xor(P[i],P[j],tmp);
-            if(tmp.size()>0){
-                if(is_included(tmp,p)) { res = 1; }
-            }
-        }
+      return res;
     }
-    
-    return res;
-}
 
+    int is_included(Path& p, vector<Path>& P) {
+      // Check if any of P[i] or (P[i] XOR P[j]) is included in p
+      int res = 0;
+      for (int i = 0; i < P.size(); i++) {
+        if (is_included(P[i], p)) {
+          res = 1;
+        }
+        for (int j = 0; j < P.size(); j++) {
+          Path tmp;
+          path_xor(P[i], P[j], tmp);
+          if (tmp.size() > 0) {
+            if (is_included(tmp, p)) {
+              res = 1;
+            }
+          }
+        }
+      }
 
-void show_path(Path& p){
+      return res;
+    }
 
-   cout<<"(";
-   for(int i=0;i<p.size();i++){
-   cout<<p[i];
-   }
-   cout<<")";
+    void show_path(Path& p) {
+      cout << "(";
+      for (int i = 0; i < p.size(); i++) {
+        cout << p[i];
+      }
+      cout << ")";
+    }
 
-}
+    void show_paths(vector<Path>& p) {
+      cout << "[ ";
+      for (int i = 0; i < p.size(); i++) {
+        show_path(p[i]);
+        cout << " ";
+      }
+      cout << "]";
+    }
 
-void show_paths(vector<Path>& p){
-
-   cout<<"[ ";
-   for(int i=0;i<p.size();i++){
-   show_path(p[i]);
-   cout<<" ";
-   }
-   cout<<"]";
-
-}
-
-}// namespace libgraph
-}// namespace liblibra
+  }  // namespace libgraph
+}  // namespace liblibra
 
 //====================================================
-

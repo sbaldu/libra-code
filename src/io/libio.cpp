@@ -19,20 +19,18 @@
 #else
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "libio.h"
 
+/// liblibra
+namespace liblibra {
 
-/// liblibra 
-namespace liblibra{
+  /// libio namespace
+  namespace libio {
 
-/// libio namespace
-namespace libio{
-
-
-void export_io_objects(){
-/** 
+    void export_io_objects() {
+      /** 
   \brief Exporter of libio classes and functions
 
   It is empty - so far no functions/classes are exported to Python
@@ -40,24 +38,16 @@ void export_io_objects(){
 
 */
 
-}// export_io_objects()
-
-
+    }  // export_io_objects()
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygio){
+    BOOST_PYTHON_MODULE(cygio) {
 #else
-BOOST_PYTHON_MODULE(libio){
+    BOOST_PYTHON_MODULE(libio) {
 #endif
 
-  export_io_objects();
+      export_io_objects();
+    }
 
-}
-
-
-
-}// namespace libio
-}// liblibra
-
-
-
+  }  // namespace libio
+}  // namespace liblibra

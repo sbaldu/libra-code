@@ -15,41 +15,28 @@
 #include "libscripts.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
+  using namespace boost::python;
 
+  namespace libscripts {
 
-namespace libscripts{
+    using namespace libstate;
 
-using namespace libstate;
-
-
-void export_scripts_objects(){
-
-  export_state_objects();
-
-}// export_scripts_objects()
-
-
-
+    void export_scripts_objects() { export_state_objects(); }  // export_scripts_objects()
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygscripts){
+    BOOST_PYTHON_MODULE(cygscripts) {
 #else
-BOOST_PYTHON_MODULE(libscripts){
+    BOOST_PYTHON_MODULE(libscripts) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
-//  export_Mathematics_objects();
-  export_scripts_objects();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      //  export_Mathematics_objects();
+      export_scripts_objects();
+    }
 
-}
-
-
-}// libscripts
-}// liblibra
-
-
+  }  // namespace libscripts
+}  // namespace liblibra

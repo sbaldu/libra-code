@@ -14,7 +14,6 @@
         
 */
 
-
 #ifndef LIB_CALCULATORS_H
 #define LIB_CALCULATORS_H
 
@@ -29,18 +28,14 @@
 #include "NPI.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libcalculators namespace
+  namespace libcalculators {
 
-/// libcalculators namespace
-namespace libcalculators{
+    void export_calculators_objects();
 
+  }  // namespace libcalculators
+}  // namespace liblibra
 
-void export_calculators_objects();
-
-
-}// namespace libcalculators
-}// liblibra
-
-
-#endif// LIB_CALCULATORS_H
+#endif  // LIB_CALCULATORS_H

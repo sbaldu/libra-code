@@ -17,24 +17,20 @@
 #include "../util/libutil.h"
 #include "../converters/libconverters.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libutil;
-using namespace libconverters;
+  using namespace liblinalg;
+  using namespace libutil;
+  using namespace libconverters;
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    namespace bp = boost::python;
 
-namespace bp = boost::python;
-
-
-
-void dyn_variables::init_nuclear_dyn_var(bp::dict _params, Random& rnd){
-/**
+    void dyn_variables::init_nuclear_dyn_var(bp::dict _params, Random& rnd) {
+      /**
     """
     Args:
         q ( list of doubles ): the mean values of coordinates for all DOFs [ units: a.u.]
@@ -98,255 +94,252 @@ void dyn_variables::init_nuclear_dyn_var(bp::dict _params, Random& rnd){
     """
 */
 
+      //# Read the parameters
+      bp::list critical_params;
+      bp::dict default_params;
+      bp::dict params(_params);
 
-  //# Read the parameters
-  bp::list critical_params; 
-  bp::dict default_params;
-  bp::dict params(_params);
+      default_params["init_type"] = 0;
+      default_params["q"] = vector<double>(ndof, 0.0);
+      default_params["p"] = vector<double>(ndof, 0.0);
+      default_params["mass"] = vector<double>(ndof, 1.0);
+      default_params["force_constant"] = vector<double>(ndof, 0.001);
+      default_params["q_width"] = vector<double>(ndof, 1.0);
+      default_params["p_width"] = vector<double>(ndof, 1.0);
 
-  default_params["init_type"] = 0;
-  default_params["q"] = vector<double>(ndof, 0.0);
-  default_params["p"] = vector<double>(ndof, 0.0);
-  default_params["mass"] = vector<double>(ndof, 1.0);
-  default_params["force_constant"] = vector<double>(ndof, 0.001);
-  default_params["q_width"] = vector<double>(ndof, 1.0);
-  default_params["p_width"] = vector<double>(ndof, 1.0);
+      check_input(params, default_params, critical_params);
 
-  check_input(params, default_params, critical_params);
+      int init_type;
+      vector<double> _Q;
+      vector<double> _P;
+      vector<double> _M;
+      vector<double> force_constant;
+      vector<double> q_width;
+      vector<double> p_width;
 
+      int idof;
 
-  int init_type;
-  vector<double> _Q;
-  vector<double> _P;
-  vector<double> _M;
-  vector<double> force_constant;
-  vector<double> q_width;
-  vector<double> p_width;
+      std::string key;
+      for (int i = 0; i < len(params.values()); i++) {
+        key = bp::extract<std::string>(params.keys()[i]);
 
-  int idof;
+        ///================= Computing Hamiltonian-related properties ====================
+        if (key == "init_type") {
+          init_type = bp::extract<int>(params.values()[i]);
+        } else if (key == "q") {
+          _Q = liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "p") {
+          _P = liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "mass") {
+          _M = liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "force_constant") {
+          force_constant =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "q_width") {
+          q_width =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "p_width") {
+          p_width =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        }
+      }
 
-  std::string key;
-  for(int i=0;i<len(params.values());i++){
-    key = bp::extract<std::string>(params.keys()[i]);
-
-    ///================= Computing Hamiltonian-related properties ====================
-    if(key=="init_type") {  init_type = bp::extract<int>(params.values()[i]); }
-    else if(key=="q") {  _Q = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="p") {  _P = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="mass") {  _M = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="force_constant") {  force_constant = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="q_width") { q_width = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i])  ); }
-    else if(key=="p_width") { p_width = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i])  ); }
-  }
-
-
-
-
-  if( !(init_type==0 || init_type==1 || init_type==2 || init_type==3 || init_type==4) ){
-    cout<<"WARNINIG in init_nuclear_dyn_var: \
-           the init_type = "<<init_type<<" is not known\
+      if (!(init_type == 0 || init_type == 1 || init_type == 2 || init_type == 3 ||
+            init_type == 4)) {
+        cout << "WARNINIG in init_nuclear_dyn_var: \
+           the init_type = "
+             << init_type << " is not known\
            Allowed values are: [0, 1, 2, 3, 4]\n";
-  }
+      }
 
-  if(_Q.size() != _P.size()){
-    cout<<"ERROR in init_nuclear_dyn_var: \
-          the length of input Q is = "<<_Q.size()<<", \
-          the length of input P is = "<<_P.size()<<", but they should be equal to each other\n";
-    exit(0);
-  }
+      if (_Q.size() != _P.size()) {
+        cout << "ERROR in init_nuclear_dyn_var: \
+          the length of input Q is = "
+             << _Q.size() << ", \
+          the length of input P is = "
+             << _P.size() << ", but they should be equal to each other\n";
+        exit(0);
+      }
 
-  if(init_type==1 || init_type==2 || init_type==3){
-    if(_Q.size() != _M.size()){
-      cout<<"ERROR in init_nuclear_dyn_var: \
-            the length of input Q is = "<<_Q.size()<<", \
-            the length of input M is = "<<_M.size()<<", but they should be equal to each other\n";
-      exit(0);
+      if (init_type == 1 || init_type == 2 || init_type == 3) {
+        if (_Q.size() != _M.size()) {
+          cout << "ERROR in init_nuclear_dyn_var: \
+            the length of input Q is = "
+               << _Q.size() << ", \
+            the length of input M is = "
+               << _M.size() << ", but they should be equal to each other\n";
+          exit(0);
+        }
+      }
+
+      if (init_type == 1 || init_type == 2 || init_type == 3) {
+        if (_Q.size() != force_constant.size()) {
+          cout << "ERROR in init_nuclear_dyn_var: \
+            the length of input Q is = "
+               << _Q.size() << ", \
+            the length of input force_constant is = "
+               << force_constant.size() << ", but they should be equal to each other\n";
+          exit(0);
+        }
+      }
+
+      if (init_type == 4) {
+        if (_Q.size() != q_width.size()) {
+          cout << "ERROR in init_nuclear_dyn_var: \
+             the length of input Q is = "
+               << _Q.size() << ", \
+             the length of input q_width is = "
+               << q_width.size() << ", but they should be equal to each other\n";
+          exit(0);
+        }
+      }
+
+      if (init_type == 4) {
+        if (_Q.size() != p_width.size()) {
+          cout << "ERROR in init_nuclear_dyn_var: \
+             the length of input Q is = "
+               << _Q.size() << ", \
+             the length of input p_width is = "
+               << p_width.size() << ", but they should be equal to each other\n";
+          exit(0);
+        }
+      }
+
+      /// At this point, it is safe to define ndof:
+      for (idof = 0; idof < ndof; idof++) {
+        iM->set(idof, 0, 1.0 / _M[idof]);
+      }
+
+      // Mean values
+      MATRIX mean_q(ndof, 1);
+      MATRIX mean_p(ndof, 1);
+
+      for (idof = 0; idof < ndof; idof++) {
+        mean_q.set(idof, 0, _Q[idof]);
+        mean_p.set(idof, 0, _P[idof]);
+      }
+
+      // Deviations
+      MATRIX sigma_q(ndof, 1);
+      MATRIX sigma_p(ndof, 1);
+
+      if (init_type == 0) {
+        for (idof = 0; idof < ndof; idof++) {
+          sigma_q.set(idof, 0, 0.0);
+          sigma_p.set(idof, 0, 0.0);
+        }
+      } else if (init_type == 1) {
+        for (idof = 0; idof < ndof; idof++) {
+          sigma_q.set(idof, 0, 0.0);
+          sigma_p.set(idof, 0, sqrt(0.5 * sqrt((force_constant[idof] * _M[idof]))));
+        }
+      } else if (init_type == 2) {
+        for (idof = 0; idof < ndof; idof++) {
+          sigma_q.set(idof, 0, sqrt(0.5 * sqrt(1.0 / (force_constant[idof] * _M[idof]))));
+          sigma_p.set(idof, 0, 0.0);
+        }
+      } else if (init_type == 3) {
+        for (idof = 0; idof < ndof; idof++) {
+          sigma_q.set(idof, 0, sqrt(0.5 * sqrt(1.0 / (force_constant[idof] * _M[idof]))));
+          sigma_p.set(idof, 0, sqrt(0.5 * sqrt((force_constant[idof] * _M[idof]))));
+        }
+      } else if (init_type == 4) {
+        for (idof = 0; idof < ndof; idof++) {
+          sigma_q.set(idof, 0, q_width[idof]);
+          sigma_p.set(idof, 0, p_width[idof]);
+        }
+      }
+
+      // Now sample the values
+      liblibra::libspecialfunctions::sample(q, mean_q, sigma_q, rnd);
+      liblibra::libspecialfunctions::sample(p, mean_p, sigma_p, rnd);
     }
-  }
 
-  if(init_type==1 || init_type==2 || init_type==3){
-    if(_Q.size() != force_constant.size()){
-      cout<<"ERROR in init_nuclear_dyn_var: \
-            the length of input Q is = "<<_Q.size()<<", \
-            the length of input force_constant is = "<<force_constant.size()<<", but they should be equal to each other\n";
-      exit(0);
+    double dyn_variables::compute_average_kinetic_energy() {
+      double res = 0.0;
+
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        for (int idof = 0; idof < ndof; idof++) {
+          res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
+        }
+      }
+      return 0.5 * res / float(ntraj);
     }
-  }
 
-  if(init_type==4){
-    if(_Q.size() != q_width.size()){
-      cout<<"ERROR in init_nuclear_dyn_var: \
-             the length of input Q is = "<<_Q.size()<<", \
-             the length of input q_width is = "<<q_width.size()<<", but they should be equal to each other\n";
-      exit(0);
+    double dyn_variables::compute_average_kinetic_energy(vector<int>& which_dofs) {
+      double res = 0.0;
+
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        for (auto idof : which_dofs) {
+          res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
+        }
+      }
+      return 0.5 * res / float(which_dofs.size());
     }
-  }
 
-  if(init_type==4){
-    if(_Q.size() != p_width.size()){
-      cout<<"ERROR in init_nuclear_dyn_var: \
-             the length of input Q is = "<<_Q.size()<<", \
-             the length of input p_width is = "<<p_width.size()<<", but they should be equal to each other\n";
-      exit(0);
+    double dyn_variables::compute_kinetic_energy(int itraj) {
+      double res = 0.0;
+
+      for (int idof = 0; idof < ndof; idof++) {
+        res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
+      }
+      res *= 0.5;
+
+      return res;
     }
-  }
 
-  /// At this point, it is safe to define ndof:
-  for(idof=0; idof<ndof; idof++){
-      iM->set(idof, 0, 1.0/_M[idof]);
-  }
+    double dyn_variables::compute_kinetic_energy(int itraj, vector<int>& which_dofs) {
+      double res = 0.0;
 
+      for (auto idof : which_dofs) {
+        res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
+      }
+      res *= 0.5;
 
-  // Mean values
-  MATRIX mean_q(ndof, 1);
-  MATRIX mean_p(ndof, 1);
-
-  for(idof=0; idof<ndof; idof++){
-    mean_q.set(idof, 0, _Q[idof]);
-    mean_p.set(idof, 0, _P[idof]);
-  }
-
-  // Deviations
-  MATRIX sigma_q(ndof, 1);
-  MATRIX sigma_p(ndof, 1);
-
-  if(init_type==0){
-    for(idof=0; idof<ndof; idof++){
-      sigma_q.set(idof, 0, 0.0);
-      sigma_p.set(idof, 0, 0.0);
+      return res;
     }
-  }
-  else if(init_type==1){
-    for(idof=0; idof<ndof; idof++){
-      sigma_q.set(idof, 0, 0.0);
-      sigma_p.set(idof, 0, sqrt( 0.5*sqrt((force_constant[idof]*_M[idof])) ));
+
+    vector<double> dyn_variables::compute_kinetic_energies() {
+      vector<double> res(ntraj, 0.0);
+
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        for (int idof = 0; idof < ndof; idof++) {
+          res[itraj] += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
+        }
+        res[itraj] *= 0.5;
+      }
+
+      return res;
     }
-  }
-  else if(init_type==2){
-    for(idof=0; idof<ndof; idof++){
-      sigma_q.set(idof, 0, sqrt( 0.5*sqrt(1.0/(force_constant[idof]*_M[idof])) ));
-      sigma_p.set(idof, 0, 0.0);
+
+    vector<double> dyn_variables::compute_kinetic_energies(vector<int>& which_dofs) {
+      vector<double> res(ntraj, 0.0);
+
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        for (auto idof : which_dofs) {
+          res[itraj] += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
+        }
+        res[itraj] *= 0.5;
+      }
+
+      return res;
     }
-  }
-  else if(init_type==3){
-    for(idof=0; idof<ndof; idof++){
-      sigma_q.set(idof, 0, sqrt( 0.5*sqrt(1.0/(force_constant[idof]*_M[idof])) ));
-      sigma_p.set(idof, 0, sqrt( 0.5*sqrt((force_constant[idof]*_M[idof])) ));
+
+    double dyn_variables::compute_tcnbra_ekin() {
+      double res = 0.0;
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        res += tcnbra_ekin[itraj];
+      }
+      return res / ntraj;
     }
-  }
-  else if(init_type==4){
-    for(idof=0; idof<ndof; idof++){
-      sigma_q.set(idof, 0, q_width[idof]);
-      sigma_p.set(idof, 0, p_width[idof]);
+
+    double dyn_variables::compute_tcnbra_thermostat_energy() {
+      double res = 0.0;
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        res += tcnbra_thermostats[itraj].energy();
+      }
+      return res / ntraj;
     }
-  }
 
-
-  // Now sample the values
-  liblibra::libspecialfunctions::sample(q, mean_q, sigma_q, rnd);
-  liblibra::libspecialfunctions::sample(p, mean_p, sigma_p, rnd);
-
-}
-
-
-double dyn_variables::compute_average_kinetic_energy(){
-  double res = 0.0;
-
-  for(int itraj = 0; itraj < ntraj; itraj++){
-    for(int idof = 0; idof < ndof; idof++){
-      res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
-    }    
-  }
-  return 0.5*res/ float(ntraj);
-}
-
-double dyn_variables::compute_average_kinetic_energy(vector<int>& which_dofs){
-  double res = 0.0;
-
-  for(int itraj = 0; itraj < ntraj; itraj++){
-    for(auto idof: which_dofs){
-      res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
-    }    
-  }
-  return 0.5*res / float(which_dofs.size() );
-}
-
-double dyn_variables::compute_kinetic_energy(int itraj){
-  double res = 0.0;
-
-  for(int idof = 0; idof < ndof; idof++){
-    res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
-  }
-  res *= 0.5;
-
-  return res;
-}
-
-
-double dyn_variables::compute_kinetic_energy(int itraj, vector<int>& which_dofs){
-  double res = 0.0;
-
-  for(auto idof : which_dofs){
-    res += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
-  }
-  res *= 0.5;
-
-  return res;
-}
-
-
-
-vector<double> dyn_variables::compute_kinetic_energies(){
-  vector<double> res(ntraj, 0.0);
-
-  for(int itraj = 0; itraj < ntraj; itraj++){
-    for(int idof = 0; idof < ndof; idof++){
-      res[itraj] += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
-    }    
-    res[itraj] *= 0.5;
-  }
-
-  return res;
-
-}
-
-vector<double> dyn_variables::compute_kinetic_energies(vector<int>& which_dofs){
-  vector<double> res(ntraj, 0.0);
-
-  for(int itraj = 0; itraj < ntraj; itraj++){
-    for(auto idof : which_dofs){
-      res[itraj] += p->get(idof, itraj) * p->get(idof, itraj) * iM->get(idof, 0);
-    }    
-    res[itraj] *= 0.5;
-  }
-
-  return res;
-
-}
-
-double dyn_variables::compute_tcnbra_ekin(){
-
-  double res = 0.0;
-  for(int itraj = 0; itraj < ntraj; itraj++){
-    res += tcnbra_ekin[itraj];
-  }
-  return res/ntraj;
-
-}
-
-double dyn_variables::compute_tcnbra_thermostat_energy(){
-
-  double res = 0.0;
-  for(int itraj = 0; itraj < ntraj; itraj++){
-    res += tcnbra_thermostats[itraj].energy();
-  }
-  return res/ntraj;
-
-}
-
-
-
-
-}// namespace libdyn
-}// liblibra
-
+  }  // namespace libdyn
+}  // namespace liblibra

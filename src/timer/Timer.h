@@ -43,8 +43,6 @@
  * For further information about Ergo, see <http://www.ergoscf.org>.
  */
 
-
-
 #ifndef TIMER_H
 #define TIMER_H
 
@@ -58,118 +56,106 @@
 #include <iomanip>
 #include <fstream>
 
-
 #include <stdexcept>
 //#include "output.h"
 #include "../realtype.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libergoscf;
-using namespace std;
+  using namespace libergoscf;
+  using namespace std;
 
-class Timer{
-/**
+  class Timer {
+    /**
   The Timer class which can be used for benchmarking purposes
 */
 
- time_t t1,t2; // start and end points
- time_t acc;   // accumulator 
+    time_t t1, t2;  // start and end points
+    time_t acc;     // accumulator
 
-public:
+  public:
+    Timer() { acc = 0.0; }  ///< Constructor: resets accumulated time to zero
 
-  Timer(){ acc = 0.0; } ///< Constructor: resets accumulated time to zero
-
-  inline void start(){ t1 = clock(); }  ///< Start: saves the time of the start
-  inline double stop(){
-  /** Stop: gets the time of call and computes the time difference w.r.t to the start time. The difference is returned
+    inline void start() { t1 = clock(); }  ///< Start: saves the time of the start
+    inline double stop() {
+      /** Stop: gets the time of call and computes the time difference w.r.t to the start time. The difference is returned
   but is also added to the internal accumulator
   */
-    t2 = clock(); acc += (t2-t1); return ((t2-t1)/((double)CLOCKS_PER_SEC));
-  }
-  inline double show(){  return (acc/((double)CLOCKS_PER_SEC)); }  ///< Returns the time accumulated so far (in between start/stop) calls
+      t2 = clock();
+      acc += (t2 - t1);
+      return ((t2 - t1) / ((double)CLOCKS_PER_SEC));
+    }
+    inline double show() {
+      return (acc / ((double)CLOCKS_PER_SEC));
+    }  ///< Returns the time accumulated so far (in between start/stop) calls
+  };
 
-
-};
-
-
-
-
-/** Time-measuring class. Measures the time between the
+  /** Time-measuring class. Measures the time between the
     construction of the object and the call of the print method. */
-class TimeMeter {
+  class TimeMeter {
+  public:
+    double startTimeCPU_sys;
+    double startTimeCPU_usr;
+    double startTimeWall;
 
-public:
+    double endTimeCPU_sys;
+    double endTimeCPU_usr;
+    double endTimeWall;
 
-  double startTimeCPU_sys;
-  double startTimeCPU_usr;
-  double startTimeWall;
+    double secondsTakenWall;
+    double secondsTakenCPU_usr;
+    double secondsTakenCPU_sys;
 
-  double endTimeCPU_sys;
-  double endTimeCPU_usr;
-  double endTimeWall;
+    double get_start_time_wall_seconds() const { return startTimeWall; }
 
-  double secondsTakenWall;
-  double secondsTakenCPU_usr;
-  double secondsTakenCPU_sys;
+    static double get_wall_seconds() {
+      struct timeval tv;
+      if (gettimeofday(&tv, NULL) != 0)
+        throw std::runtime_error("Error in get_wall_seconds(), in gettimeofday().");
+      double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
+      return seconds;
+    }
 
+    static void get_current_cpu_times(double& seconds_usr, double& seconds_sys) {
+      struct rusage usage;
+      if (getrusage(RUSAGE_SELF, &usage) != 0)
+        throw std::runtime_error("Error in get_current_cpu_times(), in getrusage().");
+      seconds_usr = usage.ru_utime.tv_sec + (double)usage.ru_utime.tv_usec / 1000000;
+      seconds_sys = usage.ru_stime.tv_sec + (double)usage.ru_stime.tv_usec / 1000000;
+    }
 
-  double get_start_time_wall_seconds() const {
-    return startTimeWall;
-  }
+    TimeMeter() {
+      startTimeWall = get_wall_seconds();
+      get_current_cpu_times(startTimeCPU_usr, startTimeCPU_sys);
 
-  static double get_wall_seconds() {
-    struct timeval tv;
-    if(gettimeofday(&tv, NULL) != 0)
-      throw std::runtime_error("Error in get_wall_seconds(), in gettimeofday().");
-    double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
-    return seconds;
-  }
+      endTimeCPU_sys = startTimeCPU_sys;
+      endTimeCPU_usr = startTimeCPU_usr;
+      endTimeWall = startTimeWall;
 
-  static void get_current_cpu_times(double & seconds_usr, double & seconds_sys) {
-    struct rusage usage;
-    if(getrusage (RUSAGE_SELF, &usage) != 0)
-	throw std::runtime_error("Error in get_current_cpu_times(), in getrusage().");
-    seconds_usr = usage.ru_utime.tv_sec + (double)usage.ru_utime.tv_usec / 1000000;
-    seconds_sys = usage.ru_stime.tv_sec + (double)usage.ru_stime.tv_usec / 1000000;
-  }
+      secondsTakenCPU_sys = 0.0;
+      secondsTakenCPU_usr = 0.0;
+      secondsTakenWall = 0.0;
+    }
 
-  TimeMeter() {
-    startTimeWall = get_wall_seconds();
-    get_current_cpu_times(startTimeCPU_usr, startTimeCPU_sys);
+    void print(int area, const char* routine) {
+      endTimeWall = get_wall_seconds();
+      secondsTakenWall = endTimeWall - startTimeWall;
 
-    endTimeCPU_sys = startTimeCPU_sys;
-    endTimeCPU_usr = startTimeCPU_usr;
-    endTimeWall = startTimeWall;
+      get_current_cpu_times(endTimeCPU_usr, endTimeCPU_sys);
+      secondsTakenCPU_usr = endTimeCPU_usr - startTimeCPU_usr;
+      secondsTakenCPU_sys = endTimeCPU_sys - startTimeCPU_sys;
 
-    secondsTakenCPU_sys = 0.0;
-    secondsTakenCPU_usr = 0.0;
-    secondsTakenWall = 0.0; 
-  }
+      //    do_output(LOG_CAT_TIMINGS, area, "%s took %9.2f usr cpu s  %9.2f sys cpu s  %9.2f wall s",
+      //		routine, secondsTakenCPU_usr, secondsTakenCPU_sys, secondsTakenWall);
 
-  void print(int area, const char *routine) {
-    endTimeWall = get_wall_seconds();
-    secondsTakenWall = endTimeWall - startTimeWall;
+      /// AVA: For now
+      cout << *routine << " took " << secondsTakenCPU_usr << " usr cpu s " << secondsTakenCPU_sys
+           << " sys cpu s " << secondsTakenWall << " wall s\n";
+    }
 
-    get_current_cpu_times(endTimeCPU_usr, endTimeCPU_sys);  
-    secondsTakenCPU_usr = endTimeCPU_usr - startTimeCPU_usr;
-    secondsTakenCPU_sys = endTimeCPU_sys - startTimeCPU_sys;
+  };  // TimeMeter class
 
-//    do_output(LOG_CAT_TIMINGS, area, "%s took %9.2f usr cpu s  %9.2f sys cpu s  %9.2f wall s", 
-//		routine, secondsTakenCPU_usr, secondsTakenCPU_sys, secondsTakenWall);
+}  // namespace liblibra
 
-    /// AVA: For now
-    cout<<*routine<<" took "<<secondsTakenCPU_usr<<" usr cpu s "<<secondsTakenCPU_sys<<" sys cpu s "
-        <<secondsTakenWall<<" wall s\n";
-  }
-
-
-  
-}; // TimeMeter class
-
-
-
-}// namespace liblibra
-
-#endif // TIMER_H
+#endif  // TIMER_H

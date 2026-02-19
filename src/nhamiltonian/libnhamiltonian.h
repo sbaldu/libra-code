@@ -17,22 +17,17 @@
 #ifndef LIB_nHAMILTONIAN_H
 #define LIB_nHAMILTONIAN_H
 
-
 #include "nHamiltonian.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libnhamiltonian namespace
+  namespace libnhamiltonian {
 
-/// libnhamiltonian namespace
-namespace libnhamiltonian{
+    void export_nhamiltonian_objects();
 
+  }  // namespace libnhamiltonian
+}  // namespace liblibra
 
-void export_nhamiltonian_objects();
-
-
-
-}// namespace libnhamiltonian
-}// liblibra
-
-#endif// LIB_nHAMILTONIAN_H
+#endif  // LIB_nHAMILTONIAN_H

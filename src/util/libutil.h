@@ -20,18 +20,14 @@
 #include "util.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libutil namespace
+  namespace libutil {
 
-/// libutil namespace
-namespace libutil{
+    void export_util_objects();
 
+  }  // namespace libutil
+}  // namespace liblibra
 
-void export_util_objects();
-
-
-}// namespace libutil
-}// liblibra
-
-
-#endif// LIB_UTIL_H
+#endif  // LIB_UTIL_H

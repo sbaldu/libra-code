@@ -19,233 +19,264 @@
 #include "../../calculators/libcalculators.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libcalculators;
+  using namespace libcalculators;
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_qm namespace
-namespace libhamiltonian_qm{
+    /// libhamiltonian_qm namespace
+    namespace libhamiltonian_qm {
 
+      /// Implementation of the copy constructor of the class Electronic
+      Electronic_Structure::Electronic_Structure(const Electronic_Structure& obj) {
+        Norb = obj.Norb;
+        Nocc_alp = obj.Nocc_alp;
+        Nocc_bet = obj.Nocc_bet;
+        Nelec = obj.Nelec;
 
+        P_alp = new MATRIX(Norb, Norb);
+        *P_alp = *obj.P_alp;
+        P_bet = new MATRIX(Norb, Norb);
+        *P_bet = *obj.P_bet;
+        P = new MATRIX(Norb, Norb);
+        *P = *obj.P;
+        C_alp = new MATRIX(Norb, Norb);
+        *C_alp = *obj.C_alp;
+        C_bet = new MATRIX(Norb, Norb);
+        *C_bet = *obj.C_bet;
+        Sao = new MATRIX(Norb, Norb);
+        *Sao = *obj.Sao;
+        Hao = new MATRIX(Norb, Norb);
+        *Hao = *obj.Hao;
+        Fao_alp = new MATRIX(Norb, Norb);
+        *Fao_alp = *obj.Fao_alp;
+        Fao_bet = new MATRIX(Norb, Norb);
+        *Fao_bet = *obj.Fao_bet;
+        dFao_alp_dP_alp = new MATRIX(Norb, Norb);
+        *dFao_alp_dP_alp = *obj.dFao_alp_dP_alp;
+        dFao_alp_dP_bet = new MATRIX(Norb, Norb);
+        *dFao_alp_dP_bet = *obj.dFao_alp_dP_bet;
+        dFao_bet_dP_alp = new MATRIX(Norb, Norb);
+        *dFao_bet_dP_alp = *obj.dFao_bet_dP_alp;
+        dFao_bet_dP_bet = new MATRIX(Norb, Norb);
+        *dFao_bet_dP_bet = *obj.dFao_bet_dP_bet;
 
-/// Implementation of the copy constructor of the class Electronic
-Electronic_Structure::Electronic_Structure(const Electronic_Structure& obj){
+        E_alp = new MATRIX(Norb, Norb);
+        *E_alp = *obj.E_alp;
+        E_bet = new MATRIX(Norb, Norb);
+        *E_bet = *obj.E_bet;
 
-    Norb = obj.Norb;
-    Nocc_alp = obj.Nocc_alp;
-    Nocc_bet = obj.Nocc_bet;
-    Nelec = obj.Nelec;
+        Mull_orb_pop_net = obj.Mull_orb_pop_net;
+        Mull_orb_pop_gross = obj.Mull_orb_pop_gross;
 
-    P_alp = new MATRIX(Norb,Norb);   *P_alp   = *obj.P_alp;
-    P_bet = new MATRIX(Norb,Norb);   *P_bet   = *obj.P_bet;
-    P     = new MATRIX(Norb,Norb);   *P       = *obj.P;
-    C_alp = new MATRIX(Norb,Norb);   *C_alp   = *obj.C_alp;
-    C_bet = new MATRIX(Norb,Norb);   *C_bet   = *obj.C_bet;
-    Sao   = new MATRIX(Norb,Norb);   *Sao     = *obj.Sao;
-    Hao   = new MATRIX(Norb,Norb);   *Hao     = *obj.Hao;
-    Fao_alp = new MATRIX(Norb,Norb); *Fao_alp = *obj.Fao_alp;
-    Fao_bet = new MATRIX(Norb,Norb); *Fao_bet = *obj.Fao_bet;
-    dFao_alp_dP_alp = new MATRIX(Norb,Norb);  *dFao_alp_dP_alp = *obj.dFao_alp_dP_alp;
-    dFao_alp_dP_bet = new MATRIX(Norb,Norb);  *dFao_alp_dP_bet = *obj.dFao_alp_dP_bet;
-    dFao_bet_dP_alp = new MATRIX(Norb,Norb);  *dFao_bet_dP_alp = *obj.dFao_bet_dP_alp;
-    dFao_bet_dP_bet = new MATRIX(Norb,Norb);  *dFao_bet_dP_bet = *obj.dFao_bet_dP_bet;
+        bands_alp = obj.bands_alp;
+        bands_bet = obj.bands_bet;
+        occ_alp = obj.occ_alp;
+        occ_bet = obj.occ_bet;
+      }
 
-    E_alp = new MATRIX(Norb,Norb);   *E_alp   = *obj.E_alp;
-    E_bet = new MATRIX(Norb,Norb);   *E_bet   = *obj.E_bet;
+      Electronic_Structure& Electronic_Structure::operator=(const Electronic_Structure& ob) {
+        if (this == &ob) {
+          return *this;
+        } else {
+          *this = Electronic_Structure(ob);
+          return *this;
+        }
+      }
 
-    Mull_orb_pop_net = obj.Mull_orb_pop_net;
-    Mull_orb_pop_gross = obj.Mull_orb_pop_gross;
+      /// Implementation of the constructor from the address pointing to an existing object of class Electronic
+      Electronic_Structure::Electronic_Structure(Electronic_Structure* obj) {
+        Norb = obj->Norb;
+        Nocc_alp = obj->Nocc_alp;
+        Nocc_bet = obj->Nocc_bet;
+        Nelec = obj->Nelec;
 
-    bands_alp = obj.bands_alp;
-    bands_bet = obj.bands_bet;
-    occ_alp = obj.occ_alp;    
-    occ_bet = obj.occ_bet;    
+        P_alp = new MATRIX(Norb, Norb);
+        *P_alp = *obj->P_alp;
+        P_bet = new MATRIX(Norb, Norb);
+        *P_bet = *obj->P_bet;
+        P = new MATRIX(Norb, Norb);
+        *P = *obj->P;
+        C_alp = new MATRIX(Norb, Norb);
+        *C_alp = *obj->C_alp;
+        C_bet = new MATRIX(Norb, Norb);
+        *C_bet = *obj->C_bet;
+        Sao = new MATRIX(Norb, Norb);
+        *Sao = *obj->Sao;
+        Hao = new MATRIX(Norb, Norb);
+        *Hao = *obj->Hao;
+        Fao_alp = new MATRIX(Norb, Norb);
+        *Fao_alp = *obj->Fao_alp;
+        Fao_bet = new MATRIX(Norb, Norb);
+        *Fao_bet = *obj->Fao_bet;
+        dFao_alp_dP_alp = new MATRIX(Norb, Norb);
+        *dFao_alp_dP_alp = *obj->dFao_alp_dP_alp;
+        dFao_alp_dP_bet = new MATRIX(Norb, Norb);
+        *dFao_alp_dP_bet = *obj->dFao_alp_dP_bet;
+        dFao_bet_dP_alp = new MATRIX(Norb, Norb);
+        *dFao_bet_dP_alp = *obj->dFao_bet_dP_alp;
+        dFao_bet_dP_bet = new MATRIX(Norb, Norb);
+        *dFao_bet_dP_bet = *obj->dFao_bet_dP_bet;
+        E_alp = new MATRIX(Norb, Norb);
+        *E_alp = *obj->E_alp;
+        E_bet = new MATRIX(Norb, Norb);
+        *E_bet = *obj->E_bet;
 
-}
+        Mull_orb_pop_net = obj->Mull_orb_pop_net;
+        Mull_orb_pop_gross = obj->Mull_orb_pop_gross;
 
-Electronic_Structure& Electronic_Structure::operator=(const Electronic_Structure& ob){
+        bands_alp = obj->bands_alp;
+        bands_bet = obj->bands_bet;
+        occ_alp = obj->occ_alp;
+        occ_bet = obj->occ_bet;
+      }
 
-  if(this == &ob){  return *this;    }
-  else{
-    *this = Electronic_Structure(ob);
-    return *this;
-  }
+      void Electronic_Structure::check_matrix_dimensionas(
+          MATRIX* A, MATRIX& B, std::string A_name, std::string B_name, std::string func_name) {
+        if (B.n_cols != A->n_cols) {
+          cout << "In " << func_name << "\n";
+          cout << "Number of cols of matrix " << A_name
+               << " is not equal to the number of cols of matrix " << B_name << "\n";
+          exit(0);
+        }
+        if (B.n_rows != A->n_rows) {
+          cout << "In " << func_name << "\n";
+          cout << "Number of rows of matrix " << A_name
+               << " is not equal to the number of rows of matrix " << B_name << "\n";
+          exit(0);
+        }
+      }
 
-}
+      void Electronic_Structure::set_P_alp(MATRIX& x_) {
+        check_matrix_dimensionas(P_alp, x_, "Electronic::P_alp", "x_", "Electronic::set_P_alp");
+        *P_alp = x_;
+      }
+      void Electronic_Structure::set_P_bet(MATRIX& x_) {
+        check_matrix_dimensionas(P_bet, x_, "Electronic::P_bet", "x_", "Electronic::set_P_bet");
+        *P_bet = x_;
+      }
+      void Electronic_Structure::set_P(MATRIX& x_) {
+        check_matrix_dimensionas(P, x_, "Electronic::P", "x_", "Electronic::set_P");
+        *P = x_;
+      }
+      MATRIX Electronic_Structure::get_P_alp() { return *P_alp; }
+      MATRIX Electronic_Structure::get_P_bet() { return *P_bet; }
+      MATRIX Electronic_Structure::get_P() { return *P; }
 
+      void Electronic_Structure::set_C_alp(MATRIX& x_) {
+        check_matrix_dimensionas(C_alp, x_, "Electronic::C_alp", "x_", "Electronic::set_C_alp");
+        *C_alp = x_;
+      }
+      void Electronic_Structure::set_C_bet(MATRIX& x_) {
+        check_matrix_dimensionas(C_bet, x_, "Electronic::C_bet", "x_", "Electronic::set_C_bet");
+        *C_bet = x_;
+      }
+      MATRIX Electronic_Structure::get_C_alp() { return *C_alp; }
+      MATRIX Electronic_Structure::get_C_bet() { return *C_bet; }
 
+      void Electronic_Structure::set_Sao(MATRIX& x_) {
+        check_matrix_dimensionas(Sao, x_, "Electronic::Sao", "x_", "Electronic::set_Sao");
+        *Sao = x_;
+      }
+      void Electronic_Structure::set_Hao(MATRIX& x_) {
+        check_matrix_dimensionas(Hao, x_, "Electronic::Hao", "x_", "Electronic::set_Hao");
+        *Hao = x_;
+      }
+      MATRIX Electronic_Structure::get_Sao() { return *Sao; }
+      MATRIX Electronic_Structure::get_Hao() { return *Hao; }
 
-/// Implementation of the constructor from the address pointing to an existing object of class Electronic
-Electronic_Structure::Electronic_Structure(Electronic_Structure* obj){
+      void Electronic_Structure::set_Fao_alp(MATRIX& x_) {
+        check_matrix_dimensionas(
+            Fao_alp, x_, "Electronic::Fao_alp", "x_", "Electronic::set_Fao_alp");
+        *Fao_alp = x_;
+      }
+      void Electronic_Structure::set_Fao_bet(MATRIX& x_) {
+        check_matrix_dimensionas(
+            Fao_bet, x_, "Electronic::Fao_bet", "x_", "Electronic::set_Fao_bet");
+        *Fao_bet = x_;
+      }
+      MATRIX Electronic_Structure::get_Fao_alp() { return *Fao_alp; }
+      MATRIX Electronic_Structure::get_Fao_bet() { return *Fao_bet; }
 
-    Norb = obj->Norb;
-    Nocc_alp = obj->Nocc_alp;
-    Nocc_bet = obj->Nocc_bet;
-    Nelec = obj->Nelec;
+      void Electronic_Structure::set_dFao_alp_dP_alp(MATRIX& x_) {
+        check_matrix_dimensionas(dFao_alp_dP_alp,
+                                 x_,
+                                 "Electronic::dFao_alp_dP_alp",
+                                 "x_",
+                                 "Electronic::set_dFao_alp_dP_alp");
+        *dFao_alp_dP_alp = x_;
+      }
+      void Electronic_Structure::set_dFao_alp_dP_bet(MATRIX& x_) {
+        check_matrix_dimensionas(dFao_alp_dP_bet,
+                                 x_,
+                                 "Electronic::dFao_alp_dP_bet",
+                                 "x_",
+                                 "Electronic::set_dFao_alp_dP_bet");
+        *dFao_alp_dP_bet = x_;
+      }
+      void Electronic_Structure::set_dFao_bet_dP_alp(MATRIX& x_) {
+        check_matrix_dimensionas(dFao_bet_dP_alp,
+                                 x_,
+                                 "Electronic::dFao_bet_dP_alp",
+                                 "x_",
+                                 "Electronic::set_dFao_bet_dP_alp");
+        *dFao_bet_dP_alp = x_;
+      }
+      void Electronic_Structure::set_dFao_bet_dP_bet(MATRIX& x_) {
+        check_matrix_dimensionas(dFao_bet_dP_bet,
+                                 x_,
+                                 "Electronic::dFao_bet_dP_bet",
+                                 "x_",
+                                 "Electronic::set_dFao_bet_dP_bet");
+        *dFao_bet_dP_bet = x_;
+      }
+      MATRIX Electronic_Structure::get_dFao_alp_dP_alp() { return *dFao_alp_dP_alp; }
+      MATRIX Electronic_Structure::get_dFao_alp_dP_bet() { return *dFao_alp_dP_bet; }
+      MATRIX Electronic_Structure::get_dFao_bet_dP_alp() { return *dFao_bet_dP_alp; }
+      MATRIX Electronic_Structure::get_dFao_bet_dP_bet() { return *dFao_bet_dP_bet; }
 
-    P_alp = new MATRIX(Norb,Norb);   *P_alp   = *obj->P_alp;
-    P_bet = new MATRIX(Norb,Norb);   *P_bet   = *obj->P_bet;
-    P     = new MATRIX(Norb,Norb);   *P       = *obj->P;
-    C_alp = new MATRIX(Norb,Norb);   *C_alp   = *obj->C_alp;
-    C_bet = new MATRIX(Norb,Norb);   *C_bet   = *obj->C_bet;
-    Sao   = new MATRIX(Norb,Norb);   *Sao     = *obj->Sao;
-    Hao   = new MATRIX(Norb,Norb);   *Hao     = *obj->Hao;
-    Fao_alp = new MATRIX(Norb,Norb); *Fao_alp = *obj->Fao_alp;
-    Fao_bet = new MATRIX(Norb,Norb); *Fao_bet = *obj->Fao_bet;
-    dFao_alp_dP_alp = new MATRIX(Norb,Norb);  *dFao_alp_dP_alp = *obj->dFao_alp_dP_alp;
-    dFao_alp_dP_bet = new MATRIX(Norb,Norb);  *dFao_alp_dP_bet = *obj->dFao_alp_dP_bet;
-    dFao_bet_dP_alp = new MATRIX(Norb,Norb);  *dFao_bet_dP_alp = *obj->dFao_bet_dP_alp;
-    dFao_bet_dP_bet = new MATRIX(Norb,Norb);  *dFao_bet_dP_bet = *obj->dFao_bet_dP_bet;
-    E_alp = new MATRIX(Norb,Norb);   *E_alp   = *obj->E_alp;
-    E_bet = new MATRIX(Norb,Norb);   *E_bet   = *obj->E_bet;
+      void Electronic_Structure::set_E_alp(MATRIX& x_) {
+        check_matrix_dimensionas(E_alp, x_, "Electronic::E_alp", "x_", "Electronic::set_E_alp");
+        *E_alp = x_;
+      }
+      void Electronic_Structure::set_E_bet(MATRIX& x_) {
+        check_matrix_dimensionas(E_bet, x_, "Electronic::E_bet", "x_", "Electronic::set_E_bet");
+        *E_bet = x_;
+      }
+      MATRIX Electronic_Structure::get_E_alp() { return *E_alp; }
+      MATRIX Electronic_Structure::get_E_bet() { return *E_bet; }
 
-    Mull_orb_pop_net = obj->Mull_orb_pop_net;
-    Mull_orb_pop_gross = obj->Mull_orb_pop_gross;
+      void Electronic_Structure::excite_alp(int I, int J) {
+        vector<pair<int, double> > occ_fin;
+        excite(I, J, occ_alp, occ_fin);
+        occ_alp = occ_fin;
 
-    bands_alp = obj->bands_alp;
-    bands_bet = obj->bands_bet;
-    occ_alp = obj->occ_alp;    
-    occ_bet = obj->occ_bet;    
+        // And recompute density matrix
+        compute_density_matrix(occ_alp, C_alp, P_alp);
 
-}
+        // Also update the total density matrix:
+        *P = *P_alp + *P_bet;
+      }
 
+      void Electronic_Structure::excite_bet(int I, int J) {
+        vector<pair<int, double> > occ_fin;
+        excite(I, J, occ_bet, occ_fin);
+        occ_bet = occ_fin;
 
-void Electronic_Structure::check_matrix_dimensionas(MATRIX* A, MATRIX& B, std::string A_name, std::string B_name, std::string func_name){
-  if(B.n_cols != A->n_cols){
-    cout<<"In "<<func_name<<"\n";
-    cout<<"Number of cols of matrix "<<A_name<<" is not equal to the number of cols of matrix "<<B_name<<"\n";
-    exit(0);
-  }
-  if(B.n_rows != A->n_rows){
-    cout<<"In "<<func_name<<"\n";
-    cout<<"Number of rows of matrix "<<A_name<<" is not equal to the number of rows of matrix "<<B_name<<"\n";
-    exit(0);
-  }
+        // And recompute density matrix
+        compute_density_matrix(occ_alp, C_bet, P_bet);
 
-}
+        // Also update the total density matrix:
+        *P = *P_alp + *P_bet;
+      }
 
-void Electronic_Structure::set_P_alp(MATRIX& x_){
-  check_matrix_dimensionas(P_alp, x_, "Electronic::P_alp", "x_", "Electronic::set_P_alp");
-  *P_alp = x_;
-}
-void Electronic_Structure::set_P_bet(MATRIX& x_){
-  check_matrix_dimensionas(P_bet, x_, "Electronic::P_bet", "x_", "Electronic::set_P_bet");
-  *P_bet = x_;
-}
-void Electronic_Structure::set_P(MATRIX& x_){
-  check_matrix_dimensionas(P, x_, "Electronic::P", "x_", "Electronic::set_P");
-  *P = x_;
-}
-MATRIX Electronic_Structure::get_P_alp(){  return *P_alp; }
-MATRIX Electronic_Structure::get_P_bet(){  return *P_bet; }
-MATRIX Electronic_Structure::get_P(){  return *P; }
-
-
-void Electronic_Structure::set_C_alp(MATRIX& x_){
-  check_matrix_dimensionas(C_alp, x_, "Electronic::C_alp", "x_", "Electronic::set_C_alp");
-  *C_alp = x_;
-}
-void Electronic_Structure::set_C_bet(MATRIX& x_){
-  check_matrix_dimensionas(C_bet, x_, "Electronic::C_bet", "x_", "Electronic::set_C_bet");
-  *C_bet = x_;
-}
-MATRIX Electronic_Structure::get_C_alp(){  return *C_alp; }
-MATRIX Electronic_Structure::get_C_bet(){  return *C_bet; }
-
-
-void Electronic_Structure::set_Sao(MATRIX& x_){
-  check_matrix_dimensionas(Sao, x_, "Electronic::Sao", "x_", "Electronic::set_Sao");
-  *Sao = x_;
-}
-void Electronic_Structure::set_Hao(MATRIX& x_){
-  check_matrix_dimensionas(Hao, x_, "Electronic::Hao", "x_", "Electronic::set_Hao");
-  *Hao = x_;
-}
-MATRIX Electronic_Structure::get_Sao(){  return *Sao; }
-MATRIX Electronic_Structure::get_Hao(){  return *Hao; }
-
-
-void Electronic_Structure::set_Fao_alp(MATRIX& x_){
-  check_matrix_dimensionas(Fao_alp, x_, "Electronic::Fao_alp", "x_", "Electronic::set_Fao_alp");
-  *Fao_alp = x_;
-}
-void Electronic_Structure::set_Fao_bet(MATRIX& x_){
-  check_matrix_dimensionas(Fao_bet, x_, "Electronic::Fao_bet", "x_", "Electronic::set_Fao_bet");
-  *Fao_bet = x_;
-}
-MATRIX Electronic_Structure::get_Fao_alp(){  return *Fao_alp; }
-MATRIX Electronic_Structure::get_Fao_bet(){  return *Fao_bet; }
-
-
-
-void Electronic_Structure::set_dFao_alp_dP_alp(MATRIX& x_){
-  check_matrix_dimensionas(dFao_alp_dP_alp, x_, "Electronic::dFao_alp_dP_alp", "x_", "Electronic::set_dFao_alp_dP_alp");
-  *dFao_alp_dP_alp = x_;
-}
-void Electronic_Structure::set_dFao_alp_dP_bet(MATRIX& x_){
-  check_matrix_dimensionas(dFao_alp_dP_bet, x_, "Electronic::dFao_alp_dP_bet", "x_", "Electronic::set_dFao_alp_dP_bet");
-  *dFao_alp_dP_bet = x_;
-}
-void Electronic_Structure::set_dFao_bet_dP_alp(MATRIX& x_){
-  check_matrix_dimensionas(dFao_bet_dP_alp, x_, "Electronic::dFao_bet_dP_alp", "x_", "Electronic::set_dFao_bet_dP_alp");
-  *dFao_bet_dP_alp = x_;
-}
-void Electronic_Structure::set_dFao_bet_dP_bet(MATRIX& x_){
-  check_matrix_dimensionas(dFao_bet_dP_bet, x_, "Electronic::dFao_bet_dP_bet", "x_", "Electronic::set_dFao_bet_dP_bet");
-  *dFao_bet_dP_bet = x_;
-}
-MATRIX Electronic_Structure::get_dFao_alp_dP_alp(){  return *dFao_alp_dP_alp; }
-MATRIX Electronic_Structure::get_dFao_alp_dP_bet(){  return *dFao_alp_dP_bet; }
-MATRIX Electronic_Structure::get_dFao_bet_dP_alp(){  return *dFao_bet_dP_alp; }
-MATRIX Electronic_Structure::get_dFao_bet_dP_bet(){  return *dFao_bet_dP_bet; }
-
-
-
-void Electronic_Structure::set_E_alp(MATRIX& x_){
-  check_matrix_dimensionas(E_alp, x_, "Electronic::E_alp", "x_", "Electronic::set_E_alp");
-  *E_alp = x_;
-}
-void Electronic_Structure::set_E_bet(MATRIX& x_){
-  check_matrix_dimensionas(E_bet, x_, "Electronic::E_bet", "x_", "Electronic::set_E_bet");
-  *E_bet = x_;
-}
-MATRIX Electronic_Structure::get_E_alp(){  return *E_alp; }
-MATRIX Electronic_Structure::get_E_bet(){  return *E_bet; }
-
-
-void Electronic_Structure::excite_alp(int I, int J){
-
-  vector< pair<int,double> > occ_fin;
-  excite(I, J, occ_alp, occ_fin);  occ_alp = occ_fin;
-
-  // And recompute density matrix
-  compute_density_matrix(occ_alp, C_alp, P_alp);
-
-  // Also update the total density matrix:
-  *P = *P_alp + *P_bet;
-
-}
-
-void Electronic_Structure::excite_bet(int I, int J){
-
-  vector< pair<int,double> > occ_fin;
-  excite(I, J, occ_bet, occ_fin);  occ_bet = occ_fin;
-
-  // And recompute density matrix
-  compute_density_matrix(occ_alp, C_bet, P_bet);
-
-  // Also update the total density matrix:
-  *P = *P_alp + *P_bet;
-
-}
-
-
-
-
-int init_numbers(Electronic_Structure& el, System& syst, vector<AO>& basis_ao, Model_Parameters& modprms, double charge){
-/** 
+      int init_numbers(Electronic_Structure& el,
+                       System& syst,
+                       vector<AO>& basis_ao,
+                       Model_Parameters& modprms,
+                       double charge) {
+        /** 
   \param[in,out] el The object containing information about the electronic structure of the given system
   \param[in,out] syst The object containing information about the nuclear coordinates and atom types of the given system
   \param[in] basis_ao The vector of AO objects - the AO basis for given calculations
@@ -258,48 +289,50 @@ int init_numbers(Electronic_Structure& el, System& syst, vector<AO>& basis_ao, M
   Then it sets the occupations numbers of alpha and beta orbitals to 0 or 1, according to aufbau principle
 */
 
-  int i;
+        int i;
 
-  // Compute total number of valence electrons in the given fragment
-  el.Nelec = 0;
+        // Compute total number of valence electrons in the given fragment
+        el.Nelec = 0;
 
+        for (i = 0; i < syst.Number_of_atoms; i++) {
+          el.Nelec += modprms.PT[syst.Atoms[i].Atom_element]
+                          .Nval;  // number of valence electrons for given atom
 
-  for(i=0;i<syst.Number_of_atoms;i++){
+        }  // for i
 
-    el.Nelec += modprms.PT[syst.Atoms[i].Atom_element].Nval;  // number of valence electrons for given atom
+        // Change the total number of electrons according to the total charge
+        // !!! Fractional charge is not supported yet:
+        double fractpart, intpart;
+        fractpart = modf(charge, &intpart);
 
-  }// for i
+        if (fabs(fractpart) > 0.01) {
+          cout << "Error in init_numbers: Fractional charge is not supported yet\n";
+          exit(0);
+        }
 
+        el.Nelec -= intpart;
 
-  // Change the total number of electrons according to the total charge
-  // !!! Fractional charge is not supported yet:
-  double fractpart, intpart;
-  fractpart = modf (charge , &intpart);
+        // Numbers of alpha & beta electrons
+        el.Nocc_alp = ((int)el.Nelec % 2 == 0) ? el.Nelec / 2 : (el.Nelec / 2 + 1);
+        el.Nocc_bet = el.Nelec - el.Nocc_alp;
 
-  if(fabs(fractpart)>0.01) { cout<<"Error in init_numbers: Fractional charge is not supported yet\n"; exit(0); }  
+        // Setup occupation numbers for unrestricted shell:
+        for (i = 0; i < el.Norb; i++) {
+          if (i < el.Nocc_alp) {
+            el.occ_alp.push_back(pair<int, double>(i, 1.0));
+          } else {
+            el.occ_alp.push_back(pair<int, double>(i, 0.0));
+          }
 
-  el.Nelec -= intpart;
+          if (i < el.Nocc_bet) {
+            el.occ_bet.push_back(pair<int, double>(i, 1.0));
+          } else {
+            el.occ_bet.push_back(pair<int, double>(i, 0.0));
+          }
+        }
+      }
 
-
-  // Numbers of alpha & beta electrons
-  el.Nocc_alp = ((int)el.Nelec%2==0)?el.Nelec/2:(el.Nelec/2+1); 
-  el.Nocc_bet = el.Nelec - el.Nocc_alp;
-
-
-  // Setup occupation numbers for unrestricted shell:
-  for(i=0;i<el.Norb;i++){
-    if(i<el.Nocc_alp){ el.occ_alp.push_back(pair<int,double>(i,1.0)); }
-    else{              el.occ_alp.push_back(pair<int,double>(i,0.0)); }
-
-    if(i<el.Nocc_bet){ el.occ_bet.push_back(pair<int,double>(i,1.0)); }
-    else{              el.occ_bet.push_back(pair<int,double>(i,0.0)); }
-  }
-
-
-
-}
-
-/*
+      /*
 int init_electronic_subsystems(System& syst,
                                vector<vector<int> >& fragments,vector<vector<int> >& atom_to_ao_map,
                                vector<vector<int> >& basis_fo, vector<Electronic>& el,
@@ -368,9 +401,6 @@ int init_electronic_subsystems(System& syst,
 }
 */
 
-
-}// namespace libhamiltonian_qm
-}// namespace libatomistic
-}// liblibra
-
-
+    }  // namespace libhamiltonian_qm
+  }  // namespace libatomistic
+}  // namespace liblibra

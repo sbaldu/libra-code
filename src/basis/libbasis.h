@@ -21,20 +21,14 @@
 #include "basisset.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libbasis namespace
+  namespace libbasis {
 
+    void export_basis_objects();
 
-/// libbasis namespace
-namespace libbasis{
+  }  // namespace libbasis
+}  // namespace liblibra
 
-
-void export_basis_objects();
-
-
-}// namespace libbasis
-}// namespace liblibra
-
-
-
-#endif// LIB_BASIS_H
+#endif  // LIB_BASIS_H

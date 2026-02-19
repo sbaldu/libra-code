@@ -17,26 +17,21 @@
 #ifndef LIB_HAMILTONIAN_GENERIC_H
 #define LIB_HAMILTONIAN_GENERIC_H
 
-
 #include "Hamiltonian.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libhamiltonian namespace
+  namespace libatomistic {
 
-/// libhamiltonian namespace
-namespace libatomistic{
+    /// libhamiltonian_generic namespace
+    namespace libhamiltonian_generic {
 
-/// libhamiltonian_generic namespace
-namespace libhamiltonian_generic{
+      void export_hamiltonian_generic_objects();
 
+    }  // namespace libhamiltonian_generic
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-void export_hamiltonian_generic_objects();
-
-
-
-}// namespace libhamiltonian_generic
-}// namespace libatomistic
-}// liblibra
-
-#endif// LIB_HAMILTONIAN_GENERIC_H
+#endif  // LIB_HAMILTONIAN_GENERIC_H

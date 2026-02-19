@@ -20,25 +20,29 @@
 #include "../math_linalg/liblinalg.h"
 #include "../common_types/libcommon_types.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libcommon_types;
+  using namespace liblinalg;
+  using namespace libcommon_types;
 
-/// libcalculators namespace
-namespace libcalculators{
+  /// libcalculators namespace
+  namespace libcalculators {
 
-void excite(int I, int J, vector< pair<int,double> >& occ_ini, vector< pair<int,double> >& occ_fin);
-boost::python::list excite(int I, int J, boost::python::list occ_ini);
+    void excite(int I,
+                int J,
+                vector<pair<int, double> >& occ_ini,
+                vector<pair<int, double> >& occ_fin);
+    boost::python::list excite(int I, int J, boost::python::list occ_ini);
 
-void excite(int Norb, excitation& ex, 
-            int Nocc_alp, vector< pair<int,double> >& occ_alp,
-            int Nocc_bet, vector< pair<int,double> >& occ_bet);
+    void excite(int Norb,
+                excitation& ex,
+                int Nocc_alp,
+                vector<pair<int, double> >& occ_alp,
+                int Nocc_bet,
+                vector<pair<int, double> >& occ_bet);
 
+  }  // namespace libcalculators
+}  // namespace liblibra
 
-}// libcalculators
-}// liblibra
-
-#endif // EXCITATIONS_H
+#endif  // EXCITATIONS_H

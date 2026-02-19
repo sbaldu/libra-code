@@ -17,7 +17,6 @@
 #ifndef LIB_MODELS_H
 #define LIB_MODELS_H
 
-
 #include "../math_linalg/liblinalg.h"
 #include "../math_meigen/libmeigen.h"
 
@@ -34,17 +33,15 @@
 #include "Model_sin.h"
 #include "Model_sin_2D.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libmodels
-namespace libmodels{
+  /// libmodels
+  namespace libmodels {
 
-  void export_models_objects();
+    void export_models_objects();
 
+  }  // namespace libmodels
+}  // namespace liblibra
 
-}// namespace libmodels
-}// liblibra
-
-#endif// LIB_MODELS_H
+#endif  // LIB_MODELS_H

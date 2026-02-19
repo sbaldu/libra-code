@@ -12,29 +12,23 @@
 #ifndef SWITCHING_FUNCTIONS_H
 #define SWITCHING_FUNCTIONS_H
 
-
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  namespace libpot {
 
+    //------------------ Switching functions --------------------------
+    void SWITCH(VECTOR& r1, VECTOR& r2, double R_on, double R_off, double& SW, VECTOR& dSW);
+    boost::python::list SWITCH(VECTOR r1, VECTOR r2, double R_on, double R_off);
 
-namespace libpot{
+    void DOUBLE_SWITCH(double x, double a, double eps, double& SW, double& dSW);
+    boost::python::list DOUBLE_SWITCH(double x, double a, double eps);
 
-//------------------ Switching functions --------------------------
-void SWITCH(VECTOR& r1,VECTOR&r2, double R_on,double R_off,double& SW,VECTOR& dSW);
-boost::python::list SWITCH(VECTOR r1,VECTOR r2, double R_on,double R_off);
+  }  // namespace libpot
+}  // namespace liblibra
 
-void DOUBLE_SWITCH(double x,double a,double eps,double& SW,double& dSW);
-boost::python::list DOUBLE_SWITCH(double x,double a,double eps);
-
-
-
-}// namespace libpot
-}// liblibra
-
-
-#endif // SWITCHING_FUNCTIONS_H
+#endif  // SWITCHING_FUNCTIONS_H

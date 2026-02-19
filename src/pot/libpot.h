@@ -12,7 +12,6 @@
 #ifndef LIBPOT_H
 #define LIBPOT_H
 
-
 #include "Switching_functions.h"
 #include "Potentials_bonds.h"
 #include "Potentials_angles.h"
@@ -27,14 +26,14 @@
 #include "Potentials_mb_elec.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libpot{
+  namespace libpot {
 
-void export_Pot_objects();
+    void export_Pot_objects();
 
-}// namespace libpot
+  }  // namespace libpot
 
-}// liblibra
+}  // namespace liblibra
 
-#endif// LIBPOT_H
+#endif  // LIBPOT_H

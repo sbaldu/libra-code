@@ -21,60 +21,52 @@
 #include "Element.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libchemobject namespace
+  namespace libchemobjects {
 
-/// libchemobject namespace
-namespace libchemobjects{
+    /// libuniverse namespace
+    namespace libuniverse {
 
-/// libuniverse namespace
-namespace libuniverse{
-
-
-
-class Universe{
-/**
+      class Universe {
+        /**
   \brief The class for keeping fundamental properties and parameters
   (e.g. atomic masses and other properties)
     
 */
 
+        //----------- Databases -----------------
+        // Periodic Table of Elements
+        map<std::string, Element> PeriodicTable;
 
-  //----------- Databases -----------------
-  // Periodic Table of Elements
-  map<std::string,Element>     PeriodicTable;
+        // GMP or other electronegativities and some atomic properties
+        //map<std::string,_GMP>     GMP;
 
-  // GMP or other electronegativities and some atomic properties
-  //map<std::string,_GMP>     GMP;
+        //--------- Auxiliary internal functions -------------
+        void init_variables();               // Initializes variables
+        void copy_content(const Universe&);  // Copies the content which is defined
 
-  //--------- Auxiliary internal functions -------------
-  void init_variables();// Initializes variables
-  void copy_content(const Universe&); // Copies the content which is defined
+      public:
+        //----------- Basic class operations ---------------------------
+        // Defined in Universe.cpp
+        Universe();                 ///< constructor
+        Universe(const Universe&);  ///< copy-constructor
+        ~Universe();                ///< destructor
 
-public:
+        Universe& operator=(const Universe&);  ///< assignment operator
+        void show_info();
+        void set(object);
 
-  //----------- Basic class operations ---------------------------
-  // Defined in Universe.cpp
-  Universe();                   ///< constructor
-  Universe(const Universe&);    ///< copy-constructor
- ~Universe();                   ///< destructor
+        //-------------- Getters, setters -----------------------------
+        // Defined in Universe_aux.cpp
+        void Add_Element_To_Periodic_Table(Element rec);
+        Element Get_Element(std::string);
+      };
 
-  Universe& operator=(const Universe&); ///< assignment operator
-  void show_info();
-  void set(object);
+    }  // namespace libuniverse
+  }  // namespace libchemobjects
 
-  //-------------- Getters, setters -----------------------------
-  // Defined in Universe_aux.cpp
-  void Add_Element_To_Periodic_Table(Element rec);
-  Element Get_Element(std::string);
+}  // namespace liblibra
 
-};
-
-
-}// namespace libuniverse
-}// namespace libchemobjects
-
-}// liblibra
-
-#endif // UNIVERSE_H
-
+#endif  // UNIVERSE_H

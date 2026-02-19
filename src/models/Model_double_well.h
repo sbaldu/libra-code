@@ -20,20 +20,17 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libmodels namespace
+  namespace libmodels {
 
-/// libmodels namespace
-namespace libmodels{
+    void double_well_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
+    boost::python::list double_well_Ham(double x, boost::python::list params_);
 
+  }  // namespace libmodels
+}  // namespace liblibra
 
-void double_well_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
-boost::python::list double_well_Ham(double x, boost::python::list params_);
-
-
-}// namespace libmodels
-}// liblibra
-
-#endif // MODEL_DOUBLE_WELL_H
+#endif  // MODEL_DOUBLE_WELL_H

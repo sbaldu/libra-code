@@ -12,20 +12,17 @@
 #ifndef LIBRANDOM_H
 #define LIBRANDOM_H
 
-
 #include "random.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// librandom namespace
-namespace librandom{
+  /// librandom namespace
+  namespace librandom {
 
+    void export_Random_objects();
 
-void export_Random_objects();
+  }  // namespace librandom
+}  // namespace liblibra
 
-
-}// namespace librandom
-}// namespace liblibra
-
-#endif// LIBRANDOM_H
+#endif  // LIBRANDOM_H

@@ -23,92 +23,109 @@
 
 #include "libqtag.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  using namespace boost::python;
 
-using namespace boost::python;
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libqtag namespace
+    namespace libqtag {
 
-/// libqtag namespace
-namespace libqtag{
-
-
-void export_qtag_objects(){
-/** 
+      void export_qtag_objects() {
+        /** 
   \brief Exporter of libqtag classes and functions
 
 */
 
-  CMATRIX (*expt_qtag_psi_v1)
-  (MATRIX& q, MATRIX& q1, MATRIX& p1, MATRIX& alp1, MATRIX& s1, CMATRIX& Coeff) = &qtag_psi;
-  def("qtag_psi",  expt_qtag_psi_v1);
+        CMATRIX(*expt_qtag_psi_v1)
+        (MATRIX & q, MATRIX & q1, MATRIX & p1, MATRIX & alp1, MATRIX & s1, CMATRIX & Coeff) =
+            &qtag_psi;
+        def("qtag_psi", expt_qtag_psi_v1);
 
+        CMATRIX(*expt_qtag_overlap_elementary_v1)
+        (MATRIX & q, MATRIX & p, MATRIX & alp, MATRIX & s) = &qtag_overlap_elementary;
+        def("qtag_overlap_elementary", expt_qtag_overlap_elementary_v1);
 
-  CMATRIX (*expt_qtag_overlap_elementary_v1)
-  (MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s) = &qtag_overlap_elementary;
-  def("qtag_overlap_elementary",  expt_qtag_overlap_elementary_v1);
+        CMATRIX(*expt_qtag_kinetic_elementary_v1)
+        (MATRIX & q, MATRIX & p, MATRIX & alp, MATRIX & s, MATRIX & invM) =
+            &qtag_kinetic_elementary;
+        def("qtag_kinetic_elementary", expt_qtag_kinetic_elementary_v1);
 
+        CMATRIX(*expt_qtag_overlap_v1)
+        (vector<int> & active_states, CMATRIX & ovlp, int nstates) = &qtag_overlap;
+        def("qtag_overlap", expt_qtag_overlap_v1);
 
-  CMATRIX (*expt_qtag_kinetic_elementary_v1)
-  (MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, MATRIX& invM) = &qtag_kinetic_elementary;
-  def("qtag_kinetic_elementary", expt_qtag_kinetic_elementary_v1);
+        CMATRIX(*expt_qtag_potential_v1)
+        (MATRIX & q1,
+         MATRIX & p1,
+         MATRIX & s1,
+         MATRIX & alp1,
+         int n1,
+         vector<int>& traj_on_surf_n1,
+         MATRIX& q2,
+         MATRIX& p2,
+         MATRIX& s2,
+         MATRIX& alp2,
+         int n2,
+         vector<int>& traj_on_surf_n2,
+         nHamiltonian& ham,
+         int method,
+         std::array<double, 3> ABC) = &qtag_potential;
+        CMATRIX(*expt_qtag_potential_v1_noABC)
+        (MATRIX & q1,
+         MATRIX & p1,
+         MATRIX & s1,
+         MATRIX & alp1,
+         int n1,
+         vector<int>& traj_on_surf_n1,
+         MATRIX& q2,
+         MATRIX& p2,
+         MATRIX& s2,
+         MATRIX& alp2,
+         int n2,
+         vector<int>& traj_on_surf_n2,
+         nHamiltonian& ham,
+         int method) = &qtag_potential;
+        def("qtag_potential", expt_qtag_potential_v1);
+        def("qtag_potential", expt_qtag_potential_v1_noABC);
 
+        void (*expt_qtag_hamiltonian_and_overlap_v1)(MATRIX& q,
+                                                     MATRIX& p,
+                                                     MATRIX& alp,
+                                                     MATRIX& s,
+                                                     CMATRIX& Coeff,
+                                                     vector<int>& active_states,
+                                                     MATRIX& invM,
+                                                     nHamiltonian& ham,
+                                                     bp::object compute_ham_funct,
+                                                     bp::dict compute_ham_params,
+                                                     bp::dict& dyn_params,
+                                                     CMATRIX& super_ovlp,
+                                                     CMATRIX& super_ham) =
+            &qtag_hamiltonian_and_overlap;
+        def("qtag_hamiltonian_and_overlap", expt_qtag_hamiltonian_and_overlap_v1);
 
-  CMATRIX (*expt_qtag_overlap_v1)
-  (vector<int>& active_states, CMATRIX& ovlp, int nstates) = &qtag_overlap;
-  def("qtag_overlap", expt_qtag_overlap_v1);
-
-
-  CMATRIX (*expt_qtag_potential_v1)
-  (MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1, vector<int>& traj_on_surf_n1,
-   MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2, vector<int>& traj_on_surf_n2,
-   nHamiltonian& ham, int method, std::array<double,3> ABC) = &qtag_potential;
-  CMATRIX (*expt_qtag_potential_v1_noABC)
-  (MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1, vector<int>& traj_on_surf_n1,
-   MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2, vector<int>& traj_on_surf_n2,
-   nHamiltonian& ham, int method) = &qtag_potential;
-  def("qtag_potential", expt_qtag_potential_v1);
-  def("qtag_potential", expt_qtag_potential_v1_noABC);
-
-
-  void (*expt_qtag_hamiltonian_and_overlap_v1)
-  (MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coeff,
-   vector<int>& active_states, MATRIX& invM, 
-   nHamiltonian& ham, bp::object compute_ham_funct, bp::dict compute_ham_params,
-   bp::dict& dyn_params,
-   CMATRIX& super_ovlp, CMATRIX& super_ham) = &qtag_hamiltonian_and_overlap;
-  def("qtag_hamiltonian_and_overlap", expt_qtag_hamiltonian_and_overlap_v1);
-
-
-  CMATRIX (*expt_qtag_momentum_v1)
-  (MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coeff) = &qtag_momentum;
-  def("qtag_momentum",  expt_qtag_momentum_v1);
-
-
-
-}
-
+        CMATRIX(*expt_qtag_momentum_v1)
+        (MATRIX & q, MATRIX & p, MATRIX & alp, MATRIX & s, CMATRIX & Coeff) = &qtag_momentum;
+        def("qtag_momentum", expt_qtag_momentum_v1);
+      }
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygqtag){
+      BOOST_PYTHON_MODULE(cygqtag) {
 #else
-BOOST_PYTHON_MODULE(libqtag){
+      BOOST_PYTHON_MODULE(libqtag) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+        // Register converters:
+        // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+        //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-  export_qtag_objects();
+        export_qtag_objects();
+      }
 
-}
-
-
-}// namespace libqtag
-}// namespace libdyn
-}// liblibra
-
+    }  // namespace libqtag
+  }  // namespace libdyn
+}  // namespace liblibra

@@ -17,35 +17,32 @@
 #include "Electronic.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace 
-namespace libdyn{
+    /// libelectronic namespace
+    namespace libelectronic {
 
-/// libelectronic namespace 
-namespace libelectronic{
+      using namespace liblinalg;
 
-using namespace liblinalg;
-
-
-Electronic& Electronic::operator=(const Electronic& ob){  
-/**
+      Electronic& Electronic::operator=(const Electronic& ob) {
+        /**
   \brief An assignment operator
 
 */
 
-  nstates = ob.nstates;
-  istate = ob.istate;
-  q = ob.q;
-  p = ob.p;
+        nstates = ob.nstates;
+        istate = ob.istate;
+        q = ob.q;
+        p = ob.p;
 
-  return *this; // return reference to allow chaining: A = B = C =...
-}
+        return *this;  // return reference to allow chaining: A = B = C =...
+      }
 
-
-void Electronic::rnd_phase(double& x, double& y, double nrm, double phi){ 
-/**
+      void Electronic::rnd_phase(double& x, double& y, double nrm, double phi) {
+        /**
   \brief An auxiliary function to generate a random (uniform distribution) phase complex number
 
   \param[out] x The real component of the complex number generated
@@ -53,15 +50,14 @@ void Electronic::rnd_phase(double& x, double& y, double nrm, double phi){
   \param[in] nrm The norm of the generated random number
   \param[in] phi The phase of the wavefunction
 
-*/                                         
+*/
 
-  x = std::sqrt(nrm) * std::cos(M_PI*phi); 
-  y = std::sqrt(nrm) * std::sin(M_PI*phi); 
+        x = std::sqrt(nrm) * std::cos(M_PI * phi);
+        y = std::sqrt(nrm) * std::sin(M_PI * phi);
+      }
 
-}
-
-void Electronic::init(int n_,int st, double phi){
-/**
+      void Electronic::init(int n_, int st, double phi) {
+        /**
   \brief An auxiliary function to initialize (or reinitialize the Electronic object)
 
   This function allocates memory for time-dependent wfc with n_ stationary states
@@ -74,24 +70,27 @@ void Electronic::init(int n_,int st, double phi){
   \param[in] phi The phase of the wavefunction
 
 */
-//  rnd_obj = new Random();
+        //  rnd_obj = new Random();
 
-  if(st>=n_){ std::cout<<"Error in Electronic::init - st("<<st<<") must be smaller than n_("<<n_<<")\n"; exit(0); }
+        if (st >= n_) {
+          std::cout << "Error in Electronic::init - st(" << st << ") must be smaller than n_(" << n_
+                    << ")\n";
+          exit(0);
+        }
 
-  nstates = n_;
-  q = std::vector<double>(n_,0.0);
-  p = std::vector<double>(n_,0.0); 
+        nstates = n_;
+        q = std::vector<double>(n_, 0.0);
+        p = std::vector<double>(n_, 0.0);
 
-  istate = st;
-  rnd_phase(q[istate],p[istate],1.0, phi);    // populate only the istate-th state
+        istate = st;
+        rnd_phase(q[istate], p[istate], 1.0, phi);  // populate only the istate-th state
+      }
 
-}
-
-//
-// Overloaded version
-//
-void Electronic::init(int n_, int st){ 
-/**
+      //
+      // Overloaded version
+      //
+      void Electronic::init(int n_, int st) {
+        /**
   \brief An auxiliary function to initialize (or reinitialize the Electronic object)
 
   This function allocates memory for time-dependent wfc with n_ stationary states
@@ -104,15 +103,14 @@ void Electronic::init(int n_, int st){
 
 */
 
-  init(n_,st, 0.0);
-}  
+        init(n_, st, 0.0);
+      }
 
-
-//
-// Overloaded version
-//
-void Electronic::init(int n_){ 
-/**
+      //
+      // Overloaded version
+      //
+      void Electronic::init(int n_) {
+        /**
   \brief An auxiliary function to initialize (or reinitialize the Electronic object)
 
   This function allocates memory for time-dependent wfc with n_ stationary states
@@ -124,12 +122,11 @@ void Electronic::init(int n_){
 
 */
 
-  init(n_,0, 0.0);
-}  
+        init(n_, 0, 0.0);
+      }
 
-
-Electronic::Electronic(int n_,int st, double phi){ 
-/**
+      Electronic::Electronic(int n_, int st, double phi) {
+        /**
   \brief Constructor
 
   \param[in] n_ The number of electronic states to include: the dimensionality of the electronic problem
@@ -137,95 +134,91 @@ Electronic::Electronic(int n_,int st, double phi){
   \param[in] phi The phase of the wavefunction
 */
 
- init(n_,st, phi);
-}
+        init(n_, st, phi);
+      }
 
-
-//
-// Constructors
-//
-Electronic::Electronic(int n_,int st){ 
-/**
+      //
+      // Constructors
+      //
+      Electronic::Electronic(int n_, int st) {
+        /**
   \brief Constructor
 
   \param[in] n_ The number of electronic states to include: the dimensionality of the electronic problem
   \param[in] st The index of electronic state to which we initialize the system 
 */
 
- init(n_,st, 0.0);
-}
+        init(n_, st, 0.0);
+      }
 
-Electronic::Electronic(int n_){ 
-/**
+      Electronic::Electronic(int n_) {
+        /**
   \brief Constructor
 
   The system is initialized to be in the lowest (index 0) electronic state.
   \param[in] n_ The number of electronic states to include: the dimensionality of the electronic problem
 */
 
- init(n_,0, 0.0); 
-}
+        init(n_, 0, 0.0);
+      }
 
-Electronic::Electronic(){ 
-/**
+      Electronic::Electronic() {
+        /**
   \brief Constructor
 
   The dimensionality of the electronic problem is set to 1 (no excited states)
   The system is initialized to be in the lowest (index 0) electronic state - the only one available
 */
 
- init(1,0, 0.0);
-}
+        init(1, 0, 0.0);
+      }
 
-
-Electronic::Electronic(const Electronic& ob){ /// cctor
-/**
+      Electronic::Electronic(const Electronic& ob) {  /// cctor
+                                                      /**
   \brief Copy constructor
 */
 
-  nstates = ob.nstates;
-  istate = ob.istate;
-  q = ob.q;
-  p = ob.p;
+        nstates = ob.nstates;
+        istate = ob.istate;
+        q = ob.q;
+        p = ob.p;
+      }
 
-}
-
-
-Electronic::~Electronic(){  
-/**
+      Electronic::~Electronic() {
+        /**
   \brief Destructor
 */
-  if(q.size()>0){ q.clear(); }
-  if(p.size()>0){ p.clear(); }
-}
+        if (q.size() > 0) {
+          q.clear();
+        }
+        if (p.size() > 0) {
+          p.clear();
+        }
+      }
 
-
-
-std::complex<double> Electronic::c(int i) const{
-/**
+      std::complex<double> Electronic::c(int i) const {
+        /**
   \brief Return the amplitude of a quantum state in the complex format: c_i = q_i + i*p_i
 
   \param[in] i Index of the quantum state
 */
 
-  return complex<double>(q[i],p[i]);
+        return complex<double>(q[i], p[i]);
+      }
 
-}
-
-std::complex<double> Electronic::rho(int i, int j) const{
-/**
+      std::complex<double> Electronic::rho(int i, int j) const {
+        /**
   \brief Returns the density matrix element: rho_ij = c^*_i * c_j
 
   \param[in] i index of one state
   \param[in] j index of another state
 */
 
-  return complex<double>((q[i]*q[j] + p[i]*p[j]), (q[i]*p[j]-p[i]*q[j]));
+        return complex<double>((q[i] * q[j] + p[i] * p[j]), (q[i] * p[j] - p[i] * q[j]));
+      }
 
-}
-
-CMATRIX Electronic::C() const{
-/**
+      CMATRIX Electronic::C() const {
+        /**
   \brief Return the amplitudes of all quantum states in the vector format:
         ( c_0 )
    C =  ( ... )
@@ -233,14 +226,15 @@ CMATRIX Electronic::C() const{
    with  c_i = q_i + i*p_i
 
 */
-  CMATRIX res(nstates,1);
-  for(int i=0; i<nstates; i++){  res.set(i, q[i], p[i]);  }
-  return res;
-}
+        CMATRIX res(nstates, 1);
+        for (int i = 0; i < nstates; i++) {
+          res.set(i, q[i], p[i]);
+        }
+        return res;
+      }
 
-
-CMATRIX Electronic::RHO() const{
-/**
+      CMATRIX Electronic::RHO() const {
+        /**
   \brief Return the density matrix computed for all quantum states:
 
    P = C * C^+
@@ -248,19 +242,15 @@ CMATRIX Electronic::RHO() const{
   The density matrix elements are: P_ij = rho_ij = c^*_i * c_j
 
 */
-  CMATRIX res(nstates,nstates);
-  for(int i=0; i<nstates; i++){
-    for(int j=0; j<nstates; j++){
+        CMATRIX res(nstates, nstates);
+        for (int i = 0; i < nstates; i++) {
+          for (int j = 0; j < nstates; j++) {
+            res.set(i, j, (q[i] * q[j] + p[i] * p[j]), (q[i] * p[j] - p[i] * q[j]));
+          }
+        }
+        return res;
+      }
 
-      res.set(i, j, (q[i]*q[j] + p[i]*p[j]),  (q[i]*p[j]-p[i]*q[j]) );  
-    }
-  }
-  return res;
-}
-
-
-
-
-}//namespace libelectronic
-}// namespace libdyn
-}// liblibra
+    }  //namespace libelectronic
+  }  // namespace libdyn
+}  // namespace liblibra

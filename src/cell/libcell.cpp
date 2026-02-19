@@ -24,78 +24,74 @@
 #include "libcell.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  using namespace boost::python;
 
-using namespace boost::python;
+  /// libcell namespace
+  namespace libcell {
 
-/// libcell namespace
-namespace libcell{
-
-void export_Cell_objects(){
-/** 
+    void export_Cell_objects() {
+      /** 
   \brief Exporter of libcell classes and functions
 
 */
 
+      //int (DATA::*ScaleData1)(double)                = &DATA::ScaleData;
+      //int (DATA::*ScaleData2)(double,double)         = &DATA::ScaleData;
 
+      class_<Cell>("Cell", init<>())
+          .def(init<VECTOR&, VECTOR&, VECTOR&, double>())
+          .def("init", &Cell::init)
+          .def("__copy__", &generic__copy__<Cell>)
+          .def("__deepcopy__", &generic__deepcopy__<Cell>)
+          //      .def_readwrite("x",&VECTOR::x)
 
-//int (DATA::*ScaleData1)(double)                = &DATA::ScaleData;
-//int (DATA::*ScaleData2)(double,double)         = &DATA::ScaleData;
+          ;
 
+      VECTOR (*expt_max_vector_v1)(VECTOR t1, VECTOR t2, VECTOR t3) = &max_vector;
+      boost::python::list (*expt_apply_pbc_v1)(
+          MATRIX3x3 H, boost::python::list in, boost::python::list t) = &apply_pbc;
+      boost::python::list (*expt_serial_to_vector_v1)(int c, int Nx, int Ny, int Nz) =
+          &serial_to_vector;
+      boost::python::list (*expt_serial_to_vector_symm_v1)(int c, int Nx, int Ny, int Nz) =
+          &serial_to_vector_symm;
+      boost::python::list (*expt_form_neibc_v1)(
+          int c, int Nx, int Ny, int Nz, double cellx, double celly, double cellz, double Roff) =
+          &form_neibc;
+      MATRIX (*expt_fold_coords_v1)(MATRIX& R, MATRIX3x3& box, std::string pbc_type) = &fold_coords;
 
-  class_<Cell>("Cell",init<>())
-      .def(init<VECTOR&, VECTOR&, VECTOR&, double>())
-      .def("init", &Cell::init)
-      .def("__copy__", &generic__copy__<Cell>) 
-      .def("__deepcopy__", &generic__deepcopy__<Cell>)
-//      .def_readwrite("x",&VECTOR::x)
-            
-  ;
+      def("max_vector", expt_max_vector_v1);
+      def("apply_pbc", expt_apply_pbc_v1);
+      def("serial_to_vector", expt_serial_to_vector_v1);
+      def("serial_to_vector_symm", expt_serial_to_vector_symm_v1);
+      def("form_neibc", expt_form_neibc_v1);
 
-  VECTOR (*expt_max_vector_v1)(VECTOR t1,VECTOR t2,VECTOR t3) = &max_vector;
-  boost::python::list (*expt_apply_pbc_v1)(MATRIX3x3 H, boost::python::list in, boost::python::list t) = &apply_pbc;
-  boost::python::list (*expt_serial_to_vector_v1)(int c,int Nx,int Ny,int Nz) = &serial_to_vector;
-  boost::python::list (*expt_serial_to_vector_symm_v1)(int c,int Nx,int Ny,int Nz) = &serial_to_vector_symm;
-  boost::python::list (*expt_form_neibc_v1)(int c,int Nx,int Ny,int Nz,double cellx,double celly,double cellz,double Roff) = &form_neibc;
-  MATRIX (*expt_fold_coords_v1)(MATRIX& R, MATRIX3x3& box, std::string pbc_type) = &fold_coords;
+      def("find_min_shell", find_min_shell);
 
-  def("max_vector", expt_max_vector_v1);
-  def("apply_pbc", expt_apply_pbc_v1);
-  def("serial_to_vector",expt_serial_to_vector_v1);
-  def("serial_to_vector_symm",expt_serial_to_vector_symm_v1);
-  def("form_neibc",expt_form_neibc_v1);
+      def("make_nlist", make_nlist);
+      def("make_nlist_auto", make_nlist_auto);
 
-  def("find_min_shell",find_min_shell);
+      def("bruteforce", bruteforce);
+      def("energy", energy);
 
-  def("make_nlist",make_nlist);
-  def("make_nlist_auto",make_nlist_auto);
+      def("fold_coords", expt_fold_coords_v1);
 
-  def("bruteforce",bruteforce);  
-  def("energy",energy);
-
-  def("fold_coords",expt_fold_coords_v1);  
-
-
-
-} // export_Cell_objects()
-
-
+    }  // export_Cell_objects()
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygcell){
+    BOOST_PYTHON_MODULE(cygcell) {
 #else
-BOOST_PYTHON_MODULE(libcell){
+    BOOST_PYTHON_MODULE(libcell) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-//  export_Mathematics_objects();
-  export_Cell_objects();
+      //  export_Mathematics_objects();
+      export_Cell_objects();
+    }
 
-}
-
-}// namespace libcell
-}// liblibra
+  }  // namespace libcell
+}  // namespace liblibra

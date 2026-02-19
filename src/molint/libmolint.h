@@ -17,7 +17,6 @@
 #ifndef LIB_MOLINT_H
 #define LIB_MOLINT_H
 
-
 #include "A_coefficients.h"
 #include "Overlaps.h"
 #include "Moments.h"
@@ -30,21 +29,15 @@
 #include "Integral_Derivative_Couplings.h"
 #include "Integral_Approx1.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libmolint namespace
+  namespace libmolint {
 
-/// libmolint namespace
-namespace libmolint{
+    void export_molint_objects();
 
+  }  // namespace libmolint
+}  // namespace liblibra
 
-void export_molint_objects();
-
-
-}// namespace libmolint
-}// namespace liblibra
-
-
-
-#endif// LIB_MOLINT_H
+#endif  // LIB_MOLINT_H

@@ -15,16 +15,13 @@
 #include "converters.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libconverters{
+  namespace libconverters {
 
+    void export_converters_objects();
 
-void export_converters_objects();
+  }  // namespace libconverters
+}  // namespace liblibra
 
-
-}// namespace libconverters
-}// liblibra
-
-#endif // LIBCONVERTERS_H
-
+#endif  // LIBCONVERTERS_H

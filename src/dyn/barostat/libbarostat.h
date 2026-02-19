@@ -14,29 +14,24 @@
     
 */
 
-
 #ifndef LIB_BAROSTAT_H
 #define LIB_BAROSTAT_H
-
 
 #include "Barostat.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libbarostat namespace
-namespace libbarostat{
+    /// libbarostat namespace
+    namespace libbarostat {
 
+      void export_Barostat_objects();
 
-void export_Barostat_objects();
+    }  // namespace libbarostat
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-}// namespace libdyn
-}// namespace libbarostat
-}// liblibra
-
-
-#endif// LIB_BAROSTAT_H
+#endif  // LIB_BAROSTAT_H

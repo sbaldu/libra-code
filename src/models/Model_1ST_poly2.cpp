@@ -17,17 +17,20 @@
 #include "Models_1_state.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-/// libmodels namespace
-namespace libmodels{
+  /// libmodels namespace
+  namespace libmodels {
 
-
-void model_1S_1D_poly2(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia, vector<CMATRIX>& dc1_dia,
-                       vector<double>& q, vector<double>& params){ 
-/*** 
+    void model_1S_1D_poly2(CMATRIX& Hdia,
+                           CMATRIX& Sdia,
+                           vector<CMATRIX>& d1ham_dia,
+                           vector<CMATRIX>& dc1_dia,
+                           vector<double>& q,
+                           vector<double>& params) {
+      /*** 
     To use with the nHamiltonian class
 
   \param[out] Hdia  The Hamiltonian in the diabatic basis (diabatic Hamiltonian)
@@ -48,34 +51,39 @@ void model_1S_1D_poly2(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia,
   dH_00 = k*(q - q0)
 */
 
-    // Default parameters
-    double k = 1.0;
-    double q0 = 0.0;
+      // Default parameters
+      double k = 1.0;
+      double q0 = 0.0;
 
-    if(params.size()>=1){    k = params[0];    }
-    if(params.size()>=2){   q0 = params[1];    }
+      if (params.size() >= 1) {
+        k = params[0];
+      }
+      if (params.size() >= 2) {
+        q0 = params[1];
+      }
 
+      // H00
+      double diff = q[0] - q0;
+      double H00 = 0.5 * k * diff * diff;
+      double dH00 = k * diff;
 
-    // H00
-    double diff = q[0] - q0;
-    double H00 = 0.5*k*diff * diff; 
-    double dH00 = k*diff;
+      Hdia.set(0, 0, H00, 0.0);
+      Sdia.set(0, 0, 1.0, 0.0);
 
-    Hdia.set(0,0, H00, 0.0); 
-    Sdia.set(0,0, 1.0, 0.0); 
+      //  d Hdia / dq_0
+      d1ham_dia[0].set(0, 0, dH00, 0.0);
 
-    //  d Hdia / dq_0
-    d1ham_dia[0].set(0,0, dH00, 0.0);
+      //  <dia| d/dq_0| dia >
+      dc1_dia[0].set(0, 0, 0.0, 0.0);
+    }
 
-    //  <dia| d/dq_0| dia >
-    dc1_dia[0].set(0,0, 0.0, 0.0); 
-
-}
-
-
-void model_1S_1D_poly2(CMATRIX* Hdia, CMATRIX* Sdia, vector<CMATRIX*>& d1ham_dia, vector<CMATRIX*>& dc1_dia,
-                       vector<double>& q, vector<double>& params){ 
-/*** 
+    void model_1S_1D_poly2(CMATRIX* Hdia,
+                           CMATRIX* Sdia,
+                           vector<CMATRIX*>& d1ham_dia,
+                           vector<CMATRIX*>& dc1_dia,
+                           vector<double>& q,
+                           vector<double>& params) {
+      /*** 
     To use with the nHamiltonian class
 
   \param[out] Hdia  The Hamiltonian in the diabatic basis (diabatic Hamiltonian)
@@ -96,34 +104,31 @@ void model_1S_1D_poly2(CMATRIX* Hdia, CMATRIX* Sdia, vector<CMATRIX*>& d1ham_dia
   dH_00 = k*(q - q0)
 */
 
-    // Default parameters
-    double k = 1.0;
-    double q0 = 0.0;
+      // Default parameters
+      double k = 1.0;
+      double q0 = 0.0;
 
-    if(params.size()>=1){    k = params[0];    }
-    if(params.size()>=2){   q0 = params[1];    }
+      if (params.size() >= 1) {
+        k = params[0];
+      }
+      if (params.size() >= 2) {
+        q0 = params[1];
+      }
 
+      // H00
+      double diff = q[0] - q0;
+      double H00 = 0.5 * k * diff * diff;
+      double dH00 = k * diff;
 
-    // H00
-    double diff = q[0] - q0;
-    double H00 = 0.5*k*diff * diff; 
-    double dH00 = k*diff;
+      Hdia->set(0, 0, H00, 0.0);
+      Sdia->set(0, 0, 1.0, 0.0);
 
-    Hdia->set(0,0, H00, 0.0); 
-    Sdia->set(0,0, 1.0, 0.0); 
+      //  d Hdia / dq_0
+      d1ham_dia[0]->set(0, 0, dH00, 0.0);
 
-    //  d Hdia / dq_0
-    d1ham_dia[0]->set(0,0, dH00, 0.0);
+      //  <dia| d/dq_0| dia >
+      dc1_dia[0]->set(0, 0, 0.0, 0.0);
+    }
 
-    //  <dia| d/dq_0| dia >
-    dc1_dia[0]->set(0,0, 0.0, 0.0); 
-
-}
-
-
-
-
-
-}// namespace libmodels
-}// liblibra
-
+  }  // namespace libmodels
+}  // namespace liblibra

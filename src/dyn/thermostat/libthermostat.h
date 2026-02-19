@@ -17,25 +17,21 @@
 #ifndef LIB_THERMOSTAT_H
 #define LIB_THERMOSTAT_H
 
-
 #include "Thermostat.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libthermostat namespace
-namespace libthermostat{
+    /// libthermostat namespace
+    namespace libthermostat {
 
+      void export_Thermostat_objects();
 
-void export_Thermostat_objects();
+    }  // namespace libthermostat
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-}// namespace libdyn
-}// namespace libthermostat
-}// liblibra
-
-
-#endif// LIB_THERMOSTAT_H
+#endif  // LIB_THERMOSTAT_H

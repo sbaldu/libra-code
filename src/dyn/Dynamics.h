@@ -32,51 +32,55 @@
 #include "dyn_variables.h"
 #include "dyn_ham.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-using namespace libnhamiltonian;
-namespace bp = boost::python;
+  using namespace libio;
+  using namespace libnhamiltonian;
+  namespace bp = boost::python;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-using namespace libthermostat;
+    using namespace libthermostat;
 
+    //========== Dynamics.cpp ===================
 
+    void aux_get_transforms(CMATRIX** Uprev, nHamiltonian& ham);
 
-//========== Dynamics.cpp ===================
+    // Adding the NBRA flag to the functions in the header
+    vector<CMATRIX> compute_St(nHamiltonian* ham, int isNBRA);
+    vector<CMATRIX> compute_St(nHamiltonian& ham, int isNBRA);
+    vector<CMATRIX> compute_St(nHamiltonian& ham);
 
-void aux_get_transforms(CMATRIX** Uprev, nHamiltonian& ham);
+    vector<CMATRIX> compute_St(nHamiltonian* ham, nHamiltonian* ham_prev, int isNBRA);
+    vector<CMATRIX> compute_St(nHamiltonian& ham, nHamiltonian& ham_prev, int isNBRA);
+    vector<CMATRIX> compute_St(nHamiltonian& ham, nHamiltonian& ham_prev);
 
+    MATRIX momenta_on_excited_states(dyn_variables& dyn_var, nHamiltonian* ham, int itraj);
+    MATRIX momenta_on_excited_states(dyn_variables& dyn_var, nHamiltonian& ham, int itraj);
 
-// Adding the NBRA flag to the functions in the header
-vector<CMATRIX> compute_St(nHamiltonian* ham, int isNBRA);
-vector<CMATRIX> compute_St(nHamiltonian& ham, int isNBRA);
-vector<CMATRIX> compute_St(nHamiltonian& ham);
+    void SSY_correction(CMATRIX& Ham, dyn_variables& dyn_var, nHamiltonian* ham, int itraj);
+    void SSY_correction(CMATRIX& Ham, dyn_variables& dyn_var, nHamiltonian& ham, int itraj);
 
-vector<CMATRIX> compute_St(nHamiltonian* ham, nHamiltonian* ham_prev, int isNBRA);
-vector<CMATRIX> compute_St(nHamiltonian& ham, nHamiltonian& ham_prev, int isNBRA);
-vector<CMATRIX> compute_St(nHamiltonian& ham, nHamiltonian& ham_prev);
+    CMATRIX Zhu_Liouvillian(double Etot, CMATRIX& Ham, CMATRIX& rho);
 
+    int need_active_states_diff_rep(dyn_control_params& prms);
 
-MATRIX momenta_on_excited_states(dyn_variables& dyn_var, nHamiltonian* ham, int itraj);
-MATRIX momenta_on_excited_states(dyn_variables& dyn_var, nHamiltonian& ham, int itraj);
+    void propagate_electronic(dyn_variables& dyn_var,
+                              nHamiltonian& ham,
+                              nHamiltonian& ham_prev,
+                              dyn_control_params& prms);
+    void propagate_electronic(dyn_variables& dyn_var,
+                              nHamiltonian* ham,
+                              nHamiltonian* ham_prev,
+                              dyn_control_params& prms);
+    void propagate_electronic_kcrpmd(dyn_variables& dyn_var,
+                                     nHamiltonian& ham,
+                                     dyn_control_params& prms,
+                                     Random& rnd);
 
-void SSY_correction(CMATRIX& Ham, dyn_variables& dyn_var, nHamiltonian* ham, int itraj);
-void SSY_correction(CMATRIX& Ham, dyn_variables& dyn_var, nHamiltonian& ham, int itraj);
-
-CMATRIX Zhu_Liouvillian(double Etot, CMATRIX& Ham, CMATRIX& rho);
-
-int need_active_states_diff_rep(dyn_control_params& prms);
-
-void propagate_electronic(dyn_variables& dyn_var, nHamiltonian& ham, nHamiltonian& ham_prev, dyn_control_params& prms);
-void propagate_electronic(dyn_variables& dyn_var, nHamiltonian* ham, nHamiltonian* ham_prev, dyn_control_params& prms);
-void propagate_electronic_kcrpmd(dyn_variables& dyn_var, nHamiltonian& ham, dyn_control_params& prms, Random& rnd);
-
-/*
+    /*
 void compute_dynamics(MATRIX& q, MATRIX& p, MATRIX& invM, CMATRIX& C, vector<CMATRIX>& projectors, vector<int>& act_states, 
               nHamiltonian& ham, bp::object py_funct, bp::dict model_params, bp::dict dyn_params, Random& rnd);
 
@@ -89,15 +93,16 @@ void compute_dynamics(MATRIX& q, MATRIX& p, MATRIX& invM, CMATRIX& C, vector<CMA
               vector<Thermostat>& therm, dyn_variables& dyn_var);
 */
 
-void compute_dynamics(dyn_variables& dyn_var, bp::dict dyn_params, nHamiltonian& ham, nHamiltonian& ham_aux, 
-                      bp::object py_funct, bp::dict model_params, Random& rnd, vector<Thermostat>& therm);
+    void compute_dynamics(dyn_variables& dyn_var,
+                          bp::dict dyn_params,
+                          nHamiltonian& ham,
+                          nHamiltonian& ham_aux,
+                          bp::object py_funct,
+                          bp::dict model_params,
+                          Random& rnd,
+                          vector<Thermostat>& therm);
 
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-
-
-}// namespace libdyn
-}// liblibra
-
-#endif // DYNAMICS_H
-
+#endif  // DYNAMICS_H

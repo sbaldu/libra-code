@@ -14,19 +14,14 @@
 
 #include "Model_Parameters.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  namespace libmodel_parameters {
 
-namespace libmodel_parameters{
+    void export_Model_Parameters_objects();
 
+  }  // namespace libmodel_parameters
+}  // namespace liblibra
 
-void export_Model_Parameters_objects();
-
-
-}// namespace libmodel_parameters
-}// namespace liblibra
-
-
-#endif// LIB_MODEL_PARAMETERS_H
+#endif  // LIB_MODEL_PARAMETERS_H

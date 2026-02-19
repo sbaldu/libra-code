@@ -26,110 +26,171 @@
 #include "../Units.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-using namespace libnhamiltonian;
+  using namespace libio;
+  using namespace libnhamiltonian;
 
-namespace bp = boost::python;
+  namespace bp = boost::python;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
+    ///================  In dyn_decoherence_methods.cpp  ===================================
 
-///================  In dyn_decoherence_methods.cpp  ===================================
+    CMATRIX sdm(CMATRIX& Coeff, double dt, int act_st, MATRIX& decoh_rates, double tol);
+    CMATRIX sdm(CMATRIX& Coeff, double dt, int act_st, MATRIX& decoh_rates);
+    CMATRIX sdm(CMATRIX& Coeff,
+                double dt,
+                vector<int>& act_st,
+                vector<MATRIX>& decoh_rates,
+                double tol,
+                int isNBRA);
+    CMATRIX sdm(
+        CMATRIX& Coeff, double dt, vector<int>& act_st, vector<MATRIX>& decoh_rates, double tol);
+    CMATRIX sdm(CMATRIX& Coeff, double dt, vector<int>& act_st, vector<MATRIX>& decoh_rates);
 
-CMATRIX sdm(CMATRIX& Coeff, double dt, int act_st, MATRIX& decoh_rates, double tol);
-CMATRIX sdm(CMATRIX& Coeff, double dt, int act_st, MATRIX& decoh_rates);
-CMATRIX sdm(CMATRIX& Coeff, double dt, vector<int>& act_st, vector<MATRIX>& decoh_rates, double tol, int isNBRA);
-CMATRIX sdm(CMATRIX& Coeff, double dt, vector<int>& act_st, vector<MATRIX>& decoh_rates, double tol);
-CMATRIX sdm(CMATRIX& Coeff, double dt, vector<int>& act_st, vector<MATRIX>& decoh_rates);
+    void project_out(CMATRIX& Coeff, int traj, int i);
+    void collapse(CMATRIX& Coeff, int traj, int i, int collapse_option);
+    void collapse_dm(CMATRIX* dm, int i);
 
+    void instantaneous_decoherence(CMATRIX& Coeff,
+                                   vector<int>& accepted_states,
+                                   vector<int>& proposed_states,
+                                   vector<int>& initial_states,
+                                   int instantaneous_decoherence_variant,
+                                   int collapse_option);
 
-void project_out(CMATRIX& Coeff, int traj, int i);
-void collapse(CMATRIX& Coeff, int traj, int i, int collapse_option);
-void collapse_dm(CMATRIX* dm, int i);
+    void instantaneous_decoherence_dia(CMATRIX& Coeff,
+                                       nHamiltonian& ham,
+                                       vector<int>& accepted_states,
+                                       vector<int>& proposed_states,
+                                       vector<int>& initial_states,
+                                       int instantaneous_decoherence_variant,
+                                       int collapse_option);
 
-void instantaneous_decoherence(CMATRIX& Coeff, 
-   vector<int>& accepted_states, vector<int>& proposed_states, vector<int>& initial_states,
-   int instantaneous_decoherence_variant, int collapse_option);
+    CMATRIX afssh_dzdt(
+        CMATRIX& dz, CMATRIX& Hvib, CMATRIX& F, CMATRIX& C, double mass, int act_state);
+    void integrate_afssh_moments(CMATRIX& dR,
+                                 CMATRIX& dP,
+                                 CMATRIX& Hvib,
+                                 CMATRIX& F,
+                                 CMATRIX& C,
+                                 double mass,
+                                 int act_state,
+                                 double dt,
+                                 int nsteps);
 
-void instantaneous_decoherence_dia(CMATRIX& Coeff, nHamiltonian& ham,
-   vector<int>& accepted_states, vector<int>& proposed_states, vector<int>& initial_states,
-   int instantaneous_decoherence_variant, int collapse_option);
+    // For branching-corrected SH
+    //MATRIX wp_reversal_events(MATRIX& p, MATRIX& invM, vector<int>& act_states,
+    //                          nHamiltonian& ham, vector<CMATRIX>& projectors, double dt);
+    void wp_reversal_events(dyn_variables& dyn_var, nHamiltonian& ham, double dt);
+    CMATRIX bcsh(CMATRIX& Coeff, double dt, vector<int>& act_states, MATRIX& reversal_events);
 
-CMATRIX afssh_dzdt(CMATRIX& dz, CMATRIX& Hvib, CMATRIX& F, CMATRIX& C, double mass, int act_state);
-void integrate_afssh_moments(CMATRIX& dR, CMATRIX& dP, CMATRIX& Hvib, CMATRIX& F, CMATRIX& C, double mass, int act_state, double dt, int nsteps);
+    // For MF-SD of Schwartz
+    CMATRIX mfsd(MATRIX& p,
+                 CMATRIX& Coeff,
+                 MATRIX& invM,
+                 double dt,
+                 vector<int>& act_st,
+                 vector<MATRIX>& decoherence_rates,
+                 nHamiltonian& ham,
+                 Random& rnd,
+                 int isNBRA);
+    CMATRIX mfsd(MATRIX& p,
+                 CMATRIX& Coeff,
+                 MATRIX& invM,
+                 double dt,
+                 vector<int>& act_st,
+                 vector<MATRIX>& decoherence_rates,
+                 nHamiltonian& ham,
+                 Random& rnd);
 
+    // Independent-trajectory XF methods
+    void xf_hop_reset(dyn_variables& dyn_var,
+                      vector<int>& accepted_states,
+                      vector<int>& initial_states);
+    void update_ham_xf(dyn_variables& dyn_var);
 
-// For branching-corrected SH
-//MATRIX wp_reversal_events(MATRIX& p, MATRIX& invM, vector<int>& act_states, 
-//                          nHamiltonian& ham, vector<CMATRIX>& projectors, double dt);
-void wp_reversal_events(dyn_variables& dyn_var, nHamiltonian& ham, double dt);
-CMATRIX bcsh(CMATRIX& Coeff, double dt, vector<int>& act_states, MATRIX& reversal_events);
+    void shxf(dyn_variables& dyn_var,
+              nHamiltonian& ham,
+              nHamiltonian& ham_prev,
+              dyn_control_params& prms);  // For SHXF
+    void mqcxf(dyn_variables& dyn_var,
+               nHamiltonian& ham,
+               nHamiltonian& ham_prev,
+               dyn_control_params& prms);  // For MQCXF
 
+    // XF propagation
+    void rotate_nab_phase(dyn_variables& dyn_var, nHamiltonian& ham, dyn_control_params& prms);
+    void update_forces_xf(dyn_variables& dyn_var, nHamiltonian& ham, nHamiltonian& ham_prev);
+    void propagate_half_xf(dyn_variables& dyn_var, nHamiltonian& ham, dyn_control_params& prms);
+    void XF_correction(
+        CMATRIX& Ham, dyn_variables& dyn_var, CMATRIX& C, double wp_width, CMATRIX& T, int traj);
 
-// For MF-SD of Schwartz
-CMATRIX mfsd(MATRIX& p, CMATRIX& Coeff, MATRIX& invM, double dt, vector<int>& act_st, vector<MATRIX>& decoherence_rates, nHamiltonian& ham, Random& rnd, int isNBRA);
-CMATRIX mfsd(MATRIX& p, CMATRIX& Coeff, MATRIX& invM, double dt, vector<int>& act_st, vector<MATRIX>& decoherence_rates, nHamiltonian& ham, Random& rnd);
+    ///================  In dyn_decoherence_time.cpp  ===================================
 
-// Independent-trajectory XF methods
-void xf_hop_reset(dyn_variables& dyn_var, vector<int>& accepted_states, vector<int>& initial_states);
-void update_ham_xf(dyn_variables& dyn_var);
+    MATRIX edc_rates(CMATRIX& Hvib, double Ekin, double C_param, double eps_param, int isNBRA);
+    MATRIX edc_rates(CMATRIX& Hvib, double Ekin, double C_param, double eps_param);
 
-void shxf(dyn_variables& dyn_var, nHamiltonian& ham, nHamiltonian& ham_prev, dyn_control_params& prms); // For SHXF
-void mqcxf(dyn_variables& dyn_var, nHamiltonian& ham, nHamiltonian& ham_prev, dyn_control_params& prms); // For MQCXF
+    vector<MATRIX> edc_rates(
+        vector<CMATRIX>& Hvib, vector<double>& Ekin, double C_param, double eps_param, int isNBRA);
+    vector<MATRIX> edc_rates(vector<CMATRIX>& Hvib,
+                             vector<double>& Ekin,
+                             double C_param,
+                             double eps_param);
 
-// XF propagation
-void rotate_nab_phase(dyn_variables& dyn_var, nHamiltonian& ham, dyn_control_params& prms);
-void update_forces_xf(dyn_variables& dyn_var, nHamiltonian& ham, nHamiltonian& ham_prev);
-void propagate_half_xf(dyn_variables& dyn_var, nHamiltonian& ham, dyn_control_params& prms);
-void XF_correction(CMATRIX& Ham, dyn_variables& dyn_var, CMATRIX& C, double wp_width, CMATRIX& T, int traj);
+    void dephasing_informed_correction(MATRIX& decoh_rates,
+                                       CMATRIX& Hvib,
+                                       MATRIX& ave_gaps,
+                                       int isNBRA);
+    void dephasing_informed_correction(vector<MATRIX>& decoh_rates,
+                                       vector<CMATRIX>& Hvib,
+                                       MATRIX& ave_gaps,
+                                       int isNBRA);
 
-///================  In dyn_decoherence_time.cpp  ===================================
+    void dephasing_informed_correction(MATRIX& decoh_rates, CMATRIX& Hvib, MATRIX& ave_gaps);
+    void dephasing_informed_correction(vector<MATRIX>& decoh_rates,
+                                       vector<CMATRIX>& Hvib,
+                                       MATRIX& ave_gaps);
 
-MATRIX edc_rates(CMATRIX& Hvib, double Ekin, double C_param, double eps_param, int isNBRA);
-MATRIX edc_rates(CMATRIX& Hvib, double Ekin, double C_param, double eps_param);
+    MATRIX coherence_intervals(CMATRIX& Coeff, MATRIX& rates);
+    MATRIX coherence_intervals(CMATRIX& Coeff, vector<MATRIX>& rates);
 
-vector<MATRIX> edc_rates(vector<CMATRIX>& Hvib, vector<double>& Ekin, double C_param, double eps_param, int isNBRA);
-vector<MATRIX> edc_rates(vector<CMATRIX>& Hvib, vector<double>& Ekin, double C_param, double eps_param);
+    vector<MATRIX> schwartz_1(dyn_control_params& prms,
+                              CMATRIX& amplitudes,
+                              nHamiltonian& ham,
+                              MATRIX& inv_alp);
+    vector<MATRIX> schwartz_1(dyn_control_params& prms,
+                              CMATRIX& amplitudes,
+                              MATRIX& p,
+                              nHamiltonian& ham,
+                              MATRIX& inv_alp);
+    vector<MATRIX> schwartz_2(dyn_control_params& prms, nHamiltonian& ham, MATRIX& inv_alp);
 
+    vector<MATRIX> Gu_Franco(dyn_control_params& prms, CMATRIX& amplitudes);
 
-void dephasing_informed_correction(MATRIX& decoh_rates, CMATRIX& Hvib, MATRIX& ave_gaps, int isNBRA);
-void dephasing_informed_correction(vector<MATRIX>& decoh_rates, vector<CMATRIX>& Hvib, MATRIX& ave_gaps, int isNBRA);
-
-void dephasing_informed_correction(MATRIX& decoh_rates, CMATRIX& Hvib, MATRIX& ave_gaps);
-void dephasing_informed_correction(vector<MATRIX>& decoh_rates, vector<CMATRIX>& Hvib, MATRIX& ave_gaps);
-
-
-
-MATRIX coherence_intervals(CMATRIX& Coeff, MATRIX& rates);
-MATRIX coherence_intervals(CMATRIX& Coeff, vector<MATRIX>& rates);
-
-vector<MATRIX> schwartz_1(dyn_control_params& prms, CMATRIX& amplitudes, nHamiltonian& ham, MATRIX& inv_alp);
-vector<MATRIX> schwartz_1(dyn_control_params& prms, CMATRIX& amplitudes, MATRIX& p, nHamiltonian& ham, MATRIX& inv_alp);
-vector<MATRIX> schwartz_2(dyn_control_params& prms, nHamiltonian& ham, MATRIX& inv_alp);
-
-
-vector<MATRIX> Gu_Franco(dyn_control_params& prms, CMATRIX& amplitudes);
-
-
-///================  In dyn_methods_dish.cpp  ===================================
-/*
+    ///================  In dyn_methods_dish.cpp  ===================================
+    /*
 vector<int> dish(dyn_control_params& prms,
        MATRIX& q, MATRIX& p,  MATRIX& invM, CMATRIX& Coeff, 
        nHamiltonian& ham, vector<int>& act_states, MATRIX& coherence_time, 
        vector<MATRIX>& decoherence_rates, Random& rnd);
 */
 
-vector<int> dish(dyn_variables& dyn_var, nHamiltonian& ham,
-                 vector<MATRIX>& decoherence_rates, dyn_control_params& prms,Random& rnd);
+    vector<int> dish(dyn_variables& dyn_var,
+                     nHamiltonian& ham,
+                     vector<MATRIX>& decoherence_rates,
+                     dyn_control_params& prms,
+                     Random& rnd);
 
-void dish_rev2023(dyn_variables& dyn_var, nHamiltonian& ham,
-                  vector<MATRIX>& decoherence_rates,
-                  dyn_control_params& prms,Random& rnd);
+    void dish_rev2023(dyn_variables& dyn_var,
+                      nHamiltonian& ham,
+                      vector<MATRIX>& decoherence_rates,
+                      dyn_control_params& prms,
+                      Random& rnd);
 
-/*
+    /*
 int ida(CMATRIX& Coeff, int old_st, int new_st, double E_old, double E_new, double T, double ksi);
 int dish(Electronic& el, MATRIX& t_m, const MATRIX& tau_m, const CMATRIX& Hvib,
           int use_boltz_flag, double Ekin, double T, double ksi1, double ksi2);
@@ -137,11 +198,7 @@ int dish(Electronic& el, Nuclear& mol, Hamiltonian& ham,
           MATRIX& t_m, const MATRIX& tau_m, int use_boltz_flag, double T, double ksi1, double ksi2);
 */
 
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-
-}// namespace libdyn
-}// liblibra
-
-#endif // DYN_DECOHERENCE_H
-
+#endif  // DYN_DECOHERENCE_H

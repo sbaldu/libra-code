@@ -13,7 +13,6 @@
   \brief The file describes the functions and data types for dealing with permutations
 */
 
-
 #ifndef permutations_H
 #define permutations_H
 
@@ -35,28 +34,23 @@
 
 #endif
 
+/// liblibra
+namespace liblibra {
 
-/// liblibra 
-namespace liblibra{
+  using namespace boost::python;
+  using namespace std;
 
-using namespace boost::python;
-using namespace std;
+  /// liblinalg namespace
+  namespace liblinalg {
 
+    vector<int> id_permutation(int sz);
+    vector<int> inverse_permutation(vector<int>& perm);
+    vector<int> composite_permutation(vector<int>& perm_t, vector<int>& perm_cum);
+    void update_permutation(vector<int>& perm_t, vector<int>& perm_cum);
+    void update_permutation(vector<int>& perm_t, vector<int>* perm_cum);
+    void check_permutation(vector<int>& perm, int n);
 
-/// liblinalg namespace
-namespace liblinalg{
+  }  //namespace liblinalg
+}  // namespace liblibra
 
-vector<int> id_permutation(int sz);
-vector<int> inverse_permutation(vector<int>& perm);
-vector<int> composite_permutation(vector<int>& perm_t, vector<int>& perm_cum);
-void update_permutation(vector<int>& perm_t, vector<int>& perm_cum);
-void update_permutation(vector<int>& perm_t, vector<int>* perm_cum);
-void check_permutation(vector<int>& perm, int n);
-
-
-
-}//namespace liblinalg
-}// liblibra
-
-#endif // permutations_H
-
+#endif  // permutations_H

@@ -18,20 +18,18 @@
 #define UNITS_H
 
 /// liblibra namespace
-namespace liblibra{
-
+namespace liblibra {
 
 //================= Mathematical and numeric constants ====================
 //    radian   conversion factor from radians to degrees
 //    M_PI     numerical value of the geometric constant
 #define radian 57.29577951308232088
-#define radians_to_degrees     57.29577951308232088                  //   = 180/pi
-#define rad_to_deg             57.29577951308232088
-#define deg_to_rad             0.017453292519943295768261569865802
-
+#define radians_to_degrees 57.29577951308232088  //   = 180/pi
+#define rad_to_deg 57.29577951308232088
+#define deg_to_rad 0.017453292519943295768261569865802
 
 #ifndef M_PI
-#define M_PI   3.14159265358979323846264338327950288419716939937510 // 50 digits
+#define M_PI 3.14159265358979323846264338327950288419716939937510  // 50 digits
 #endif
 
 /*
@@ -49,7 +47,6 @@ namespace liblibra{
  130019278766111959092164201989380952572010654858632788659361533818279682303019520353018529689957736225994138912497217752834791315155748572424541506959
 */
 
-
 //======================== Conversion factors for Physical constants ==============
 
 /*     avogadro    Avogadro's number (N) in particles/mole
@@ -66,58 +63,50 @@ namespace liblibra{
 */
 
 // Length units
-#define Angst 1.889725989                    // 1 Angstrom in atomic units
-#define bohr       0.5291772083              // 1 Bohr = bohr Angstrom
+#define Angst 1.889725989  // 1 Angstrom in atomic units
+#define bohr 0.5291772083  // 1 Bohr = bohr Angstrom
 #define nanometers_to_angstrem 10.0
-#define bohrs_to_angstrem      0.5291772083
-#define meters_to_angstrem     1.0E+10
-
+#define bohrs_to_angstrem 0.5291772083
+#define meters_to_angstrem 1.0E+10
 
 // Time units
-#define FS 41.34145          // 1 fs in atomic units of time
-#define FS_TO_TAU 0.020454828280872953835407068780373 
-#define ps_to_tau 20.45482828087295383540706878037      //   = 10*sqrt(4.184)
-#define tau_to_ps 48.88821290839616117449108217105E-3    
-#define tau_to_fs 48.88821290839616117449108217105      //   = 100/sqrt(4.184)
-#define tau_to_s  48.88821290839616117449108217105E-15  
-
+#define FS 41.34145  // 1 fs in atomic units of time
+#define FS_TO_TAU 0.020454828280872953835407068780373
+#define ps_to_tau 20.45482828087295383540706878037  //   = 10*sqrt(4.184)
+#define tau_to_ps 48.88821290839616117449108217105E-3
+#define tau_to_fs 48.88821290839616117449108217105  //   = 100/sqrt(4.184)
+#define tau_to_s 48.88821290839616117449108217105E-15
 
 // Energy units
-#define Ha 1.0                 // 1 Ha = 1 Ha 
-#define Rydberg 0.5            // 1 Ry = 0.5 Ha;
-#define eV 0.036749309         // 1 eV = 0.036.. Ha
-#define joule      4.184       // 1 kcal = 4.184 kJ
-#define evolt      27.2113834  // 1 Ha = 27.21.. eV
-#define hartree    627.5094709 // 1 Ha = 627.5.. kcal/mol
-#define cal_to_J   4.184       // 1 cal = 4.184 J
-#define J_to_cal   0.23901     // 1 J = 0.239.. cal
-
+#define Ha 1.0               // 1 Ha = 1 Ha
+#define Rydberg 0.5          // 1 Ry = 0.5 Ha;
+#define eV 0.036749309       // 1 eV = 0.036.. Ha
+#define joule 4.184          // 1 kcal = 4.184 kJ
+#define evolt 27.2113834     // 1 Ha = 27.21.. eV
+#define hartree 627.5094709  // 1 Ha = 627.5.. kcal/mol
+#define cal_to_J 4.184       // 1 cal = 4.184 J
+#define J_to_cal 0.23901     // 1 J = 0.239.. cal
 
 // Pressure units --- Conversion from kcal/(mol*Angstrom^3) to Pa
-#define pressure_to_Pa         1.6605387280149467216398197213547E+3  //  = 10000/avogadro
-#define pressure_unit          694.76940380145370833410057141479E+2  //  1 kcal/(mol*Angstrom^3) = pressure_unit    bar
-#define pressure_to_atm        68568.4                               //  1 kcal/(mol*Angstrom^3) = pressure_to_atm  atmospheres
-#define atm_to_int             0.000014583977459004439362738520951342 // 1 atm = atm_to_int internal units
-
+#define pressure_to_Pa 1.6605387280149467216398197213547E+3  //  = 10000/avogadro
+#define pressure_unit \
+  694.76940380145370833410057141479E+2  //  1 kcal/(mol*Angstrom^3) = pressure_unit    bar
+#define pressure_to_atm 68568.4         //  1 kcal/(mol*Angstrom^3) = pressure_to_atm  atmospheres
+#define atm_to_int 0.000014583977459004439362738520951342  // 1 atm = atm_to_int internal units
 
 // Basic phisical constants
-#define avogadro   6.02214199E+23
-#define lightspd   2.99792458E-2
-#define electric   332.05382
-#define debye      4.8033324
-#define prescon    6.85695E+4
-#define boltzmann  1.9872065E-3        // in kcal/(mol*K)
+#define avogadro 6.02214199E+23
+#define lightspd 2.99792458E-2
+#define electric 332.05382
+#define debye 4.8033324
+#define prescon 6.85695E+4
+#define boltzmann 1.9872065E-3  // in kcal/(mol*K)
 //#define boltzmann  0.83143435
 //#define gasconst   1.9872065E-3
 
-
 // Electric dipole moments
-#define Debye 0.393430307   // 1 Debye in atomic units [ e * Bohr]
+#define Debye 0.393430307  // 1 Debye in atomic units [ e * Bohr]
 
+}  // namespace liblibra
 
-
-
-}// namespace liblibra
-
-
-#endif // UNITS_H
+#endif  // UNITS_H

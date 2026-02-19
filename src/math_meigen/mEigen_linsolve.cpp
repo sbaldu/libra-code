@@ -15,19 +15,18 @@
 #include <Eigen/Core>
 #include "mEigen.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace Eigen;
-using namespace std;
-using namespace liblinalg;
+  using namespace Eigen;
+  using namespace std;
+  using namespace liblinalg;
 
-/// libmeigen namespace
-namespace libmeigen{
+  /// libmeigen namespace
+  namespace libmeigen {
 
-void least_squares_solve(MATRIX& A, MATRIX& X, MATRIX& B, int option){
-/**
+    void least_squares_solve(MATRIX& A, MATRIX& X, MATRIX& B, int option) {
+      /**
    Solving Ax = b for x using the BDCSVD decomposition
 
    A = N x M
@@ -36,40 +35,47 @@ void least_squares_solve(MATRIX& A, MATRIX& X, MATRIX& B, int option){
 
 */
 
-  int N = A.n_rows;
-  int M = A.n_cols;
-  int K = B.n_cols;
-  int i,j;
+      int N = A.n_rows;
+      int M = A.n_cols;
+      int K = B.n_cols;
+      int i, j;
 
+      Eigen::MatrixXd a(N, M);
+      Eigen::MatrixXd x(M, K);
+      Eigen::MatrixXd b(N, K);
 
-  Eigen::MatrixXd a(N,M);
-  Eigen::MatrixXd x(M,K);
-  Eigen::MatrixXd b(N,K);
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < M; j++) {
+          a(i, j) = A.M[i * M + j];
+        }
+      }
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < K; j++) {
+          b(i, j) = B.M[i * K + j];
+        }
+      }
 
-  for(i=0;i<N;i++){  for(j=0;j<M;j++){ a(i,j) = A.M[i*M+j]; }  }
-  for(i=0;i<N;i++){  for(j=0;j<K;j++){ b(i,j) = B.M[i*K+j]; }  }
+      if (option == 0) {
+        //  x = a.template bdcSvd<Eigen::ComputeThinU | Eigen::ComputeThinV>().solve(b);
+        // x = BDCSVD(a).solve(b);
+        x = a.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
+      } else if (option == 1) {
+        x = a.fullPivLu().solve(b);
+      } else if (option == 2) {
+        x = a.fullPivHouseholderQr().solve(b);
+      } else if (option == 3) {
+        x = a.completeOrthogonalDecomposition().solve(b);
+      }
 
-  if(option==0){
-  //  x = a.template bdcSvd<Eigen::ComputeThinU | Eigen::ComputeThinV>().solve(b);
-  // x = BDCSVD(a).solve(b);
-   x = a.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-  }
-  else if(option==1){
-   x = a.fullPivLu().solve(b);
-  }
-  else if(option==2){
-   x = a.fullPivHouseholderQr().solve(b);
-  }
-  else if(option==3){
-   x = a.completeOrthogonalDecomposition().solve(b);
-  }
+      for (i = 0; i < M; i++) {
+        for (j = 0; j < K; j++) {
+          X.M[i * K + j] = x(i, j);
+        }
+      }
+    }
 
-  for(i=0;i<M;i++){  for(j=0;j<K;j++){ X.M[i*K+j] = x(i,j); }  }
-
-}
-
-bool linsys_solver(const MATRIX& A, MATRIX& X, const MATRIX& B, const double NormThreshold){
-/**
+    bool linsys_solver(const MATRIX& A, MATRIX& X, const MATRIX& B, const double NormThreshold) {
+      /**
   This function is adapted from the OpenBabel Qeq method:
 
   Solving a linear system of equations: A * x = b
@@ -81,28 +87,35 @@ bool linsys_solver(const MATRIX& A, MATRIX& X, const MATRIX& B, const double Nor
   // if that fails, tries again using singular value decomposition (SVD)
 */
 
-    std::cout<<"Not implemented. Exiting...\n";
-    exit(0);
+      std::cout << "Not implemented. Exiting...\n";
+      exit(0);
 
-    int i,j;   // counters
+      int i, j;  // counters
 
-    if(A.n_rows!=A.n_cols){
-        std::cout<<"Error: The matrix A in equation A * x = b must be square\n"; exit(1);  // N
-    }
-    if(A.n_cols!=X.n_rows){
-        std::cout<<"Error: The number of cols of matrix A and the number of rows in matrix x in equation A * x = b must be equal\n"; exit(1);  // N
-    }
-    if( (X.n_cols!=B.n_cols) || (X.n_rows!=B.n_rows)){
-        std::cout<<"Error: The dimensions of matrices x and b in equation A * x = b must be equal\n"; exit(1); 
-    }
-    if(X.n_cols!=1){
-        std::cout<<"Error: The matrices x and b in equation A * x = b should be column-vectors (num_of_cols ==1) \n"; exit(1); 
-    }
+      if (A.n_rows != A.n_cols) {
+        std::cout << "Error: The matrix A in equation A * x = b must be square\n";
+        exit(1);  // N
+      }
+      if (A.n_cols != X.n_rows) {
+        std::cout << "Error: The number of cols of matrix A and the number of rows in matrix x in "
+                     "equation A * x = b must be equal\n";
+        exit(1);  // N
+      }
+      if ((X.n_cols != B.n_cols) || (X.n_rows != B.n_rows)) {
+        std::cout
+            << "Error: The dimensions of matrices x and b in equation A * x = b must be equal\n";
+        exit(1);
+      }
+      if (X.n_cols != 1) {
+        std::cout << "Error: The matrices x and b in equation A * x = b should be column-vectors "
+                     "(num_of_cols ==1) \n";
+        exit(1);
+      }
 
-    // Set dimentions
-    int N = A.n_rows; // the dimension of the matrix A (square)
+      // Set dimentions
+      int N = A.n_rows;  // the dimension of the matrix A (square)
 
-/*
+      /*
     // Convert out matrices to the Eigen types:
     MatrixXd a(N,N); for(i=0;i<N;i++){  for(j=0;j<N;j++){  a(i,j) = A.M[i*N+j];  }    }// for i
     VectorXd x(N);   for(i=0;i<N;i++){  x(i) = 0.0;   }// for i
@@ -147,12 +160,11 @@ bool linsys_solver(const MATRIX& A, MATRIX& X, const MATRIX& B, const double Nor
     for(i=0;i<N;i++){  X.M[i] = x(i);   }// for i
 */
 
-    return true;
-}
+      return true;
+    }
 
-
-void solve_linsys(MATRIX& C,MATRIX& D, MATRIX& X,double eps,int maxiter){
-/*********************************************
+    void solve_linsys(MATRIX& C, MATRIX& D, MATRIX& X, double eps, int maxiter) {
+      /*********************************************
  Here we solve the system of linear equations
               AX = D
  using Gauss-Seidel iterative procedure
@@ -175,84 +187,96 @@ void solve_linsys(MATRIX& C,MATRIX& D, MATRIX& X,double eps,int maxiter){
 
 **********************************************/
 
-// Do the transformations A = C^T * C and b = C^T * d
-// If matrices d and c have more then 1 columns we do the
-// procedure for each column
+      // Do the transformations A = C^T * C and b = C^T * d
+      // If matrices d and c have more then 1 columns we do the
+      // procedure for each column
 
+      int i, j, k;   // counters
+      int n, m, p;   // dimetions
+      double s;      // sums
+      double error;  // error
+      int iter;      // number of iterations
 
-    int i,j,k;   // counters
-    int n,m,p;   // dimetions
-    double s;    // sums
-    double error;// error
-    int iter;    // number of iterations
+      if (C.n_rows != D.n_rows) {
+        std::cout
+            << "Error: The number of rows of matrices C and D in equation CX = D must be equal\n";
+        exit(35);
+      }  // n
+      if (C.n_cols != X.n_rows) {
+        std::cout << "Error: The number of cols of matrix C and num of rows in matrix D in "
+                     "equation CX = D must be equal\n";
+        exit(35);
+      }  // m
+      if (X.n_cols != D.n_cols) {
+        std::cout
+            << "Error: The number of cols of matrices X and D in equation CX = D must be equal\n";
+        exit(35);
+      }  // p
 
-    if(C.n_rows!=D.n_rows)
-        {std::cout<<"Error: The number of rows of matrices C and D in equation CX = D must be equal\n"; exit(35); } // n
-    if(C.n_cols!=X.n_rows)
-        {std::cout<<"Error: The number of cols of matrix C and num of rows in matrix D in equation CX = D must be equal\n"; exit(35); } // m
-    if(X.n_cols!=D.n_cols)
-        {std::cout<<"Error: The number of cols of matrices X and D in equation CX = D must be equal\n"; exit(35); } // p
+      // Set dimentions
+      n = C.n_rows;
+      m = C.n_cols;
+      p = D.n_cols;
 
-    // Set dimentions
-    n = C.n_rows;
-    m = C.n_cols;
-    p = D.n_cols;
+      MATRIX A(m, m);
+      A = C.T() * C;
+      X = 0.0;
+      error = 2.0 * eps;
+      iter = 0;
 
-    MATRIX A(m,m); A = C.T() * C;
-    X = 0.0;
-    error = 2.0*eps;
-    iter = 0;
+      while ((error > eps) && (iter < maxiter)) {
+        error = 0.0;
 
-    while((error>eps)&&(iter<maxiter)){
+        for (k = 0; k < p; k++) {
+          //------- Matrix preparation step -----------
 
-    error = 0.0;
+          MATRIX d(n, 1);
+          for (i = 0; i < n; i++) {
+            d.M[i] = D.M[i * p + k];
+          }
+          MATRIX x(m, 1);
+          for (i = 0; i < m; i++) {
+            x.M[i] = X.M[i * p + k];
+          }
+          MATRIX xprev(m, 1);
+          xprev = x;
+          MATRIX b(m, 1);
+          b = C.T() * d;
 
-    for( k = 0; k < p; k++ ){
+          //------- Gauss-Seidel step -----------------
 
-        //------- Matrix preparation step -----------
-
-        MATRIX d(n,1);  for(i = 0;i<n;i++){ d.M[i] = D.M[i*p+k]; }
-        MATRIX x(m,1);  for(i = 0;i<m;i++){ x.M[i] = X.M[i*p+k]; }
-        MATRIX xprev(m,1); xprev = x;
-        MATRIX b(m,1);  b = C.T() * d;
-
-        //------- Gauss-Seidel step -----------------
-
-        for( i = 0; i < m; i++ ){
-
+          for (i = 0; i < m; i++) {
             s = 0.0;
-            for( j = 0; j < i; j++ ){ s += A.M[i*m + j]*x.M[j];   }// for j
-            for( j = i+1; j < m; j++ ){ s += A.M[i*m + j]*xprev.M[j]; }// for j
+            for (j = 0; j < i; j++) {
+              s += A.M[i * m + j] * x.M[j];
+            }  // for j
+            for (j = i + 1; j < m; j++) {
+              s += A.M[i * m + j] * xprev.M[j];
+            }  // for j
 
-            x.M[i] = (b.M[i] - s)/A.M[i*m + i];
+            x.M[i] = (b.M[i] - s) / A.M[i * m + i];
 
-        }// for i - all elements of vector x
+          }  // for i - all elements of vector x
 
+          //-------- Now calculate the error and update X ---------
+          for (i = 0; i < m; i++) {
+            error += (x.M[i] - xprev.M[i]) * (x.M[i] - xprev.M[i]);
+            X.M[i * p + k] = x.M[i];
+          }  // for i
 
-        //-------- Now calculate the error and update X ---------
-        for( i = 0; i < m; i++ ){
-            error += (x.M[i] - xprev.M[i])*(x.M[i] - xprev.M[i]);
-            X.M[i*p + k] = x.M[i];
-        }// for i
+        }  // for k - all columns of D
 
+        error = sqrt(error / double(m));
+        iter++;
 
-    }// for k - all columns of D
+      }  // loop over convergence
 
-    error = sqrt(error/double(m));
-    iter++;
-
-    }// loop over convergence
-
-    if(error>eps){
-      cout<<"Error in solve_linsys: convergence to eps= "<<eps<<" is not achieved for "<<iter<<" iterations\n";
-      exit(0);
+      if (error > eps) {
+        cout << "Error in solve_linsys: convergence to eps= " << eps << " is not achieved for "
+             << iter << " iterations\n";
+        exit(0);
+      }
     }
 
-}
-
-
-
-
-
-}// namespace libmeigen
-}// namespace liblibra
+  }  // namespace libmeigen
+}  // namespace liblibra

@@ -19,67 +19,85 @@
 #include "Electronic_Structure.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_qm namespace
-namespace libhamiltonian_qm{
+    /// libhamiltonian_qm namespace
+    namespace libhamiltonian_qm {
 
+      // Hamiltonian_EHT.cpp
+      void Hamiltonian_core_eht(System& syst,
+                                vector<AO>& basis_ao,
+                                Control_Parameters& prms,
+                                Model_Parameters& modprms,
+                                vector<vector<int> >& atom_to_ao_map,
+                                vector<int>& ao_to_atom_map,
+                                MATRIX* Hao,
+                                MATRIX* Sao,
+                                int DF);
 
+      void Hamiltonian_core_eht(System& syst,
+                                vector<AO>& basis_ao,
+                                Control_Parameters& prms,
+                                Model_Parameters& modprms,
+                                vector<vector<int> >& atom_to_ao_map,
+                                vector<int>& ao_to_atom_map,
+                                MATRIX& Hao,
+                                MATRIX& Sao,
+                                int DF);
 
-// Hamiltonian_EHT.cpp
-void Hamiltonian_core_eht
-( System& syst, vector<AO>& basis_ao, 
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
-  MATRIX* Hao, MATRIX* Sao, int DF
-);
+      void Hamiltonian_core_deriv_eht(System& syst,
+                                      vector<AO>& basis_ao,
+                                      Control_Parameters& prms,
+                                      Model_Parameters& modprms,
+                                      vector<vector<int> >& atom_to_ao_map,
+                                      vector<int>& ao_to_atom_map,
+                                      MATRIX* Hao,
+                                      MATRIX* Sao,
+                                      int DF,
+                                      int c,
+                                      MATRIX* dHao_dx,
+                                      MATRIX* dHao_dy,
+                                      MATRIX* dHao_dz,
+                                      MATRIX* dSao_dx,
+                                      MATRIX* dSao_dy,
+                                      MATRIX* dSao_dz);
 
-void Hamiltonian_core_eht
-( System& syst, vector<AO>& basis_ao, 
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
-  MATRIX& Hao, MATRIX& Sao, int DF
-);
+      void Hamiltonian_core_deriv_eht(System& syst,
+                                      vector<AO>& basis_ao,
+                                      Control_Parameters& prms,
+                                      Model_Parameters& modprms,
+                                      vector<vector<int> >& atom_to_ao_map,
+                                      vector<int>& ao_to_atom_map,
+                                      MATRIX& Hao,
+                                      MATRIX& Sao,
+                                      int DF,
+                                      int c,
+                                      MATRIX& dHao_dx,
+                                      MATRIX& dHao_dy,
+                                      MATRIX& dHao_dz,
+                                      MATRIX& dSao_dx,
+                                      MATRIX& dSao_dy,
+                                      MATRIX& dSao_dz);
 
-void Hamiltonian_core_deriv_eht
-( System& syst, vector<AO>& basis_ao, 
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
-  MATRIX* Hao, MATRIX* Sao, int DF,
-  int c,
-  MATRIX* dHao_dx, MATRIX* dHao_dy, MATRIX* dHao_dz, 
-  MATRIX* dSao_dx, MATRIX* dSao_dy, MATRIX* dSao_dz
-);
+      void Hamiltonian_Fock_eht(Electronic_Structure* el,
+                                System& syst,
+                                vector<AO>& basis_ao,
+                                Control_Parameters& prms,
+                                Model_Parameters& modprms,
+                                vector<vector<int> >& atom_to_ao_map,
+                                vector<int>& ao_to_atom_map);
 
-void Hamiltonian_core_deriv_eht
-( System& syst, vector<AO>& basis_ao, 
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
-  MATRIX& Hao, MATRIX& Sao, int DF,
-  int c,
-  MATRIX& dHao_dx, MATRIX& dHao_dy, MATRIX& dHao_dz, 
-  MATRIX& dSao_dx, MATRIX& dSao_dy, MATRIX& dSao_dz
-);
+      void Hamiltonian_Fock_eht(Electronic_Structure& el,
+                                System& syst,
+                                vector<AO>& basis_ao,
+                                Control_Parameters& prms,
+                                Model_Parameters& modprms,
+                                vector<vector<int> >& atom_to_ao_map,
+                                vector<int>& ao_to_atom_map);
 
-
-
-void Hamiltonian_Fock_eht
-( Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map
-);
-
-void Hamiltonian_Fock_eht
-( Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map
-);
-
-
-
-/*
+      /*
 
 
 void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
@@ -114,10 +132,8 @@ void Hamiltonian_Fock_derivs_eht
 
 */
 
+    }  // namespace libhamiltonian_qm
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-
-}// namespace libhamiltonian_qm
-}// namespace libatomistic
-}// liblibra
-
-#endif // HAMILTONIAN_EHT_H
+#endif  // HAMILTONIAN_EHT_H

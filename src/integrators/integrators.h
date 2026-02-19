@@ -22,23 +22,21 @@
 #include "../io/libio.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libio;
-//using namespace boost::python;
+  using namespace liblinalg;
+  using namespace libio;
+  //using namespace boost::python;
 
-/// libdyn namespace
-namespace libintegrators{
+  /// libdyn namespace
+  namespace libintegrators {
 
-namespace bp = boost::python;
+    namespace bp = boost::python;
 
-CMATRIX RK4(CMATRIX& q, double dt, bp::object compute_derivatives, bp::object function_params);
+    CMATRIX RK4(CMATRIX& q, double dt, bp::object compute_derivatives, bp::object function_params);
 
+  }  // namespace libintegrators
 
-}// namespace libintegrators
+}  // namespace liblibra
 
-}// liblibra
-
-#endif // INTEGRATORS_H
-
+#endif  // INTEGRATORS_H

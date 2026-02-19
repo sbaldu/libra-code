@@ -15,25 +15,35 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-namespace libpot{
+  namespace libpot {
 
+    //------------------------- Fragment-Fragment potentials ------------------------------------
+    double Gay_Berne(VECTOR& ri,
+                     VECTOR& rj,
+                     VECTOR& ui,
+                     VECTOR& uj, /*Inputs*/
+                     VECTOR& fi,
+                     VECTOR& fj,
+                     VECTOR& ti,
+                     VECTOR& tj, /*Outputs*/
+                     double di,
+                     double dj,
+                     double li,
+                     double lj,
+                     double e0,
+                     double rat,
+                     double dw,
+                     double mu,
+                     double nu); /*Parameters*/
 
-//------------------------- Fragment-Fragment potentials ------------------------------------
-double Gay_Berne(VECTOR& ri,VECTOR& rj,VECTOR& ui,VECTOR& uj,          /*Inputs*/
-                 VECTOR& fi,VECTOR& fj,VECTOR& ti,VECTOR& tj,          /*Outputs*/
-                 double di, double dj,double li,double lj,
-                 double e0,double rat,double dw,double mu,double nu);  /*Parameters*/
+    double Girifalco12_6(
+        VECTOR& ri, VECTOR& rj, VECTOR& fi, VECTOR& fj, double a, double alp, double bet);
 
-double Girifalco12_6(VECTOR& ri,VECTOR& rj,
-                     VECTOR& fi,VECTOR& fj,
-                     double a,double alp,double bet
-                    );
+  }  //namespace libpot
+}  // namespace liblibra
 
-}//namespace libpot
-}// liblibra
-
-#endif // POTENTIALS_FRAG_H
+#endif  // POTENTIALS_FRAG_H

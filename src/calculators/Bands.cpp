@@ -20,18 +20,16 @@
 #include "../Units.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libspecialfunctions;
+  using namespace liblinalg;
+  using namespace libspecialfunctions;
 
+  /// libcalculators namespace
+  namespace libcalculators {
 
-/// libcalculators namespace
-namespace libcalculators{
-
-
-void convert_1(boost::python::list bands,  vector< pair<int,double> >& int_bands){
-/**
+    void convert_1(boost::python::list bands, vector<pair<int, double> >& int_bands) {
+      /**
   \brief Auxiliary converter function
 
   This function converts Python list into vector of pairs, so we can conveniently 
@@ -41,27 +39,26 @@ void convert_1(boost::python::list bands,  vector< pair<int,double> >& int_bands
   \param[out] int_bands The C++ output - the vector of pairs
 */
 
-  int Norb = len(bands);
+      int Norb = len(bands);
 
-  for(int i=0;i<Norb;i++){
-    // Extract data from external list of lists
-    boost::python::list bnd = boost::python::extract<boost::python::list>(bands[i]);
+      for (int i = 0; i < Norb; i++) {
+        // Extract data from external list of lists
+        boost::python::list bnd = boost::python::extract<boost::python::list>(bands[i]);
 
-    int indx = boost::python::extract<int>(bnd[0]);
-    double en = boost::python::extract<double>(bnd[1]);
+        int indx = boost::python::extract<int>(bnd[0]);
+        double en = boost::python::extract<double>(bnd[1]);
 
-    // Create internal representation
-    std::pair<int,double> x;
-    x = make_pair(indx, en);
+        // Create internal representation
+        std::pair<int, double> x;
+        x = make_pair(indx, en);
 
-    int_bands.push_back(x);
+        int_bands.push_back(x);
 
-  }// for i
+      }  // for i
+    }
 
-}
-
-boost::python::list convert_2( vector< pair<int,double> >& bands){
-/**
+    boost::python::list convert_2(vector<pair<int, double> >& bands) {
+      /**
   \brief Auxiliary converter function
 
   This function converts C++ vector of pairs into Python list
@@ -70,25 +67,22 @@ boost::python::list convert_2( vector< pair<int,double> >& bands){
   The function returns a list of 2-element lists
 */
 
-  boost::python::list res;
+      boost::python::list res;
 
-  for(int i=0;i<bands.size();i++){
-    boost::python::list bnd; 
- 
-    bnd.append(bands[i].first);
-    bnd.append(bands[i].second);
+      for (int i = 0; i < bands.size(); i++) {
+        boost::python::list bnd;
 
-    res.append(bnd);
-  }
+        bnd.append(bands[i].first);
+        bnd.append(bands[i].second);
 
-  return res;
+        res.append(bnd);
+      }
 
-}
+      return res;
+    }
 
-
-
-void order_bands(MATRIX* E, vector< pair<int,double> >& bands){
-/**
+    void order_bands(MATRIX* E, vector<pair<int, double> >& bands) {
+      /**
   \brief Ordering of bands 
 
   This function takes the diagonal elements of the E matrix, orders them and packs into a vector of pairs. Each 
@@ -99,36 +93,37 @@ void order_bands(MATRIX* E, vector< pair<int,double> >& bands){
   \param[in,out] bands The packed structure containing ordered eigenvalues and their original ordering indices
 */
 
+      int Norb = E->n_cols;
 
-  int Norb = E->n_cols;
+      std::vector<pair<int, double> > in;
+      std::pair<int, double> x;
+      int i;
 
-  std::vector< pair<int,double> > in;
-  std::pair<int,double> x;
-  int i;
+      for (i = 0; i < Norb; i++) {
+        x = make_pair(i, E->M[i * Norb + i]);
+        in.push_back(x);
+      }
 
-  for(i=0;i<Norb;i++){
-    x = make_pair(i, E->M[i*Norb+i]);
-    in.push_back(x);
-  }
+      if (0) {  // For debug
+        cout << "Unordered bands:\n";
+        for (i = 0; i < Norb; i++) {
+          cout << "i= " << i << " orb_indx = " << in[i].first << " E[i]= " << in[i].second << endl;
+        }
+      }
 
-  if(0){ // For debug
-    cout<<"Unordered bands:\n";
-    for(i=0;i<Norb;i++){  cout<<"i= "<<i<<" orb_indx = "<<in[i].first<<" E[i]= "<<in[i].second<<endl; }
-  }
+      libspecialfunctions::merge_sort(in, bands);
 
-  libspecialfunctions::merge_sort(in,bands);  
+      if (0) {  // For debug
+        cout << "Ordered bands:\n";
+        for (i = 0; i < Norb; i++) {
+          cout << "i= " << i << " orb_indx = " << in[i].first << " E[i]= " << in[i].second << endl;
+        }
+      }
 
-  if(0){ // For debug
-    cout<<"Ordered bands:\n";
-    for(i=0;i<Norb;i++){  cout<<"i= "<<i<<" orb_indx = "<<in[i].first<<" E[i]= "<<in[i].second<<endl; }
-  }
+    }  // order_bands(...)
 
-  
-}// order_bands(...)
-
-
-boost::python::list order_bands(MATRIX E){
-/**
+    boost::python::list order_bands(MATRIX E) {
+      /**
   \brief Ordering of bands (Python-friendly version)
 
   This function takes the diagonal elements of the E matrix, orders them and packs into a vector of pairs. Each 
@@ -140,18 +135,20 @@ boost::python::list order_bands(MATRIX E){
   and their original ordering indices
 */
 
+      vector<pair<int, double> > bands;
+      order_bands(&E, bands);
 
-  vector< pair<int,double> > bands;
-  order_bands(&E, bands);
+      return convert_2(bands);
+    }
 
-  return convert_2(bands);
-
-}
-
-
-void populate_bands(double Nel, double degen, double kT, double etol, int pop_opt,
-         vector< pair<int,double> >& bands,vector< pair<int,double> >& occ){
-/**
+    void populate_bands(double Nel,
+                        double degen,
+                        double kT,
+                        double etol,
+                        int pop_opt,
+                        vector<pair<int, double> >& bands,
+                        vector<pair<int, double> >& occ) {
+      /**
   \brief Compute populations of bands
 
   The function computes populations of bands, depending on the chosen poulation scheme and the corresponding parameters.
@@ -168,51 +165,56 @@ void populate_bands(double Nel, double degen, double kT, double etol, int pop_op
 
 */
 
-  int Norb = bands.size();
-  int i;
-  occ = bands;    // maybe not the best way, but it allocates memory
+      int Norb = bands.size();
+      int i;
+      occ = bands;  // maybe not the best way, but it allocates memory
 
-  if(pop_opt==0){  // integer populations - populate first Nocc bands
+      if (pop_opt == 0) {  // integer populations - populate first Nocc bands
 
-    double sum = 0.0;
-    for(i=0;i<Norb;i++){
-      occ[i].first = bands[i].first;
+        double sum = 0.0;
+        for (i = 0; i < Norb; i++) {
+          occ[i].first = bands[i].first;
 
-      if(sum<Nel){ occ[i].second = degen; sum+= degen; }
-      else{ occ[i].second = 0.0; }
+          if (sum < Nel) {
+            occ[i].second = degen;
+            sum += degen;
+          } else {
+            occ[i].second = 0.0;
+          }
 
-    }// for i
-  }// pop_opt = 0
+        }  // for i
+      }  // pop_opt = 0
 
-  else if(pop_opt==1){  // Fermi distribution (fractional populations possible)
+      else if (pop_opt == 1) {  // Fermi distribution (fractional populations possible)
 
-    vector<double> e(Norb,0.0);  for(i=0;i<Norb;i++){ e[i] = bands[i].second; }
- 
-    double E_f = fermi_energy(e, Nel, degen, kT, etol);
+        vector<double> e(Norb, 0.0);
+        for (i = 0; i < Norb; i++) {
+          e[i] = bands[i].second;
+        }
 
-    for(i=0;i<Norb;i++){
-      occ[i].first = bands[i].first;
-      occ[i].second = fermi_population(e[i],E_f,degen,kT);
+        double E_f = fermi_energy(e, Nel, degen, kT, etol);
 
-    }// for i
-  }// pop_opt = 1
+        for (i = 0; i < Norb; i++) {
+          occ[i].first = bands[i].first;
+          occ[i].second = fermi_population(e[i], E_f, degen, kT);
 
+        }  // for i
+      }  // pop_opt = 1
 
-  if(0){  // for debug, now inactive
-    cout<<"In populate:\n";
-    cout<<"Occupation numbers:\n";
-    for(i=0;i<Norb;i++){
-      cout<<"i= "<<i<<" orbital index= "<<occ[i].first<<" occupation_number= "<<occ[i].second<<endl;
-    }
-  }// if 
+      if (0) {  // for debug, now inactive
+        cout << "In populate:\n";
+        cout << "Occupation numbers:\n";
+        for (i = 0; i < Norb; i++) {
+          cout << "i= " << i << " orbital index= " << occ[i].first
+               << " occupation_number= " << occ[i].second << endl;
+        }
+      }  // if
 
+    }  // populate_bands(...)
 
-}// populate_bands(...)
-
-
-boost::python::list populate_bands(double Nel, double degen, double kT, double etol, int pop_opt,
-         boost::python::list bands){
-/**
+    boost::python::list populate_bands(
+        double Nel, double degen, double kT, double etol, int pop_opt, boost::python::list bands) {
+      /**
   \brief Compute populations of bands (Python-friendly version)
 
   The function computes populations of bands, depending on the chosen poulation scheme and the corresponding parameters.
@@ -229,38 +231,37 @@ boost::python::list populate_bands(double Nel, double degen, double kT, double e
 
 */
 
+      // General bands:
+      int Norb = len(bands);
+      vector<pair<int, double> > int_bands;
 
-  // General bands:
-  int Norb = len(bands);
-  vector< pair<int,double> > int_bands;
+      // Extract data from external list of lists and create internal representation
+      convert_1(bands, int_bands);
 
-  // Extract data from external list of lists and create internal representation
-  convert_1(bands, int_bands);
+      // Call c++ version
+      vector<pair<int, double> > occ;
+      populate_bands(Nel, degen, kT, etol, pop_opt, int_bands, occ);
 
-  // Call c++ version
-  vector< pair<int,double> > occ;
-  populate_bands(Nel, degen, kT, etol, pop_opt, int_bands, occ);
+      // Now create list of lists
+      boost::python::list res;
 
+      for (int i = 0; i < Norb; i++) {
+        boost::python::list oc;
 
-  // Now create list of lists
-  boost::python::list res;
+        oc.append(occ[i].first);
+        oc.append(occ[i].second);
 
-  for(int i=0;i<Norb;i++){
-    boost::python::list oc; 
- 
-    oc.append(occ[i].first);
-    oc.append(occ[i].second);
+        res.append(oc);
+      }
 
-    res.append(oc);
-  }
+      return res;
+    }
 
-  return res;
-}
-
-
-
-void show_bands(int Norb, int Nocc, vector< pair<int,double> >& bands,vector< pair<int,double> >& occ){
-/**
+    void show_bands(int Norb,
+                    int Nocc,
+                    vector<pair<int, double> >& bands,
+                    vector<pair<int, double> >& occ) {
+      /**
   \brief Formatter printout of the bands
 
   The function will print energy levels and the corresponding populations
@@ -272,23 +273,20 @@ void show_bands(int Norb, int Nocc, vector< pair<int,double> >& bands,vector< pa
 
 */
 
-// Show only Norb bands
+      // Show only Norb bands
 
-  int sz = Norb;
-  cout<<"# of bands = "<<sz<<"\n";
-  cout<<"# of occupied = "<<Nocc<<endl;
+      int sz = Norb;
+      cout << "# of bands = " << sz << "\n";
+      cout << "# of occupied = " << Nocc << endl;
 
-  for(int i=0;i<sz;i++){
-    cout<<" band# = "<<i<<" mo indx ="<<bands[i].first
-        <<" energy(eV) = "<<bands[i].second/eV
-        <<" energy(a.u.) = "<<bands[i].second
-        <<" occupation = "<<occ[i].second<<endl;
-  }
+      for (int i = 0; i < sz; i++) {
+        cout << " band# = " << i << " mo indx =" << bands[i].first
+             << " energy(eV) = " << bands[i].second / eV << " energy(a.u.) = " << bands[i].second
+             << " occupation = " << occ[i].second << endl;
+      }
 
-}// show_bands(...)
+    }  // show_bands(...)
 
-}// namespace libcalculators
+  }  // namespace libcalculators
 
-}// liblibra
-
-
+}  // namespace liblibra

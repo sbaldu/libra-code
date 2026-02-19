@@ -17,20 +17,24 @@
 #include "Wfcgrid2.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-using namespace libwfcgrid;
+    using namespace libwfcgrid;
 
-/// libwfcgrid namespace
-namespace libwfcgrid2{
+    /// libwfcgrid namespace
+    namespace libwfcgrid2 {
 
-
-
-CMATRIX Gaussian(vector<double>& x, vector<double>& x0, vector<double>& px0, vector<double>& dx, int init_state, int nstates, complex<double> scl){
-/**
+      CMATRIX Gaussian(vector<double>& x,
+                       vector<double>& x0,
+                       vector<double>& px0,
+                       vector<double>& dx,
+                       int init_state,
+                       int nstates,
+                       complex<double> scl) {
+        /**
   \brief Computes a multi-dimensional Gaussian wavepacket at a given point
 
   \param[out] wfc [CMATRIX(nstates, 1)] Gaussian amplitude at a given state (zero elsewhere)
@@ -65,53 +69,53 @@ CMATRIX Gaussian(vector<double>& x, vector<double>& x0, vector<double>& px0, vec
 
 */
 
+        int idof, st;
+        int ndof = x.size();
 
-  int idof, st;
-  int ndof = x.size();
+        // Constants
+        CMATRIX wfc(nstates, 1);
+        const complex<double> one(0.0, 1.0);
+        double nrm = 1.0;
 
-  // Constants
-  CMATRIX wfc(nstates,1);
-  const complex<double> one(0.0, 1.0);
-  double nrm = 1.0;
+        for (idof = 0; idof < ndof; idof++) {
+          nrm *= pow((1.0 / (2.0 * M_PI * dx[idof] * dx[idof])), 0.25);
+        }
 
-  for(idof=0; idof<ndof; idof++){
-      nrm *= pow((1.0/(2.0*M_PI*dx[idof]*dx[idof])),0.25);
-  }
+        for (st = 0; st < nstates; st++) {
+          if (st == init_state) {
+            double c1, c2;
+            c1 = 0.0;
+            c2 = 0.0;
 
-  for(st=0; st<nstates; st++){
+            for (idof = 0; idof < ndof; idof++) {
+              double deltx = 0.5 * (x[idof] - x0[idof]) / dx[idof];
 
-      if(st==init_state){
+              c1 += -deltx * deltx;
+              c2 += px0[idof] * (x[idof] - x0[idof]);
+            }
 
-          double c1, c2;
-          c1 = 0.0; c2 = 0.0;
+            wfc.M[st] = exp(c1) * (cos(c2) + one * sin(c2));
 
-          for(idof=0; idof<ndof; idof++){
-
-              double deltx = 0.5*(x[idof] - x0[idof])/dx[idof];
-
-              c1 += -deltx*deltx;
-              c2 += px0[idof]*(x[idof] - x0[idof]);
+          } else {
+            wfc.M[st] = complex<double>(0.0, 0.0);
           }
 
-          wfc.M[st] = exp(c1) * (cos(c2)+one*sin(c2));
+        }  // for st
 
+        wfc *= nrm * scl;
+
+        return wfc;
       }
-      else{ wfc.M[st] = complex<double>(0.0, 0.0); }
 
-  }// for st
-
-  wfc *= nrm * scl;
-
-  return wfc;
-
-
-}
-
-
-
-CMATRIX HO(vector<double>& x, vector<double>& x0, vector<double>& px0, 
-           vector<double>& alpha, int init_state, int nstates, vector<int>& nu, complex<double> scl){
-/**
+      CMATRIX HO(vector<double>& x,
+                 vector<double>& x0,
+                 vector<double>& px0,
+                 vector<double>& alpha,
+                 int init_state,
+                 int nstates,
+                 vector<int>& nu,
+                 complex<double> scl) {
+        /**
   \brief Compute n-D Harmonic Oscillator (HO) wavefunction 
 
   \param[out] wfc [CMATRIX(nstates,1)] Gaussian amplitude at a given state (zero elsewhere)
@@ -137,62 +141,60 @@ CMATRIX HO(vector<double>& x, vector<double>& x0, vector<double>& px0,
 
 */
 
-  int idof, st;
-  int ndof = x.size();
+        int idof, st;
+        int ndof = x.size();
 
-  // Constants
-  CMATRIX wfc(nstates,1);
-  const complex<double> one(0.0, 1.0);
-  double nrm = 1.0;
+        // Constants
+        CMATRIX wfc(nstates, 1);
+        const complex<double> one(0.0, 1.0);
+        double nrm = 1.0;
 
-  for(idof=0; idof<ndof; idof++){
-      nrm *= (1.0/sqrt(pow(2.0, nu[idof]) * FACTORIAL(nu[idof])) ) * pow((alpha[idof]/M_PI),0.25);
-  }
+        for (idof = 0; idof < ndof; idof++) {
+          nrm *= (1.0 / sqrt(pow(2.0, nu[idof]) * FACTORIAL(nu[idof]))) *
+                 pow((alpha[idof] / M_PI), 0.25);
+        }
 
+        double H, dH, ksi, ksi2, c2;
 
-  double H, dH, ksi,ksi2, c2;
+        for (st = 0; st < nstates; st++) {
+          if (st == init_state) {
+            c2 = 0.0;
+            ksi2 = 0.0;
+            wfc.M[st] = complex<double>(1.0, 0.0);
 
-  for(st=0; st<nstates; st++){
+            for (idof = 0; idof < ndof; idof++) {
+              ksi = sqrt(alpha[idof]) * (x[idof] - x0[idof]);
+              ksi2 += ksi * ksi;
 
-      if(st==init_state){
+              HERMITE(nu[idof], ksi, H, dH);
 
-        c2 = 0.0;
-        ksi2 = 0.0;
-        wfc.M[st] = complex<double>(1.0, 0.0);
+              c2 += px0[idof] * (x[idof] - x0[idof]);
 
-        for(idof=0; idof<ndof; idof++){
- 
-          ksi = sqrt(alpha[idof]) * (x[idof] - x0[idof]);
-          ksi2 += ksi*ksi;
+              wfc.M[st] *= H;
 
-          HERMITE(nu[idof], ksi, H, dH);
+            }  // for idof
 
-          c2 += px0[idof]*(x[idof] - x0[idof]);
+            wfc.M[st] *= exp(-0.5 * ksi2) * (cos(c2) + one * sin(c2));
 
-          wfc.M[st] *= H;
+          }  // st == init_state
+          else {
+            wfc.M[st] = complex<double>(0.0, 0.0);
+          }
 
-        }// for idof
+        }  // for st
 
-        wfc.M[st] *= exp(-0.5*ksi2) * (cos(c2)+one*sin(c2));
+        wfc *= nrm * scl;
 
-      }// st == init_state
-      else{ wfc.M[st] = complex<double>(0.0, 0.0); }
+        return wfc;
+      }
 
-  }// for st
-
-  wfc *= nrm * scl;
-
-  return wfc;
-
-
-}
-
-
-
-
-
-void Wfcgrid2::add_wfc_Gau(vector<double>& x0, vector<double>& px0, vector<double>& dx0, int init_state, complex<double> weight, int rep){
-/**      
+      void Wfcgrid2::add_wfc_Gau(vector<double>& x0,
+                                 vector<double>& px0,
+                                 vector<double>& dx0,
+                                 int init_state,
+                                 complex<double> weight,
+                                 int rep) {
+        /**      
   \brief Add an n-D wavefunction wavepacket to the grid
   \param[in] x0 Position of the center of the Gaussian wavepacket for each dimension
   \param[in] px0 Momentum of the Gaussian wavepacket for each dimension
@@ -206,35 +208,33 @@ void Wfcgrid2::add_wfc_Gau(vector<double>& x0, vector<double>& px0, vector<doubl
    
 */
 
-  for(int i=0;i<Npts;i++){      
-      vector<double> x(ndof, 0.0);
+        for (int i = 0; i < Npts; i++) {
+          vector<double> x(ndof, 0.0);
 
-      for(int idof=0; idof<ndof; idof++){
-          int ipt = gmap[i][idof];          /// index of the point in that dof
-          x[idof] = rgrid[idof]->M[ipt];
-      }
+          for (int idof = 0; idof < ndof; idof++) {
+            int ipt = gmap[i][idof];  /// index of the point in that dof
+            x[idof] = rgrid[idof]->M[ipt];
+          }
 
-      if(rep==0){
-        PSI_dia[i] += Gaussian(x, x0, px0, dx0, init_state, nstates, weight);
-      }
-      else if(rep==1){
-        PSI_adi[i] += Gaussian(x, x0, px0, dx0, init_state, nstates, weight);
-      }
+          if (rep == 0) {
+            PSI_dia[i] += Gaussian(x, x0, px0, dx0, init_state, nstates, weight);
+          } else if (rep == 1) {
+            PSI_adi[i] += Gaussian(x, x0, px0, dx0, init_state, nstates, weight);
+          }
+        }
 
- 
-  }
+        cout << "Added a Gaussian to the grid\n";
 
-  cout<<"Added a Gaussian to the grid\n";
+      }  // add_wfc_Gau
 
-}// add_wfc_Gau
-
-
-
-
-
-
-void Wfcgrid2::add_wfc_HO(vector<double>& x0, vector<double>& px0, vector<double>& alpha, int init_state, vector<int>& nu, complex<double> weight, int rep){
-/**      
+      void Wfcgrid2::add_wfc_HO(vector<double>& x0,
+                                vector<double>& px0,
+                                vector<double>& alpha,
+                                int init_state,
+                                vector<int>& nu,
+                                complex<double> weight,
+                                int rep) {
+        /**      
   \brief Add an n-D HO wavefunction to the grid
 
   \param[out] wfc [CMATRIX(1, nstates)] Gaussian amplitude at a given state (zero elsewhere)
@@ -260,32 +260,27 @@ void Wfcgrid2::add_wfc_HO(vector<double>& x0, vector<double>& px0, vector<double
    
 */
 
-  for(int i=0;i<Npts;i++){      
-      vector<double> x(ndof, 0.0);
+        for (int i = 0; i < Npts; i++) {
+          vector<double> x(ndof, 0.0);
 
-      for(int idof=0; idof<ndof; idof++){
-          int ipt = gmap[i][idof];          /// index of the point in that dof
-          x[idof] = rgrid[idof]->M[ipt];
-      }
+          for (int idof = 0; idof < ndof; idof++) {
+            int ipt = gmap[i][idof];  /// index of the point in that dof
+            x[idof] = rgrid[idof]->M[ipt];
+          }
 
-      if(rep==0){
-        PSI_dia[i] += HO(x, x0, px0, alpha, init_state, nstates, nu, weight);
-      }
-      else if(rep==1){
-        PSI_adi[i] += HO(x, x0, px0, alpha, init_state, nstates, nu, weight);
-      }
+          if (rep == 0) {
+            PSI_dia[i] += HO(x, x0, px0, alpha, init_state, nstates, nu, weight);
+          } else if (rep == 1) {
+            PSI_adi[i] += HO(x, x0, px0, alpha, init_state, nstates, nu, weight);
+          }
+        }
 
- 
-  }
+        cout << "Added a Harmonic oscillator eigenfunction to the grid\n";
 
-  cout<<"Added a Harmonic oscillator eigenfunction to the grid\n";
+      }  // add_wfc_HO
 
-}// add_wfc_HO
-
-
-
-void Wfcgrid2::add_wfc_ARB(bp::object py_funct, bp::object params, int rep){
-/**
+      void Wfcgrid2::add_wfc_ARB(bp::object py_funct, bp::object params, int rep) {
+        /**
   \brief Initialize a nd-D wavefunction according the external Python function
 
   \param[in] py_funct - the name of the Python-defined function. Expectations is that the 
@@ -295,36 +290,28 @@ void Wfcgrid2::add_wfc_ARB(bp::object py_funct, bp::object params, int rep){
 
 */
 
-  CMATRIX res(nstates, 1);
+        CMATRIX res(nstates, 1);
 
-  for(int i=0;i<Npts;i++){      
-      MATRIX x(ndof, 1);
+        for (int i = 0; i < Npts; i++) {
+          MATRIX x(ndof, 1);
 
-      for(int idof=0; idof<ndof; idof++){
-          int ipt = gmap[i][idof];          /// index of the point in that dof
-          x.set(idof, 0, rgrid[idof]->M[ipt] );
+          for (int idof = 0; idof < ndof; idof++) {
+            int ipt = gmap[i][idof];  /// index of the point in that dof
+            x.set(idof, 0, rgrid[idof]->M[ipt]);
+          }
+
+          res = bp::extract<CMATRIX>(py_funct(x, params));
+
+          if (rep == 0) {
+            PSI_dia[i] += res;
+          } else if (rep == 1) {
+            PSI_adi[i] += res;
+          }
+        }
+
+        cout << "Added a custom eigenfunction to the grid\n";
       }
 
-      res = bp::extract< CMATRIX >( py_funct(x, params) );
-
-      if(rep==0){
-        PSI_dia[i] += res;
-      }
-      else if(rep==1){
-        PSI_adi[i] += res;
-      }
- 
-  }
-
-  cout<<"Added a custom eigenfunction to the grid\n";
-
- 
-}
-
-
-
-
-}// namespace libwfcgrid2
-}// namespace libdyn
-}// liblibra
-
+    }  // namespace libwfcgrid2
+  }  // namespace libdyn
+}  // namespace liblibra

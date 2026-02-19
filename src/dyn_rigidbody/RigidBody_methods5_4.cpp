@@ -17,14 +17,13 @@
 #include "RigidBody.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// librigidbody namespace
+  namespace librigidbody {
 
-/// librigidbody namespace
-namespace librigidbody{
-
-void RigidBody::propagate_kln(double t){
-/**
+    void RigidBody::propagate_kln(double t) {
+      /**
   \brief The KLN propagation scheme for RB dynamics
   \param[in] t The duration of the propagation
 
@@ -44,52 +43,50 @@ void RigidBody::propagate_kln(double t){
              S_k = sin(phi_i) * S_j - cos(phi_i) * S_k
 
 */
-  MATRIX3x3 R;
-  VECTOR nx(1.0,0.0,0.0);
-  VECTOR ny(0.0,1.0,0.0);
+      MATRIX3x3 R;
+      VECTOR nx(1.0, 0.0, 0.0);
+      VECTOR ny(0.0, 1.0, 0.0);
 
-  //--------- 0.5 phiy --------------
-//  R.Rotation(0.5*t*rb_l_e.y*(rb_C-rb_B)*ny);
-  R.Ry(0.5*t*rb_l_e.y*(rb_C-rb_B));
-  rb_l_e      = R * rb_l_e;
+      //--------- 0.5 phiy --------------
+      //  R.Rotation(0.5*t*rb_l_e.y*(rb_C-rb_B)*ny);
+      R.Ry(0.5 * t * rb_l_e.y * (rb_C - rb_B));
+      rb_l_e = R * rb_l_e;
 
-  //--------- 0.5 phix --------------
-//  R.Rotation(0.5*t*rb_l_e.x*(rb_C-rb_A)*nx);
-  R.Rx(0.5*t*rb_l_e.x*(rb_C-rb_A));
-  rb_l_e      = R * rb_l_e;
+      //--------- 0.5 phix --------------
+      //  R.Rotation(0.5*t*rb_l_e.x*(rb_C-rb_A)*nx);
+      R.Rx(0.5 * t * rb_l_e.x * (rb_C - rb_A));
+      rb_l_e = R * rb_l_e;
 
-  //---- Quaternion propagation -------
-  MATRIX skew1(4,4),mexp(4,4);
-  mexp.Init_Unit_Matrix(1.0);
+      //---- Quaternion propagation -------
+      MATRIX skew1(4, 4), mexp(4, 4);
+      mexp.Init_Unit_Matrix(1.0);
 
-//  set_angular_momentum(rb_l_e);
-  rb_w_e.x = rb_l_e.x * rb_A;
-  rb_w_e.y = rb_l_e.y * rb_B;
-  rb_w_e.z = rb_l_e.z * rb_C;
+      //  set_angular_momentum(rb_l_e);
+      rb_w_e.x = rb_l_e.x * rb_A;
+      rb_w_e.y = rb_l_e.y * rb_B;
+      rb_w_e.z = rb_l_e.z * rb_C;
 
-  double omega = 0.5*t*rb_w_e.length();
-  skew1.skew1(rb_w_e);
+      double omega = 0.5 * t * rb_w_e.length();
+      skew1.skew1(rb_w_e);
 
-  // Euler-Rodriguez formula
-  mexp = cos(omega)*mexp + 0.5*t*sin_(omega)*skew1;
-  rb_L = mexp * rb_L;
+      // Euler-Rodriguez formula
+      mexp = cos(omega) * mexp + 0.5 * t * sin_(omega) * skew1;
+      rb_L = mexp * rb_L;
 
-  //--------- 0.5 phix --------------
-//  R.Rotation(0.5*t*rb_l_e.x*(rb_C-rb_A)*nx);
-  R.Rx(0.5*t*rb_l_e.x*(rb_C-rb_A));
-  rb_l_e      = R * rb_l_e;
+      //--------- 0.5 phix --------------
+      //  R.Rotation(0.5*t*rb_l_e.x*(rb_C-rb_A)*nx);
+      R.Rx(0.5 * t * rb_l_e.x * (rb_C - rb_A));
+      rb_l_e = R * rb_l_e;
 
-  //--------- 0.5 phiy --------------
-//  R.Rotation(0.5*t*rb_l_e.y*(rb_C-rb_B)*ny);
-  R.Ry(0.5*t*rb_l_e.y*(rb_C-rb_B));
-  rb_l_e      = R * rb_l_e;
+      //--------- 0.5 phiy --------------
+      //  R.Rotation(0.5*t*rb_l_e.y*(rb_C-rb_B)*ny);
+      R.Ry(0.5 * t * rb_l_e.y * (rb_C - rb_B));
+      rb_l_e = R * rb_l_e;
 
+      // Update dependent variables
+      set_angular_momentum(rb_l_e);
+      set_orientation(rb_L);
+    }
 
-  // Update dependent variables
-  set_angular_momentum(rb_l_e);
-  set_orientation(rb_L);
-
-}
-
-}// namespace librigidbody
-}// liblibra
+  }  // namespace librigidbody
+}  // namespace liblibra

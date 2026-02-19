@@ -17,24 +17,21 @@
 #ifndef LIB_NUCLEAR_H
 #define LIB_NUCLEAR_H
 
-
 #include "Nuclear.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libnuclear namespace
-namespace libnuclear{
+    /// libnuclear namespace
+    namespace libnuclear {
 
+      void export_Nuclear_objects();
 
-void export_Nuclear_objects();
+    }  // namespace libnuclear
+  }  // namespace libdyn
+}  // namespace liblibra
 
-}// namespace libdyn
-}// namespace libnuclear
-}// liblibra
-
-
-#endif// LIB_NUCLEAR_H
+#endif  // LIB_NUCLEAR_H

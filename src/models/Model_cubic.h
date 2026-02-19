@@ -15,20 +15,17 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libmodels namespace
+  namespace libmodels {
 
-/// libmodels namespace
-namespace libmodels{
+    void cubic_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params);
+    boost::python::list cubic_Ham(double x, boost::python::list params_);
 
+  }  // namespace libmodels
+}  // namespace liblibra
 
-void cubic_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params);
-boost::python::list cubic_Ham(double x, boost::python::list params_);
-
-
-}// namespace libmodels
-}// liblibra
-
-#endif // MODEL_CUBIC_H
+#endif  // MODEL_CUBIC_H

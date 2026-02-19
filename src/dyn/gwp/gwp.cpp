@@ -17,47 +17,63 @@
 #include "gwp.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libgwp namespace
-namespace libgwp{
+    /// libgwp namespace
+    namespace libgwp {
 
+      int check_dimensions(
+          std::string function_name, MATRIX& R1, MATRIX& P1, MATRIX& R2, MATRIX& P2) {
+        if (R1.n_cols != 1) {
+          cout << "Error in " << function_name << ": R1 should have only 1 colomn\n";
+          exit(0);
+        }
+        if (R2.n_cols != 1) {
+          cout << "Error in " << function_name << ": R2 should have only 1 colomn\n";
+          exit(0);
+        }
+        if (P1.n_cols != 1) {
+          cout << "Error in " << function_name << ": P1 should have only 1 colomn\n";
+          exit(0);
+        }
+        if (P2.n_cols != 1) {
+          cout << "Error in " << function_name << ": P2 should have only 1 colomn\n";
+          exit(0);
+        }
 
-int check_dimensions(std::string function_name, MATRIX& R1, MATRIX& P1, MATRIX& R2, MATRIX& P2){
+        if (R1.n_rows != P1.n_rows) {
+          cout << "Error in " << function_name << ": The dimensions of vectors R1 (given "
+               << R1.n_rows << " ) "
+               << "and P1 (given " << P1.n_rows << " ) do not match\n";
+          exit(0);
+        }
+        if (R1.n_rows != R2.n_rows) {
+          cout << "Error in " << function_name << ": The dimensions of vectors R1 (given "
+               << R1.n_rows << " ) "
+               << "and R2 (given " << R2.n_rows << " ) do not match\n";
+          exit(0);
+        }
+        if (P1.n_rows != P2.n_rows) {
+          cout << "Error in " << function_name << ": The dimensions of vectors P1 (given "
+               << P1.n_rows << " ) "
+               << "and P2 (given " << P2.n_rows << " ) do not match\n";
+          exit(0);
+        }
 
-  if(R1.n_cols!=1){  cout<<"Error in "<<function_name<<": R1 should have only 1 colomn\n"; exit(0);  }
-  if(R2.n_cols!=1){  cout<<"Error in "<<function_name<<": R2 should have only 1 colomn\n"; exit(0);  }
-  if(P1.n_cols!=1){  cout<<"Error in "<<function_name<<": P1 should have only 1 colomn\n"; exit(0);  }
-  if(P2.n_cols!=1){  cout<<"Error in "<<function_name<<": P2 should have only 1 colomn\n"; exit(0);  }
+        // At this point, we are sure that the dimensions of all input vectors are correct
+        // so we can return this dimension
 
-  if(R1.n_rows!=P1.n_rows){ 
-    cout<<"Error in "<<function_name<<": The dimensions of vectors R1 (given "<<R1.n_rows<<" ) "
-        <<"and P1 (given "<<P1.n_rows<<" ) do not match\n"; exit(0);     
-  }
-  if(R1.n_rows!=R2.n_rows){ 
-    cout<<"Error in "<<function_name<<": The dimensions of vectors R1 (given "<<R1.n_rows<<" ) "
-        <<"and R2 (given "<<R2.n_rows<<" ) do not match\n"; exit(0);     
-  }
-  if(P1.n_rows!=P2.n_rows){ 
-    cout<<"Error in "<<function_name<<": The dimensions of vectors P1 (given "<<P1.n_rows<<" ) "
-        <<"and P2 (given "<<P2.n_rows<<" ) do not match\n"; exit(0);     
-  }
+        return R1.n_rows;
+      }
 
-  // At this point, we are sure that the dimensions of all input vectors are correct
-  // so we can return this dimension
-
-  return R1.n_rows;
-
-}
-
-
-complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& P, double gamma,  double alp, double hbar){
-/**
+      complex<double> gwp_value(
+          MATRIX& r, MATRIX& R, MATRIX& P, double gamma, double alp, double hbar) {
+        /**
   This function computes the value of the Gaussian at a given point r
 
   G_a(r; R_a, P_a, alp_a, gamma_a) = (2*alp_a/pi)^(Ndof/4) * exp(-alp_a*(r-R_a)^2 + i*(P_a/hbar)*(r-R_a) + i*gamma_a/hbar)
@@ -79,18 +95,17 @@ complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& P, double gamma,  double
   The function returns the value of the Gaussian function - a complex number
 */
 
-  int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
+        int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
 
-  double re = -alp* ((r-R).T() * (r-R)).M[0] ;
-  double im =  ( (P.T()*(r-R)).M[0] + gamma)/hbar; 
-  double nrm = pow((2.0*alp/M_PI), 0.25*Ndof); // normalization factor
-  
-  return nrm*exp(complex<double>(re, im));
+        double re = -alp * ((r - R).T() * (r - R)).M[0];
+        double im = ((P.T() * (r - R)).M[0] + gamma) / hbar;
+        double nrm = pow((2.0 * alp / M_PI), 0.25 * Ndof);  // normalization factor
 
-}
+        return nrm * exp(complex<double>(re, im));
+      }
 
-complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp){
-/**
+      complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp) {
+        /**
   This function computes the value of the Gaussian at a given point r. hbar = 1
 
   G_a(r; R, P, alp) = \prod_{i}^{Ndof} { (2*alp_i/pi)^(1/4) } * exp(-alp*(r-R)^2 + i*P*(r-R) ) 
@@ -110,25 +125,24 @@ complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp){
   The function returns the value of the Gaussian function - a complex number
 */
 
-  int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
-  double re, im, nrm;
-  nrm = 1.0;
-  MATRIX dR(Ndof, 1);  dR = r - R;
+        int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
+        double re, im, nrm;
+        nrm = 1.0;
+        MATRIX dR(Ndof, 1);
+        dR = r - R;
 
-  im = (P.T() * dR).get(0,0);
+        im = (P.T() * dR).get(0, 0);
 
-  for(int i=0; i<Ndof; i++){
-    re += -alp.get(i,0) * dR.get(i,0) * dR.get(i, 0);
-    nrm *= (2.0*alp.get(i,0)/M_PI); // normalization factor
-  }
+        for (int i = 0; i < Ndof; i++) {
+          re += -alp.get(i, 0) * dR.get(i, 0) * dR.get(i, 0);
+          nrm *= (2.0 * alp.get(i, 0) / M_PI);  // normalization factor
+        }
 
-  return pow(nrm, 0.25) * exp(re) * complex<double>(cos(im), sin(im));
+        return pow(nrm, 0.25) * exp(re) * complex<double>(cos(im), sin(im));
+      }
 
-}
-
-
-complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& alp){
-/**
+      complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& alp) {
+        /**
   This function computes the value of the Gaussian at a given point r. hbar = 1
 
   G_a(r; R, alp) = \prod_{i}^{Ndof} { (2*alp_i/pi)^(1/2) } * exp(-2*alp*(r-R)^2 )
@@ -146,25 +160,24 @@ complex<double> gwp_value(MATRIX& r, MATRIX& R, MATRIX& alp){
   The function returns the value of the Gaussian function - a complex number
 */
 
-//  int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
-  int Ndof = R.n_rows;
+        //  int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
+        int Ndof = R.n_rows;
 
-  double re, nrm;
-  nrm = 1.0;
-  MATRIX dR(Ndof, 1);  dR = r - R;
+        double re, nrm;
+        nrm = 1.0;
+        MATRIX dR(Ndof, 1);
+        dR = r - R;
 
-  for(int i=0; i<Ndof; i++){
-    re += -2.0 * alp.get(i,0) * dR.get(i,0) * dR.get(i, 0);
-    nrm *= (2.0*alp.get(i,0)/M_PI); // normalization factor
-  }
+        for (int i = 0; i < Ndof; i++) {
+          re += -2.0 * alp.get(i, 0) * dR.get(i, 0) * dR.get(i, 0);
+          nrm *= (2.0 * alp.get(i, 0) / M_PI);  // normalization factor
+        }
 
-  return pow(nrm, 0.5) * exp(re) * complex<double>(1.0, 0.0);
+        return pow(nrm, 0.5) * exp(re) * complex<double>(1.0, 0.0);
+      }
 
-}
-
-
-CMATRIX gwp_deriv(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp){
-/**
+      CMATRIX gwp_deriv(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp) {
+        /**
   This function computes the derivative of the Gaussian at a given point r. hbar = 1
 
   d/dr [G_a(r; R, P, alp)] = d/dr { \prod_{i}^{Ndof} { (2*alp_i/pi)^(1/4) } * exp(-alp*(r-R)^2 + i*P*(r-R) ) } = 
@@ -188,25 +201,24 @@ CMATRIX gwp_deriv(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp){
   The function returns the value of the Gaussian function - a complex number
 */
 
-  int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
+        int Ndof = check_dimensions("libgwp::gwp_overlap", r, P, R, P);
 
-  MATRIX dR(Ndof, 1);  dR = r - R;
-  CMATRIX deriv(Ndof, 1);
+        MATRIX dR(Ndof, 1);
+        dR = r - R;
+        CMATRIX deriv(Ndof, 1);
 
-  complex<double> g = gwp_value(r, R, P, alp);
+        complex<double> g = gwp_value(r, R, P, alp);
 
-  for(int i=0; i<Ndof; i++){    
-    deriv.set(i, 0,  complex<double>( -2.0 * alp.get(i, 0) * dR.get(i,0),  P.get(i, 0) ) );
-  }
-  deriv *= g;
+        for (int i = 0; i < Ndof; i++) {
+          deriv.set(i, 0, complex<double>(-2.0 * alp.get(i, 0) * dR.get(i, 0), P.get(i, 0)));
+        }
+        deriv *= g;
 
-  return deriv;
+        return deriv;
+      }
 
-}
-
-
-CMATRIX gwp_deriv(MATRIX& r, MATRIX& R, MATRIX& alp){
-/**
+      CMATRIX gwp_deriv(MATRIX& r, MATRIX& R, MATRIX& alp) {
+        /**
   This function computes the derivative of the Gaussian at a given point r. hbar = 1
 
   d/dr [G_a(r; R, P, alp)] = d/dr { \prod_{i}^{Ndof} { (2*alp_i/pi)^(1/2) } * exp(-2 * alp*(r-R)^2 ) } =
@@ -228,54 +240,35 @@ CMATRIX gwp_deriv(MATRIX& r, MATRIX& R, MATRIX& alp){
   The function returns the derivatives of the Gaussian function wrt coordinates - a complex number
 */
 
-  int Ndof = R.n_rows; //check_dimensions("libgwp::gwp_overlap", r, P, R, P);
+        int Ndof = R.n_rows;  //check_dimensions("libgwp::gwp_overlap", r, P, R, P);
 
-  MATRIX dR(Ndof, 1);  dR = r - R;
-  CMATRIX deriv(Ndof, 1);
+        MATRIX dR(Ndof, 1);
+        dR = r - R;
+        CMATRIX deriv(Ndof, 1);
 
-  complex<double> g = gwp_value(r, R, alp);
+        complex<double> g = gwp_value(r, R, alp);
 
-  for(int i=0; i<Ndof; i++){
-    deriv.set(i, 0,  complex<double>( -4.0 * alp.get(i, 0) * dR.get(i,0),  0.0 ) );
-  }
-  deriv *= g;
+        for (int i = 0; i < Ndof; i++) {
+          deriv.set(i, 0, complex<double>(-4.0 * alp.get(i, 0) * dR.get(i, 0), 0.0));
+        }
+        deriv *= g;
 
-  return deriv;
+        return deriv;
+      }
 
-}
-
-double gwp_product_decomposition(double q1, double p1, double gamma1, double alp1,
-                                 double q2, double p2, double gamma2, double alp2,
-                                 double& q, double& p, double& gamma, double& alp 
-                              ){
-/**
-
- This function computes the parameters `q`, `p`, `gamma`, `alp`, and `prefactor` in a Gaussian wavepacket decompositions:
-
- G(q; q1, p1, gamma1, alp1) *  G(q; q2, p2, gamma2, alp2) =  prefactor * G(q; q, p, gamma, alp)
-
- This is a version for 1D case
-
-**/
-
-
-  alp = alp1 + alp2;
-  p = p1 + p2;
-  q = (alp1 * q1 + alp2 * q2) / alp;
-  double dq = q2 - q1;
-  gamma = gamma1 + gamma2 + dq * (alp2 * p1 - alp1 * p2) / alp;
-  
-  double prefactor = pow(2.0 * alp1 * alp2 / alp, 0.25) * exp( - (alp1 * alp2 / alp) * dq*dq ); 
-  
-  return prefactor;
-}
-
-
-double gwp_product_decomposition(MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-                                 MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2,
-                                 MATRIX& q,  MATRIX& p,  MATRIX& gamma,  MATRIX& alp
-                              ){
-/**
+      double gwp_product_decomposition(double q1,
+                                       double p1,
+                                       double gamma1,
+                                       double alp1,
+                                       double q2,
+                                       double p2,
+                                       double gamma2,
+                                       double alp2,
+                                       double& q,
+                                       double& p,
+                                       double& gamma,
+                                       double& alp) {
+        /**
 
  This function computes the parameters `q`, `p`, `gamma`, `alp`, and `prefactor` in a Gaussian wavepacket decompositions:
 
@@ -285,40 +278,70 @@ double gwp_product_decomposition(MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX&
 
 **/
 
+        alp = alp1 + alp2;
+        p = p1 + p2;
+        q = (alp1 * q1 + alp2 * q2) / alp;
+        double dq = q2 - q1;
+        gamma = gamma1 + gamma2 + dq * (alp2 * p1 - alp1 * p2) / alp;
 
-  int Ndof = check_dimensions("libgwp::gwp_product_decomposition", q1, p1, q2, p2);
-             check_dimensions("libgwp::gwp_product_decomposition", q,  p,  q,  p);
+        double prefactor = pow(2.0 * alp1 * alp2 / alp, 0.25) * exp(-(alp1 * alp2 / alp) * dq * dq);
 
+        return prefactor;
+      }
 
-  double prefactor = 1.0;
-  double pref1 = 1.0;
-  double pref2 = 0.0;
+      double gwp_product_decomposition(MATRIX& q1,
+                                       MATRIX& p1,
+                                       MATRIX& gamma1,
+                                       MATRIX& alp1,
+                                       MATRIX& q2,
+                                       MATRIX& p2,
+                                       MATRIX& gamma2,
+                                       MATRIX& alp2,
+                                       MATRIX& q,
+                                       MATRIX& p,
+                                       MATRIX& gamma,
+                                       MATRIX& alp) {
+        /**
 
-  for(int i=0; i<Ndof; i++){
+ This function computes the parameters `q`, `p`, `gamma`, `alp`, and `prefactor` in a Gaussian wavepacket decompositions:
 
-    alp.set(i, 0, alp1.get(i,0) + alp2.get(i,0));
-    p.set(i, 0, p1.get(i,0) + p2.get(i,0));
-    q.set(i, 0, (alp1.get(i,0) * q1.get(i,0) + alp2.get(i,0) * q2.get(i,0)) / alp.get(i,0) );
-    double dq = q2.get(i,0) - q1.get(i,0);
+ G(q; q1, p1, gamma1, alp1) *  G(q; q2, p2, gamma2, alp2) =  prefactor * G(q; q, p, gamma, alp)
 
-    gamma.set(i,0, gamma1.get(i,0) + gamma2.get(i,0) + dq * (alp2.get(i,0) * p1.get(i,0) - alp1.get(i,0) * p2.get(i,0)) / alp.get(i,0));      
+ This is a version for 1D case
 
-    double a1a2_over_a = alp1.get(i,0) * alp2.get(i,0) / alp.get(i,0);
-    pref1 *= (2.0 * a1a2_over_a );
-    pref2 += a1a2_over_a * dq*dq;   
-  
-  }
+**/
 
-  prefactor = pow(pref1, 0.25) * exp( -pref2 );
+        int Ndof = check_dimensions("libgwp::gwp_product_decomposition", q1, p1, q2, p2);
+        check_dimensions("libgwp::gwp_product_decomposition", q, p, q, p);
 
-  return prefactor;
-}
+        double prefactor = 1.0;
+        double pref1 = 1.0;
+        double pref2 = 0.0;
 
+        for (int i = 0; i < Ndof; i++) {
+          alp.set(i, 0, alp1.get(i, 0) + alp2.get(i, 0));
+          p.set(i, 0, p1.get(i, 0) + p2.get(i, 0));
+          q.set(i,
+                0,
+                (alp1.get(i, 0) * q1.get(i, 0) + alp2.get(i, 0) * q2.get(i, 0)) / alp.get(i, 0));
+          double dq = q2.get(i, 0) - q1.get(i, 0);
 
+          gamma.set(i,
+                    0,
+                    gamma1.get(i, 0) + gamma2.get(i, 0) +
+                        dq * (alp2.get(i, 0) * p1.get(i, 0) - alp1.get(i, 0) * p2.get(i, 0)) /
+                            alp.get(i, 0));
 
+          double a1a2_over_a = alp1.get(i, 0) * alp2.get(i, 0) / alp.get(i, 0);
+          pref1 *= (2.0 * a1a2_over_a);
+          pref2 += a1a2_over_a * dq * dq;
+        }
 
-}// namespace libgwp
-}// namespace libdyn
-}// liblibra
+        prefactor = pow(pref1, 0.25) * exp(-pref2);
 
+        return prefactor;
+      }
 
+    }  // namespace libgwp
+  }  // namespace libdyn
+}  // namespace liblibra

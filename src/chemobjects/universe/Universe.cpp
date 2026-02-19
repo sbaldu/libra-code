@@ -16,64 +16,61 @@
 #include "Universe.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libchemobjects namespace
-namespace libchemobjects{
+  /// libchemobjects namespace
+  namespace libchemobjects {
 
-/// libuniverse namespace
-namespace libuniverse{
+    /// libuniverse namespace
+    namespace libuniverse {
 
+      void Universe::init_variables() {}
 
-void Universe::init_variables(){
+      void Universe::copy_content(const Universe& u) {
+        //  if(u.PeriodicTable.size()>0){ PeriodicTable = u.PeriodicTable; }
+      }
 
-}
-
-void Universe::copy_content(const Universe& u){
-//  if(u.PeriodicTable.size()>0){ PeriodicTable = u.PeriodicTable; }
-
-}
-
-Universe::Universe(){
-/**
+      Universe::Universe() {
+        /**
   \brief Constructor
   Initialize variables to default values
 */
 
-  // Initialize variables to default values
-  init_variables();
-}
+        // Initialize variables to default values
+        init_variables();
+      }
 
-Universe::Universe(const Universe& u){
-/**
+      Universe::Universe(const Universe& u) {
+        /**
   \brief Copy constructor
   Initialize variables to default values
   Copy content of the input object which is defined
 */
-  // Initialize variables to default values
-  init_variables();
-  // Copy content of the input object which is defined
-  copy_content(u);
-}
+        // Initialize variables to default values
+        init_variables();
+        // Copy content of the input object which is defined
+        copy_content(u);
+      }
 
-Universe& Universe::operator=(const Universe& u){
-/**
+      Universe& Universe::operator=(const Universe& u) {
+        /**
   \brief Assignment operator
   Initialize variables to default values
   Copy content of the input object which is defined
 */
-  // Initialize variables to default values
-  init_variables();
-  // Copy content of the input object which is defined
-  copy_content(u);
-  return *this;
-}
+        // Initialize variables to default values
+        init_variables();
+        // Copy content of the input object which is defined
+        copy_content(u);
+        return *this;
+      }
 
+      Universe::~Universe() {
+        ;
+        ;
+      }
 
-Universe::~Universe(){ ;; }
+    }  // namespace libuniverse
+  }  // namespace libchemobjects
 
-
-}// namespace libuniverse
-}// namespace libchemobjects
-
-}// liblibra
+}  // namespace liblibra

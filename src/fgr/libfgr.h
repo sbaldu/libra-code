@@ -13,18 +13,17 @@
 #ifndef LIBFGR_H
 #define LIBFGR_H
 
-
 #include "fgr.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libfgr{
+  namespace libfgr {
 
-void export_fgr_objects();
+    void export_fgr_objects();
 
-}// namespace libfgr
+  }  // namespace libfgr
 
-}// liblibra
+}  // namespace liblibra
 
-#endif// LIBFGR_H
+#endif  // LIBFGR_H

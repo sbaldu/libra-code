@@ -17,86 +17,76 @@
 #include "Wfcgrid2.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-using namespace libwfcgrid;
+    using namespace libwfcgrid;
 
-/// libwfcgrid namespace
-namespace libwfcgrid2{
+    /// libwfcgrid namespace
+    namespace libwfcgrid2 {
 
-
-
-
-double Wfcgrid2::norm(int rep){
-/**
+      double Wfcgrid2::norm(int rep) {
+        /**
   Compute the norm for nd-D wavefunction: <psi|psi>   
 */
 
-  double nrm; nrm = 0.0;
+        double nrm;
+        nrm = 0.0;
 
-//  if(rep==0){  nrm = (lin_PSI_dia->H() * (*lin_PSI_dia)).get(0,0).real(); }
-//  else if(rep==1){  nrm = (lin_PSI_adi->H() * (*lin_PSI_adi)).get(0,0).real(); }
-  
-  
-  for(int npt1=0; npt1<Npts; npt1++){
+        //  if(rep==0){  nrm = (lin_PSI_dia->H() * (*lin_PSI_dia)).get(0,0).real(); }
+        //  else if(rep==1){  nrm = (lin_PSI_adi->H() * (*lin_PSI_adi)).get(0,0).real(); }
 
-    if(rep==0){
-      nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0).real();
-    }
-    else if(rep==1){
-      nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0,0).real();
-    }
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          if (rep == 0) {
+            nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0).real();
+          } else if (rep == 1) {
+            nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
+          }
 
-  }// for npt1
-  
+        }  // for npt1
 
-  for(int idof; idof<ndof; idof++){   nrm *= dr[idof];  }
+        for (int idof; idof < ndof; idof++) {
+          nrm *= dr[idof];
+        }
 
-  return nrm;
+        return nrm;
+      }
 
-}
-
-
-
-
-double Wfcgrid2::e_kin(vector<double>& mass, int rep){
-/**
+      double Wfcgrid2::e_kin(vector<double>& mass, int rep) {
+        /**
   Compute kinetic energy for nd-D wavefunction: <psi|T|psi> / <psi|psi>
   
 */
-  int idof, ipt;
-  double k, kfactor, kfactor2;
-  double res; res = 0.0;
-  double nrm; nrm = 0.0;
+        int idof, ipt;
+        double k, kfactor, kfactor2;
+        double res;
+        res = 0.0;
+        double nrm;
+        nrm = 0.0;
 
-  for(int npt1=0; npt1<Npts; npt1++){
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          kfactor = 0.0;
 
-    kfactor = 0.0;
+          for (idof = 0; idof < ndof; idof++) {
+            ipt = gmap[npt1][idof];
+            k = kgrid[idof]->get(ipt);
+            kfactor += k * k / mass[idof];
+          }
 
-    for(idof=0; idof<ndof; idof++){
-      ipt = gmap[npt1][idof];
-      k = kgrid[idof]->get(ipt);
-      kfactor += k*k/mass[idof];
-    } 
+          if (rep == 0) {
+            res += kfactor * (reciPSI_dia[npt1].H() * reciPSI_dia[npt1]).get(0, 0).real();
+            //nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0).real();
+            nrm += (reciPSI_dia[npt1].H() * reciPSI_dia[npt1]).get(0, 0).real();
+          } else if (rep == 1) {
+            res += kfactor * (reciPSI_adi[npt1].H() * reciPSI_adi[npt1]).get(0, 0).real();
+            nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
+          }
 
-    if(rep==0){
-      res += kfactor * (reciPSI_dia[npt1].H() * reciPSI_dia[npt1]).get(0,0).real();
-      //nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0).real();
-      nrm += (reciPSI_dia[npt1].H() * reciPSI_dia[npt1]).get(0,0).real();
-    }
-    else if(rep==1){
-      res += kfactor * (reciPSI_adi[npt1].H() * reciPSI_adi[npt1]).get(0,0).real();
-      nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0,0).real();
+        }  // for npt1
 
-    }
-
-  }// for npt1
-
-
-/*
+        /*
       kfactor2 = 0.0;  
 
       for(idof=0; idof<ndof; idof++){
@@ -106,48 +96,42 @@ double Wfcgrid2::e_kin(vector<double>& mass, int rep){
       } 
 */
 
-
-/*
+        /*
   for(idof=0; idof<ndof; idof++){
     res *= dk[idof];
     nrm *= dr[idof];
   }
 */
-  res *= (2.0*M_PI*M_PI);
+        res *= (2.0 * M_PI * M_PI);
 
+        res = res / nrm;
 
-  res = res / nrm;
+        return res;
 
-  return res;
+      }  // e_kin
 
-}// e_kin
-
-
-
-
-double Wfcgrid2::e_pot(int rep){
-/**
+      double Wfcgrid2::e_pot(int rep) {
+        /**
   Compute potential energy for nd-D wavefunction: <psi|V|psi> / <psi|psi>  
 */
 
-  double res; res = 0.0;
-  double nrm; nrm = 0.0;
+        double res;
+        res = 0.0;
+        double nrm;
+        nrm = 0.0;
 
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          if (rep == 0) {
+            res += (PSI_dia[npt1].H() * Hdia[npt1] * PSI_dia[npt1]).get(0, 0).real();
+            nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0).real();
+          } else if (rep == 1) {
+            res += (PSI_adi[npt1].H() * Hadi[npt1] * PSI_adi[npt1]).get(0, 0).real();
+            nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
+          }
 
-  for(int npt1=0; npt1<Npts; npt1++){
+        }  // for npt1
 
-    if(rep==0){
-      res += (PSI_dia[npt1].H() * Hdia[npt1] * PSI_dia[npt1]).get(0,0).real();
-      nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0).real();
-    }
-    else if(rep==1){
-      res += (PSI_adi[npt1].H() * Hadi[npt1] * PSI_adi[npt1]).get(0,0).real();
-      nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0,0).real();
-    }
-
-  }// for npt1
-
-/*
+        /*
   if(rep==0){
     res = (lin_PSI_dia->H() * (*lin_Hdia) * (*lin_PSI_dia)).get(0,0).real();
     nrm = (lin_PSI_dia->H() * (*lin_PSI_dia)).get(0,0).real();
@@ -157,206 +141,179 @@ double Wfcgrid2::e_pot(int rep){
     nrm = (lin_PSI_adi->H() * (*lin_PSI_adi)).get(0,0).real();
   }
 */
-  res = res / nrm;
+        res = res / nrm;
 
-  return res;
+        return res;
 
-}// e_pot
+      }  // e_pot
 
-
-
-
-double Wfcgrid2::e_tot(vector<double>& mass, int rep){
-/**
+      double Wfcgrid2::e_tot(vector<double>& mass, int rep) {
+        /**
   Compute total energy for nd-D wavefunction: <psi|T+V|psi> / <psi|psi>
 */
-  double res = e_kin(mass, rep) + e_pot(rep);
-  
-  return res;
+        double res = e_kin(mass, rep) + e_pot(rep);
 
-}// e_tot
+        return res;
 
+      }  // e_tot
 
-
-CMATRIX Wfcgrid2::get_pow_q(int rep, int n){
-/**
+      CMATRIX Wfcgrid2::get_pow_q(int rep, int n) {
+        /**
   Compute the expectation value of coordinates of a nd-D wavefunction: <psi|r^n |psi> / <psi|psi>
 
   Out:  CMATRIX(ndof, 1)
   
 */
 
-  int idof, ipt;
-  double q;
-  double nrm; nrm = 0.0;
+        int idof, ipt;
+        double q;
+        double nrm;
+        nrm = 0.0;
 
-  CMATRIX res(ndof, 1);
-  
+        CMATRIX res(ndof, 1);
 
-  for(int npt1=0; npt1<Npts; npt1++){
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          complex<double> ampl(0.0, 0.0);
 
-    complex<double> ampl(0.0, 0.0);
+          if (rep == 0) {
+            ampl = (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0);
+            nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0).real();
+          } else if (rep == 1) {
+            ampl = (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0);
+            nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
+          }
 
-    if(rep==0){
+          for (idof = 0; idof < ndof; idof++) {
+            ipt = gmap[npt1][idof];
+            q = rgrid[idof]->get(ipt);
 
-      ampl = (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0);
-      nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0).real();
-    }
-    else if(rep==1){
-      ampl = (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0,0);
-      nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0,0).real();
-    }
+            res.add(idof, 0, pow(q, n) * ampl);
+          }
 
-    for(idof=0; idof<ndof; idof++){
+        }  // for npt1
 
-      ipt = gmap[npt1][idof];
-      q = rgrid[idof]->get(ipt);
+        res = res / nrm;
 
-      res.add(idof, 0, pow(q, n)*ampl );
-    } 
+        return res;
+      }
 
-  }// for npt1
-
-  res = res / nrm;
-
-  return res;
-
-}
-
-
-
-
-CMATRIX Wfcgrid2::get_pow_p(int rep, int n){
-/**
+      CMATRIX Wfcgrid2::get_pow_p(int rep, int n) {
+        /**
   Compute the expectation value of momentum of a nd-D wavefunction: <psi|(-i*hbar*d/dr)^n |psi> / <psi|psi>
 
   Out:  CMATRIX(ndof, 1)
   
 */
 
-  int idof, ipt;
-  double k;
-  double nrm; nrm = 0.0;
+        int idof, ipt;
+        double k;
+        double nrm;
+        nrm = 0.0;
 
-  CMATRIX res(ndof, 1);
-  
+        CMATRIX res(ndof, 1);
 
-  for(int npt1=0; npt1<Npts; npt1++){
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          complex<double> ampl(0.0, 0.0);
 
-    complex<double> ampl(0.0, 0.0);
+          if (rep == 0) {
+            ampl = (reciPSI_dia[npt1].H() * reciPSI_dia[npt1]).get(0, 0);
+            nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0).real();
+          } else if (rep == 1) {
+            ampl = (reciPSI_adi[npt1].H() * reciPSI_adi[npt1]).get(0, 0);
+            nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
+          }
 
-    if(rep==0){
+          for (idof = 0; idof < ndof; idof++) {
+            ipt = gmap[npt1][idof];
+            k = kgrid[idof]->get(ipt);
 
-      ampl = (reciPSI_dia[npt1].H() * reciPSI_dia[npt1]).get(0,0);
-      nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0).real();
-    }
-    else if(rep==1){
-      ampl = (reciPSI_adi[npt1].H() * reciPSI_adi[npt1]).get(0,0);
-      nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0,0).real();
-    }
+            res.add(idof, 0, pow(k, n) * ampl);
+          }
 
-    for(idof=0; idof<ndof; idof++){
-      ipt = gmap[npt1][idof];
-      k = kgrid[idof]->get(ipt);
+        }  // for npt1
 
-      res.add(idof, 0, pow(k, n)*ampl );
-    } 
+        for (idof = 0; idof < ndof; idof++) {
+          res *= dk[idof];
+          nrm *= dr[idof];
+        }
+        res *= pow((2.0 * M_PI), n);
 
-  }// for npt1
+        res = res / nrm;
 
-  for(idof=0; idof<ndof; idof++){
-    res *= dk[idof];
-    nrm *= dr[idof];
-  }
-  res *= pow((2.0*M_PI), n);
+        return res;
+      }
 
-  res = res / nrm;
-
-  return res;
-
-}
-
-
-
-CMATRIX Wfcgrid2::get_den_mat(int rep){
-/**
+      CMATRIX Wfcgrid2::get_den_mat(int rep) {
+        /**
   Compute the wavefunction density matrix in a given representation
 
   Out:  CMATRIX(nstates, nstates)
   
 */
 
-  CMATRIX res(nstates, nstates);  
+        CMATRIX res(nstates, nstates);
 
-  double nrm; nrm = 0.0;
+        double nrm;
+        nrm = 0.0;
 
-  for(int npt1=0; npt1<Npts; npt1++){
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          if (rep == 0) {
+            res += (PSI_dia[npt1] * PSI_dia[npt1].H());
+            nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0).real();
+          } else if (rep == 1) {
+            res += (PSI_adi[npt1] * PSI_adi[npt1].H());
+            nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
+          }
 
-    if(rep==0){
-      res += (PSI_dia[npt1] * PSI_dia[npt1].H());
-      nrm += (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0,0).real();
-    }
-    else if(rep==1){
-      res += (PSI_adi[npt1] * PSI_adi[npt1].H());
-      nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0,0).real();
-    }
+        }  // for npt1
 
-  }// for npt1
+        res = res / nrm;
 
-  res = res / nrm;
+        return res;
+      }
 
-  return res;
-
-}
-
-
-
-MATRIX Wfcgrid2::get_pops(int rep){
-/**
+      MATRIX Wfcgrid2::get_pops(int rep) {
+        /**
   Compute the populations of all states in a given representation
 
   Out:  CMATRIX(nstates, 1)
   
 */
 
-  int istate;
-  double pop_i;
+        int istate;
+        double pop_i;
 
-  MATRIX res(nstates, 1);  
+        MATRIX res(nstates, 1);
 
-  for(int npt1=0; npt1<Npts; npt1++){
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          if (rep == 0) {
+            for (istate = 0; istate < nstates; istate++) {
+              pop_i =
+                  (PSI_dia[npt1].get(istate, 0) * std::conj(PSI_dia[npt1].get(istate, 0))).real();
+              res.add(istate, 0, pop_i);
+            }
+          } else if (rep == 1) {
+            for (istate = 0; istate < nstates; istate++) {
+              pop_i =
+                  (PSI_adi[npt1].get(istate, 0) * std::conj(PSI_adi[npt1].get(istate, 0))).real();
+              res.add(istate, 0, pop_i);
+            }
+          }
 
-    if(rep==0){
+        }  // for npt1
 
-      for(istate=0; istate<nstates; istate++){
-          pop_i = (PSI_dia[npt1].get(istate, 0) * std::conj(PSI_dia[npt1].get(istate, 0))).real(); 
-          res.add(istate, 0,  pop_i);
+        double dV = 1.0;
+        for (int idof = 0; idof < ndof; idof++) {
+          dV *= dr[idof];
+        }
+
+        res *= dV;
+
+        return res;
       }
-    }
-    else if(rep==1){
 
-      for(istate=0; istate<nstates; istate++){
-          pop_i = (PSI_adi[npt1].get(istate, 0) * std::conj(PSI_adi[npt1].get(istate, 0))).real(); 
-          res.add(istate, 0,  pop_i);
-      }
-    }
-
-  }// for npt1
-
-  double dV = 1.0;
-  for(int idof=0; idof<ndof; idof++){  dV *= dr[idof];  }
-
-  res *= dV;
-
-  return res;
-
-}
-
-
-
-
-MATRIX Wfcgrid2::get_pops(int rep, vector<double>& bmin, vector<double>& bmax){
-/**
+      MATRIX Wfcgrid2::get_pops(int rep, vector<double>& bmin, vector<double>& bmax) {
+        /**
   Compute the populations of all states in a given representation
 
   Only the points that belong to a multidimensional box given by bmin and bmax parameters are
@@ -366,134 +323,131 @@ MATRIX Wfcgrid2::get_pops(int rep, vector<double>& bmin, vector<double>& bmax){
   
 */
 
-  int istate, idof;
-  double pop_i;
-  vector<int> pt;
+        int istate, idof;
+        double pop_i;
+        vector<int> pt;
 
-  MATRIX res(nstates, 1);  
-   
-  int maxdim = ndof;
-  if(bmin.size() < maxdim) { maxdim = bmin.size(); }
+        MATRIX res(nstates, 1);
 
-  for(int npt1=0; npt1<Npts; npt1++){
-
-    pt = gmap[npt1];
-
-
-    int is_included = 1;
-
-    for(idof=0; idof<maxdim && is_included; idof++){
-
-      double coord = rgrid[idof]->get(pt[idof]);
-
-      if(coord < bmin[idof]  || coord > bmax[idof] ){  is_included = 0; }    
-
-    }
-
-
-    if(is_included){
-
-      if(rep==0){    
-     
-        for(istate=0; istate<nstates; istate++){
-            pop_i = (PSI_dia[npt1].get(istate, 0) * std::conj(PSI_dia[npt1].get(istate, 0))).real(); 
-            res.add(istate, 0,  pop_i);
+        int maxdim = ndof;
+        if (bmin.size() < maxdim) {
+          maxdim = bmin.size();
         }
-      }
-      else if(rep==1){
-     
-        for(istate=0; istate<nstates; istate++){
-            pop_i = (PSI_adi[npt1].get(istate, 0) * std::conj(PSI_adi[npt1].get(istate, 0))).real(); 
-            res.add(istate, 0,  pop_i);
+
+        for (int npt1 = 0; npt1 < Npts; npt1++) {
+          pt = gmap[npt1];
+
+          int is_included = 1;
+
+          for (idof = 0; idof < maxdim && is_included; idof++) {
+            double coord = rgrid[idof]->get(pt[idof]);
+
+            if (coord < bmin[idof] || coord > bmax[idof]) {
+              is_included = 0;
+            }
+          }
+
+          if (is_included) {
+            if (rep == 0) {
+              for (istate = 0; istate < nstates; istate++) {
+                pop_i =
+                    (PSI_dia[npt1].get(istate, 0) * std::conj(PSI_dia[npt1].get(istate, 0))).real();
+                res.add(istate, 0, pop_i);
+              }
+            } else if (rep == 1) {
+              for (istate = 0; istate < nstates; istate++) {
+                pop_i =
+                    (PSI_adi[npt1].get(istate, 0) * std::conj(PSI_adi[npt1].get(istate, 0))).real();
+                res.add(istate, 0, pop_i);
+              }
+            }
+
+          }  // if is_included
+
+        }  // for npt1
+
+        double dV = 1.0;
+        for (int idof = 0; idof < ndof; idof++) {
+          dV *= dr[idof];
         }
+
+        res *= dV;
+
+        return res;
       }
 
-    }// if is_included
-
-  }// for npt1
-
-  double dV = 1.0;
-  for(int idof=0; idof<ndof; idof++){  dV *= dr[idof];  }
-
-  res *= dV;
-
-
-  return res;
-
-}
-
-
-MATRIX Wfcgrid2::get_coherences(int rep){
-/**
+      MATRIX Wfcgrid2::get_coherences(int rep) {
+        /**
   Compute the coherence indicator between all states in a given representation
 
   Out:  MATRIX(nstates, nstates)
   
 */
-  MATRIX res(nstates, nstates);  
-  
-  int istate, jstate, npt1;
-  
-  MATRIX temp(Npts, 1);
-  if(rep==0){
-    for(npt1=0; npt1<Npts; npt1++){
-      temp.set(npt1, 0, (PSI_dia[npt1].H()*PSI_dia[npt1]).get(0,0).real() );
-    }
-  }
-  else if(rep==1){
-    for(npt1=0; npt1<Npts; npt1++){
-      temp.set(npt1, 0, (PSI_adi[npt1].H()*PSI_adi[npt1]).get(0,0).real() );
-    }
-  }
-  
-  double rho_i, rho_j, coh_ij;
-  if(rep==0){
-    for(npt1=0; npt1<Npts; npt1++){
-      for(istate=0; istate<nstates; istate++){
-        rho_i = (PSI_dia[npt1].get(istate, 0) * std::conj(PSI_dia[npt1].get(istate, 0))).real();
-        for(jstate=0; jstate<nstates; jstate++){  
-          rho_j = (PSI_dia[npt1].get(jstate, 0) * std::conj(PSI_dia[npt1].get(jstate, 0))).real();
-          coh_ij = rho_i*rho_j/temp.get(npt1,0);
-          res.add(istate, jstate, coh_ij);
-        }// for jstate
-      }// for istate
-    }// for npt1
-  }
-  else if(rep==1){
-    for(npt1=0; npt1<Npts; npt1++){
-      for(istate=0; istate<nstates; istate++){
-        rho_i = (PSI_adi[npt1].get(istate, 0) * std::conj(PSI_adi[npt1].get(istate, 0))).real();
-        for(jstate=0; jstate<nstates; jstate++){  
-          rho_j = (PSI_adi[npt1].get(jstate, 0) * std::conj(PSI_adi[npt1].get(jstate, 0))).real();
-          coh_ij = rho_i*rho_j/temp.get(npt1,0);
-          res.add(istate, jstate, coh_ij);
-        }// for jstate
-      }// for istate
-    }// for npt1
-  }
+        MATRIX res(nstates, nstates);
 
-  double dV = 1.0;
-  for(int idof=0; idof<ndof; idof++){  dV *= dr[idof];  }
+        int istate, jstate, npt1;
 
-  res *= dV;
+        MATRIX temp(Npts, 1);
+        if (rep == 0) {
+          for (npt1 = 0; npt1 < Npts; npt1++) {
+            temp.set(npt1, 0, (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0).real());
+          }
+        } else if (rep == 1) {
+          for (npt1 = 0; npt1 < Npts; npt1++) {
+            temp.set(npt1, 0, (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real());
+          }
+        }
 
-  return res;
+        double rho_i, rho_j, coh_ij;
+        if (rep == 0) {
+          for (npt1 = 0; npt1 < Npts; npt1++) {
+            for (istate = 0; istate < nstates; istate++) {
+              rho_i =
+                  (PSI_dia[npt1].get(istate, 0) * std::conj(PSI_dia[npt1].get(istate, 0))).real();
+              for (jstate = 0; jstate < nstates; jstate++) {
+                rho_j =
+                    (PSI_dia[npt1].get(jstate, 0) * std::conj(PSI_dia[npt1].get(jstate, 0))).real();
+                coh_ij = rho_i * rho_j / temp.get(npt1, 0);
+                res.add(istate, jstate, coh_ij);
+              }  // for jstate
+            }  // for istate
+          }  // for npt1
+        } else if (rep == 1) {
+          for (npt1 = 0; npt1 < Npts; npt1++) {
+            for (istate = 0; istate < nstates; istate++) {
+              rho_i =
+                  (PSI_adi[npt1].get(istate, 0) * std::conj(PSI_adi[npt1].get(istate, 0))).real();
+              for (jstate = 0; jstate < nstates; jstate++) {
+                rho_j =
+                    (PSI_adi[npt1].get(jstate, 0) * std::conj(PSI_adi[npt1].get(jstate, 0))).real();
+                coh_ij = rho_i * rho_j / temp.get(npt1, 0);
+                res.add(istate, jstate, coh_ij);
+              }  // for jstate
+            }  // for istate
+          }  // for npt1
+        }
 
-}
+        double dV = 1.0;
+        for (int idof = 0; idof < ndof; idof++) {
+          dV *= dr[idof];
+        }
 
+        res *= dV;
 
-void Wfcgrid2::compute_wfc_gradients(int rep, int idof, double mass){
-// Compute wfc derivatives: first compute them in the k-space, then 
-// FT to the real space
-// Form Kx * reciPSI and Ky * reciPSI, etc.
+        return res;
+      }
 
-  for(int ipt=0; ipt<Npts; ipt++){
+      void Wfcgrid2::compute_wfc_gradients(int rep, int idof, double mass) {
+        // Compute wfc derivatives: first compute them in the k-space, then
+        // FT to the real space
+        // Form Kx * reciPSI and Ky * reciPSI, etc.
 
-//    nabla_reciPSI_dia[idof][ipt]  =  reciPSI_dia[ipt];
+        for (int ipt = 0; ipt < Npts; ipt++) {
+          //    nabla_reciPSI_dia[idof][ipt]  =  reciPSI_dia[ipt];
 
-  }// for ipt
+        }  // for ipt
 
-/*
+        /*
   for(int nst=0;nst<nstates;nst++){
     KxreciPSI[nst] = reciPSI[nst];
 
@@ -506,13 +460,10 @@ void Wfcgrid2::compute_wfc_gradients(int rep, int idof, double mass){
   ft_1D(KxreciPSI,DxPSI,2,xmin,kxmin,dx);
 
 */
+      }
 
-}
-
-
-
-//MATRIX void Wfcgrid2::flux(double xf, int fdim){
-/**
+      //MATRIX void Wfcgrid2::flux(double xf, int fdim){
+      /**
   \brief Compute the population flux in 1D case
   \param[in] xf The point at which flux is computed
   \param[in] fdim index of the dimension for which the xf is set 
@@ -574,11 +525,6 @@ void Wfcgrid2::compute_wfc_gradients(int rep, int idof, double mass){
 
 */
 
-
-
-
-
-}// namespace libwfcgrid2
-}// namespace libdyn
-}// liblibra
-
+    }  // namespace libwfcgrid2
+  }  // namespace libdyn
+}  // namespace liblibra

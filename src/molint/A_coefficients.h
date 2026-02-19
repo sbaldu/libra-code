@@ -12,23 +12,20 @@
 #ifndef A_COEFFICIENTS_H
 #define A_COEFFICIENTS_H
 
-
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libmolint{
+  namespace libmolint {
 
-// Auxiliary  functions for computation of STO integrals
+    // Auxiliary  functions for computation of STO integrals
 
-double A_coefficient_general(int u,int v, int na, int nb, int la, int lb, int m);
-void generate_coefficients();
-void A_coefficients_fast(int u,int v, int na, int nb, int la, int lb, int m,double** A);
+    double A_coefficient_general(int u, int v, int na, int nb, int la, int lb, int m);
+    void generate_coefficients();
+    void A_coefficients_fast(int u, int v, int na, int nb, int la, int lb, int m, double** A);
 
-void Aux_F1(double rhoA, double rhoB, double* f,int mu_max);
+    void Aux_F1(double rhoA, double rhoB, double* f, int mu_max);
 
+  }  // namespace libmolint
+}  // namespace liblibra
 
-}// namespace libmolint
-}// namespace liblibra
-
-#endif // A_COEFFICIENTS_H
+#endif  // A_COEFFICIENTS_H

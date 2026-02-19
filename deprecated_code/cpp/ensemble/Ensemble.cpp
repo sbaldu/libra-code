@@ -17,32 +17,25 @@
 #include "Ensemble.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libensemble namespace
+    namespace libensemble {
 
-/// libensemble namespace
-namespace libensemble{
-
-
-
-Ensemble::~Ensemble(){
-/** 
+      Ensemble::~Ensemble() {
+        /** 
   \brief Destructor
 
   Doesn't do anything
 
 */
+      }
 
-
-}
-
-
-
-void Ensemble::_init(int _ntraj, int _nelec, int _nnucl){
-/**
+      void Ensemble::_init(int _ntraj, int _nelec, int _nnucl) {
+        /**
   \brief Ensemble object initializer 
   
   Allocate memory for an ensemble of ntraj trajectories, with all electronic components 
@@ -53,41 +46,42 @@ void Ensemble::_init(int _ntraj, int _nelec, int _nnucl){
   \param[in] _nelec The number of electronic (quantum) states for each trajectory
   \param[in] _nnucl The number of nuclear DOF for each trajectory
 
-*/ 
+*/
 
-  int i;
-  ntraj = _ntraj;
-  nelec = _nelec;
-  nnucl = _nnucl;
+        int i;
+        ntraj = _ntraj;
+        nelec = _nelec;
+        nnucl = _nnucl;
 
-  // Allocate electronic part
-  el.resize(ntraj);
-  for(i=0;i<ntraj;i++){   el[i] = Electronic(nelec, 0);   }  
+        // Allocate electronic part
+        el.resize(ntraj);
+        for (i = 0; i < ntraj; i++) {
+          el[i] = Electronic(nelec, 0);
+        }
 
-  // Allocate nuclear part
-  mol.resize(ntraj);
-  for(i=0;i<ntraj;i++){ mol[i] = Nuclear(nnucl); }
+        // Allocate nuclear part
+        mol.resize(ntraj);
+        for (i = 0; i < ntraj; i++) {
+          mol[i] = Nuclear(nnucl);
+        }
 
-  // Allocate Hamiltonian handlers
-  ham.resize(ntraj);
+        // Allocate Hamiltonian handlers
+        ham.resize(ntraj);
 
-  // Activate all trajectories
-  is_active = vector<int>(ntraj,1);
+        // Activate all trajectories
+        is_active = vector<int>(ntraj, 1);
 
-
-/*
+        /*
   // Allocate memory for statistical data  
   ave_q = vector<double>(nnucl, 0.0);
   ave_p = vector<double>(nnucl, 0.0);
   sigma_q = vector<double>(nnucl, 0.0);
   sigma_p = vector<double>(nnucl, 0.0);
 */
+      }
 
-}
-
-
-void Ensemble::ham_set_ham(int i, Hamiltonian& _ham){ 
-/**
+      void Ensemble::ham_set_ham(int i, Hamiltonian& _ham) {
+        /**
   \brief Set Hamiltonian for the given trajectory
 
   This function binds the external Hamiltonian (or derived) object to the one stored and used internally.
@@ -96,11 +90,11 @@ void Ensemble::ham_set_ham(int i, Hamiltonian& _ham){
   \param[in] i Is the index of the trajectory for which we setup the Hamiltonian 
   \param[in] _ham The external object, which can be modified outside, but will still affect the Ensemble computations
 */
-  ham[i] = &_ham;
-}
+        ham[i] = &_ham;
+      }
 
-void Ensemble::ham_set_ham(int i, std::string opt, int mopt){
-/**
+      void Ensemble::ham_set_ham(int i, std::string opt, int mopt) {
+        /**
   \brief Set Hamiltonian for the given trajectory
 
   This function creates a new Hamiltonian internally. So far, works only for model Hamiltonians.
@@ -111,10 +105,10 @@ void Ensemble::ham_set_ham(int i, std::string opt, int mopt){
   \param[in] mopt The option to select the type of model Hamiltonian when creating the array of such Hamiltonians.
 */
 
-  if(opt=="model"){
-    ham[i] = new Hamiltonian_Model(mopt);    
-  }// model
-  /*
+        if (opt == "model") {
+          ham[i] = new Hamiltonian_Model(mopt);
+        }  // model
+        /*
   else if(opt=="QM"){
 
     ham[i] = new Hamiltonian_Atomistic(nelec, nnucl);
@@ -122,10 +116,10 @@ void Ensemble::ham_set_ham(int i, std::string opt, int mopt){
 
   }// atomistic
   */
-}
+      }
 
-void Ensemble::ham_set_ham(std::string opt, int mopt){ 
-/**
+      void Ensemble::ham_set_ham(std::string opt, int mopt) {
+        /**
   \brief Set Hamiltonians for all trajectories
 
   This function creates a new Hamiltonians internally. So far, works only for model Hamiltonians.
@@ -135,36 +129,36 @@ void Ensemble::ham_set_ham(std::string opt, int mopt){
   \param[in] mopt The option to select the type of model Hamiltonian when creating the array of such Hamiltonians.
 */
 
-  for(int i=0;i<ntraj;i++){  ham_set_ham(i,opt,mopt); }
+        for (int i = 0; i < ntraj; i++) {
+          ham_set_ham(i, opt, mopt);
+        }
+      }
 
-}
-
-
-void Ensemble::ham_set_rep(int i, int _rep){
-/**
+      void Ensemble::ham_set_rep(int i, int _rep) {
+        /**
   \brief Set a representation for given trajectory
 
   \param[in] i Is the index of the trajectory for which we setup the representation
   \param[in] _rep The representation. Possible options: 0 (for diabatic) and 1 (for adiabatic)
 */
 
+        ham[i]->set_rep(_rep);
+      }
 
-  ham[i]->set_rep(_rep);
-}
-
-void Ensemble::ham_set_rep(int _rep){
-/**
+      void Ensemble::ham_set_rep(int _rep) {
+        /**
   \brief Set a representation for all trajectories in the ensemble
 
   \param[in] _rep The representation. Possible options: 0 (for diabatic) and 1 (for adiabatic)
 */
 
-  for(int i=0;i<ntraj;i++){  ham[i]->set_rep(_rep); } 
-}
+        for (int i = 0; i < ntraj; i++) {
+          ham[i]->set_rep(_rep);
+        }
+      }
 
-
-void Ensemble::ham_set_params(int i, vector<double>& params_){ 
-/**
+      void Ensemble::ham_set_params(int i, vector<double>& params_) {
+        /**
   \brief Set the parameters of the Hamiltonian associated with a given trajectory
 
   So far, the model Hamiltonians are implied
@@ -172,11 +166,11 @@ void Ensemble::ham_set_params(int i, vector<double>& params_){
   \param[in] params_ The vector of double-valued parameters to feed into the Hamiltonian
 */
 
-  ham[i]->set_params(params_); 
-}
+        ham[i]->set_params(params_);
+      }
 
-void Ensemble::ham_set_params(int i, boost::python::list params_){  
-/**
+      void Ensemble::ham_set_params(int i, boost::python::list params_) {
+        /**
   \brief Set the parameters of the Hamiltonian associated with a given trajectory (Python-friendly)
 
   So far, the model Hamiltonians are implied
@@ -184,57 +178,59 @@ void Ensemble::ham_set_params(int i, boost::python::list params_){
   \param[in] params_ The list of parameters (could be of different types) to feed into the Hamiltonian
 */
 
-  ham[i]->set_params(params_); 
-}
+        ham[i]->set_params(params_);
+      }
 
-void Ensemble::ham_set_params(vector<double>& params_){
-/**
+      void Ensemble::ham_set_params(vector<double>& params_) {
+        /**
   \brief Set the parameters of the Hamiltonian associated with all trajectories in the ensemble
 
   So far, the model Hamiltonians are implied
   \param[in] params_ The vector of double-valued parameters to feed into the Hamiltonian
 */
 
-  for(int i=0;i<ntraj;i++){ ham[i]->set_params(params_); } 
-}
+        for (int i = 0; i < ntraj; i++) {
+          ham[i]->set_params(params_);
+        }
+      }
 
-void Ensemble::ham_set_params(boost::python::list params_){
-/**
+      void Ensemble::ham_set_params(boost::python::list params_) {
+        /**
   \brief Set the parameters of the Hamiltonian associated with all trajectories in the ensemble (Python-friendly)
 
   So far, the model Hamiltonians are implied
   \param[in] params_ The list of parameters (could be of different types) to feed into the Hamiltonian
 */
 
-  for(int i=0;i<ntraj;i++){ ham[i]->set_params(params_);  } 
-}
+        for (int i = 0; i < ntraj; i++) {
+          ham[i]->set_params(params_);
+        }
+      }
 
-
-void Ensemble::ham_set_q(int i, vector<double>& q){ 
-/**
+      void Ensemble::ham_set_q(int i, vector<double>& q) {
+        /**
   \brief Update Hamiltonian coordinates (all are real-valued scalars)
 
   \param[in] i Is the index of the trajectory for which we setup Hamiltonian's coordinates
   \param[in] q The vector of real-valued coordinates to be used for Hamiltonian calculations.
 */
 
-  ham[i]->set_q(q); 
-}
+        ham[i]->set_q(q);
+      }
 
-void Ensemble::ham_set_q(int i, boost::python::list q){ 
-/**
+      void Ensemble::ham_set_q(int i, boost::python::list q) {
+        /**
   \brief Update Hamiltonian coordinates (all are real-valued scalars - the components of the Python list) - Python-friendly
 
   \param[in] i Is the index of the trajectory for which we setup Hamiltonian's coordinates
   \param[in] q The list of real-valued coordinates to be used for Hamiltonian calculations.
 */
 
-  ham[i]->set_q(q);
-}
+        ham[i]->set_q(q);
+      }
 
-
-void Ensemble::ham_set_v(int i, vector<double>& v){ 
-/**
+      void Ensemble::ham_set_v(int i, vector<double>& v) {
+        /**
   \brief Update Hamiltonian velocities (all are real-valued scalars)
 
   \param[in] i Is the index of the trajectory for which we setup Hamiltonian's velocities
@@ -244,11 +240,11 @@ void Ensemble::ham_set_v(int i, vector<double>& v){
   Otherwise, they are not used.
 */
 
-  ham[i]->set_v(v);
-}
+        ham[i]->set_v(v);
+      }
 
-void Ensemble::ham_set_v(int i, boost::python::list v){
-/**
+      void Ensemble::ham_set_v(int i, boost::python::list v) {
+        /**
   \brief Update Hamiltonian velocities (all are real-valued scalars -the components of Python list) - Python-friendly 
 
   \param[in] i Is the index of the trajectory for which we setup Hamiltonian's velocities
@@ -258,11 +254,11 @@ void Ensemble::ham_set_v(int i, boost::python::list v){
   Otherwise, they are not used.
 */
 
-  ham[i]->set_v(v); 
-}
+        ham[i]->set_v(v);
+      }
 
-void Ensemble::ham_set_v(){
-/**
+      void Ensemble::ham_set_v() {
+        /**
   \brief Update Hamiltonian velocities for all trajectories
 
   The velocities are computed using the nuclear momenta (extracted from internally-stored mol object) and the masses of
@@ -272,18 +268,18 @@ void Ensemble::ham_set_v(){
   Otherwise, they are not used.
 */
 
+        vector<double> v(nnucl, 0.0);
+        for (int i = 0; i < ntraj; i++) {
+          // Velocities for all DOFs for given trajectory
+          for (int n = 0; n < nnucl; n++) {
+            v[n] = mol[i].p[n] / mol[i].mass[n];
+          }
+          ham[i]->set_v(v);
+        }  // for i
+      }
 
-  vector<double> v(nnucl,0.0); 
-  for(int i=0;i<ntraj;i++){ 
-    // Velocities for all DOFs for given trajectory
-    for(int n=0;n<nnucl;n++){ v[n] = mol[i].p[n]/mol[i].mass[n];  }
-    ham[i]->set_v(v);
-  }// for i
-
-}
-
-void Ensemble::ham_compute(int i){ 
-/**
+      void Ensemble::ham_compute(int i) {
+        /**
   \brief Perform actual Hamiltonian computations for the given trajectory
 
   The computations of either diabatiatic or adiabatic or both Hamiltonians are invoked, depending
@@ -299,11 +295,11 @@ void Ensemble::ham_compute(int i){
 
 */
 
-  ham[i]->compute();
-}
+        ham[i]->compute();
+      }
 
-void Ensemble::ham_compute_diabatic(int i){
-/**
+      void Ensemble::ham_compute_diabatic(int i) {
+        /**
   \brief Perform actual Hamiltonian computations (only diabatic) for the given trajectory
 
   The computations of either diabatiatic Hamiltonian is invoked, depending
@@ -316,11 +312,11 @@ void Ensemble::ham_compute_diabatic(int i){
 
 */
 
-  ham[i]->compute_diabatic(); 
-}
+        ham[i]->compute_diabatic();
+      }
 
-void Ensemble::ham_compute_adiabatic(int i){
-/**
+      void Ensemble::ham_compute_adiabatic(int i) {
+        /**
   \brief Perform actual Hamiltonian computations (only adiabatic) for the given trajectory
 
   The computations of  adiabatiatic Hamiltonian is invoked, depending
@@ -333,12 +329,11 @@ void Ensemble::ham_compute_adiabatic(int i){
 
 */
 
-  ham[i]->compute_adiabatic();
-}
+        ham[i]->compute_adiabatic();
+      }
 
-
-std::complex<double> Ensemble::ham_H(int traj, int i,int j){ 
-/**
+      std::complex<double> Ensemble::ham_H(int traj, int i, int j) {
+        /**
   \brief Return electronic Hamiltonian for given trajectory
 
   The returned Hamiltonian depends on the selected representation - can be either diabatic or adiabatic.
@@ -350,11 +345,11 @@ std::complex<double> Ensemble::ham_H(int traj, int i,int j){
 
 */
 
-  return ham[traj]->H(i,j); 
-}
+        return ham[traj]->H(i, j);
+      }
 
-std::complex<double> Ensemble::ham_dHdq(int traj, int i,int j,int n){ 
-/**
+      std::complex<double> Ensemble::ham_dHdq(int traj, int i, int j, int n) {
+        /**
   \brief Return the derivative of electronic Hamiltonian w.r.t. nuclear DOF for given trajectory
 
   The returned Hamiltonian depends on the selected representation - can be either diabatic or adiabatic.
@@ -367,11 +362,11 @@ std::complex<double> Ensemble::ham_dHdq(int traj, int i,int j,int n){
 
 */
 
-  return ham[traj]->dHdq(i,j,n); 
-}
+        return ham[traj]->dHdq(i, j, n);
+      }
 
-std::complex<double> Ensemble::ham_D(int traj, int i,int j,int n){ 
-/**
+      std::complex<double> Ensemble::ham_D(int traj, int i, int j, int n) {
+        /**
   \brief Return the derivative coupling w.r.t. nuclear DOF for given trajectory
 
   The returned coupling depends on the selected representation - can be either diabatic or adiabatic.
@@ -386,11 +381,11 @@ std::complex<double> Ensemble::ham_D(int traj, int i,int j,int n){
 
 */
 
-  return ham[traj]->D(i,j,n); 
-}
+        return ham[traj]->D(i, j, n);
+      }
 
-std::complex<double> Ensemble::ham_nac(int traj,int i,int j){ 
-/**
+      std::complex<double> Ensemble::ham_nac(int traj, int i, int j) {
+        /**
   \brief Return the nonadiabatic coupling for given trajectory
 
   The returned coupling depends on the selected representation - can be either diabatic or adiabatic.
@@ -404,11 +399,11 @@ std::complex<double> Ensemble::ham_nac(int traj,int i,int j){
 
 */
 
-  return ham[traj]->nac(i,j); 
-}
+        return ham[traj]->nac(i, j);
+      }
 
-std::complex<double> Ensemble::ham_Hvib(int traj, int i,int j){ 
-/**
+      std::complex<double> Ensemble::ham_Hvib(int traj, int i, int j) {
+        /**
   \brief Return the vibronic Hamiltonian for given trajectory
 
   The returned Hamiltonian depends on the selected representation - can be either diabatic or adiabatic.
@@ -420,41 +415,36 @@ std::complex<double> Ensemble::ham_Hvib(int traj, int i,int j){
 
 */
 
-  return ham[traj]->Hvib(i,j); 
-}
+        return ham[traj]->Hvib(i, j);
+      }
 
-
-
-
-
-void Ensemble::el_propagate_electronic(int i,double dt){
-/**
+      void Ensemble::el_propagate_electronic(int i, double dt) {
+        /**
   \brief Propagate electronic DOF for a given trajectory
 
   \param[in] i Index of the trajectory
   \param[in] dt Integration time step (integration duration)
 
 */
-             
-  el[i].propagate_electronic(dt, ham[i]);
 
-}
+        el[i].propagate_electronic(dt, ham[i]);
+      }
 
-void Ensemble::el_propagate_electronic(double dt){
-/**
+      void Ensemble::el_propagate_electronic(double dt) {
+        /**
   \brief Propagate electronic DOF for all trajectories
 
   \param[in] dt Integration time step (integration duration)
 
 */
 
+        for (int i = 0; i < ntraj; i++) {
+          el[i].propagate_electronic(dt, ham[i]);
+        }
+      }
 
-  for(int i=0;i<ntraj;i++){     el[i].propagate_electronic(dt, ham[i]);  }
-
-}
-
-void Ensemble::mol_propagate_q(int i,double dt){
-/**
+      void Ensemble::mol_propagate_q(int i, double dt) {
+        /**
   \brief Propagate nuclear coordinates for given trajectory
 
   \param[in] i Index of the trajectory
@@ -462,25 +452,23 @@ void Ensemble::mol_propagate_q(int i,double dt){
 
 */
 
-
-  mol[i].propagate_q(dt);
-
-}
-void Ensemble::mol_propagate_q(double dt){
-/**
+        mol[i].propagate_q(dt);
+      }
+      void Ensemble::mol_propagate_q(double dt) {
+        /**
   \brief Propagate nuclear coordinates for all trajectories
 
   \param[in] dt Integration time step (integration duration)
 
 */
 
+        for (int i = 0; i < ntraj; i++) {
+          mol[i].propagate_q(dt);
+        }
+      }
 
-  for(int i=0;i<ntraj;i++){    mol[i].propagate_q(dt);   }
-
-}
-
-void Ensemble::mol_propagate_p(int i,double dt){
-/**
+      void Ensemble::mol_propagate_p(int i, double dt) {
+        /**
   \brief Propagate nuclear momenta for given trajectory
 
   \param[in] i Index of the trajectory
@@ -488,26 +476,23 @@ void Ensemble::mol_propagate_p(int i,double dt){
 
 */
 
-  mol[i].propagate_p(dt);
-
-}
-void Ensemble::mol_propagate_p(double dt){
-/**
+        mol[i].propagate_p(dt);
+      }
+      void Ensemble::mol_propagate_p(double dt) {
+        /**
   \brief Propagate nuclear momenta for all trajectories
 
   \param[in] dt Integration time step (integration duration)
 
 */
 
-  for(int i=0;i<ntraj;i++){    mol[i].propagate_p(dt);   }
+        for (int i = 0; i < ntraj; i++) {
+          mol[i].propagate_p(dt);
+        }
+      }
 
-}
-
-
-
-
-Ensemble::Ensemble(int _ntraj, int _nstates, int _nnucl){
-/**
+      Ensemble::Ensemble(int _ntraj, int _nstates, int _nnucl) {
+        /**
   \brief Constructor with parameters
 
   \param[in] _ntraj The number of the trajectories of the ensemble 
@@ -516,13 +501,12 @@ Ensemble::Ensemble(int _ntraj, int _nstates, int _nnucl){
 
 */
 
-// Constructor
-   _init(_ntraj,_nstates,_nnucl);
-}
+        // Constructor
+        _init(_ntraj, _nstates, _nnucl);
+      }
 
-
-void Ensemble::se_pop(vector<double>& pops,double xmin, double xmax){
-/**
+      void Ensemble::se_pop(vector<double>& pops, double xmin, double xmax) {
+        /**
   \brief Compute Schrodinger equation (coherent) populations
 
   The computed population take into consideration the spatial localization of trajectories -
@@ -540,48 +524,42 @@ void Ensemble::se_pop(vector<double>& pops,double xmin, double xmax){
 
 */
 
-  int i,traj,n;
+        int i, traj, n;
 
-  // In case array is of wrong size
-  if(pops.size()!=nelec){
-    pops.reserve(nelec);
-    pops.resize(nelec,0.0);  
-  }
-
-
-  for(i=0;i<nelec;i++){  // all electronic states
-    pops[i] = 0.0;
-
-    for(traj=0;traj<ntraj;traj++){
-
-      if(el[traj].istate == i){
-        
-        int res = 1;
-        for(n=0;n<nnucl;n++){
-          if(mol[traj].q[n]<xmin || mol[traj].q[n] > xmax ){  res = 0;  }
-        }// for n
-
-        if(res==1){ 
-          double q = el[traj].q[i];
-          double p = el[traj].p[i];
-          pops[i] += (q*q + p*p);       
+        // In case array is of wrong size
+        if (pops.size() != nelec) {
+          pops.reserve(nelec);
+          pops.resize(nelec, 0.0);
         }
 
+        for (i = 0; i < nelec; i++) {  // all electronic states
+          pops[i] = 0.0;
 
-      }// if right state
-    }// for j - all trajectories
+          for (traj = 0; traj < ntraj; traj++) {
+            if (el[traj].istate == i) {
+              int res = 1;
+              for (n = 0; n < nnucl; n++) {
+                if (mol[traj].q[n] < xmin || mol[traj].q[n] > xmax) {
+                  res = 0;
+                }
+              }  // for n
 
-    pops[i] /= (double)ntraj;   // normalize
+              if (res == 1) {
+                double q = el[traj].q[i];
+                double p = el[traj].p[i];
+                pops[i] += (q * q + p * p);
+              }
 
-  }// for i - all electronic states
+            }  // if right state
+          }  // for j - all trajectories
 
+          pops[i] /= (double)ntraj;  // normalize
 
-   
+        }  // for i - all electronic states
+      }
 
-}
-
-void Ensemble::se_pop(vector<double>& pops){
-/**
+      void Ensemble::se_pop(vector<double>& pops) {
+        /**
   \brief Compute Schrodinger equation (coherent) populations
 
   Wavefunction population of all states, without regard to nuclear wavefunction localization
@@ -592,12 +570,11 @@ void Ensemble::se_pop(vector<double>& pops){
 
 */
 
-  se_pop(pops,-1000000.0,1000000.0);
+        se_pop(pops, -1000000.0, 1000000.0);
+      }
 
-}
-
-boost::python::list Ensemble::se_pop(){
-/**
+      boost::python::list Ensemble::se_pop() {
+        /**
   \brief Compute Schrodinger equation (coherent) populations - Python-friendly version
 
   Wavefunction population of all states, without regard to nuclear wavefunction localization
@@ -607,20 +584,19 @@ boost::python::list Ensemble::se_pop(){
   The computed vector of populations will be returned as the list of the floating-point values
 */
 
+        vector<double> pops;
+        se_pop(pops);
 
-  vector<double> pops;
-  se_pop(pops);
+        boost::python::list res;
+        for (int i = 0; i < pops.size(); i++) {
+          res.append(pops[i]);
+        }
 
-  boost::python::list res;
-  for(int i=0;i<pops.size();i++){
-    res.append(pops[i]);
-  }
+        return res;
+      }
 
-  return res;
-}
-
-boost::python::list Ensemble::se_pop(double xmin, double xmax){
-/**
+      boost::python::list Ensemble::se_pop(double xmin, double xmax) {
+        /**
   \brief Compute Schrodinger equation (coherent) populations - Python-friendly version
 
   The computed population take into consideration the spatial localization of trajectories -
@@ -638,22 +614,19 @@ boost::python::list Ensemble::se_pop(double xmin, double xmax){
   The computed vector of populations will be returned as the list of the floating-point values
 */
 
-  vector<double> pops;
-  se_pop(pops, xmin, xmax);
+        vector<double> pops;
+        se_pop(pops, xmin, xmax);
 
-  boost::python::list res;
-  for(int i=0;i<pops.size();i++){
-    res.append(pops[i]);
-  }
+        boost::python::list res;
+        for (int i = 0; i < pops.size(); i++) {
+          res.append(pops[i]);
+        }
 
-  return res;
-}
+        return res;
+      }
 
-
-
-
-void Ensemble::sh_pop(vector<double>& pops,double xmin, double xmax){
-/**
+      void Ensemble::sh_pop(vector<double>& pops, double xmin, double xmax) {
+        /**
   \brief Compute surface hopping (incoherent) populations
 
   The computed population take into consideration the spatial localization of trajectories -
@@ -671,42 +644,40 @@ void Ensemble::sh_pop(vector<double>& pops,double xmin, double xmax){
 
 */
 
+        int i, traj, n;
 
-  int i,traj,n;
+        // In case array is of wrong size
+        if (pops.size() != nelec) {
+          pops.reserve(nelec);
+          pops.resize(nelec, 0.0);
+        }
 
-  // In case array is of wrong size
-  if(pops.size()!=nelec){
-    pops.reserve(nelec);
-    pops.resize(nelec,0.0);  
-  }
-  
-  for(i=0;i<nelec;i++){  // all electronic states
-    pops[i] = 0.0;
+        for (i = 0; i < nelec; i++) {  // all electronic states
+          pops[i] = 0.0;
 
-    for(traj=0;traj<ntraj;traj++){
+          for (traj = 0; traj < ntraj; traj++) {
+            if (el[traj].istate == i) {
+              int res = 1;
+              for (n = 0; n < nnucl; n++) {
+                if (mol[traj].q[n] < xmin || mol[traj].q[n] > xmax) {
+                  res = 0;
+                }
+              }  // for n
 
-      if(el[traj].istate == i){
-        
-        int res = 1;
-        for(n=0;n<nnucl;n++){
-          if(mol[traj].q[n]<xmin || mol[traj].q[n] > xmax ){  res = 0;  }
-        }// for n
+              if (res == 1) {
+                pops[i] += 1.0;
+              }
 
-        if(res==1){    pops[i] += 1.0;        }
+            }  // if right state
+          }  // for j - all trajectories
 
+          pops[i] /= (double)ntraj;  // normalize
 
-      }// if right state
-    }// for j - all trajectories
+        }  // for i - all electronic states
+      }
 
-    pops[i] /= (double)ntraj;   // normalize
-
-  }// for i - all electronic states
-  
-
-}
-
-void Ensemble::sh_pop(vector<double>& pops){
-/**
+      void Ensemble::sh_pop(vector<double>& pops) {
+        /**
   \brief Compute surface hopping (incoherent) populations
 
   Wavefunction population of all states, without regard to nuclear wavefunction localization
@@ -717,12 +688,11 @@ void Ensemble::sh_pop(vector<double>& pops){
 
 */
 
-  sh_pop(pops,-1000000.0,1000000.0);
+        sh_pop(pops, -1000000.0, 1000000.0);
+      }
 
-}
-
-boost::python::list Ensemble::sh_pop(){
-/**
+      boost::python::list Ensemble::sh_pop() {
+        /**
   \brief Compute surface hopping (incoherent) populations - Python-friendly version
 
   Wavefunction population of all states, without regard to nuclear wavefunction localization
@@ -732,20 +702,19 @@ boost::python::list Ensemble::sh_pop(){
   The computed vector of populations will be returned as the list of the floating-point values
 */
 
+        vector<double> pops;
+        sh_pop(pops);
 
-  vector<double> pops;
-  sh_pop(pops);
+        boost::python::list res;
+        for (int i = 0; i < pops.size(); i++) {
+          res.append(pops[i]);
+        }
 
-  boost::python::list res;
-  for(int i=0;i<pops.size();i++){
-    res.append(pops[i]);
-  }
+        return res;
+      }
 
-  return res;
-}
-
-boost::python::list Ensemble::sh_pop(double xmin, double xmax){
-/**
+      boost::python::list Ensemble::sh_pop(double xmin, double xmax) {
+        /**
   \brief Compute surface hopping (incoherent) populations - Python-friendly version
 
   The computed population take into consideration the spatial localization of trajectories -
@@ -763,21 +732,19 @@ boost::python::list Ensemble::sh_pop(double xmin, double xmax){
   The computed vector of populations will be returned as the list of the floating-point values
 */
 
-  vector<double> pops;
-  sh_pop(pops, xmin, xmax);
+        vector<double> pops;
+        sh_pop(pops, xmin, xmax);
 
-  boost::python::list res;
-  for(int i=0;i<pops.size();i++){
-    res.append(pops[i]);
-  }
+        boost::python::list res;
+        for (int i = 0; i < pops.size(); i++) {
+          res.append(pops[i]);
+        }
 
-  return res;
-}
+        return res;
+      }
 
-
-
-void Ensemble::sh_pop1(vector<double>& pops,double xmin, double xmax){
-/**
+      void Ensemble::sh_pop1(vector<double>& pops, double xmin, double xmax) {
+        /**
   \brief Compute surface hopping (incoherent) populations
 
   This is specially for Marcus spin-boson problem
@@ -797,93 +764,83 @@ void Ensemble::sh_pop1(vector<double>& pops,double xmin, double xmax){
 
 */
 
-  int i,j;
-  vector<double> v_(ntraj);
+        int i, j;
+        vector<double> v_(ntraj);
 
-  // In case array is of wrong size
-  if(pops.size()!=nelec){
-    pops.reserve(nelec);
-    pops.resize(nelec,0.0);  
-  }
+        // In case array is of wrong size
+        if (pops.size() != nelec) {
+          pops.reserve(nelec);
+          pops.resize(nelec, 0.0);
+        }
 
-  for(i=0;i<nelec;i++){  // all electronic states
-    pops[i] = 0.0;
-  }
+        for (i = 0; i < nelec; i++) {  // all electronic states
+          pops[i] = 0.0;
+        }
 
- 
-  for(j=0;j<ntraj;j++){ // for all trajectories
+        for (j = 0; j < ntraj; j++) {  // for all trajectories
 
-//    ham[j]->set_status(0);
-    ham[j]->set_q(mol[j].q); 
-    for(i=0;i<mol[j].nnucl;i++){ v_[i] = mol[j].p[i]/mol[j].mass[i]; }  ham[j]->set_v(v_);
-    ham[j]->compute();
-
-    double E0, E1, H0, H1, V;
-    ham[j]->set_rep(1);
-    E0 = ham[j]->H(0,0).real();   // adiabatic
-    E1 = ham[j]->H(1,1).real();
-
-    ham[j]->set_rep(0);
-    H0 = ham[j]->H(0,0).real(); // diabatic
-    H1 = ham[j]->H(1,1).real();
-    V  = ham[j]->H(0,1).real();
-
-    ham[j]->set_rep(1); // return back to adiabatic
-
-    for(i=0;i<nelec;i++){  // all electronic states
-
-      if(mol[j].q[0] > xmin && mol[j].q[0] < xmax){ // only those trajectories that are in given range
-
-        if(el[j].istate == 0){ // we are in 0-th adiabatic state
-        
-          if(i==0){             // Probability to be on 0-th (left) diabat - f0
-           
-            pops[0] += V*V/((H0 - E0)*(H0 - E0) + V*V);  // f0^2
-
+          //    ham[j]->set_status(0);
+          ham[j]->set_q(mol[j].q);
+          for (i = 0; i < mol[j].nnucl; i++) {
+            v_[i] = mol[j].p[i] / mol[j].mass[i];
           }
-          else if(i==1){             // Probability to be on 1-th (right) diabat - g0
-           
-            pops[1] += (H0 - E0)*(H0 - E0)/((H0 - E0)*(H0 - E0) + V*V);  // g0^2
+          ham[j]->set_v(v_);
+          ham[j]->compute();
 
-          }
+          double E0, E1, H0, H1, V;
+          ham[j]->set_rep(1);
+          E0 = ham[j]->H(0, 0).real();  // adiabatic
+          E1 = ham[j]->H(1, 1).real();
 
+          ham[j]->set_rep(0);
+          H0 = ham[j]->H(0, 0).real();  // diabatic
+          H1 = ham[j]->H(1, 1).real();
+          V = ham[j]->H(0, 1).real();
 
-        }// 0-th adiabatic state
-        else if(el[j].istate == 1){
+          ham[j]->set_rep(1);  // return back to adiabatic
 
-          if(i==0){             // Probability to be on 0-th (left) diabat - f1
-         
-            pops[0] += V*V/((H0 - E1)*(H0 - E1) + V*V);  // f1
+          for (i = 0; i < nelec; i++) {  // all electronic states
 
-          }
-          else if(i==1){             // Probability to be on 1-th (right) diabat - g1
+            if (mol[j].q[0] > xmin &&
+                mol[j].q[0] < xmax) {  // only those trajectories that are in given range
 
-            pops[1] += (H0 - E1)*(H0 - E1)/((H0 - E1)*(H0 - E1) + V*V);  // g1
+              if (el[j].istate == 0) {  // we are in 0-th adiabatic state
 
-          }
+                if (i == 0) {  // Probability to be on 0-th (left) diabat - f0
 
+                  pops[0] += V * V / ((H0 - E0) * (H0 - E0) + V * V);  // f0^2
 
-        }// 1-th adiabatic state
+                } else if (i == 1) {  // Probability to be on 1-th (right) diabat - g0
 
-      }// if min < x < max
+                  pops[1] += (H0 - E0) * (H0 - E0) / ((H0 - E0) * (H0 - E0) + V * V);  // g0^2
+                }
 
-    }// for i - all electronic states
-  }// for j - all trajectories
+              }  // 0-th adiabatic state
+              else if (el[j].istate == 1) {
+                if (i == 0) {  // Probability to be on 0-th (left) diabat - f1
 
+                  pops[0] += V * V / ((H0 - E1) * (H0 - E1) + V * V);  // f1
 
+                } else if (i == 1) {  // Probability to be on 1-th (right) diabat - g1
 
-  for(i=0;i<nelec;i++){  // all electronic states
+                  pops[1] += (H0 - E1) * (H0 - E1) / ((H0 - E1) * (H0 - E1) + V * V);  // g1
+                }
 
-    pops[i] /= ((double)ntraj);   // normalize
+              }  // 1-th adiabatic state
 
-  }
-  
+            }  // if min < x < max
 
-}
+          }  // for i - all electronic states
+        }  // for j - all trajectories
 
+        for (i = 0; i < nelec; i++) {  // all electronic states
 
-void Ensemble::sh_pop1(vector<double>& pops){
-/**
+          pops[i] /= ((double)ntraj);  // normalize
+        }
+      }
+
+      void Ensemble::sh_pop1(vector<double>& pops) {
+        /**
   \brief Compute surface hopping (incoherent) populations
 
   This is specially for Marcus spin-boson problem
@@ -896,12 +853,11 @@ void Ensemble::sh_pop1(vector<double>& pops){
 
 */
 
-  sh_pop1(pops,-100000000.0,100000000.0);
+        sh_pop1(pops, -100000000.0, 100000000.0);
+      }
 
-}
-
-boost::python::list Ensemble::sh_pop1(){
-/**
+      boost::python::list Ensemble::sh_pop1() {
+        /**
   \brief Compute surface hopping (incoherent) populations - Python-friendly version
 
   This is specially for Marcus spin-boson problem
@@ -913,19 +869,19 @@ boost::python::list Ensemble::sh_pop1(){
   The computed vector of populations will be returned as the list of the floating-point values
 */
 
-  vector<double> pops;
-  sh_pop1(pops);
+        vector<double> pops;
+        sh_pop1(pops);
 
-  boost::python::list res;
-  for(int i=0;i<pops.size();i++){
-    res.append(pops[i]);
-  }
+        boost::python::list res;
+        for (int i = 0; i < pops.size(); i++) {
+          res.append(pops[i]);
+        }
 
-  return res;
-}
+        return res;
+      }
 
-boost::python::list Ensemble::sh_pop1(double xmin, double xmax){
-/**
+      boost::python::list Ensemble::sh_pop1(double xmin, double xmax) {
+        /**
   \brief Compute surface hopping (incoherent) populations - Python-friendly version
 
   This is specially for Marcus spin-boson problem
@@ -945,26 +901,31 @@ boost::python::list Ensemble::sh_pop1(double xmin, double xmax){
   The computed vector of populations will be returned as the list of the floating-point values
 */
 
-  vector<double> pops;
-  sh_pop1(pops, xmin, xmax);
+        vector<double> pops;
+        sh_pop1(pops, xmin, xmax);
 
-  boost::python::list res;
-  for(int i=0;i<pops.size();i++){
-    res.append(pops[i]);
-  }
+        boost::python::list res;
+        for (int i = 0; i < pops.size(); i++) {
+          res.append(pops[i]);
+        }
 
-  return res;
-}
+        return res;
+      }
 
-
-
-void Ensemble::print_map(std::string prefix, double Xmin, double Xmax, double dx, double Ymin, double Ymax, double dy, int snap){
-/**
+      void Ensemble::print_map(std::string prefix,
+                               double Xmin,
+                               double Xmax,
+                               double dx,
+                               double Ymin,
+                               double Ymax,
+                               double dy,
+                               int snap) {
+        /**
   \brief for 2D projections on XY plane. Inactive now.
 
 */
 
-/*
+        /*
  // for 2D projections on XY plane
 
   std::string snaps,filename;
@@ -1011,19 +972,22 @@ void Ensemble::print_map(std::string prefix, double Xmin, double Xmax, double dx
   out.close();
 
 */
-}// print map
+      }  // print map
 
-
-void Ensemble::integral_flux(vector< vector<double> >& Int_flx, double Xmin, double Xmax, double dx, 
-                                                                double Ymin, double Ymax, double dy){
-/**
+      void Ensemble::integral_flux(vector<vector<double> >& Int_flx,
+                                   double Xmin,
+                                   double Xmax,
+                                   double dx,
+                                   double Ymin,
+                                   double Ymax,
+                                   double dy) {
+        /**
   \brief for 2D projections on XY plane. Inactive now.
 
 */
 
-
- // for 2D projections on XY plane
-/*
+        // for 2D projections on XY plane
+        /*
   int Nx = Int_flx.size();
   int Ny = Int_flx[0].size();
 
@@ -1053,20 +1017,15 @@ void Ensemble::integral_flux(vector< vector<double> >& Int_flx, double Xmin, dou
 
 */
 
-}// print map
+      }  // print map
 
-
-
-
-
-void Ensemble::compute_averages(){
-/**
+      void Ensemble::compute_averages() {
+        /**
   \brief Computing the ensemble-averaged value. Inactive now.
 
 */
 
-
-/*
+        /*
   ave_x = 0.0; 
   ave_x2 = 0.0; 
   ave_y = 0.0; 
@@ -1118,11 +1077,9 @@ void Ensemble::compute_averages(){
   psx = (ave_xpx - ave_x * ave_px)/sx;
   psy = (ave_ypy - ave_y * ave_py)/sy;
 */
+      }
 
-}
-
-
-/*
+      /*
 double Ensemble::Epot(){
   
   double res = 0.0; 
@@ -1155,7 +1112,6 @@ double Ensemble::Etot(){
 }
 */
 
-
-}// namespace libensemble
-}// namespace libdyn
-}// liblibra
+    }  // namespace libensemble
+  }  // namespace libdyn
+}  // namespace liblibra

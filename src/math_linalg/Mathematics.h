@@ -15,19 +15,15 @@
 #include "MATRIX.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// liblinalg namespace
-namespace liblinalg{
+  /// liblinalg namespace
+  namespace liblinalg {
 
+    void MATRIX_TO_QUATERNION(MATRIX&, QUATERNION&);
+    void QUATERNION_TO_MATRIX(QUATERNION&, MATRIX&);
+    void MATRIX_TO_QUATERNION(MATRIX3x3&, QUATERNION&);
+    void QUATERNION_TO_MATRIX(QUATERNION&, MATRIX3x3&);
 
-
-void MATRIX_TO_QUATERNION(MATRIX&,QUATERNION&);
-void QUATERNION_TO_MATRIX(QUATERNION&,MATRIX&);
-void MATRIX_TO_QUATERNION(MATRIX3x3&,QUATERNION&);
-void QUATERNION_TO_MATRIX(QUATERNION&,MATRIX3x3&);
-
-
-}// namespace liblinalg
-}// namespace liblibra
-
+  }  // namespace liblinalg
+}  // namespace liblibra

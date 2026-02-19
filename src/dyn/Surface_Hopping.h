@@ -17,7 +17,6 @@
 #ifndef SURFACE_HOPPING_H
 #define SURFACE_HOPPING_H
 
-
 // External dependencies
 #include "../math_linalg/liblinalg.h"
 #include "../nhamiltonian/libnhamiltonian.h"
@@ -28,34 +27,30 @@
 //#include "ensemble/libensemble.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-using namespace libnhamiltonian;
-namespace bp = boost::python;
+  using namespace libio;
+  using namespace libnhamiltonian;
+  namespace bp = boost::python;
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    using namespace libnuclear;
+    using namespace libelectronic;
+    //using namespace libensemble;
 
-using namespace libnuclear;
-using namespace libelectronic;
-//using namespace libensemble;
+    ///================  In tsh_prob_lz.cpp  ===================================
 
-///================  In tsh_prob_lz.cpp  ===================================
+    //MATRIX compute_hopping_probabilities_lz(nHamiltonian* ham, int rep, MATRIX& p, const MATRIX& invM, MATRIX& prev_ham_dia);
+    //MATRIX compute_hopping_probabilities_lz(nHamiltonian& ham, int rep, MATRIX& p, const MATRIX& invM, MATRIX& prev_ham_dia);
 
-//MATRIX compute_hopping_probabilities_lz(nHamiltonian* ham, int rep, MATRIX& p, const MATRIX& invM, MATRIX& prev_ham_dia);
-//MATRIX compute_hopping_probabilities_lz(nHamiltonian& ham, int rep, MATRIX& p, const MATRIX& invM, MATRIX& prev_ham_dia);
+    ///================  In tsh_hungarian.cpp  =================================
+    vector<int> get_permutation(vector<vector<int> >& inp);
+    vector<int> Munkres_Kuhn_minimize(MATRIX& _X, int verbosity);
+    vector<int> Munkres_Kuhn_maximize(MATRIX& _X, int verbosity);
 
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-///================  In tsh_hungarian.cpp  =================================
-vector<int> get_permutation(vector<vector<int> >& inp);
-vector<int> Munkres_Kuhn_minimize(MATRIX& _X, int verbosity);
-vector<int> Munkres_Kuhn_maximize(MATRIX& _X, int verbosity);
-
-
-}// namespace libdyn
-}// liblibra
-
-#endif // SURFACE_HOPPING_H
+#endif  // SURFACE_HOPPING_H

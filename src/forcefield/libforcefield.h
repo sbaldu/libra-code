@@ -14,20 +14,14 @@
 
 #include "ForceField.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  namespace libforcefield {
 
-namespace libforcefield{
+    void export_forcefield_objects();
 
+  }  // namespace libforcefield
+}  // namespace liblibra
 
-
-void export_forcefield_objects();
-
-
-}// namespace libforcefield
-}// namespace liblibra
-
-
-#endif // LIB_FORCEFIELD_H
+#endif  // LIB_FORCEFIELD_H

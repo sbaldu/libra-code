@@ -14,25 +14,20 @@
     
 */
 
-
 #ifndef LIB_SYMMETRY_H
 #define LIB_SYMMETRY_H
-
 
 #include "Space_Groups.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libsymmetry namespace
-namespace libsymmetry{
+  /// libsymmetry namespace
+  namespace libsymmetry {
 
+    void export_symmetry_objects();
 
-void export_symmetry_objects();
+  }  // namespace libsymmetry
+}  // namespace liblibra
 
-
-}// namespace libsymmetry
-}// namespace liblibra
-
-
-#endif// LIB_SYMMETRY_H
+#endif  // LIB_SYMMETRY_H

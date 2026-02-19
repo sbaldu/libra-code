@@ -16,30 +16,37 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  namespace libpot {
 
-namespace libpot{
+    //--------------------------- Vdw potentials -------------------------------------------
 
+    double Vdw_LJ(VECTOR& ri,
+                  VECTOR& rj, /*Inputs*/
+                  VECTOR& fi,
+                  VECTOR& fj, /*Outputs*/
+                  double sigma,
+                  double espilon); /*Parameters*/
 
-//--------------------------- Vdw potentials -------------------------------------------
+    double Vdw_Buffered14_7(VECTOR& ri,
+                            VECTOR& rj, /*Inputs*/
+                            VECTOR& fi,
+                            VECTOR& fj, /*Outputs*/
+                            double sigma,
+                            double espilon); /*Parameters*/
 
-double Vdw_LJ(VECTOR& ri,VECTOR& rj,          /*Inputs*/
-              VECTOR& fi,VECTOR& fj,          /*Outputs*/
-              double sigma, double espilon);  /*Parameters*/
+    double Vdw_Morse(VECTOR& ri,
+                     VECTOR& rj, /*Inputs*/
+                     VECTOR& fi,
+                     VECTOR& fj, /*Outputs*/
+                     double D,
+                     double r0,
+                     double alp); /*Parameters*/
 
-double Vdw_Buffered14_7(VECTOR& ri,VECTOR& rj,          /*Inputs*/
-                        VECTOR& fi,VECTOR& fj,          /*Outputs*/
-                        double sigma, double espilon);  /*Parameters*/
+  }  // namespace libpot
+}  // namespace liblibra
 
-double Vdw_Morse(VECTOR& ri,VECTOR& rj,            /*Inputs*/
-                 VECTOR& fi,VECTOR& fj,            /*Outputs*/
-                 double D, double r0,double alp);  /*Parameters*/
-
-
-} // namespace libpot
-}//liblibra
-
-#endif //POTENTIALS_VDW_H
+#endif  //POTENTIALS_VDW_H

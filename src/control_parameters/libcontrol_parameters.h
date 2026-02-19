@@ -20,18 +20,14 @@
 #include "Control_Parameters.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libcontrol_parameters namespace
+  namespace libcontrol_parameters {
 
-/// libcontrol_parameters namespace
-namespace libcontrol_parameters{
+    void export_Control_Parameters_objects();
 
+  }  // namespace libcontrol_parameters
+}  // namespace liblibra
 
-void export_Control_Parameters_objects();
-
-
-}// namespace libcontrol_parameters
-}// namespace liblibra
-
-
-#endif// LIB_CONTROL_PARAMETERS_H
+#endif  // LIB_CONTROL_PARAMETERS_H

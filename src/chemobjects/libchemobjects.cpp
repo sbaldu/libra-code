@@ -19,54 +19,46 @@
 #else
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "libchemobjects.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
+  using namespace boost::python;
 
-/// libchemobjects
-namespace libchemobjects{
+  /// libchemobjects
+  namespace libchemobjects {
 
-using namespace libuniverse;
-using namespace libmol;
-using namespace libchemsys;
+    using namespace libuniverse;
+    using namespace libmol;
+    using namespace libchemsys;
 
-
-void export_chemobjects_objects(){
-/** 
+    void export_chemobjects_objects() {
+      /** 
   \brief Exporter of libchemobjects classes and functions
 
 */
 
-  export_Universe_objects();
-  export_Mol_objects();
-  export_Chemsys_objects();
+      export_Universe_objects();
+      export_Mol_objects();
+      export_Chemsys_objects();
 
-}// export_chemobjects_objects()
-
-
-
+    }  // export_chemobjects_objects()
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygchemobjects){
+    BOOST_PYTHON_MODULE(cygchemobjects) {
 #else
-BOOST_PYTHON_MODULE(libchemobjects){
+    BOOST_PYTHON_MODULE(libchemobjects) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
-//  export_Mathematics_objects();
-  export_chemobjects_objects();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      //  export_Mathematics_objects();
+      export_chemobjects_objects();
+    }
 
-}
-
-
-}// libchemobjects
-}// liblibra
-
+  }  // namespace libchemobjects
+}  // namespace liblibra

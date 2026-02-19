@@ -14,7 +14,6 @@
     
 */
 
-
 #ifndef LIB_HAMILTONIAN_MM_H
 #define LIB_HAMILTONIAN_MM_H
 
@@ -25,20 +24,17 @@
 #include "Interactions_4_Body.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_mm namespace
-namespace libhamiltonian_mm{
+    /// libhamiltonian_mm namespace
+    namespace libhamiltonian_mm {
 
+      void export_hamiltonian_mm_objects();
 
-void export_hamiltonian_mm_objects();
+    }  // namespace libhamiltonian_mm
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-
-
-}// namespace libhamiltonian_mm
-}// namespace libatomistic
-}// liblibra
-
-#endif// LIB_HAMILTONIAN_MM_H
+#endif  // LIB_HAMILTONIAN_MM_H

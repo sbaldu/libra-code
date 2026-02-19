@@ -28,15 +28,13 @@
 */
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
-
-
-MATRIX compute_dkinemat(dyn_variables& dyn_var, nHamiltonian& ham){
-/**
+    MATRIX compute_dkinemat(dyn_variables& dyn_var, nHamiltonian& ham) {
+      /**
   This function computes the difference between the kinematic and canonical momenta
 
   p_{kin,j} = m dq_j/dt  = p_j - 2 \hbar * \sum_{n} \sum_{k<n}  d_{kn, j} \beta_{kn, j}
@@ -45,31 +43,31 @@ MATRIX compute_dkinemat(dyn_variables& dyn_var, nHamiltonian& ham){
 
 */
 
-  int ndof = dyn_var.ndof;
-  int ntraj = dyn_var.ntraj;
-  int nadi = dyn_var.nadi;
+      int ndof = dyn_var.ndof;
+      int ntraj = dyn_var.ntraj;
+      int nadi = dyn_var.nadi;
 
-  MATRIX dp(ndof, ntraj);
+      MATRIX dp(ndof, ntraj);
 
-  for(int idof=0; idof<ndof; idof++){
-    for(int itraj=0; itraj<ntraj; itraj++){
+      for (int idof = 0; idof < ndof; idof++) {
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          CMATRIX T(*dyn_var.proj_adi[itraj]);
+          double sum = 0.0;
+          for (int n = 0; n < nadi; n++) {
+            for (int k = 0; k < n; k++) {
+              //sum += ham.children[itraj]->dc1_adi[idof]->get(k, n).real() * dyn_var.dm_adi[itraj]->get(k, n).imag();
+              sum += (T.H() * (*ham.children[itraj]->dc1_adi[idof]) * T).get(k, n).real() *
+                     (T.H() * (*dyn_var.dm_adi[itraj]) * T).get(k, n).imag();
+            }  // for k
+          }  // for n
 
-      CMATRIX T(*dyn_var.proj_adi[itraj]);
-      double sum = 0.0;
-      for(int n=0; n<nadi; n++){
-        for(int k=0; k<n; k++){
-          //sum += ham.children[itraj]->dc1_adi[idof]->get(k, n).real() * dyn_var.dm_adi[itraj]->get(k, n).imag();
-          sum += (T.H() * (*ham.children[itraj]->dc1_adi[idof]) * T).get(k, n).real() * (T.H() * (*dyn_var.dm_adi[itraj]) * T ).get(k, n).imag();
-        }// for k
-      }// for n
+          dp.set(idof, itraj, -2.0 * sum);
 
-      dp.set(idof, itraj, -2.0*sum);
+        }  // for itraj
+      }  // for idof
 
-    }// for itraj
-  }// for idof
+      return dp;
+    }
 
-  return dp;
-}
-
-}// libdyn
-}// liblibra
+  }  // namespace libdyn
+}  // namespace liblibra

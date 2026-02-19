@@ -17,13 +17,13 @@
 #include "Operators.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// liboperators namespace
-namespace liboperators{
+  /// liboperators namespace
+  namespace liboperators {
 
-void rotate(double& x,double& y,double phi){
-/** 
+    void rotate(double& x, double& y, double phi) {
+      /** 
   This operator performs in-plane rotation - changes 2 components of an arbitrary vector
   
   \param[in,out] x The x component of 2D vector
@@ -39,19 +39,18 @@ void rotate(double& x,double& y,double phi){
  
 */
 
-  double c = std::cos(phi);
-  double s = std::sin(phi);
+      double c = std::cos(phi);
+      double s = std::sin(phi);
 
-  double tmpx =  c*x - s*y;
-  double tmpy =  s*x + c*y;
+      double tmpx = c * x - s * y;
+      double tmpy = s * x + c * y;
 
-  x = tmpx;
-  y = tmpy;
+      x = tmpx;
+      y = tmpy;
+    }
 
-}
-
-boost::python::list expt_rotate(double x,double y,double phi){
-/** 
+    boost::python::list expt_rotate(double x, double y, double phi) {
+      /** 
   This is the Python version of the void rotate(double& x,double& y,double phi) function.
   The difference is that the input variables x and y are not changed. The new variables
   are returned as a 2-element Python list
@@ -61,21 +60,21 @@ boost::python::list expt_rotate(double x,double y,double phi){
   \param[in] phi The angle of rotation (radians)
 
 */
-  boost::python::list res;
-  double rx,ry; rx = x; ry = y;
+      boost::python::list res;
+      double rx, ry;
+      rx = x;
+      ry = y;
 
-  rotate(rx,ry,phi);
+      rotate(rx, ry, phi);
 
-  res.append(rx);
-  res.append(ry);
- 
-  return res;
-}
+      res.append(rx);
+      res.append(ry);
 
+      return res;
+    }
 
-
-void shift(double& x, double phi){
-/** 
+    void shift(double& x, double phi) {
+      /** 
   This is the shift operator: 
 
   exp(iL * phi) = exp (phi * d/dx ) to vector variable x:
@@ -87,12 +86,11 @@ void shift(double& x, double phi){
 
 */
 
-  x += phi;
+      x += phi;
+    }
 
-}
-
-double expt_shift(double x,double phi){
-/** 
+    double expt_shift(double x, double phi) {
+      /** 
   This is the Python version of the void shift(double& x, double phi) function.
   The difference is that the input variable x is not changed. The new variable
   is returned as a double value
@@ -102,18 +100,17 @@ double expt_shift(double x,double phi){
 
 */
 
-  boost::python::list res;
-  double rx; rx = x;
+      boost::python::list res;
+      double rx;
+      rx = x;
 
-  shift(rx,phi);
- 
-  return rx;
-}
+      shift(rx, phi);
 
+      return rx;
+    }
 
-
-void scale(double& x, double phi){
-/** 
+    void scale(double& x, double phi) {
+      /** 
   Application of the operator 
   exp(iL * phi) = exp (phi * x*d/dx ) to vector variable x:
 
@@ -124,12 +121,11 @@ void scale(double& x, double phi){
 
 */
 
-  x *= std::exp(phi);
+      x *= std::exp(phi);
+    }
 
-}
-
-double expt_scale(double x,double phi){
-/** 
+    double expt_scale(double x, double phi) {
+      /** 
   This is the Python version of the void scale(double& x, double phi) function.
   The difference is that the input variable x is not changed. The new variable
   is returned as a double value
@@ -139,16 +135,13 @@ double expt_scale(double x,double phi){
 
 */
 
+      double rx;
+      rx = x;
 
-  double rx; rx = x;
+      scale(rx, phi);
 
-  scale(rx,phi);
+      return rx;
+    }
 
-  return rx;
-}
-
-
-
-}// namespace liboperators
-}// namespace liblibra
-
+  }  // namespace liboperators
+}  // namespace liblibra

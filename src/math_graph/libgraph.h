@@ -15,15 +15,14 @@
 #include "GRAPH.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libgraph namespace
-namespace libgraph{
+  /// libgraph namespace
+  namespace libgraph {
 
+    void export_GRAPH_objects();
 
-void export_GRAPH_objects();
+  }  // namespace libgraph
+}  // namespace liblibra
 
-}// namespace libgraph
-}// liblibra
-
-#endif //LIB_GRAPH_H
+#endif  //LIB_GRAPH_H

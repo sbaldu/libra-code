@@ -16,704 +16,649 @@
 #include "dyn_variables.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-namespace bp = boost::python;
+    namespace bp = boost::python;
 
-void dyn_variables::allocate_electronic_vars(){
+    void dyn_variables::allocate_electronic_vars() {
+      if (electronic_vars_status == 0) {
+        ampl_dia = new CMATRIX(ndia, ntraj);
+        ampl_adi = new CMATRIX(nadi, ntraj);
+        q_mm = new MATRIX(nadi, ntraj);
+        p_mm = new MATRIX(nadi, ntraj);
+        ave_decoherence_rates = new MATRIX(nadi, nadi);
+        proj_adi = vector<CMATRIX*>(ntraj);
+        dm_dia = vector<CMATRIX*>(ntraj);
+        dm_adi = vector<CMATRIX*>(ntraj);
+        basis_transform = vector<CMATRIX*>(ntraj);
 
-  if(electronic_vars_status==0){ 
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          proj_adi[itraj] = new CMATRIX(nadi, nadi);
+          proj_adi[itraj]->load_identity();
+          dm_dia[itraj] = new CMATRIX(ndia, ndia);
+          dm_adi[itraj] = new CMATRIX(nadi, nadi);
+          basis_transform[itraj] = new CMATRIX(ndia, nadi);
+        }
 
-    ampl_dia = new CMATRIX(ndia, ntraj);
-    ampl_adi = new CMATRIX(nadi, ntraj);
-    q_mm = new MATRIX(nadi, ntraj);
-    p_mm = new MATRIX(nadi, ntraj);
-    ave_decoherence_rates = new MATRIX(nadi, nadi);
-    proj_adi = vector<CMATRIX*>(ntraj);
-    dm_dia = vector<CMATRIX*>(ntraj);
-    dm_adi = vector<CMATRIX*>(ntraj);
-    basis_transform = vector<CMATRIX*>(ntraj);
+        act_states = vector<int>(ntraj, 0);
+        act_states_dia = vector<int>(ntraj, 0);
 
-    for(int itraj=0; itraj<ntraj; itraj++){
-      proj_adi[itraj] = new CMATRIX(nadi, nadi);
-      proj_adi[itraj]->load_identity();
-      dm_dia[itraj] = new CMATRIX(ndia, ndia);
-      dm_adi[itraj] = new CMATRIX(nadi, nadi);
-      basis_transform[itraj] = new CMATRIX(ndia, nadi);
+        electronic_vars_status = 1;
+      }
     }
 
-    act_states = vector<int>(ntraj, 0);
-    act_states_dia = vector<int>(ntraj, 0);
+    void dyn_variables::allocate_nuclear_vars() {
+      if (nuclear_vars_status == 0) {
+        iM = new MATRIX(ndof, 1);
+        q = new MATRIX(ndof, ntraj);
+        p = new MATRIX(ndof, ntraj);
+        f = new MATRIX(ndof, ntraj);
 
-    electronic_vars_status = 1;
-  }
+        nuclear_vars_status = 1;
+      }
+    }
 
-}
-
-void dyn_variables::allocate_nuclear_vars(){
-
-  if(nuclear_vars_status==0){ 
-
-    iM = new MATRIX(ndof, 1);
-    q = new MATRIX(ndof, ntraj);
-    p = new MATRIX(ndof, ntraj);
-    f = new MATRIX(ndof, ntraj);
-
-    nuclear_vars_status = 1;
-  }
-
-}
-
-
-
-
-dyn_variables::dyn_variables(int _ndia, int _nadi, int _ndof, int _ntraj){
-/**
+    dyn_variables::dyn_variables(int _ndia, int _nadi, int _ndof, int _ntraj) {
+      /**
 
   This function initializes the default values of control parameters
 
 */
 
-  ///================= Dimension numbers =============
-  ndia = _ndia;
-  nadi = _nadi;
-  ndof = _ndof;
-  ntraj = _ntraj;
+      ///================= Dimension numbers =============
+      ndia = _ndia;
+      nadi = _nadi;
+      ndof = _ndof;
+      ntraj = _ntraj;
 
+      ///================= Electronic and nuclear variables, for OOP implementation ================
+      electronic_vars_status = 0;
+      allocate_electronic_vars();
 
-  ///================= Electronic and nuclear variables, for OOP implementation ================
-  electronic_vars_status = 0;
-  allocate_electronic_vars();
-    
-  nuclear_vars_status = 0;
-  allocate_nuclear_vars();
+      nuclear_vars_status = 0;
+      allocate_nuclear_vars();
 
-  ///================= A-FSSH ====================
-  afssh_vars_status = 0;
+      ///================= A-FSSH ====================
+      afssh_vars_status = 0;
 
-  ///================= BCSH ====================
-  bcsh_vars_status = 0;
+      ///================= BCSH ====================
+      bcsh_vars_status = 0;
 
-  ///================= DISH ====================
-  dish_vars_status = 0;
+      ///================= DISH ====================
+      dish_vars_status = 0;
 
-  ///================= FSSH2 ===================
-  fssh2_vars_status = 0;
-  
-  ///================= SHXF ====================
-  shxf_vars_status = 0;
+      ///================= FSSH2 ===================
+      fssh2_vars_status = 0;
 
-  ///================ TCNBRA ===================
-  tcnbra_vars_status = 0;
-  
-  ///================= MQCXF ====================
-  mqcxf_vars_status = 0;
-  
-  ///================= QTSH ====================
-  qtsh_vars_status = 0;
+      ///================= SHXF ====================
+      shxf_vars_status = 0;
 
-  ///================= KC-RPMD ====================
-  kcrpmd_vars_status = 0;
+      ///================ TCNBRA ===================
+      tcnbra_vars_status = 0;
 
-  ///================= simple decoherence ====================
-  simple_decoherence_vars_status = 0;
+      ///================= MQCXF ====================
+      mqcxf_vars_status = 0;
 
-}
+      ///================= QTSH ====================
+      qtsh_vars_status = 0;
 
+      ///================= KC-RPMD ====================
+      kcrpmd_vars_status = 0;
 
-void dyn_variables::allocate_afssh(){
+      ///================= simple decoherence ====================
+      simple_decoherence_vars_status = 0;
+    }
 
+    void dyn_variables::allocate_afssh() {
+      if (afssh_vars_status == 0) {
+        dR = vector<vector<CMATRIX*> >(ntraj, vector<CMATRIX*>(ndof, NULL));
+        dP = vector<vector<CMATRIX*> >(ntraj, vector<CMATRIX*>(ndof, NULL));
 
-  if(afssh_vars_status==0){
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          for (int idof = 0; idof < ndof; idof++) {
+            dR[itraj][idof] = new CMATRIX(nadi, nadi);
+            dP[itraj][idof] = new CMATRIX(nadi, nadi);
+          }
+        }
 
-    dR = vector< vector<CMATRIX*> >(ntraj, vector<CMATRIX*>(ndof, NULL) );
-    dP = vector< vector<CMATRIX*> >(ntraj, vector<CMATRIX*>(ndof, NULL) );
+        afssh_vars_status = 1;
+      }
 
-    for(int itraj=0; itraj<ntraj; itraj++){
-      for(int idof=0; idof<ndof; idof++){
+    }  // allocate_afssh
 
-        dR[itraj][idof] = new CMATRIX(nadi, nadi);
-        dP[itraj][idof] = new CMATRIX(nadi, nadi);
+    void dyn_variables::allocate_bcsh() {
+      if (bcsh_vars_status == 0) {
+        reversal_events = new MATRIX(nadi, ntraj);
+        bcsh_vars_status = 1;
+      }
 
+    }  // allocate_bcsh
+
+    void dyn_variables::allocate_dish() {
+      if (dish_vars_status == 0) {
+        coherence_time = new MATRIX(nadi, ntraj);
+        dish_vars_status = 1;
+      }
+
+    }  // allocate_dish
+
+    void dyn_variables::allocate_fssh2() {
+      if (fssh2_vars_status == 0) {
+        dm_dia_prev = vector<CMATRIX*>(ntraj);
+        dm_adi_prev = vector<CMATRIX*>(ntraj);
+
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          dm_dia_prev[itraj] = new CMATRIX(ndia, ndia);
+          dm_adi_prev[itraj] = new CMATRIX(nadi, nadi);
+        }
+
+        fssh3_errors = vector<vector<double> >(ntraj, vector<double>(5, 0.0));
+
+        fssh2_vars_status = 1;
       }
     }
 
-    afssh_vars_status = 1;
+    void dyn_variables::allocate_shxf() {
+      if (shxf_vars_status == 0) {
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          is_mixed.push_back(vector<int>());
+          is_first.push_back(vector<int>());
+          is_fixed.push_back(vector<int>());
+          is_keep.push_back(vector<int>());
+          for (int i = 0; i < nadi; i++) {
+            is_mixed[itraj].push_back(0);
+            is_first[itraj].push_back(0);
+            is_fixed[itraj].push_back(0);
+            is_keep[itraj].push_back(0);
+          }  // i
+        }  // itraj
+
+        q_aux = vector<MATRIX*>(ntraj);
+        p_aux = vector<MATRIX*>(ntraj);
+        p_aux_old = vector<MATRIX*>(ntraj);
+        nab_phase = vector<MATRIX*>(ntraj);
+        nab_phase_old = vector<MATRIX*>(ntraj);
+        ham_xf = vector<CMATRIX*>(ntraj);
+
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          q_aux[itraj] = new MATRIX(nadi, ndof);
+          p_aux[itraj] = new MATRIX(nadi, ndof);
+          p_aux_old[itraj] = new MATRIX(nadi, ndof);
+          nab_phase[itraj] = new MATRIX(nadi, ndof);
+          nab_phase_old[itraj] = new MATRIX(nadi, ndof);
+          ham_xf[itraj] = new CMATRIX(nadi, nadi);
+        }
+
+        wp_width = new MATRIX(ndof, ntraj);
+        p_quant = new MATRIX(ndof, ntraj);
+        VP = new MATRIX(ndof, ntraj);
+
+        shxf_vars_status = 1;
+      }
+    }  // allocate_shxf
+
+    void dyn_variables::allocate_mqcxf() {
+      if (mqcxf_vars_status == 0) {
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          is_mixed.push_back(vector<int>());
+          is_first.push_back(vector<int>());
+          is_fixed.push_back(vector<int>());
+          is_keep.push_back(vector<int>());
+          for (int i = 0; i < nadi; i++) {
+            is_mixed[itraj].push_back(0);
+            is_first[itraj].push_back(0);
+            is_fixed[itraj].push_back(0);
+            is_keep[itraj].push_back(0);
+          }  // i
+        }  // itraj
+
+        q_aux = vector<MATRIX*>(ntraj);
+        p_aux = vector<MATRIX*>(ntraj);
+        p_aux_old = vector<MATRIX*>(ntraj);
+        nab_phase = vector<MATRIX*>(ntraj);
+        //nab_phase_old = vector<MATRIX*>(ntraj);
+        ham_xf = vector<CMATRIX*>(ntraj);
+
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          q_aux[itraj] = new MATRIX(nadi, ndof);
+          p_aux[itraj] = new MATRIX(nadi, ndof);
+          p_aux_old[itraj] = new MATRIX(nadi, ndof);
+          nab_phase[itraj] = new MATRIX(nadi, ndof);
+          //nab_phase_old[itraj] = new MATRIX(nadi, ndof);
+          ham_xf[itraj] = new CMATRIX(nadi, nadi);
+        }
+
+        wp_width = new MATRIX(ndof, ntraj);
+        p_quant = new MATRIX(ndof, ntraj);
+        VP = new MATRIX(ndof, ntraj);
+        f_xf = new MATRIX(ndof, ntraj);
+
+        mqcxf_vars_status = 1;
+      }
+    }  // allocate_mqcxf
+
+    void dyn_variables::allocate_tcnbra() {
+      if (tcnbra_vars_status == 0) {
+        thermal_correction_factors = vector<double>(ntraj, 1.0);
+
+        for (int i = 0; i < ntraj; i++) {
+          Thermostat th;
+          th.nu_therm = 0.001;
+          th.thermostat_type = "Nose-Hoover";
+          th.NHC_size = 1;
+          // by default, thermostat has 1 translational DOF
+          th.init_nhc();
+          tcnbra_thermostats.push_back(th);
+        }
+        tcnbra_ekin = vector<double>(ntraj, -1000.0);
+
+        tcnbra_vars_status = 1;
+      }
+    }  // allocate_tcnbra
+
+    void dyn_variables::allocate_qtsh() {
+      if (qtsh_vars_status == 0) {
+        qtsh_f_nc = new MATRIX(ndof, ntraj);
 
-  }
-
-}// allocate_afssh
-
-
-
-void dyn_variables::allocate_bcsh(){
-
-  if(bcsh_vars_status==0){
-
-    reversal_events = new MATRIX(nadi, ntraj);
-    bcsh_vars_status = 1;
-
-  }
-
-}// allocate_bcsh
-
-
-void dyn_variables::allocate_dish(){
-
-  if(dish_vars_status==0){
-
-    coherence_time = new MATRIX(nadi, ntraj);
-    dish_vars_status = 1;
-
-  }
-
-}// allocate_dish
-
-
-void dyn_variables::allocate_fssh2(){
-
-  if(fssh2_vars_status==0){
-
-    dm_dia_prev = vector<CMATRIX*>(ntraj);
-    dm_adi_prev = vector<CMATRIX*>(ntraj);
-
-    for(int itraj=0; itraj<ntraj; itraj++){
-      dm_dia_prev[itraj] = new CMATRIX(ndia, ndia);
-      dm_adi_prev[itraj] = new CMATRIX(nadi, nadi);
-    }
-
-    fssh3_errors = vector< vector<double> >(ntraj, vector<double>(5, 0.0) );
-
-    fssh2_vars_status = 1;
-  }
-}
-
-void dyn_variables::allocate_shxf(){
-
-  if(shxf_vars_status==0){
-    for(int itraj=0; itraj<ntraj; itraj++){
-      is_mixed.push_back(vector<int>());
-      is_first.push_back(vector<int>());
-      is_fixed.push_back(vector<int>());
-      is_keep.push_back(vector<int>());
-      for(int i=0; i<nadi; i++){
-        is_mixed[itraj].push_back(0);
-        is_first[itraj].push_back(0);
-        is_fixed[itraj].push_back(0);
-        is_keep[itraj].push_back(0);
-      } // i
-    } // itraj
-
-    q_aux = vector<MATRIX*>(ntraj); 
-    p_aux = vector<MATRIX*>(ntraj);
-    p_aux_old = vector<MATRIX*>(ntraj);
-    nab_phase = vector<MATRIX*>(ntraj);
-    nab_phase_old = vector<MATRIX*>(ntraj);
-    ham_xf = vector<CMATRIX*>(ntraj);
-
-    for(int itraj=0; itraj<ntraj; itraj++){
-      q_aux[itraj] = new MATRIX(nadi, ndof);
-      p_aux[itraj] = new MATRIX(nadi, ndof);
-      p_aux_old[itraj] = new MATRIX(nadi, ndof);
-      nab_phase[itraj] = new MATRIX(nadi, ndof);
-      nab_phase_old[itraj] = new MATRIX(nadi, ndof);
-      ham_xf[itraj] = new CMATRIX(nadi, nadi);
-    }
-
-    wp_width = new MATRIX(ndof, ntraj);
-    p_quant = new MATRIX(ndof, ntraj);
-    VP = new MATRIX(ndof, ntraj);
-  
-    shxf_vars_status = 1;
-  }
-}// allocate_shxf
-
-void dyn_variables::allocate_mqcxf(){
-
-  if(mqcxf_vars_status==0){
-    for(int itraj=0; itraj<ntraj; itraj++){
-      is_mixed.push_back(vector<int>());
-      is_first.push_back(vector<int>());
-      is_fixed.push_back(vector<int>());
-      is_keep.push_back(vector<int>());
-      for(int i=0; i<nadi; i++){
-        is_mixed[itraj].push_back(0);
-        is_first[itraj].push_back(0);
-        is_fixed[itraj].push_back(0);
-        is_keep[itraj].push_back(0);
-      } // i
-    } // itraj
-
-    q_aux = vector<MATRIX*>(ntraj); 
-    p_aux = vector<MATRIX*>(ntraj);
-    p_aux_old = vector<MATRIX*>(ntraj);
-    nab_phase = vector<MATRIX*>(ntraj);
-    //nab_phase_old = vector<MATRIX*>(ntraj);
-    ham_xf = vector<CMATRIX*>(ntraj);
-
-    for(int itraj=0; itraj<ntraj; itraj++){
-      q_aux[itraj] = new MATRIX(nadi, ndof);
-      p_aux[itraj] = new MATRIX(nadi, ndof);
-      p_aux_old[itraj] = new MATRIX(nadi, ndof);
-      nab_phase[itraj] = new MATRIX(nadi, ndof);
-      //nab_phase_old[itraj] = new MATRIX(nadi, ndof);
-      ham_xf[itraj] = new CMATRIX(nadi, nadi);
-    }
-
-    wp_width = new MATRIX(ndof, ntraj);
-    p_quant = new MATRIX(ndof, ntraj);
-    VP = new MATRIX(ndof, ntraj);
-    f_xf = new MATRIX(ndof, ntraj);
-  
-    mqcxf_vars_status = 1;
-  }
-}// allocate_mqcxf
-
-
-void dyn_variables::allocate_tcnbra(){
-
-  if(tcnbra_vars_status==0){
-    thermal_correction_factors = vector<double>(ntraj, 1.0); 
-
-    for(int i=0; i<ntraj; i++){
-      Thermostat th;
-      th.nu_therm = 0.001; th.thermostat_type = "Nose-Hoover"; th.NHC_size = 1;     
-      // by default, thermostat has 1 translational DOF
-      th.init_nhc();
-      tcnbra_thermostats.push_back(th); 
-    }
-    tcnbra_ekin = vector<double>(ntraj, -1000.0);
-
-    tcnbra_vars_status = 1;
-  }
-}// allocate_tcnbra
-
-
-
-void dyn_variables::allocate_qtsh(){
-
-  if(qtsh_vars_status==0){
-    
-    qtsh_f_nc = new MATRIX(ndof, ntraj);
-
-    qtsh_vars_status = 1;
-  }
-}
-
-
-void dyn_variables::allocate_kcrpmd(){
-
-  if(kcrpmd_vars_status==0){
-
-    //m_aux_var = vector<double>(1, 10.0);
-    //y_aux_var = vector<double>(1, 0.0);
-    //p_aux_var = vector<double>(1, 0.05);
-    f_aux_var = vector<double>(1, 0.0);
-
-    kcrpmd_vars_status = 1;
-  }
-}// allocate_kcrpmd
-
-
-void dyn_variables::allocate_simple_decoherence(){
-
-  if(simple_decoherence_vars_status==0){
-
-    coherence_factors = std::vector< std::vector< std::vector<double> >  >(ntraj, std::vector< std::vector<double> >(nadi, std::vector<double>(nadi, 1.0) ) );
-    simple_decoherence_vars_status = 1;
-  }
-
-}
-
-
-
-dyn_variables::dyn_variables(const dyn_variables& x){     
-  //cout<<"dyn_variables copy constructor\n";
-  int itraj, idof;
-
-  ndia = x.ndia;
-  nadi = x.nadi;
-  ndof = x.ndof;
-  ntraj = x.ntraj;
-
-  // copy content of electronic vars, only if initialized 
-  if(x.electronic_vars_status==1){
-
-    allocate_electronic_vars();
-
-    *ampl_dia = *x.ampl_dia;
-    *ampl_adi = *x.ampl_adi;
-    *q_mm = *x.q_mm;
-    *p_mm = *x.p_mm;
-    *ave_decoherence_rates = *x.ave_decoherence_rates;
-    for(itraj=0; itraj<ntraj; itraj++){
-      *proj_adi[itraj] = *x.proj_adi[itraj];
-      *dm_dia[itraj] = *x.dm_dia[itraj];
-      *dm_adi[itraj] = *x.dm_adi[itraj];
-      *basis_transform[itraj] = *x.basis_transform[itraj];
-    }
-    act_states = x.act_states;
-    act_states_dia = x.act_states_dia;
-
-  }
-
-  // copy content of nuclear vars, only if initialized 
-  if(x.nuclear_vars_status==1){
-
-    allocate_nuclear_vars();
-
-    *iM = *x.iM;
-    *q = *x.q;
-    *p = *x.p;
-    *f = *x.f;
-  }
-
-  // AFSSH vars - only if initialized
-  if(x.afssh_vars_status==1){
-    allocate_afssh();
-    
-    // Copy content
-    for(itraj=0; itraj<ntraj; itraj++){
-      for(idof=0; idof<ndof; idof++){
-        *dR[itraj][idof] = *x.dR[itraj][idof];
-        *dP[itraj][idof] = *x.dP[itraj][idof];
+        qtsh_vars_status = 1;
       }
     }
 
-  }// if AFSSH vars
+    void dyn_variables::allocate_kcrpmd() {
+      if (kcrpmd_vars_status == 0) {
+        //m_aux_var = vector<double>(1, 10.0);
+        //y_aux_var = vector<double>(1, 0.0);
+        //p_aux_var = vector<double>(1, 0.05);
+        f_aux_var = vector<double>(1, 0.0);
 
-  // BCSH vars - only if initialized
-  if(x.bcsh_vars_status==1){
-    allocate_bcsh();
+        kcrpmd_vars_status = 1;
+      }
+    }  // allocate_kcrpmd
 
-    // Copy content
-    *reversal_events = *x.reversal_events;
-
-  }// if BCSH vars
-
-  // DISH vars - only if initialized
-  if(x.dish_vars_status==1){
-    allocate_dish();
-
-    // Copy content
-    *coherence_time = *x.coherence_time;
-
-  }// if DISH vars
-
-  // FSSH2 vars - only if initialized
-    if(x.fssh2_vars_status==1){
-    allocate_fssh2();
- 
-    // Copy content
-    for(itraj=0; itraj<ntraj; itraj++){
-      *dm_dia_prev[itraj] = *x.dm_dia_prev[itraj];
-      *dm_adi_prev[itraj] = *x.dm_adi_prev[itraj];
-    }
-    fssh3_errors = x.fssh3_errors;
-
-  }// if FSSH2 vars
- 
-  // SHXF vars - only if initialized
-  if(x.shxf_vars_status==1){
-    allocate_shxf();
-    
-    // Copy content
-    for(int itraj=0; itraj<ntraj; itraj++){
-        *q_aux[itraj] = *x.q_aux[itraj];
-        *p_aux[itraj] = *x.p_aux[itraj];
-        *p_aux_old[itraj] = *x.p_aux_old[itraj];
-        *nab_phase[itraj] = *x.nab_phase[itraj];
-        *nab_phase_old[itraj] = *x.nab_phase_old[itraj];
-        *ham_xf[itraj] = *x.ham_xf[itraj];
-    }
-    *wp_width = *x.wp_width;
-    *p_quant = *x.p_quant;
-    *VP = *x.VP;
-
-  }// if SHXF vars
-  
-  // MQCXF vars - only if initialized
-  if(x.mqcxf_vars_status==1){
-    allocate_mqcxf();
-    
-    // Copy content
-    for(int itraj=0; itraj<ntraj; itraj++){
-        *q_aux[itraj] = *x.q_aux[itraj];
-        *p_aux[itraj] = *x.p_aux[itraj];
-        *p_aux_old[itraj] = *x.p_aux_old[itraj];
-        *nab_phase[itraj] = *x.nab_phase[itraj];
-        //*nab_phase_old[itraj] = *x.nab_phase_old[itraj];
-        *ham_xf[itraj] = *x.ham_xf[itraj];
-    }
-    *wp_width = *x.wp_width;
-    *p_quant = *x.p_quant;
-    *VP = *x.VP;
-    *f_xf = *x.f_xf;
-
-  }// if MQCXF vars
-
- 
-  // TCNBRA vars - only if initialized
-  if(x.tcnbra_vars_status==1){
-    allocate_tcnbra();
-
-    // Copy content
-    thermal_correction_factors = x.thermal_correction_factors;
-
-    tcnbra_thermostats = x.tcnbra_thermostats;
-    tcnbra_ekin = x.tcnbra_ekin; 
-
-  }// if TCNBRA vars
-  
-
-  // QTSH vars - only if initialized
-  if(x.qtsh_vars_status==1){
-    allocate_qtsh();
-    
-    // Copy content
-    *qtsh_f_nc = *x.qtsh_f_nc;
-
-  }// if QTSH vars
-
-
-  // KC-RPMD vars - only if initialized
-  if(x.kcrpmd_vars_status==1){
-    allocate_kcrpmd();
-    
-    // Copy content
-    m_aux_var = x.m_aux_var;
-    y_aux_var = x.y_aux_var;
-    p_aux_var = x.p_aux_var;
-    f_aux_var = x.f_aux_var;
-
-  }// if KCRPMD vars
-
-  if(x.simple_decoherence_vars_status == 1 ){
-    coherence_factors = x.coherence_factors;
-  }
-
-}// dyn_variables cctor
-
-
-
-dyn_variables::~dyn_variables(){  
-  //cout<<"dyn_variables destructor!!!\n";
-
-  if(nuclear_vars_status==1){
-    delete iM;
-    delete q;
-    delete p;
-    delete f;
-    nuclear_vars_status = 0;
-  }
-
-  if(electronic_vars_status==1){ 
-    for(int itraj=0; itraj<ntraj; itraj++){
-      delete proj_adi[itraj];
-      delete dm_dia[itraj];
-      delete dm_adi[itraj];
-      delete basis_transform[itraj];
-    }
-    proj_adi.clear();
-    dm_dia.clear();
-    dm_adi.clear();
-    basis_transform.clear();
-    
-    delete ampl_dia;
-    delete ampl_adi;
-    delete q_mm;
-    delete p_mm;
-    delete ave_decoherence_rates;
-
-    act_states.clear();
-    act_states_dia.clear();
-    electronic_vars_status = 0;
-  }
-
-  if(afssh_vars_status==1){
-
-    for(int itraj; itraj<ntraj; itraj++){
-      for(int idof; idof<ndof; idof++){
-
-        delete dR[itraj][idof];
-        delete dP[itraj][idof];
-      }// for idof
-
-      dR[itraj].clear();
-      dP[itraj].clear();
-
-    }// for itraj
-
-    dR.clear();
-    dP.clear();
-
-    afssh_vars_status = 0;
-
-  }// AFSSH variables
-
-  if(bcsh_vars_status==1){
-    delete reversal_events;
-
-    bcsh_vars_status = 0;
-  }
-
-  if(dish_vars_status==1){
-    delete coherence_time;
-
-    dish_vars_status = 0;
-  }
-
-  if(fssh2_vars_status==1){
-
-    for(int itraj=0; itraj<ntraj; itraj++){
-      delete dm_dia_prev[itraj];
-      delete dm_adi_prev[itraj];
-      fssh3_errors[itraj].clear();
-    }
-    dm_dia_prev.clear();
-    dm_adi_prev.clear();
-    fssh3_errors.clear();
-
-    fssh2_vars_status = 0;
-  }
-
-  if(shxf_vars_status==1){
-    for(int itraj; itraj<ntraj; itraj++){
-
-        delete q_aux[itraj];
-        delete p_aux[itraj];
-        delete p_aux_old[itraj];
-        delete nab_phase[itraj];
-        delete nab_phase_old[itraj];
-        delete ham_xf[itraj];
-
+    void dyn_variables::allocate_simple_decoherence() {
+      if (simple_decoherence_vars_status == 0) {
+        coherence_factors = std::vector<std::vector<std::vector<double> > >(
+            ntraj, std::vector<std::vector<double> >(nadi, std::vector<double>(nadi, 1.0)));
+        simple_decoherence_vars_status = 1;
+      }
     }
 
-    q_aux.clear();
-    p_aux.clear();
-    p_aux_old.clear();
-    nab_phase.clear();
-    nab_phase_old.clear();
-    ham_xf.clear();
+    dyn_variables::dyn_variables(const dyn_variables& x) {
+      //cout<<"dyn_variables copy constructor\n";
+      int itraj, idof;
 
-    delete wp_width;
-    delete p_quant;
-    delete VP;
+      ndia = x.ndia;
+      nadi = x.nadi;
+      ndof = x.ndof;
+      ntraj = x.ntraj;
 
-    shxf_vars_status = 0;
-  }
+      // copy content of electronic vars, only if initialized
+      if (x.electronic_vars_status == 1) {
+        allocate_electronic_vars();
 
-  if(tcnbra_vars_status==1){
-    thermal_correction_factors.clear(); 
-    tcnbra_thermostats.clear();
-    tcnbra_ekin.clear();
+        *ampl_dia = *x.ampl_dia;
+        *ampl_adi = *x.ampl_adi;
+        *q_mm = *x.q_mm;
+        *p_mm = *x.p_mm;
+        *ave_decoherence_rates = *x.ave_decoherence_rates;
+        for (itraj = 0; itraj < ntraj; itraj++) {
+          *proj_adi[itraj] = *x.proj_adi[itraj];
+          *dm_dia[itraj] = *x.dm_dia[itraj];
+          *dm_adi[itraj] = *x.dm_adi[itraj];
+          *basis_transform[itraj] = *x.basis_transform[itraj];
+        }
+        act_states = x.act_states;
+        act_states_dia = x.act_states_dia;
+      }
 
-    tcnbra_vars_status = 0;
+      // copy content of nuclear vars, only if initialized
+      if (x.nuclear_vars_status == 1) {
+        allocate_nuclear_vars();
 
-  }
+        *iM = *x.iM;
+        *q = *x.q;
+        *p = *x.p;
+        *f = *x.f;
+      }
 
-  if(mqcxf_vars_status==1){
-    for(int itraj; itraj<ntraj; itraj++){
+      // AFSSH vars - only if initialized
+      if (x.afssh_vars_status == 1) {
+        allocate_afssh();
 
-        delete q_aux[itraj];
-        delete p_aux[itraj];
-        delete p_aux_old[itraj];
-        delete nab_phase[itraj];
-        //delete nab_phase_old[itraj];
-        delete ham_xf[itraj];
+        // Copy content
+        for (itraj = 0; itraj < ntraj; itraj++) {
+          for (idof = 0; idof < ndof; idof++) {
+            *dR[itraj][idof] = *x.dR[itraj][idof];
+            *dP[itraj][idof] = *x.dP[itraj][idof];
+          }
+        }
 
+      }  // if AFSSH vars
+
+      // BCSH vars - only if initialized
+      if (x.bcsh_vars_status == 1) {
+        allocate_bcsh();
+
+        // Copy content
+        *reversal_events = *x.reversal_events;
+
+      }  // if BCSH vars
+
+      // DISH vars - only if initialized
+      if (x.dish_vars_status == 1) {
+        allocate_dish();
+
+        // Copy content
+        *coherence_time = *x.coherence_time;
+
+      }  // if DISH vars
+
+      // FSSH2 vars - only if initialized
+      if (x.fssh2_vars_status == 1) {
+        allocate_fssh2();
+
+        // Copy content
+        for (itraj = 0; itraj < ntraj; itraj++) {
+          *dm_dia_prev[itraj] = *x.dm_dia_prev[itraj];
+          *dm_adi_prev[itraj] = *x.dm_adi_prev[itraj];
+        }
+        fssh3_errors = x.fssh3_errors;
+
+      }  // if FSSH2 vars
+
+      // SHXF vars - only if initialized
+      if (x.shxf_vars_status == 1) {
+        allocate_shxf();
+
+        // Copy content
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          *q_aux[itraj] = *x.q_aux[itraj];
+          *p_aux[itraj] = *x.p_aux[itraj];
+          *p_aux_old[itraj] = *x.p_aux_old[itraj];
+          *nab_phase[itraj] = *x.nab_phase[itraj];
+          *nab_phase_old[itraj] = *x.nab_phase_old[itraj];
+          *ham_xf[itraj] = *x.ham_xf[itraj];
+        }
+        *wp_width = *x.wp_width;
+        *p_quant = *x.p_quant;
+        *VP = *x.VP;
+
+      }  // if SHXF vars
+
+      // MQCXF vars - only if initialized
+      if (x.mqcxf_vars_status == 1) {
+        allocate_mqcxf();
+
+        // Copy content
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          *q_aux[itraj] = *x.q_aux[itraj];
+          *p_aux[itraj] = *x.p_aux[itraj];
+          *p_aux_old[itraj] = *x.p_aux_old[itraj];
+          *nab_phase[itraj] = *x.nab_phase[itraj];
+          //*nab_phase_old[itraj] = *x.nab_phase_old[itraj];
+          *ham_xf[itraj] = *x.ham_xf[itraj];
+        }
+        *wp_width = *x.wp_width;
+        *p_quant = *x.p_quant;
+        *VP = *x.VP;
+        *f_xf = *x.f_xf;
+
+      }  // if MQCXF vars
+
+      // TCNBRA vars - only if initialized
+      if (x.tcnbra_vars_status == 1) {
+        allocate_tcnbra();
+
+        // Copy content
+        thermal_correction_factors = x.thermal_correction_factors;
+
+        tcnbra_thermostats = x.tcnbra_thermostats;
+        tcnbra_ekin = x.tcnbra_ekin;
+
+      }  // if TCNBRA vars
+
+      // QTSH vars - only if initialized
+      if (x.qtsh_vars_status == 1) {
+        allocate_qtsh();
+
+        // Copy content
+        *qtsh_f_nc = *x.qtsh_f_nc;
+
+      }  // if QTSH vars
+
+      // KC-RPMD vars - only if initialized
+      if (x.kcrpmd_vars_status == 1) {
+        allocate_kcrpmd();
+
+        // Copy content
+        m_aux_var = x.m_aux_var;
+        y_aux_var = x.y_aux_var;
+        p_aux_var = x.p_aux_var;
+        f_aux_var = x.f_aux_var;
+
+      }  // if KCRPMD vars
+
+      if (x.simple_decoherence_vars_status == 1) {
+        coherence_factors = x.coherence_factors;
+      }
+
+    }  // dyn_variables cctor
+
+    dyn_variables::~dyn_variables() {
+      //cout<<"dyn_variables destructor!!!\n";
+
+      if (nuclear_vars_status == 1) {
+        delete iM;
+        delete q;
+        delete p;
+        delete f;
+        nuclear_vars_status = 0;
+      }
+
+      if (electronic_vars_status == 1) {
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          delete proj_adi[itraj];
+          delete dm_dia[itraj];
+          delete dm_adi[itraj];
+          delete basis_transform[itraj];
+        }
+        proj_adi.clear();
+        dm_dia.clear();
+        dm_adi.clear();
+        basis_transform.clear();
+
+        delete ampl_dia;
+        delete ampl_adi;
+        delete q_mm;
+        delete p_mm;
+        delete ave_decoherence_rates;
+
+        act_states.clear();
+        act_states_dia.clear();
+        electronic_vars_status = 0;
+      }
+
+      if (afssh_vars_status == 1) {
+        for (int itraj; itraj < ntraj; itraj++) {
+          for (int idof; idof < ndof; idof++) {
+            delete dR[itraj][idof];
+            delete dP[itraj][idof];
+          }  // for idof
+
+          dR[itraj].clear();
+          dP[itraj].clear();
+
+        }  // for itraj
+
+        dR.clear();
+        dP.clear();
+
+        afssh_vars_status = 0;
+
+      }  // AFSSH variables
+
+      if (bcsh_vars_status == 1) {
+        delete reversal_events;
+
+        bcsh_vars_status = 0;
+      }
+
+      if (dish_vars_status == 1) {
+        delete coherence_time;
+
+        dish_vars_status = 0;
+      }
+
+      if (fssh2_vars_status == 1) {
+        for (int itraj = 0; itraj < ntraj; itraj++) {
+          delete dm_dia_prev[itraj];
+          delete dm_adi_prev[itraj];
+          fssh3_errors[itraj].clear();
+        }
+        dm_dia_prev.clear();
+        dm_adi_prev.clear();
+        fssh3_errors.clear();
+
+        fssh2_vars_status = 0;
+      }
+
+      if (shxf_vars_status == 1) {
+        for (int itraj; itraj < ntraj; itraj++) {
+          delete q_aux[itraj];
+          delete p_aux[itraj];
+          delete p_aux_old[itraj];
+          delete nab_phase[itraj];
+          delete nab_phase_old[itraj];
+          delete ham_xf[itraj];
+        }
+
+        q_aux.clear();
+        p_aux.clear();
+        p_aux_old.clear();
+        nab_phase.clear();
+        nab_phase_old.clear();
+        ham_xf.clear();
+
+        delete wp_width;
+        delete p_quant;
+        delete VP;
+
+        shxf_vars_status = 0;
+      }
+
+      if (tcnbra_vars_status == 1) {
+        thermal_correction_factors.clear();
+        tcnbra_thermostats.clear();
+        tcnbra_ekin.clear();
+
+        tcnbra_vars_status = 0;
+      }
+
+      if (mqcxf_vars_status == 1) {
+        for (int itraj; itraj < ntraj; itraj++) {
+          delete q_aux[itraj];
+          delete p_aux[itraj];
+          delete p_aux_old[itraj];
+          delete nab_phase[itraj];
+          //delete nab_phase_old[itraj];
+          delete ham_xf[itraj];
+        }
+
+        q_aux.clear();
+        p_aux.clear();
+        p_aux_old.clear();
+        nab_phase.clear();
+        //nab_phase_old.clear();
+        ham_xf.clear();
+
+        delete wp_width;
+        delete p_quant;
+        delete VP;
+        delete f_xf;
+
+        mqcxf_vars_status = 0;
+      }
+
+      if (qtsh_vars_status == 1) {
+        delete qtsh_f_nc;
+
+        qtsh_vars_status = 0;
+      }
+
+      if (kcrpmd_vars_status == 1) {
+        m_aux_var.clear();
+        y_aux_var.clear();
+        p_aux_var.clear();
+        f_aux_var.clear();
+
+        kcrpmd_vars_status = 0;
+      }
+
+      if (simple_decoherence_vars_status == 1) {
+        coherence_factors.clear();
+
+        simple_decoherence_vars_status = 0;
+      }
     }
 
-    q_aux.clear();
-    p_aux.clear();
-    p_aux_old.clear();
-    nab_phase.clear();
-    //nab_phase_old.clear();
-    ham_xf.clear();
+    CMATRIX dyn_variables::get_dm_adi(int i, int prev_steps) {
+      if (prev_steps == 0) {
+        return *dm_adi[i];
+      } else if (prev_steps == 1) {
+        return *dm_adi_prev[i];
+      } else {
+        ;
+        ;
+      }
+    }
 
-    delete wp_width;
-    delete p_quant;
-    delete VP;
-    delete f_xf;
+    CMATRIX dyn_variables::get_dm_dia(int i, int prev_steps) {
+      if (prev_steps == 0) {
+        return *dm_dia[i];
+      } else if (prev_steps == 1) {
+        return *dm_dia_prev[i];
+      } else {
+        ;
+        ;
+      }
+    }
 
-    mqcxf_vars_status = 0;
-  }
-  
-  if(qtsh_vars_status==1){
+    vector<vector<double> > dyn_variables::get_fssh3_errors() { return fssh3_errors; }
 
-    delete qtsh_f_nc;
+    vector<double> dyn_variables::get_fssh3_average_errors() {
+      int itraj, k;
+      vector<double> res(5, 0.0);
+      for (itraj = 0; itraj < ntraj; itraj++) {
+        for (k = 0; k < 5; k++) {
+          res[k] += fssh3_errors[itraj][k];
+        }
+      }
+      for (k = 0; k < 5; k++) {
+        res[k] /= ntraj;
+      }
 
-    qtsh_vars_status = 0;
-  }
+      return res;
+    }
 
-  if(kcrpmd_vars_status==1){
-    m_aux_var.clear(); 
-    y_aux_var.clear(); 
-    p_aux_var.clear(); 
-    f_aux_var.clear(); 
-
-    kcrpmd_vars_status = 0;
-  }
-
-  if(simple_decoherence_vars_status==1){
-    coherence_factors.clear();
-
-    simple_decoherence_vars_status = 0;
-  }
-
-}
-
-
-
-CMATRIX dyn_variables::get_dm_adi(int i, int prev_steps){
-  if(prev_steps==0){ return *dm_adi[i]; }
-  else if(prev_steps==1){ return *dm_adi_prev[i]; }
-  else{ ;; }
-}
-
-CMATRIX dyn_variables::get_dm_dia(int i, int prev_steps){
-  if(prev_steps==0){ return *dm_dia[i]; }
-  else if(prev_steps==1){ return *dm_dia_prev[i]; }
-  else{ ;; }
-}
-
-vector< vector<double> > dyn_variables::get_fssh3_errors(){
-  return fssh3_errors;
-}
-
-vector<double> dyn_variables::get_fssh3_average_errors(){
-  int itraj, k;
-  vector<double> res(5,0.0);
-  for(itraj=0;itraj<ntraj;itraj++){
-    for(k=0;k<5;k++){  res[k] += fssh3_errors[itraj][k];   }
-  }
-  for(k=0;k<5;k++){ res[k] /= ntraj; }
-
-  return res;
-}
-
-void dyn_variables::set_parameters(bp::dict params){
-/**
+    void dyn_variables::set_parameters(bp::dict params) {
+      /**
   Extract the parameters from the input dictionary
 */
 
-  std::string key;
-  for(int i=0;i<len(params.values());i++){
-    key = bp::extract<std::string>(params.keys()[i]);
+      std::string key;
+      for (int i = 0; i < len(params.values()); i++) {
+        key = bp::extract<std::string>(params.keys()[i]);
 
-    ///================= Computing Hamiltonian-related properties ====================
-//    if(key=="rep_tdse") { rep_tdse = bp::extract<int>(params.values()[i]); }
-//    else if(key=="rep_ham") { rep_ham = bp::extract<int>(params.values()[i]);   }
+        ///================= Computing Hamiltonian-related properties ====================
+        //    if(key=="rep_tdse") { rep_tdse = bp::extract<int>(params.values()[i]); }
+        //    else if(key=="rep_ham") { rep_ham = bp::extract<int>(params.values()[i]);   }
+      }
+    }
 
-  }
-}
-
-
-}// namespace libdyn
-}// liblibra
-
+  }  // namespace libdyn
+}  // namespace liblibra

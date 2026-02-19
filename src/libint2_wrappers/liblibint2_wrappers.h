@@ -20,19 +20,14 @@
 #include "libint2_wrappers.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// liblibint2_wrappers namespace
+  namespace liblibint2_wrappers {
 
-/// liblibint2_wrappers namespace
-namespace liblibint2_wrappers{
+    void export_libint2_wrappers_objects();
 
+  }  // namespace liblibint2_wrappers
+}  // namespace liblibra
 
-void export_libint2_wrappers_objects();
-
-
-}// namespace libqobjects
-}// namespace liblibra
-
-
-
-#endif// LIB_LIBINT2_WRAPPERS_H
+#endif  // LIB_LIBINT2_WRAPPERS_H

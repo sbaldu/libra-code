@@ -15,17 +15,14 @@
 #include "mEigen.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libmeigen namespace
-namespace libmeigen{
+  /// libmeigen namespace
+  namespace libmeigen {
 
+    void export_mEigen_objects();
 
-void export_mEigen_objects();
+  }  // namespace libmeigen
+}  // namespace liblibra
 
-
-}// namespace libmeigen
-}// namespace liblibra
-
-
-#endif// LIBMMATH_EIGEN_H
+#endif  // LIBMMATH_EIGEN_H

@@ -19,183 +19,284 @@
 #else
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "libgwp.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  using namespace boost::python;
 
-using namespace boost::python;
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libgwp namespace
+    namespace libgwp {
 
-/// libgwp namespace
-namespace libgwp{
-
-
-void export_gwp_objects(){
-/** 
+      void export_gwp_objects() {
+        /** 
   \brief Exporter of libgwp classes and functions
 
 */
 
-  complex<double> (*expt_gwp_value_v1)(MATRIX& r, MATRIX& R, MATRIX& P, double gamma,  double alp, double hbar) = &gwp_value;
-  complex<double> (*expt_gwp_value_v2)(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp) = &gwp_value;
-  complex<double> (*expt_gwp_value_v3)(MATRIX& r, MATRIX& R, MATRIX& alp) = &gwp_value;
+        complex<double> (*expt_gwp_value_v1)(
+            MATRIX& r, MATRIX& R, MATRIX& P, double gamma, double alp, double hbar) = &gwp_value;
+        complex<double> (*expt_gwp_value_v2)(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp) =
+            &gwp_value;
+        complex<double> (*expt_gwp_value_v3)(MATRIX& r, MATRIX& R, MATRIX& alp) = &gwp_value;
 
-  def("gwp_value", expt_gwp_value_v1);
-  def("gwp_value", expt_gwp_value_v2);
-  def("gwp_value", expt_gwp_value_v3);
+        def("gwp_value", expt_gwp_value_v1);
+        def("gwp_value", expt_gwp_value_v2);
+        def("gwp_value", expt_gwp_value_v3);
 
+        CMATRIX (*expt_gwp_deriv_v1)(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp) = &gwp_deriv;
+        CMATRIX (*expt_gwp_deriv_v2)(MATRIX& r, MATRIX& R, MATRIX& alp) = &gwp_deriv;
 
-  CMATRIX (*expt_gwp_deriv_v1)(MATRIX& r, MATRIX& R, MATRIX& P, MATRIX& alp) = &gwp_deriv;
-  CMATRIX (*expt_gwp_deriv_v2)(MATRIX& r, MATRIX& R, MATRIX& alp) = &gwp_deriv;
+        def("gwp_deriv", expt_gwp_deriv_v1);
+        def("gwp_deriv", expt_gwp_deriv_v2);
 
-  def("gwp_deriv", expt_gwp_deriv_v1);
-  def("gwp_deriv", expt_gwp_deriv_v2);
+        double (*expt_gwp_product_decomposition_v1)(double q1,
+                                                    double p1,
+                                                    double gamma1,
+                                                    double alp1,
+                                                    double q2,
+                                                    double p2,
+                                                    double gamma2,
+                                                    double alp2,
+                                                    double& q,
+                                                    double& p,
+                                                    double& gamma,
+                                                    double& alp) = &gwp_product_decomposition;
 
+        double (*expt_gwp_product_decomposition_v2)(MATRIX& q1,
+                                                    MATRIX& p1,
+                                                    MATRIX& gamma1,
+                                                    MATRIX& alp1,
+                                                    MATRIX& q2,
+                                                    MATRIX& p2,
+                                                    MATRIX& gamma2,
+                                                    MATRIX& alp2,
+                                                    MATRIX& q,
+                                                    MATRIX& p,
+                                                    MATRIX& gamma,
+                                                    MATRIX& alp) = &gwp_product_decomposition;
 
-  double (*expt_gwp_product_decomposition_v1)
-  (double q1, double p1, double gamma1, double alp1,
-   double q2, double p2, double gamma2, double alp2,
-   double& q, double& p, double& gamma, double& alp) = &gwp_product_decomposition;
+        def("gwp_product_decomposition", expt_gwp_product_decomposition_v1);
+        def("gwp_product_decomposition", expt_gwp_product_decomposition_v2);
 
-  double (*expt_gwp_product_decomposition_v2)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2,
-   MATRIX& q,  MATRIX& p,  MATRIX& gamma,  MATRIX& alp) = &gwp_product_decomposition;
+        ///=============== Overlaps ===================
 
-  def("gwp_product_decomposition",  expt_gwp_product_decomposition_v1);
-  def("gwp_product_decomposition",  expt_gwp_product_decomposition_v2);
+        complex<double> (*expt_gwp_overlap_v1)(double q1,
+                                               double p1,
+                                               double gamma1,
+                                               double alp1,
+                                               double q2,
+                                               double p2,
+                                               double gamma2,
+                                               double alp2) = &gwp_overlap;
 
+        complex<double> (*expt_gwp_overlap_v2)(MATRIX& q1,
+                                               MATRIX& p1,
+                                               MATRIX& gamma1,
+                                               MATRIX& alp1,
+                                               MATRIX& q2,
+                                               MATRIX& p2,
+                                               MATRIX& gamma2,
+                                               MATRIX& alp2) = &gwp_overlap;
 
-  ///=============== Overlaps ===================
+        complex<double> (*expt_gwp_overlap_v3)(MATRIX& R1,
+                                               MATRIX& P1,
+                                               double gamma1,
+                                               MATRIX& R2,
+                                               MATRIX& P2,
+                                               double gamma2,
+                                               double alp,
+                                               double hbar) = &gwp_overlap;
 
-  complex<double> (*expt_gwp_overlap_v1)
-  (double q1, double p1, double gamma1, double alp1,
-   double q2, double p2, double gamma2, double alp2) = &gwp_overlap;
+        complex<double> (*expt_gwp_overlap_v4)(MATRIX& q1,
+                                               MATRIX& p1,
+                                               MATRIX& gamma1,
+                                               MATRIX& alp1,
+                                               MATRIX& q2,
+                                               MATRIX& p2,
+                                               MATRIX& gamma2,
+                                               MATRIX& alp2,
+                                               MATRIX& q3,
+                                               MATRIX& p3,
+                                               MATRIX& gamma3,
+                                               MATRIX& alp3) = &gwp_overlap;
 
-  complex<double> (*expt_gwp_overlap_v2)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2) = &gwp_overlap;
+        def("gwp_overlap", expt_gwp_overlap_v1);
+        def("gwp_overlap", expt_gwp_overlap_v2);
+        def("gwp_overlap", expt_gwp_overlap_v3);
+        def("gwp_overlap", expt_gwp_overlap_v4);
 
-  complex<double> (*expt_gwp_overlap_v3)
-  (MATRIX& R1, MATRIX& P1, double gamma1, 
-   MATRIX& R2, MATRIX& P2, double gamma2, double alp, double hbar) = &gwp_overlap;
+        CMATRIX(*expt_gwp_overlap_matrix_v1)
+        (MATRIX & q1,
+         MATRIX & p1,
+         MATRIX & gamma1,
+         MATRIX & alp1,
+         MATRIX & q2,
+         MATRIX & p2,
+         MATRIX & gamma2,
+         MATRIX & alp2) = &gwp_overlap_matrix;
 
-  complex<double> (*expt_gwp_overlap_v4)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2,
-   MATRIX& q3, MATRIX& p3, MATRIX& gamma3, MATRIX& alp3) = &gwp_overlap;
+        CMATRIX(*expt_gwp_overlap_matrix_v2)
+        (MATRIX & q1,
+         MATRIX & p1,
+         MATRIX & gamma1,
+         MATRIX & alp1,
+         vector<int> & state1,
+         MATRIX & q2,
+         MATRIX & p2,
+         MATRIX & gamma2,
+         MATRIX & alp2,
+         vector<int> & state2) = &gwp_overlap_matrix;
 
-  def("gwp_overlap",  expt_gwp_overlap_v1);
-  def("gwp_overlap",  expt_gwp_overlap_v2);
-  def("gwp_overlap",  expt_gwp_overlap_v3);
-  def("gwp_overlap",  expt_gwp_overlap_v4);
+        def("gwp_overlap_matrix", expt_gwp_overlap_matrix_v1);
+        def("gwp_overlap_matrix", expt_gwp_overlap_matrix_v2);
 
+        ///=============== Transition dipole moments ===================
+        complex<double> (*expt_gwp_dipole_v1)(double q1,
+                                              double p1,
+                                              double gamma1,
+                                              double alp1,
+                                              double q2,
+                                              double p2,
+                                              double gamma2,
+                                              double alp2) = &gwp_dipole;
 
-  CMATRIX (*expt_gwp_overlap_matrix_v1)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2) = &gwp_overlap_matrix;
+        CMATRIX(*expt_gwp_dipole_v2)
+        (MATRIX & q1,
+         MATRIX & p1,
+         MATRIX & gamma1,
+         MATRIX & alp1,
+         MATRIX & q2,
+         MATRIX & p2,
+         MATRIX & gamma2,
+         MATRIX & alp2) = &gwp_dipole;
 
-  CMATRIX (*expt_gwp_overlap_matrix_v2)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1, vector<int>& state1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2, vector<int>& state2) = &gwp_overlap_matrix;
+        CMATRIX(*expt_gwp_dipole_v3)
+        (MATRIX & R1,
+         MATRIX & P1,
+         double gamma1,
+         MATRIX& R2,
+         MATRIX& P2,
+         double gamma2,
+         double alp,
+         double hbar) = &gwp_dipole;
 
-  def("gwp_overlap_matrix",  expt_gwp_overlap_matrix_v1);
-  def("gwp_overlap_matrix",  expt_gwp_overlap_matrix_v2);
+        def("gwp_dipole", expt_gwp_dipole_v1);
+        def("gwp_dipole", expt_gwp_dipole_v2);
+        def("gwp_dipole", expt_gwp_dipole_v3);
 
+        ///=============== Derivative couplings ===================
 
-  ///=============== Transition dipole moments ===================
-  complex<double> (*expt_gwp_dipole_v1)
-  (double q1, double p1, double gamma1, double alp1,
-   double q2, double p2, double gamma2, double alp2) = &gwp_dipole;
+        complex<double> (*expt_gwp_coupling_v1)(double q1,
+                                                double p1,
+                                                double gamma1,
+                                                double alp1,
+                                                double q2,
+                                                double p2,
+                                                double gamma2,
+                                                double alp2) = &gwp_coupling;
 
-  CMATRIX (*expt_gwp_dipole_v2)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2) = &gwp_dipole;
+        CMATRIX(*expt_gwp_coupling_v2)
+        (MATRIX & q1,
+         MATRIX & p1,
+         MATRIX & gamma1,
+         MATRIX & alp1,
+         MATRIX & q2,
+         MATRIX & p2,
+         MATRIX & gamma2,
+         MATRIX & alp2) = &gwp_coupling;
 
-  CMATRIX (*expt_gwp_dipole_v3)
-  (MATRIX& R1, MATRIX& P1, double gamma1, MATRIX& R2, MATRIX& P2, double gamma2, double alp, double hbar) = &gwp_dipole; 
+        CMATRIX(*expt_gwp_coupling_v3)
+        (MATRIX & R1,
+         MATRIX & P1,
+         double gamma1,
+         MATRIX& R2,
+         MATRIX& P2,
+         double gamma2,
+         double alp,
+         double hbar) = &gwp_coupling;
 
+        def("gwp_coupling", expt_gwp_coupling_v1);
+        def("gwp_coupling", expt_gwp_coupling_v2);
+        def("gwp_coupling", expt_gwp_coupling_v3);
 
-  def("gwp_dipole", expt_gwp_dipole_v1);
-  def("gwp_dipole", expt_gwp_dipole_v2);
-  def("gwp_dipole", expt_gwp_dipole_v3);
+        ///=============== Kinetic energy ===================
 
+        complex<double> (*expt_gwp_kinetic_v1)(double q1,
+                                               double p1,
+                                               double gamma1,
+                                               double alp1,
+                                               double q2,
+                                               double p2,
+                                               double gamma2,
+                                               double alp2) = &gwp_kinetic;
 
-  ///=============== Derivative couplings ===================
+        complex<double> (*expt_gwp_kinetic_v2)(MATRIX& q1,
+                                               MATRIX& p1,
+                                               MATRIX& gamma1,
+                                               MATRIX& alp1,
+                                               MATRIX& q2,
+                                               MATRIX& p2,
+                                               MATRIX& gamma2,
+                                               MATRIX& alp2) = &gwp_kinetic;
 
-  complex<double> (*expt_gwp_coupling_v1)
-  (double q1, double p1, double gamma1, double alp1,
-   double q2, double p2, double gamma2, double alp2) = &gwp_coupling;
+        complex<double> (*expt_gwp_kinetic_v3)(MATRIX& q1,
+                                               MATRIX& p1,
+                                               MATRIX& gamma1,
+                                               MATRIX& alp1,
+                                               MATRIX& q2,
+                                               MATRIX& p2,
+                                               MATRIX& gamma2,
+                                               MATRIX& alp2,
+                                               MATRIX& iM) = &gwp_kinetic;
 
-  CMATRIX (*expt_gwp_coupling_v2)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2) = &gwp_coupling;
+        complex<double> (*expt_gwp_kinetic_v4)(MATRIX& R1,
+                                               MATRIX& P1,
+                                               double gamma1,
+                                               MATRIX& R2,
+                                               MATRIX& P2,
+                                               double gamma2,
+                                               double alp,
+                                               double hbar) = &gwp_kinetic;
 
-  CMATRIX (*expt_gwp_coupling_v3)
-  (MATRIX& R1, MATRIX& P1, double gamma1, MATRIX& R2, MATRIX& P2, double gamma2, double alp, double hbar) = &gwp_coupling; 
+        def("gwp_kinetic", expt_gwp_kinetic_v1);
+        def("gwp_kinetic", expt_gwp_kinetic_v2);
+        def("gwp_kinetic", expt_gwp_kinetic_v3);
+        def("gwp_kinetic", expt_gwp_kinetic_v4);
 
+        CMATRIX(*expt_gwp_kinetic_matrix_v1)
+        (MATRIX & q1,
+         MATRIX & p1,
+         MATRIX & gamma1,
+         MATRIX & alp1,
+         MATRIX & q2,
+         MATRIX & p2,
+         MATRIX & gamma2,
+         MATRIX & alp2,
+         MATRIX & invM) = &gwp_kinetic_matrix;
 
-  def("gwp_coupling", expt_gwp_coupling_v1);
-  def("gwp_coupling", expt_gwp_coupling_v2);
-  def("gwp_coupling", expt_gwp_coupling_v3);
-
-  ///=============== Kinetic energy ===================
-
-  complex<double> (*expt_gwp_kinetic_v1)
-  (double q1, double p1, double gamma1, double alp1,
-   double q2, double p2, double gamma2, double alp2) = &gwp_kinetic;
-
-  complex<double> (*expt_gwp_kinetic_v2)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2) = &gwp_kinetic;
-
-  complex<double> (*expt_gwp_kinetic_v3)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2,
-   MATRIX& iM) = &gwp_kinetic;
-
-  complex<double> (*expt_gwp_kinetic_v4)
-  (MATRIX& R1, MATRIX& P1, double gamma1, MATRIX& R2, MATRIX& P2, double gamma2, double alp, double hbar) = &gwp_kinetic;
-
-  def("gwp_kinetic",  expt_gwp_kinetic_v1);
-  def("gwp_kinetic",  expt_gwp_kinetic_v2);
-  def("gwp_kinetic",  expt_gwp_kinetic_v3);
-  def("gwp_kinetic",  expt_gwp_kinetic_v4);
-
-
-  CMATRIX (*expt_gwp_kinetic_matrix_v1)
-  (MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
-   MATRIX& q2, MATRIX& p2, MATRIX& gamma2, MATRIX& alp2, 
-   MATRIX& invM) = &gwp_kinetic_matrix;
-
-  def("gwp_kinetic_matrix",  expt_gwp_kinetic_matrix_v1);
-
-}
-
+        def("gwp_kinetic_matrix", expt_gwp_kinetic_matrix_v1);
+      }
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cyggwp){
+      BOOST_PYTHON_MODULE(cyggwp) {
 #else
-BOOST_PYTHON_MODULE(libgwp){
+      BOOST_PYTHON_MODULE(libgwp) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+        // Register converters:
+        // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+        //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-  export_gwp_objects();
+        export_gwp_objects();
+      }
 
-}
-
-
-}// namespace libgwp
-}// namespace libdyn
-}// liblibra
-
+    }  // namespace libgwp
+  }  // namespace libdyn
+}  // namespace liblibra

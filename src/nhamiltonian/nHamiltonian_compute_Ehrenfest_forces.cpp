@@ -13,32 +13,26 @@
   \brief The file implements the calculations of various variants of the Ehrenfest forces 
 */
 
-
 #if defined(USING_PCH)
 #include "../pch.h"
 #else
 #include <stdlib.h>
-#endif 
+#endif
 
 #include "nHamiltonian.h"
 #include "../math_meigen/libmeigen.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libnhamiltonian namespace 
-namespace libnhamiltonian{
+  /// libnhamiltonian namespace
+  namespace libnhamiltonian {
 
+    using namespace liblinalg;
+    using namespace libmeigen;
 
-using namespace liblinalg;
-using namespace libmeigen;
-
-
-
-
-CMATRIX nHamiltonian::Ehrenfest_forces_dia_unit(CMATRIX& ampl_dia, int option){
-/**
+    CMATRIX nHamiltonian::Ehrenfest_forces_dia_unit(CMATRIX& ampl_dia, int option) {
+      /**
   \param[in] ampl_dia: MATRIX(ndia, 1) diabatic amplitudes for one trajectory
 
   Returns:
@@ -63,62 +57,67 @@ CMATRIX nHamiltonian::Ehrenfest_forces_dia_unit(CMATRIX& ampl_dia, int option){
 
 */
 
-  if(ovlp_dia_mem_status==0){ cout<<"Error in Ehrenfest_forces_dia_unit(): the overlap matrix in the diabatic basis is not allocated \
-  but it is needed for the calculations\n"; exit(0); }
-
-  if(ham_dia_mem_status==0){ cout<<"Error in Ehrenfest_forces_dia_unit(): the diabatic Hamiltonian matrix is not allocated \
-  but it is needed for the calculations\n"; exit(0); }
-
-
-  CMATRIX res(nnucl,1);
-  CMATRIX* dtilda; dtilda = new CMATRIX(nadi,nadi);
-  CMATRIX* invS; invS = new CMATRIX(nadi, nadi); 
-
-  FullPivLU_inverse(*ovlp_dia, *invS);
-
-  complex<double> norm = ( ampl_dia.H() * (*ovlp_dia) * ampl_dia ).M[0]; 
-
-  
-  for(int n=0;n<nnucl;n++){
-
-      if(d1ham_dia_mem_status[n]==0){ cout<<"Error in Ehrenfest_forces_dia_unit(): the derivatives of the Hamiltonian matrix in the \
-      diabatic basis w.r.t. the nuclear DOF "<<n<<" is not allocated but is needed for the calculations \n"; exit(0); }
-
-      if(dc1_dia_mem_status[n]==0){ cout<<"Error in Ehrenfest_forces_dia_unit(): the derivatives couplings matrix in the diabatic \
-      basis w.r.t. the nuclear DOF "<<n<<" is not allocated but is needed for the calculations \n"; exit(0); }
-
-
-      if(option==0){
-        *dtilda = ( (*dc1_dia[n]).H() * (*invS) * (*ham_dia) + (*ham_dia) * (*invS) * (*dc1_dia[n])  );
-        res.M[n] = -( ampl_dia.H() * (*d1ham_dia[n] - *dtilda ) * ampl_dia ).M[0];
+      if (ovlp_dia_mem_status == 0) {
+        cout << "Error in Ehrenfest_forces_dia_unit(): the overlap matrix in the diabatic basis is not allocated \
+  but it is needed for the calculations\n";
+        exit(0);
       }
-      else if(option==1){
-        res.M[n] = -( ampl_dia.H() * (*d1ham_dia[n] ) * ampl_dia ).M[0];
+
+      if (ham_dia_mem_status == 0) {
+        cout << "Error in Ehrenfest_forces_dia_unit(): the diabatic Hamiltonian matrix is not allocated \
+  but it is needed for the calculations\n";
+        exit(0);
       }
-      
 
-  }// for n
+      CMATRIX res(nnucl, 1);
+      CMATRIX* dtilda;
+      dtilda = new CMATRIX(nadi, nadi);
+      CMATRIX* invS;
+      invS = new CMATRIX(nadi, nadi);
 
-  res /= norm; 
+      FullPivLU_inverse(*ovlp_dia, *invS);
 
+      complex<double> norm = (ampl_dia.H() * (*ovlp_dia) * ampl_dia).M[0];
 
-  delete dtilda;
-  delete invS;
+      for (int n = 0; n < nnucl; n++) {
+        if (d1ham_dia_mem_status[n] == 0) {
+          cout << "Error in Ehrenfest_forces_dia_unit(): the derivatives of the Hamiltonian matrix in the \
+      diabatic basis w.r.t. the nuclear DOF "
+               << n << " is not allocated but is needed for the calculations \n";
+          exit(0);
+        }
 
-  return res;
- 
-}
+        if (dc1_dia_mem_status[n] == 0) {
+          cout << "Error in Ehrenfest_forces_dia_unit(): the derivatives couplings matrix in the diabatic \
+      basis w.r.t. the nuclear DOF "
+               << n << " is not allocated but is needed for the calculations \n";
+          exit(0);
+        }
 
+        if (option == 0) {
+          *dtilda =
+              ((*dc1_dia[n]).H() * (*invS) * (*ham_dia) + (*ham_dia) * (*invS) * (*dc1_dia[n]));
+          res.M[n] = -(ampl_dia.H() * (*d1ham_dia[n] - *dtilda) * ampl_dia).M[0];
+        } else if (option == 1) {
+          res.M[n] = -(ampl_dia.H() * (*d1ham_dia[n]) * ampl_dia).M[0];
+        }
 
+      }  // for n
 
-CMATRIX nHamiltonian::Ehrenfest_forces_dia_unit(CMATRIX& ampl_dia){
-  return Ehrenfest_forces_dia_unit(ampl_dia, 0);
-}
+      res /= norm;
 
+      delete dtilda;
+      delete invS;
 
+      return res;
+    }
 
-CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia, int lvl, int option){
-/**
+    CMATRIX nHamiltonian::Ehrenfest_forces_dia_unit(CMATRIX& ampl_dia) {
+      return Ehrenfest_forces_dia_unit(ampl_dia, 0);
+    }
+
+    CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia, int lvl, int option) {
+      /**
   \brief Computes the Ehrenfest forces in the diabatic basis
 
   \param[in] ampl_dia [ndia x ntraj] matrix of diabatic amplitudes for
@@ -138,61 +137,61 @@ CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia, int lvl, int optio
 
 
 */
-  int i;
+      int i;
 
-  if(lvl==1){
-    // Check whether we have enough sub-Hamiltonians
-    if(children.size()!=ampl_dia.n_cols){
-      cout<<"ERROR in CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia):\n";
-      cout<<"The number of columns of the ampl_dia ("<<ampl_dia.n_cols<<")";
-      cout<<" should be equal to the number of children Hamiltonians ("<<children.size()<<")\n";
-      cout<<"Exiting...\n";
-      exit(0);
+      if (lvl == 1) {
+        // Check whether we have enough sub-Hamiltonians
+        if (children.size() != ampl_dia.n_cols) {
+          cout << "ERROR in CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia):\n";
+          cout << "The number of columns of the ampl_dia (" << ampl_dia.n_cols << ")";
+          cout << " should be equal to the number of children Hamiltonians (" << children.size()
+               << ")\n";
+          cout << "Exiting...\n";
+          exit(0);
+        }
+      }
+
+      CMATRIX ampl_tmp(ampl_dia.n_rows, 1);
+      CMATRIX frc_tmp(nnucl, 1);
+      CMATRIX F(nnucl, ampl_dia.n_cols);
+
+      vector<int> stenc_ampl(ampl_dia.n_rows, 0);
+      vector<int> stenc_frc(nnucl, 0);
+      vector<int> stenc_col(1, 0);
+
+      // The indicies in stenc_frc reflects which indicies are to be updated in the final F matrix
+      for (i = 0; i < nnucl; i++) {
+        stenc_frc[i] = i;
+      }
+
+      for (i = 0; i < ampl_dia.n_rows; i++) {
+        stenc_ampl[i] = i;
+      }
+
+      for (i = 0; i < ampl_dia.n_cols; i++) {
+        stenc_col[0] = i;
+
+        pop_submatrix(ampl_dia, ampl_tmp, stenc_ampl, stenc_col);
+
+        if (lvl == 0) {
+          frc_tmp = Ehrenfest_forces_dia_unit(ampl_tmp, option);
+        }
+        if (lvl == 1) {
+          frc_tmp = children[i]->Ehrenfest_forces_dia_unit(ampl_tmp, option);
+        }
+
+        push_submatrix(F, frc_tmp, stenc_frc, stenc_col);
+
+      }  // for all children
+
+      return F;
     }
-  }
 
-  CMATRIX ampl_tmp(ampl_dia.n_rows, 1);
-  CMATRIX frc_tmp(nnucl, 1);
-  CMATRIX F(nnucl, ampl_dia.n_cols);
-
-  vector<int> stenc_ampl(ampl_dia.n_rows, 0);
-  vector<int> stenc_frc(nnucl, 0);
-  vector<int> stenc_col(1, 0);
-
-  // The indicies in stenc_frc reflects which indicies are to be updated in the final F matrix
-  for(i=0;i<nnucl;i++) { stenc_frc[i] = i;}    
-
-  for(i=0;i<ampl_dia.n_rows;i++){ stenc_ampl[i] = i;}
-
-  for(i=0;i<ampl_dia.n_cols;i++){
-    stenc_col[0] = i;
-
-    pop_submatrix(ampl_dia, ampl_tmp, stenc_ampl, stenc_col);
-
-    if(lvl==0){
-        frc_tmp = Ehrenfest_forces_dia_unit(ampl_tmp, option);
-    }
-    if(lvl==1){
-        frc_tmp = children[i]->Ehrenfest_forces_dia_unit(ampl_tmp, option);
+    CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia, int lvl) {
+      return Ehrenfest_forces_dia(ampl_dia, lvl, 0);
     }
 
-    push_submatrix(F, frc_tmp, stenc_frc, stenc_col);
- 
-  }// for all children
-
-  return F;
-  
-}
-
-
-CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia, int lvl){
-  return Ehrenfest_forces_dia(ampl_dia, lvl, 0);
-}
-
-
-
-
-/*
+    /*
 CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia, vector<int>& id_){
 //
 //  See the description of the Ehrenfest_forces_dia(CMATRIX& ampl_dia) function
@@ -208,10 +207,11 @@ CMATRIX nHamiltonian::Ehrenfest_forces_dia(CMATRIX& ampl_dia, vector<int>& id_){
 }
 */
 
-
-
-CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi, int option, CMATRIX& transform, double gamma){
-/**
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi,
+                                                    int option,
+                                                    CMATRIX& transform,
+                                                    double gamma) {
+      /**
   \param[in] ampl_adi: MATRIX(nadi, 1) diabatic amplitudes for one trajectory
 
   \params[in] option [0 or 1] - option 0 keeps all the terms in the Ehrenfest force expression, including NAC
@@ -245,78 +245,92 @@ CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi, int option, C
 
 */
 
-  if(ham_adi_mem_status==0){ cout<<"Error in Ehrenfest_forces_adi(): the adiabatic Hamiltonian matrix is not allocated \
-  but it is needed for the calculations\n"; exit(0); }
+      if (ham_adi_mem_status == 0) {
+        cout << "Error in Ehrenfest_forces_adi(): the adiabatic Hamiltonian matrix is not allocated \
+  but it is needed for the calculations\n";
+        exit(0);
+      }
 
+      complex<double> norm = (ampl_adi.H() * ampl_adi).M[0];
 
-  complex<double> norm = (ampl_adi.H() * ampl_adi).M[0];
+      CMATRIX res(nnucl, 1);
+      CMATRIX tmp(nadi, nadi);
 
+      //  CMATRIX& T = transform;
+      CMATRIX T(transform);
+      T.identity();
 
-  CMATRIX res(nnucl,1);
-  CMATRIX tmp(nadi, nadi);
+      for (int n = 0; n < nnucl; n++) {
+        if (d1ham_adi_mem_status[n] == 0) {
+          cout << "Error in Ehrenfest_forces_adi_unit(): the derivatives of the Hamiltonian matrix in the \
+    adiabatic basis w.r.t. the nuclear DOF "
+               << n << " is not allocated but is needed for the calculations \n";
+          exit(0);
+        }
 
-//  CMATRIX& T = transform;
-  CMATRIX T(transform);  T.identity();
+        if (dc1_adi_mem_status[n] == 0) {
+          cout << "Error in Ehrenfest_forces_adi_unit(): the derivatives couplings matrix in the adiabatic \
+    basis w.r.t. the nuclear DOF "
+               << n << " is not allocated but is needed for the calculations \n";
+          exit(0);
+        }
 
+        if (option == 0) {  // Original formulation with NACs - for non-LD integrators
 
-  for(int n=0;n<nnucl;n++){
+          // This is the original approach
+          //      tmp = dc1_adi[n]->H() * (*ham_adi) + (*ham_adi) * (dc1_adi[n]->H());
 
-    if(d1ham_adi_mem_status[n]==0){ cout<<"Error in Ehrenfest_forces_adi_unit(): the derivatives of the Hamiltonian matrix in the \
-    adiabatic basis w.r.t. the nuclear DOF "<<n<<" is not allocated but is needed for the calculations \n"; exit(0); }
+          // This is how i think it should be
+          //      tmp = (T.H() * (*dc1_adi[n]) ).H() *  (T.H() * (*ham_adi) * T);
+          // AVA - testing new approach  11/9/2023 - thanks to Daeho; let's keep this version
+          // it works better and is more theoretically sound
+          tmp = (T.H() * (*dc1_adi[n]) * T).H() * (T.H() * (*ham_adi) * T);
+          tmp = tmp + tmp.H();
+          res.M[n] = -(ampl_adi.H() * (T.H() * (*d1ham_adi[n]) * T - tmp) * ampl_adi).M[0];
+        } else if (option ==
+                   1) {  // Options that disregard the NACs - appropriate for the LD integrators
+          res.M[n] = -(ampl_adi.H() * T.H() * (*d1ham_adi[n]) * T * ampl_adi).M[0];
+        }
 
-    if(dc1_adi_mem_status[n]==0){ cout<<"Error in Ehrenfest_forces_adi_unit(): the derivatives couplings matrix in the adiabatic \
-    basis w.r.t. the nuclear DOF "<<n<<" is not allocated but is needed for the calculations \n"; exit(0); }
+      }  // for n
 
+      // Adding Meyer-Miller ZPE term:
+      for (int n = 0; n < nnucl; n++) {
+        for (int i = 0; i < nadi; i++) {
+          res.M[n] -= gamma * (-d1ham_adi[n]->get(i, i));
+        }  // for i
+      }  // for n
 
-    if(option==0){ // Original formulation with NACs - for non-LD integrators
+      res /= norm;
+      //delete tmp;
 
-// This is the original approach
-//      tmp = dc1_adi[n]->H() * (*ham_adi) + (*ham_adi) * (dc1_adi[n]->H());
-     
-// This is how i think it should be
-//      tmp = (T.H() * (*dc1_adi[n]) ).H() *  (T.H() * (*ham_adi) * T);
-// AVA - testing new approach  11/9/2023 - thanks to Daeho; let's keep this version
-// it works better and is more theoretically sound
-      tmp = (T.H() * (*dc1_adi[n]) * T ).H() *  (T.H() * (*ham_adi) * T);      
-      tmp = tmp + tmp.H();
-      res.M[n] = -( ampl_adi.H() * ( T.H() * (*d1ham_adi[n]) * T - tmp ) * ampl_adi ).M[0];
+      return res;
     }
-    else if(option==1){ // Options that disregard the NACs - appropriate for the LD integrators
-      res.M[n] = -( ampl_adi.H() * T.H() * ( *d1ham_adi[n] ) * T * ampl_adi ).M[0];
+
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi,
+                                                    int option,
+                                                    CMATRIX& transform) {
+      return Ehrenfest_forces_adi_unit(ampl_adi, option, transform, 0.0);
     }
 
-  }// for n
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi, int option) {
+      CMATRIX I(nadi, nadi);
+      I.identity();
+      return Ehrenfest_forces_adi_unit(ampl_adi, option, I, 0.0);
+    }
 
-  // Adding Meyer-Miller ZPE term:
-  for(int n=0;n<nnucl;n++){ 
-    for(int i=0; i<nadi; i++){
-      res.M[n] -= gamma * (  -d1ham_adi[n]->get(i,i) );
-    }// for i
-  }// for n
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi) {
+      CMATRIX I(nadi, nadi);
+      I.identity();
+      return Ehrenfest_forces_adi_unit(ampl_adi, 0, I, 0.0);
+    }
 
-  res /= norm; 
-  //delete tmp;
-
-  return res;
-}
-
-CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi, int option, CMATRIX& transform){
-  return Ehrenfest_forces_adi_unit(ampl_adi,option, transform, 0.0);
-}
-
-CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi, int option){
-  CMATRIX I(nadi, nadi); I.identity();
-  return Ehrenfest_forces_adi_unit(ampl_adi,option, I, 0.0);
-}
-
-CMATRIX nHamiltonian::Ehrenfest_forces_adi_unit(CMATRIX& ampl_adi){
-  CMATRIX I(nadi, nadi); I.identity();
-  return Ehrenfest_forces_adi_unit(ampl_adi, 0, I, 0.0);
-}
-
-
-CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, int lvl, int option, vector<CMATRIX*>& transforms, vector<double>& gammas){
-/**
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi,
+                                               int lvl,
+                                               int option,
+                                               vector<CMATRIX*>& transforms,
+                                               vector<double>& gammas) {
+      /**
   \brief Computes the Ehrenfest forces in the adiabatic basis
 
   \param[in] ampl_adi [nadi x ntraj] matrix of adiabatic amplitudes for
@@ -341,99 +355,112 @@ CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, int lvl, int optio
   MATRIX(ndof, ntraj) - Ehrenfest forces in adiabatic representation, for multiple trajectories
 
 */
-  int i;
+      int i;
 
-  if(lvl==1){
-    // Check whether we have enough sub-Hamiltonians
-    if(children.size()!=ampl_adi.n_cols){
-      cout<<"ERROR in CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi):\n";
-      cout<<"The number of columns of the ampl_adi ("<<ampl_adi.n_cols<<")";
-      cout<<" should be equal to the number of children Hamiltonians ("<<children.size()<<")\n";
-      cout<<"Exiting...\n";
-      exit(0);
+      if (lvl == 1) {
+        // Check whether we have enough sub-Hamiltonians
+        if (children.size() != ampl_adi.n_cols) {
+          cout << "ERROR in CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi):\n";
+          cout << "The number of columns of the ampl_adi (" << ampl_adi.n_cols << ")";
+          cout << " should be equal to the number of children Hamiltonians (" << children.size()
+               << ")\n";
+          cout << "Exiting...\n";
+          exit(0);
+        }
+      }
+
+      CMATRIX ampl_tmp(ampl_adi.n_rows, 1);
+      CMATRIX frc_tmp(nnucl, 1);
+      CMATRIX F(nnucl, ampl_adi.n_cols);
+
+      vector<int> stenc_ampl(ampl_adi.n_rows, 0);
+      vector<int> stenc_frc(nnucl, 0);
+      vector<int> stenc_col(1, 0);
+
+      // The indicies in stenc_frc reflects which indicies are to be updated in the final F matrix
+      for (i = 0; i < nnucl; i++) {
+        stenc_frc[i] = i;
+      }
+
+      for (i = 0; i < ampl_adi.n_rows; i++) {
+        stenc_ampl[i] = i;
+      }
+
+      for (i = 0; i < ampl_adi.n_cols; i++) {
+        stenc_col[0] = i;
+
+        pop_submatrix(ampl_adi, ampl_tmp, stenc_ampl, stenc_col);
+
+        if (lvl == 0) {
+          frc_tmp = Ehrenfest_forces_adi_unit(
+              ampl_tmp, option, *transforms[0], gammas[0]);  // gammas[i]);
+        }
+        if (lvl == 1) {
+          frc_tmp =
+              children[i]->Ehrenfest_forces_adi_unit(ampl_tmp, option, *transforms[i], gammas[i]);
+        }
+
+        push_submatrix(F, frc_tmp, stenc_frc, stenc_col);
+
+      }  // for all children
+
+      return F;
     }
-  }
 
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi,
+                                               int lvl,
+                                               int option,
+                                               vector<CMATRIX*>& transforms) {
+      int ntraj = ampl_adi.n_cols;
+      vector<double> gammas(ntraj, 0.0);
 
-  CMATRIX ampl_tmp(ampl_adi.n_rows, 1);
-  CMATRIX frc_tmp(nnucl, 1);
-  CMATRIX F(nnucl, ampl_adi.n_cols);
-
-  vector<int> stenc_ampl(ampl_adi.n_rows, 0);
-  vector<int> stenc_frc(nnucl, 0);
-  vector<int> stenc_col(1, 0);
-
-  // The indicies in stenc_frc reflects which indicies are to be updated in the final F matrix
-  for(i=0;i<nnucl;i++) { stenc_frc[i] = i;}   
-
-  for(i=0;i<ampl_adi.n_rows;i++){ stenc_ampl[i] = i;}
-
-  for(i=0;i<ampl_adi.n_cols;i++){
-    stenc_col[0] = i;
-
-    pop_submatrix(ampl_adi, ampl_tmp, stenc_ampl, stenc_col);
-
-    if(lvl==0){
-        frc_tmp = Ehrenfest_forces_adi_unit(ampl_tmp, option, *transforms[0], gammas[0]); // gammas[i]);
-    }
-    if(lvl==1){
-        frc_tmp = children[i]->Ehrenfest_forces_adi_unit(ampl_tmp, option, *transforms[i], gammas[i] );
+      return Ehrenfest_forces_adi(ampl_adi, lvl, option, transforms, gammas);
     }
 
-    push_submatrix(F, frc_tmp, stenc_frc, stenc_col);
- 
-  }// for all children
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, int lvl, int option) {
+      int ntraj = ampl_adi.n_cols;
+      vector<CMATRIX*> I(ntraj);
+      vector<double> gammas(ntraj, 0.0);
 
-  return F;
-}
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        I[itraj] = new CMATRIX(nadi, nadi);
+        I[itraj]->load_identity();
+      }
 
-CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, int lvl, int option, vector<CMATRIX*>& transforms){
-  int ntraj = ampl_adi.n_cols;
-  vector<double> gammas(ntraj, 0.0);
+      CMATRIX F(nnucl, ampl_adi.n_cols);
 
-  return Ehrenfest_forces_adi(ampl_adi, lvl, option, transforms, gammas);
-}
+      F = Ehrenfest_forces_adi(ampl_adi, lvl, option, I, gammas);
 
-CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, int lvl, int option){
-  int ntraj = ampl_adi.n_cols;
-  vector<CMATRIX*> I(ntraj);
-  vector<double> gammas(ntraj, 0.0);
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        delete I[itraj];
+      }
+      I.clear();
 
-  for(int itraj=0; itraj<ntraj; itraj++){
-    I[itraj] = new CMATRIX(nadi, nadi);
-    I[itraj]->load_identity();
-  }      
+      return F;
+    }
 
-  CMATRIX F(nnucl, ampl_adi.n_cols);
+    CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, int lvl) {
+      int ntraj = ampl_adi.n_cols;
+      vector<CMATRIX*> I(ntraj);
+      vector<double> gammas(ntraj, 0.0);
 
-  F = Ehrenfest_forces_adi(ampl_adi, lvl, option, I, gammas);
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        I[itraj] = new CMATRIX(nadi, nadi);
+        I[itraj]->load_identity();
+      }
 
-  for(int itraj=0; itraj<ntraj; itraj++){  delete I[itraj];  }  I.clear();
+      CMATRIX F(nnucl, ampl_adi.n_cols);
 
-  return F;
+      F = Ehrenfest_forces_adi(ampl_adi, lvl, 0, I, gammas);
 
-}
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        delete I[itraj];
+      }
+      I.clear();
+      return F;
+    }
 
-CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, int lvl){
-  int ntraj = ampl_adi.n_cols;
-  vector<CMATRIX*> I(ntraj);
-  vector<double> gammas(ntraj, 0.0);
-
-  for(int itraj=0; itraj<ntraj; itraj++){
-    I[itraj] = new CMATRIX(nadi, nadi);
-    I[itraj]->load_identity();
-  }  
-
-  CMATRIX F(nnucl, ampl_adi.n_cols);
-
-  F = Ehrenfest_forces_adi(ampl_adi, lvl, 0, I, gammas);
-
-  for(int itraj=0; itraj<ntraj; itraj++){  delete I[itraj];  }  I.clear();
-  return F;
-}
-
-
-/*
+    /*
 CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, vector<int>& id_){
 //
 //  See the description of the Ehrenfest_forces_adi(CMATRIX& ampl_adi) function
@@ -449,9 +476,5 @@ CMATRIX nHamiltonian::Ehrenfest_forces_adi(CMATRIX& ampl_adi, vector<int>& id_){
 }
 */
 
-
-
-
-}// namespace libnhamiltonian
-}// liblibra
-
+  }  // namespace libnhamiltonian
+}  // namespace liblibra

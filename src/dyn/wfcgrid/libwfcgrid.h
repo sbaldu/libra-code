@@ -17,26 +17,21 @@
 #ifndef LIB_WFCGRID_H
 #define LIB_WFCGRID_H
 
-
 #include "Wfcgrid.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libwfcgrid namespace
-namespace libwfcgrid{
+    /// libwfcgrid namespace
+    namespace libwfcgrid {
 
+      void export_Wfcgrid_objects();
 
-void export_Wfcgrid_objects();
+    }  // namespace libwfcgrid
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-}// namespace libwfcgrid
-}// namespace libdyn
-}// liblibra
-
-
-
-#endif// LIB_WFCGRID_H
+#endif  // LIB_WFCGRID_H

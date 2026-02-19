@@ -19,28 +19,22 @@
 #include "../pch.h"
 #else
 #include <stdlib.h>
-#endif 
+#endif
 
 #include "nHamiltonian.h"
 #include "../math_meigen/libmeigen.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libnhamiltonian namespace 
-namespace libnhamiltonian{
+  /// libnhamiltonian namespace
+  namespace libnhamiltonian {
 
+    using namespace liblinalg;
+    using namespace libmeigen;
 
-using namespace liblinalg;
-using namespace libmeigen;
-
-
-
-
-
-double ETHD_energy(const MATRIX& q, const MATRIX& invM){
-/**
+    double ETHD_energy(const MATRIX& q, const MATRIX& invM) {
+      /**
   Compute the ETHD energy
 
   q - is a ndof x ntraj matrix of coordinates
@@ -49,50 +43,46 @@ double ETHD_energy(const MATRIX& q, const MATRIX& invM){
 
 */
 
-  int ndof = q.n_rows;
-  int ntraj = q.n_cols;
+      int ndof = q.n_rows;
+      int ntraj = q.n_cols;
 
-  int dof, traj;
+      int dof, traj;
 
-  //============ Compute the averages =========
-  MATRIX q_ave(ndof, 1);
+      //============ Compute the averages =========
+      MATRIX q_ave(ndof, 1);
 
-  for(dof=0; dof<ndof; dof++){    
-    for(traj=0; traj<ntraj; traj++){   q_ave.add(dof,0, q.get(dof, traj));  }
-  }// for dof
-  q_ave = q_ave / float(ntraj);
+      for (dof = 0; dof < ndof; dof++) {
+        for (traj = 0; traj < ntraj; traj++) {
+          q_ave.add(dof, 0, q.get(dof, traj));
+        }
+      }  // for dof
+      q_ave = q_ave / float(ntraj);
 
-  //============ Compute the variances =========
-  MATRIX s2(ndof, 1);
+      //============ Compute the variances =========
+      MATRIX s2(ndof, 1);
 
-  for(dof=0; dof<ndof; dof++){    
-    for(traj=0; traj<ntraj; traj++){   
-      double s = q.get(dof, traj) - q_ave.get(dof,0);
-      s2.add(dof,0, s*s);  
-    }    
-    s2.M[dof] = s2.M[dof]/float(ntraj);
-  }// for dof
+      for (dof = 0; dof < ndof; dof++) {
+        for (traj = 0; traj < ntraj; traj++) {
+          double s = q.get(dof, traj) - q_ave.get(dof, 0);
+          s2.add(dof, 0, s * s);
+        }
+        s2.M[dof] = s2.M[dof] / float(ntraj);
+      }  // for dof
 
+      //============ Compute the energy =========
+      double en = 0.0;
 
-  //============ Compute the energy =========  
-  double en = 0.0;
+      for (dof = 0; dof < ndof; dof++) {
+        en += 0.125 * ntraj * invM.get(dof, 0) / s2.get(dof, 0);
+      }
 
-  for(dof=0; dof<ndof; dof++){    
+      //cout<<"ETHD energy = "<<en<<endl;
 
-    en += 0.125 * ntraj * invM.get(dof, 0) / s2.get(dof, 0);
+      return en;
+    }
 
-  } 
-
-  //cout<<"ETHD energy = "<<en<<endl;
-  
-  return en;
-
-
-}
-
-
-MATRIX ETHD_forces(const MATRIX& q, const MATRIX& invM){
-/**
+    MATRIX ETHD_forces(const MATRIX& q, const MATRIX& invM) {
+      /**
   Compute the ETHD energy
 
   q - is a ndof x ntraj matrix of coordinates
@@ -104,149 +94,131 @@ MATRIX ETHD_forces(const MATRIX& q, const MATRIX& invM){
 
 */
 
-  int ndof = q.n_rows;
-  int ntraj = q.n_cols;
+      int ndof = q.n_rows;
+      int ntraj = q.n_cols;
 
-  int dof, traj;
+      int dof, traj;
 
-  MATRIX f(ndof, ntraj);
+      MATRIX f(ndof, ntraj);
 
-  //============ Compute the averages =========
-  MATRIX q_ave(ndof, 1);
+      //============ Compute the averages =========
+      MATRIX q_ave(ndof, 1);
 
-  for(dof=0; dof<ndof; dof++){    
-    for(traj=0; traj<ntraj; traj++){   q_ave.add(dof,0, q.get(dof, traj));  }
-  }// for dof
-  q_ave = q_ave / float(ntraj);
+      for (dof = 0; dof < ndof; dof++) {
+        for (traj = 0; traj < ntraj; traj++) {
+          q_ave.add(dof, 0, q.get(dof, traj));
+        }
+      }  // for dof
+      q_ave = q_ave / float(ntraj);
 
-  //============ Compute the variances =========
-  MATRIX s2(ndof, 1);
+      //============ Compute the variances =========
+      MATRIX s2(ndof, 1);
 
-  for(dof=0; dof<ndof; dof++){    
-    for(traj=0; traj<ntraj; traj++){   
-      double s = q.get(dof, traj) - q_ave.get(dof,0);
-      s2.add(dof,0, s*s);  
-    }    
-    s2.M[dof] = s2.M[dof]/float(ntraj);
-  }// for dof
+      for (dof = 0; dof < ndof; dof++) {
+        for (traj = 0; traj < ntraj; traj++) {
+          double s = q.get(dof, traj) - q_ave.get(dof, 0);
+          s2.add(dof, 0, s * s);
+        }
+        s2.M[dof] = s2.M[dof] / float(ntraj);
+      }  // for dof
 
+      //============ Compute the energy =========
+      //  q.show_matrix();
+      //  q_ave.show_matrix();
 
-  //============ Compute the energy =========  
-//  q.show_matrix();
-//  q_ave.show_matrix();
+      //  cout<<"ndof = "<<ndof<<" ntraj = "<<ntraj<<endl;
 
-//  cout<<"ndof = "<<ndof<<" ntraj = "<<ntraj<<endl;
+      for (dof = 0; dof < ndof; dof++) {
+        double s4 = s2.get(dof, 0);
+        s4 = s4 * s4;
+        double pref = 0.25 * invM.get(dof, 0) / s4;
 
-  for(dof=0; dof<ndof; dof++){    
+        for (traj = 0; traj < ntraj; traj++) {
+          //      cout<<"dof = "<<dof<<" traj = "<<traj<<pref * (q.get(dof, traj) - q_ave.get(dof, 0) )<<endl;
+          f.set(dof, traj, pref * (q.get(dof, traj) - q_ave.get(dof, 0)));
 
-    double s4 = s2.get(dof, 0); s4 = s4 * s4;
-    double pref = 0.25 * invM.get(dof, 0) / s4;
+        }  // for traj
+      }  //dof
 
-    for(traj=0; traj<ntraj; traj++){
-      
-//      cout<<"dof = "<<dof<<" traj = "<<traj<<pref * (q.get(dof, traj) - q_ave.get(dof, 0) )<<endl;
-      f.set(dof, traj,  pref * (q.get(dof, traj) - q_ave.get(dof, 0) ) );
+      //  cout<<"ETHD forces = "; f.show_matrix();
 
-    }// for traj
-  }//dof
+      return f;
+    }
 
-//  cout<<"ETHD forces = "; f.show_matrix();
-
-  return f;
-
-}
-
-
-
-void nHamiltonian::add_ethd_dia(const MATRIX& q, const MATRIX& invM, int der_lvl){
-/**
+    void nHamiltonian::add_ethd_dia(const MATRIX& q, const MATRIX& invM, int der_lvl) {
+      /**
   Add ETHD energies and (optionally) forces to all the children Hamiltonians in the diabatic representation
 */
 
-  complex<double> minus_one(-1.0, 0.0);
+      complex<double> minus_one(-1.0, 0.0);
 
-  if(der_lvl>=0){
-    double en = ETHD_energy(q, invM);
+      if (der_lvl >= 0) {
+        double en = ETHD_energy(q, invM);
 
-    CMATRIX ethd_en(ndia, ndia);
-    ethd_en.identity();
-    ethd_en *= en;
-    *ham_dia = ethd_en; 
+        CMATRIX ethd_en(ndia, ndia);
+        ethd_en.identity();
+        ethd_en *= en;
+        *ham_dia = ethd_en;
 
-    if(der_lvl>=1){
-      MATRIX ethd_frcs(q.n_rows, q.n_cols);
-      ethd_frcs = ETHD_forces(q, invM);
+        if (der_lvl >= 1) {
+          MATRIX ethd_frcs(q.n_rows, q.n_cols);
+          ethd_frcs = ETHD_forces(q, invM);
 
-      for(int traj=0; traj<children.size(); traj++){
+          for (int traj = 0; traj < children.size(); traj++) {
+            for (int dof = 0; dof < nnucl; dof++) {
+              for (int st = 0; st < ndia; st++) {
+                children[traj]->d1ham_dia[dof]->add(st, st, ethd_frcs.get(dof, traj) * minus_one);
 
-        for(int dof=0; dof<nnucl; dof++){
+              }  // for st
+            }  // dof
+          }  // traj
 
-          for(int st=0; st<ndia; st++){
+        }  // der_lvl >=1
 
-            children[traj]->d1ham_dia[dof]->add(st,st, ethd_frcs.get(dof, traj)*minus_one);
+      }  // der_lvl >=0
+    }
 
-          }// for st
-        }// dof
-      }// traj
-
-    }// der_lvl >=1
-
-  }// der_lvl >=0
-
-}
-
-
-void nHamiltonian::add_ethd_adi(const MATRIX& q, const MATRIX& invM, int der_lvl){
-/**
+    void nHamiltonian::add_ethd_adi(const MATRIX& q, const MATRIX& invM, int der_lvl) {
+      /**
   Add ETHD energies and (optionally) forces to all the children Hamiltonians in the adiabatic representation
 */
 
-  complex<double> minus_one(-1.0, 0.0);
+      complex<double> minus_one(-1.0, 0.0);
 
-  if(der_lvl>=0){
+      if (der_lvl >= 0) {
+        //    cout<<"In add_ethd_adi\n";
+        //    cout<<"nadi = "<<nadi<<endl;
+        CMATRIX ethd_en(nadi, nadi);
+        ethd_en.identity();
+        ethd_en *= ETHD_energy(q, invM);
 
-//    cout<<"In add_ethd_adi\n";
-//    cout<<"nadi = "<<nadi<<endl;
-    CMATRIX ethd_en(nadi, nadi);
-    ethd_en.identity();
-    ethd_en *= ETHD_energy(q, invM);
+        *ham_adi = ethd_en;
 
-    *ham_adi = ethd_en; 
+        //    cout<<"ham_adi = "<<ham_adi<<endl;
+        //    cout<<"Added ETHD energy = \n";
+        //    exit(0);
 
-//    cout<<"ham_adi = "<<ham_adi<<endl;
-//    cout<<"Added ETHD energy = \n";
-//    exit(0);
+        //    ethd_en.show_matrix();
 
-//    ethd_en.show_matrix();
+        if (der_lvl >= 1) {
+          MATRIX ethd_frcs(q.n_rows, q.n_cols);
+          ethd_frcs = ETHD_forces(q, invM);
 
-    if(der_lvl>=1){
-      MATRIX ethd_frcs(q.n_rows, q.n_cols);
-      ethd_frcs = ETHD_forces(q, invM);
+          //      cout<<"ethd forces = \n"; ethd_frcs.show_matrix();
+          //      exit(0);
+          for (int traj = 0; traj < children.size(); traj++) {
+            for (int dof = 0; dof < nnucl; dof++) {
+              for (int st = 0; st < nadi; st++) {
+                children[traj]->d1ham_adi[dof]->add(st, st, ethd_frcs.get(dof, traj) * minus_one);
 
-//      cout<<"ethd forces = \n"; ethd_frcs.show_matrix();
-//      exit(0);
-      for(int traj=0; traj<children.size(); traj++){
+              }  // for st
+            }  // dof
+          }  // traj
 
-        for(int dof=0; dof<nnucl; dof++){
+        }  // der_lvl >=1
 
-          for(int st=0; st<nadi; st++){
+      }  // der_lvl >=0
+    }
 
-            children[traj]->d1ham_adi[dof]->add(st,st, ethd_frcs.get(dof, traj)*minus_one);
-
-          }// for st
-        }// dof
-      }// traj
-
-    }// der_lvl >=1
-
-  }// der_lvl >=0
-
-}
-
-
-
-
-
-}// namespace libnhamiltonian
-}// liblibra
-
+  }  // namespace libnhamiltonian
+}  // namespace liblibra

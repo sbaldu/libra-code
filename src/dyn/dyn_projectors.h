@@ -22,54 +22,74 @@
 #include "../io/libio.h"
 #include "dyn_control_params.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-namespace bp = boost::python;
+  using namespace libio;
+  namespace bp = boost::python;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
+    vector<int> hungarian_algorithm(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha);
 
-vector<int> hungarian_algorithm(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha);
+    CMATRIX compute_phase_corrections(CMATRIX& S, double tol);
+    CMATRIX compute_phase_corrections(CMATRIX& S);
+    vector<int> get_reordering(CMATRIX& time_overlap);
+    MATRIX make_cost_mat(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha);
+    vector<int> Munkres_Kuhn(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha, int verbosity);
+    vector<int> get_stochastic_reordering(CMATRIX& time_overlap, Random& rnd);
+    vector<int> get_stochastic_reordering2(CMATRIX& time_overlap, Random& rnd);
+    vector<int> get_stochastic_reordering3(CMATRIX& time_overlap,
+                                           Random& rnd,
+                                           int convergence,
+                                           int max_number_of_attempts);
+    vector<int> get_stochastic_reordering3(CMATRIX& time_overlap,
+                                           Random& rnd,
+                                           int convergence,
+                                           int max_number_of_attempts,
+                                           double filter_tol,
+                                           int verbosity_level);
 
-CMATRIX compute_phase_corrections(CMATRIX& S, double tol);
-CMATRIX compute_phase_corrections(CMATRIX& S);
-vector<int> get_reordering(CMATRIX& time_overlap);
-MATRIX make_cost_mat(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha);
-vector<int> Munkres_Kuhn(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha, int verbosity);
-vector<int> get_stochastic_reordering(CMATRIX& time_overlap, Random& rnd);
-vector<int> get_stochastic_reordering2(CMATRIX& time_overlap, Random& rnd);
-vector<int> get_stochastic_reordering3(CMATRIX& time_overlap, Random& rnd, int convergence, int max_number_of_attempts);
-vector<int> get_stochastic_reordering3(CMATRIX& time_overlap, Random& rnd, 
-                                       int convergence, int max_number_of_attempts,
-                                       double filter_tol, int verbosity_level
-                                       );
+    vector<int> permute_states(vector<vector<int> >& perms, vector<int>& act_states);
 
-vector<int> permute_states(vector<vector<int> >& perms, vector<int>& act_states);
+    CMATRIX permutation2cmatrix(vector<int>& permutation);
+    void update_projectors(dyn_control_params& prms,
+                           vector<CMATRIX>& projectors,
+                           vector<CMATRIX>& Eadi,
+                           vector<CMATRIX>& St,
+                           Random& rnd);
 
-CMATRIX permutation2cmatrix(vector<int>& permutation);
-void update_projectors(dyn_control_params& prms, vector<CMATRIX>& projectors, 
-  vector<CMATRIX>& Eadi, vector<CMATRIX>& St, Random& rnd);
+    vector<vector<int> > compute_permutations(dyn_control_params& prms,
+                                              vector<CMATRIX>& Eadi,
+                                              vector<CMATRIX>& St,
+                                              Random& rnd);
+    //vector<CMATRIX> compute_projectors(dyn_control_params& prms, vector<CMATRIX>& Eadi, vector<CMATRIX>& St, Random& rnd);
+    //vector<CMATRIX> compute_projectors(dyn_control_params& prms, vector<CMATRIX>& St, vector<vector<int> >& perms);
 
-vector< vector<int> > compute_permutations(dyn_control_params& prms, vector<CMATRIX>& Eadi, vector<CMATRIX>& St, Random& rnd);
-//vector<CMATRIX> compute_projectors(dyn_control_params& prms, vector<CMATRIX>& Eadi, vector<CMATRIX>& St, Random& rnd);
-//vector<CMATRIX> compute_projectors(dyn_control_params& prms, vector<CMATRIX>& St, vector<vector<int> >& perms);
+    CMATRIX compute_projector(dyn_control_params& prms, CMATRIX& Eadi, CMATRIX& St);
 
-CMATRIX compute_projector(dyn_control_params& prms, CMATRIX& Eadi, CMATRIX& St);
+    CMATRIX raw_to_dynconsyst(CMATRIX& amplitudes, vector<CMATRIX>& projectors);
+    CMATRIX dynconsyst_to_raw(CMATRIX& amplitudes, vector<CMATRIX>& projectors);
 
-CMATRIX raw_to_dynconsyst(CMATRIX& amplitudes, vector<CMATRIX>& projectors);
-CMATRIX dynconsyst_to_raw(CMATRIX& amplitudes, vector<CMATRIX>& projectors);
+    CMATRIX compute_F_cost_matrix(CMATRIX& F_curr,
+                                  CMATRIX& F_prev,
+                                  MATRIX& e_curr,
+                                  MATRIX& e_prev,
+                                  MATRIX& p,
+                                  MATRIX& iM,
+                                  double dt,
+                                  int act_state);
+    vector<MATRIX> compute_F_cost_matrix_dof_resolved(CMATRIX& F_curr,
+                                                      CMATRIX& F_prev,
+                                                      MATRIX& e_curr,
+                                                      MATRIX& e_prev,
+                                                      MATRIX& _p,
+                                                      MATRIX& iM,
+                                                      double dt,
+                                                      int act_state);
 
-CMATRIX compute_F_cost_matrix(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr, MATRIX& e_prev, MATRIX& p, MATRIX& iM, double dt, int act_state);
-vector<MATRIX> compute_F_cost_matrix_dof_resolved(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr, MATRIX& e_prev, 
-MATRIX& _p, MATRIX& iM, double dt, int act_state);
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-}// namespace libdyn
-}// liblibra
-
-#endif // DYN_PROJECTORS_H
-
+#endif  // DYN_PROJECTORS_H

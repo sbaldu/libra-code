@@ -27,25 +27,23 @@
 #include "thermostat/libthermostat.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libhamiltonian;
+  using namespace libhamiltonian;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-using namespace libnuclear;
-using namespace libelectronic;
-using namespace libthermostat;
+    using namespace libnuclear;
+    using namespace libelectronic;
+    using namespace libthermostat;
 
+    // Dynamics_Nuclear.cpp
+    void propagate_nuclear(double dt, Nuclear* mol, Electronic* el, Hamiltonian* ham, int opt);
+    void propagate_nuclear(
+        double dt, Nuclear* mol, Electronic* el, Hamiltonian* ham, Thermostat* therm, int opt);
 
-// Dynamics_Nuclear.cpp
-void propagate_nuclear(double dt,Nuclear* mol,Electronic* el,Hamiltonian* ham,int opt);
-void propagate_nuclear(double dt,Nuclear* mol,Electronic* el,Hamiltonian* ham,Thermostat* therm, int opt);
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-}// namespace libdyn
-}// liblibra
-
-#endif // DYNAMICS_NUCLEAR_H
-
+#endif  // DYNAMICS_NUCLEAR_H

@@ -20,20 +20,18 @@
 #include "Hamiltonian_Extern.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libhamiltonian namespace
+  namespace libhamiltonian {
 
-/// libhamiltonian namespace
-namespace libhamiltonian{
+    /// libhamiltonian_extern namespace
+    namespace libhamiltonian_extern {
 
-/// libhamiltonian_extern namespace
-namespace libhamiltonian_extern{
+      void export_hamiltonian_extern_objects();
 
-void export_hamiltonian_extern_objects();
+    }  // namespace libhamiltonian_extern
+  }  // namespace libhamiltonian
+}  // namespace liblibra
 
-
-}// namespace libhamiltonian_extern
-}// namespace libhamiltonian
-}// liblibra
-
-#endif// LIB_HAMILTONIAN_EXTERN_H
+#endif  // LIB_HAMILTONIAN_EXTERN_H

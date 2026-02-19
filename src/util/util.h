@@ -27,68 +27,81 @@
 #include <vector>
 #include <boost/python.hpp>
 
-#endif 
+#endif
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace std;
-using namespace boost::python;
+  using namespace std;
+  using namespace boost::python;
 
+  /// liutil namespace
+  namespace libutil {
 
-/// liutil namespace
-namespace libutil{
+    // Operations on the the vectors of integers
+    void show_vector(vector<int>& A);
 
+    int is_in_vector(int a, vector<int>& A);
+    int is_in_vector(int a, vector<int>& A, int& pos);
+    int is_in_vector(int a, vector<int>& A, vector<int>& indx);
+    boost::python::list is_in_vector2(int a, vector<int>& A);
 
-// Operations on the the vectors of integers
-void show_vector(vector<int>& A);
+    int is_repeating(vector<int>& A, int& reap);
+    boost::python::list is_repeating(vector<int>& A);
 
-int is_in_vector(int a, vector<int>& A);
-int is_in_vector(int a, vector<int>& A, int& pos);
-int is_in_vector(int a, vector<int>& A, vector<int>& indx);
-boost::python::list is_in_vector2(int a, vector<int>& A);
+    int delta(vector<int>& A, vector<int>& B, int& a, int& b);
+    boost::python::list delta(vector<int>& A, vector<int>& B);
 
+    // Operations on strings ("lines")
+    void split_line(std::string line, vector<std::string>& arr);
+    void split_line(std::string line, vector<std::string>& arr, char delim);
+    std::string int2str(int inp);
+    int find_section(vector<std::string>& A,
+                     std::string marker_beg,
+                     std::string marker_end,
+                     int min_line,
+                     int max_line,
+                     int& beg,
+                     int& end);
+    std::string extract_s(std::string line, std::string marker);
 
-int is_repeating(vector<int>& A,int& reap);
-boost::python::list is_repeating(vector<int>& A);
+    // Operations on arrays - reformings, etc.
+    void extract_1D(vector<double>& in, vector<double>& out, vector<int>& templ, int shift);
+    void extract_2D(vector<vector<double> >& in,
+                    vector<vector<double> >& out,
+                    int minx,
+                    int maxx,
+                    int miny,
+                    int maxy);
+    void extract_2D(vector<vector<double> >& in,
+                    vector<vector<double> >& out,
+                    vector<int>& templ,
+                    int shift);
 
-int delta(vector<int>& A,vector<int>& B,int& a,int& b);
-boost::python::list delta(vector<int>& A,vector<int>& B);
+    // Checking the presence of vectors in lists of vectors
+    int is_equal(vector<int>& vec1, vector<int>& vec2);
+    int is_included(vector<int>& vec1, vector<vector<int> >& vec);
+    int is_included(vector<int>& vec1, vector<vector<int> >& vec, int start, int num_of_elts);
+    int is_present(vector<vector<int> >& vec, int i, int start, int end);
 
-// Operations on strings ("lines")
-void split_line(std::string line, vector<std::string>& arr);
-void split_line(std::string line,vector<std::string>& arr,char delim);
-std::string int2str(int inp);
-int find_section(vector<std::string>& A,std::string marker_beg,std::string marker_end,int min_line,int max_line,int& beg,int& end);
-std::string extract_s(std::string line, std::string marker);    
+    // Properties of vectors
+    int sum_row(int row, vector<vector<int> >& vec);
 
-// Operations on arrays - reformings, etc.
-void extract_1D(vector<double>& in, vector<double>& out, vector<int>& templ,int shift);
-void extract_2D(vector< vector<double> >& in, vector< vector<double> >& out, int minx,int maxx, int miny, int maxy );
-void extract_2D(vector< vector<double> >& in, vector< vector<double> >& out, vector<int>& templ,int shift);
+    // Allocating storage
+    vector<int> allocate_1D(int sz1);
+    vector<vector<int> > allocate_2D(int sz1, int sz2);
+    vector<vector<vector<int> > > allocate_3D(int sz1, int sz2, int sz3);
 
-// Checking the presence of vectors in lists of vectors
-int is_equal(vector<int>& vec1, vector<int>& vec2);
-int is_included(vector<int>& vec1, vector<vector<int> >& vec);
-int is_included(vector<int>& vec1, vector<vector<int> >& vec, int start, int num_of_elts);
-int is_present(vector< vector<int> >& vec, int i, int start, int end);
+    void check_input(boost::python::dict params,
+                     boost::python::dict default_params,
+                     boost::python::list critical_params);
+    void check_input(boost::python::dict params,
+                     boost::python::dict default_params,
+                     boost::python::list critical_params,
+                     int verbose);
 
-// Properties of vectors
-int sum_row(int row, vector<vector<int> >& vec);
+  }  // namespace libutil
 
-// Allocating storage
-vector<int> allocate_1D(int sz1);
-vector< vector<int> > allocate_2D(int sz1, int sz2);
-vector< vector< vector<int> > > allocate_3D(int sz1, int sz2, int sz3);
+}  // namespace liblibra
 
-
-
-void check_input(boost::python::dict params, boost::python::dict default_params, boost::python::list critical_params);
-void check_input(boost::python::dict params, boost::python::dict default_params, boost::python::list critical_params, int verbose);
-
-}// libutil
-
-}// liblibra
-
-#endif // UTIL_H
-
+#endif  // UTIL_H

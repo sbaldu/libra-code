@@ -14,20 +14,22 @@
     
 */
 
-
 #include "Potentials_elec.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  namespace libpot {
 
-namespace libpot{
-
-double Elec_Coulomb(VECTOR& ri,VECTOR& rj,     /*Inputs*/             
-                    VECTOR& fi,VECTOR& fj,     /*Outputs*/
-                    double qi,double qj,
-                    double eps,double delta){  /*Parameters*/
-/**
+    double Elec_Coulomb(VECTOR& ri,
+                        VECTOR& rj, /*Inputs*/
+                        VECTOR& fi,
+                        VECTOR& fj, /*Outputs*/
+                        double qi,
+                        double qj,
+                        double eps,
+                        double delta) { /*Parameters*/
+                                        /**
   This is a simple Coulombic interaction potential:
 
   E = qi*qj/(eps*|rij+delta|) 
@@ -50,18 +52,16 @@ double Elec_Coulomb(VECTOR& ri,VECTOR& rj,     /*Inputs*/
 
 */
 
-  double energy,r2,r6,r12,d1,d2;
-  VECTOR rij = ri - rj;
-  d1 = rij.length();
-  d2 = d1 + delta;
-//  energy = electric*(qi*qj/(eps*d2));
-  energy = (qi*qj/(eps*d2));
-  fi = (energy/d2)*(rij/d1);
-  fj = -fi;
-  return energy;
-}
+      double energy, r2, r6, r12, d1, d2;
+      VECTOR rij = ri - rj;
+      d1 = rij.length();
+      d2 = d1 + delta;
+      //  energy = electric*(qi*qj/(eps*d2));
+      energy = (qi * qj / (eps * d2));
+      fi = (energy / d2) * (rij / d1);
+      fj = -fi;
+      return energy;
+    }
 
-
-}// namespace libpot
-}// liblibra
-
+  }  // namespace libpot
+}  // namespace liblibra

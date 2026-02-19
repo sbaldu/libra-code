@@ -22,18 +22,14 @@
 #include "chemsys/libchemsys.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libchemobjects namespace
+  namespace libchemobjects {
 
-/// libchemobjects namespace
-namespace libchemobjects{
+    void export_chemobjects_objects();
 
+  }  // namespace libchemobjects
+}  // namespace liblibra
 
-void export_chemobjects_objects();
-
-
-}// namespace libchemobjects
-}// liblibra
-
-#endif // LIBCHEMOBJECTS_H
-
+#endif  // LIBCHEMOBJECTS_H

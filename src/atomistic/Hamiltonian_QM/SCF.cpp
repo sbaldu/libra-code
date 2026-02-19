@@ -19,20 +19,22 @@
 #include "SCF.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_qm namespace
-namespace libhamiltonian_qm{
+    /// libhamiltonian_qm namespace
+    namespace libhamiltonian_qm {
 
-
-
-double scf(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM
-){
-/**
+      double scf(Electronic_Structure* el,
+                 System& syst,
+                 vector<AO>& basis_ao,
+                 Control_Parameters& prms,
+                 Model_Parameters& modprms,
+                 vector<vector<int> >& atom_to_ao_map,
+                 vector<int>& ao_to_atom_map,
+                 int BM) {
+        /**
   This function implements the SCF with the choice of algorithms: SCF_none, SCF_oda, SCF_oda_disk
   The choice is controlled by the parameter prms
 
@@ -49,22 +51,19 @@ double scf(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
   Returns the converged total electronic energy 
 */
 
+        double res = 0.0;
 
-
-  double res = 0.0;
-
-  if(prms.scf_algo=="none"){
-    res = scf_none(el,syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map, BM);
-  }
-  else if(prms.scf_algo=="oda"){
-    if(prms.use_disk){
-      res = scf_oda_disk(el,syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map, BM);
-    } 
-    else{
-      res = scf_oda(el,syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map, BM);
-    }
-  }
-/*
+        if (prms.scf_algo == "none") {
+          res = scf_none(el, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map, BM);
+        } else if (prms.scf_algo == "oda") {
+          if (prms.use_disk) {
+            res =
+                scf_oda_disk(el, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map, BM);
+          } else {
+            res = scf_oda(el, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map, BM);
+          }
+        }
+        /*
   else if(prms.scf_algo=="diis_fock"){
     res = scf_diis_fock(el,syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map);
   }
@@ -72,15 +71,18 @@ double scf(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
     res = scf_diis_dm(el,syst,basis_ao, prms,modprms, atom_to_ao_map,ao_to_atom_map);
   }
 */
-  return res;
+        return res;
+      }
 
-}
-
-double scf(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-           Control_Parameters& prms,Model_Parameters& modprms,
-           vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map, int BM
-){
-/**
+      double scf(Electronic_Structure& el,
+                 System& syst,
+                 vector<AO>& basis_ao,
+                 Control_Parameters& prms,
+                 Model_Parameters& modprms,
+                 vector<vector<int> >& atom_to_ao_map,
+                 vector<int>& ao_to_atom_map,
+                 int BM) {
+        /**
   Python-friendly version
   This function implements the SCF with the choice of algorithms: SCF_none, SCF_oda, SCF_oda_disk
   The choice is controlled by the parameter prms
@@ -98,15 +100,9 @@ double scf(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
   Returns the converged total electronic energy 
 */
 
+        return scf(&el, syst, basis_ao, prms, modprms, atom_to_ao_map, ao_to_atom_map, BM);
+      }
 
-  return scf(&el,syst,basis_ao,  prms,modprms,  atom_to_ao_map,ao_to_atom_map, BM);
-}
-
-
-
-}// namespace libhamiltonian_qm
-}// namespace libatomistic
-}// liblibra
-
-
-
+    }  // namespace libhamiltonian_qm
+  }  // namespace libatomistic
+}  // namespace liblibra

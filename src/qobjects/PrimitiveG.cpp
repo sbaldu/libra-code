@@ -18,108 +18,137 @@
 #include "../molint/libmolint.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libspecialfunctions;
-using namespace libmolint;
+  using namespace liblinalg;
+  using namespace libspecialfunctions;
+  using namespace libmolint;
 
-/// libqobjects namespace
-namespace libqobjects{
+  /// libqobjects namespace
+  namespace libqobjects {
 
+    //----------------------- Members of PrimitiveG class -----------------------
 
-//----------------------- Members of PrimitiveG class -----------------------
-
-int PrimitiveG::get_x_exp(){ 
-/** 
+    int PrimitiveG::get_x_exp() {
+      /** 
   \brief Returns x exponent (x-projection of angular momentum quantum number)
 */
-  if(is_x_exp){ return x_exp; }
-   else{ std::cout<<"Error: x_exp is not set\n"; exit(0); } 
-}
+      if (is_x_exp) {
+        return x_exp;
+      } else {
+        std::cout << "Error: x_exp is not set\n";
+        exit(0);
+      }
+    }
 
-int PrimitiveG::get_y_exp(){
-/** 
+    int PrimitiveG::get_y_exp() {
+      /** 
   \brief Returns y exponent (y-projection of angular momentum quantum number)
 */
 
-  if(is_y_exp){ return y_exp; }
-  else{ std::cout<<"Error: y_exp is not set\n"; exit(0); } 
-}
+      if (is_y_exp) {
+        return y_exp;
+      } else {
+        std::cout << "Error: y_exp is not set\n";
+        exit(0);
+      }
+    }
 
-int PrimitiveG::get_z_exp(){
-/** 
+    int PrimitiveG::get_z_exp() {
+      /** 
   \brief Returns z exponent (z-projection of angular momentum quantum number)
 */
 
-  if(is_z_exp){ return z_exp; }
-  else{ std::cout<<"Error: z_exp is not set\n"; exit(0); } 
-}
+      if (is_z_exp) {
+        return z_exp;
+      } else {
+        std::cout << "Error: z_exp is not set\n";
+        exit(0);
+      }
+    }
 
-double PrimitiveG::get_alpha(){
-/** 
+    double PrimitiveG::get_alpha() {
+      /** 
   \brief Returns Gaussian exponent 
 */
 
-  if(is_alpha){ return alpha; } else{ std::cout<<"Error: alpha is not set\n"; exit(0); } 
-}
+      if (is_alpha) {
+        return alpha;
+      } else {
+        std::cout << "Error: alpha is not set\n";
+        exit(0);
+      }
+    }
 
-VECTOR PrimitiveG::get_R(){ 
-/** 
+    VECTOR PrimitiveG::get_R() {
+      /** 
   \brief Returns the position of the primitive Gaussian
 */
 
-  if(is_R){ return R; } else{ std::cout<<"Error: R is not set\n"; exit(0); } 
-}
+      if (is_R) {
+        return R;
+      } else {
+        std::cout << "Error: R is not set\n";
+        exit(0);
+      }
+    }
 
-double PrimitiveG::get_value(){
-/** 
+    double PrimitiveG::get_value() {
+      /** 
   \brief Returns the value of the primitive Gaussian function, computed at some point
   Note: this functions doesn't do the calculation, only returns the pre-computed value
 */
 
-  if(is_value){ return value; } else{ std::cout<<"Error: value is not set\n"; exit(0); } 
-}
+      if (is_value) {
+        return value;
+      } else {
+        std::cout << "Error: value is not set\n";
+        exit(0);
+      }
+    }
 
-
-void PrimitiveG::set_x_exp(int _x){ 
-/** 
+    void PrimitiveG::set_x_exp(int _x) {
+      /** 
   \brief Sets the x exponent (x-projection of angular momentum quantum number)
   \param[in] _x The x exponent input
 */
 
-  x_exp = _x; is_x_exp = 1; 
-}
+      x_exp = _x;
+      is_x_exp = 1;
+    }
 
-void PrimitiveG::set_y_exp(int _y){
-/** 
+    void PrimitiveG::set_y_exp(int _y) {
+      /** 
   \brief Sets the y exponent (y-projection of angular momentum quantum number)
   \param[in] _y The y exponent input
 */
 
-  y_exp = _y; is_y_exp = 1; 
-}
+      y_exp = _y;
+      is_y_exp = 1;
+    }
 
-void PrimitiveG::set_z_exp(int _z){
-/** 
+    void PrimitiveG::set_z_exp(int _z) {
+      /** 
   \brief Sets the z exponent (z-projection of angular momentum quantum number)
   \param[in] _z The z exponent input
 */
 
-  z_exp = _z; is_z_exp = 1; 
-}
+      z_exp = _z;
+      is_z_exp = 1;
+    }
 
-void PrimitiveG::set_alpha(double _alp){ 
-/** 
+    void PrimitiveG::set_alpha(double _alp) {
+      /** 
   \brief Sets the Gaussian exponent, alpha
   \param[in] _alp The Gaussian exponent, alpha, input
 */
 
-  alpha = _alp; is_alpha = 1; 
-}
+      alpha = _alp;
+      is_alpha = 1;
+    }
 
-void PrimitiveG::set_position_const_ref(const VECTOR& _R){ 
-/** 
+    void PrimitiveG::set_position_const_ref(const VECTOR& _R) {
+      /** 
   \brief Sets the position of the primitive
   \param[in] _R The input position
   Note: here we use the setting by the const reference, so changing _R outside, will not affect the 
@@ -127,11 +156,12 @@ void PrimitiveG::set_position_const_ref(const VECTOR& _R){
   
 */
 
-  R = _R; is_R = 1; 
-}
+      R = _R;
+      is_R = 1;
+    }
 
-void PrimitiveG::set_position(VECTOR _R){ 
-/** 
+    void PrimitiveG::set_position(VECTOR _R) {
+      /** 
   \brief Sets the position of the primitive
   \param[in] _R The input position
   Note: here the assignment made by value, that is the copy constructory is used,
@@ -139,12 +169,13 @@ void PrimitiveG::set_position(VECTOR _R){
   
 */
 
-  R = _R; is_R = 1; }
+      R = _R;
+      is_R = 1;
+    }
 
-
-// General initialization
-void PrimitiveG::init(int l,int m,int n,double alp,VECTOR& center){
-/** 
+    // General initialization
+    void PrimitiveG::init(int l, int m, int n, double alp, VECTOR& center) {
+      /** 
   \brief Initialization with parameters
   \param[in] l x-exponent
   \param[in] m y-exponent
@@ -154,26 +185,32 @@ void PrimitiveG::init(int l,int m,int n,double alp,VECTOR& center){
   center variable outside *WILL* change the position of the primitive
 */
 
-  x_exp = l;           is_x_exp = 1;
-  y_exp = m;           is_y_exp = 1;
-  z_exp = n;           is_z_exp = 1;
-  alpha = alp;         is_alpha = 1;
-  R = center;          is_R = 1;
-  value = 0.0;         is_value = 0;
-}
+      x_exp = l;
+      is_x_exp = 1;
+      y_exp = m;
+      is_y_exp = 1;
+      z_exp = n;
+      is_z_exp = 1;
+      alpha = alp;
+      is_alpha = 1;
+      R = center;
+      is_R = 1;
+      value = 0.0;
+      is_value = 0;
+    }
 
-// Default constructor
-PrimitiveG::PrimitiveG(){  
-/** 
+    // Default constructor
+    PrimitiveG::PrimitiveG() {
+      /** 
   \brief Default ctor: Simple S-type function at the global origin: R = (0,0,0)^T, alpha = 1.0
 */
-  VECTOR r;
-  init(0,0,0,1.0, r );
-}
+      VECTOR r;
+      init(0, 0, 0, 1.0, r);
+    }
 
-// Arbitrary L function constructor
-PrimitiveG::PrimitiveG(int l,int m,int n,double alp,VECTOR& center){ 
-/** 
+    // Arbitrary L function constructor
+    PrimitiveG::PrimitiveG(int l, int m, int n, double alp, VECTOR& center) {
+      /** 
   \brief Constructor with initialization
   \param[in] l x-exponent
   \param[in] m y-exponent
@@ -183,110 +220,155 @@ PrimitiveG::PrimitiveG(int l,int m,int n,double alp,VECTOR& center){
   center variable outside *WILL* change the position of the primitive
 */
 
-  init(l,m,n,alp, center );
-}
+      init(l, m, n, alp, center);
+    }
 
-// Copy constructor
-PrimitiveG::PrimitiveG(const PrimitiveG& g){
-/**
+    // Copy constructor
+    PrimitiveG::PrimitiveG(const PrimitiveG& g) {
+      /**
   \brief Copy constructor
 
   Only the properties defined in the source object will be copied to the destination object
 */
 
-  // Default parameters
-  VECTOR r;
-  init(0,0,0,1.0, r );
+      // Default parameters
+      VECTOR r;
+      init(0, 0, 0, 1.0, r);
 
-  if(g.is_x_exp)   {  x_exp = g.x_exp; is_x_exp = 1; }
-  if(g.is_y_exp)   {  y_exp = g.y_exp; is_y_exp = 1; }
-  if(g.is_z_exp)   {  z_exp = g.z_exp; is_z_exp = 1; }
-  if(g.is_alpha)   {  alpha = g.alpha; is_alpha = 1; }
-  if(g.is_R)       {  R     = g.R;     is_R     = 1; }
-  if(g.is_value)   {  value = g.value; is_value = 1; }
+      if (g.is_x_exp) {
+        x_exp = g.x_exp;
+        is_x_exp = 1;
+      }
+      if (g.is_y_exp) {
+        y_exp = g.y_exp;
+        is_y_exp = 1;
+      }
+      if (g.is_z_exp) {
+        z_exp = g.z_exp;
+        is_z_exp = 1;
+      }
+      if (g.is_alpha) {
+        alpha = g.alpha;
+        is_alpha = 1;
+      }
+      if (g.is_R) {
+        R = g.R;
+        is_R = 1;
+      }
+      if (g.is_value) {
+        value = g.value;
+        is_value = 1;
+      }
+    }
 
-}
-
-PrimitiveG& PrimitiveG::operator=(const PrimitiveG& g){
-/**
+    PrimitiveG& PrimitiveG::operator=(const PrimitiveG& g) {
+      /**
   \brief Assignment operator
 
   Only the properties defined in the source object will be copied to the destination object  
 */
 
-  // Default parameters
-  VECTOR r;
-  init(0,0,0,1.0, r );
- 
-  if(g.is_x_exp) {  x_exp = g.x_exp; is_x_exp = 1; }
-  if(g.is_y_exp) {  y_exp = g.y_exp; is_y_exp = 1; }
-  if(g.is_z_exp) {  z_exp = g.z_exp; is_z_exp = 1; }
-  if(g.is_alpha) {  alpha = g.alpha; is_alpha = 1; }
-  if(g.is_R)     {  R     = g.R;     is_R     = 1; }
-  if(g.is_value) {  value = g.value; is_value = 1; }
+      // Default parameters
+      VECTOR r;
+      init(0, 0, 0, 1.0, r);
 
-  return *this;
+      if (g.is_x_exp) {
+        x_exp = g.x_exp;
+        is_x_exp = 1;
+      }
+      if (g.is_y_exp) {
+        y_exp = g.y_exp;
+        is_y_exp = 1;
+      }
+      if (g.is_z_exp) {
+        z_exp = g.z_exp;
+        is_z_exp = 1;
+      }
+      if (g.is_alpha) {
+        alpha = g.alpha;
+        is_alpha = 1;
+      }
+      if (g.is_R) {
+        R = g.R;
+        is_R = 1;
+      }
+      if (g.is_value) {
+        value = g.value;
+        is_value = 1;
+      }
 
-}
+      return *this;
+    }
 
-void PrimitiveG::show_info(){
-/**
+    void PrimitiveG::show_info() {
+      /**
   \brief Printing properties of the primitive Gaussian
 */
 
-  std::cout<<"Primitive Gaussian properties:"<<std::endl;
+      std::cout << "Primitive Gaussian properties:" << std::endl;
 
-  if(is_x_exp) {std::cout<<"x_exp = "<<x_exp<<" unitless"<<std::endl;   }
-  if(is_y_exp) {std::cout<<"y_exp = "<<y_exp<<" unitless"<<std::endl;   }
-  if(is_z_exp) {std::cout<<"z_exp = "<<z_exp<<" unitless"<<std::endl;   }
-  if(is_alpha) {std::cout<<"alpha = "<<alpha<<" Bohr^-1"<<std::endl;   }
-  if(is_R)     {std::cout<<"R = "<<R<<" Bohr"<<std::endl;   }
-  if(is_value) {std::cout<<"value = "<<value<<" unitless"<<std::endl;   }
+      if (is_x_exp) {
+        std::cout << "x_exp = " << x_exp << " unitless" << std::endl;
+      }
+      if (is_y_exp) {
+        std::cout << "y_exp = " << y_exp << " unitless" << std::endl;
+      }
+      if (is_z_exp) {
+        std::cout << "z_exp = " << z_exp << " unitless" << std::endl;
+      }
+      if (is_alpha) {
+        std::cout << "alpha = " << alpha << " Bohr^-1" << std::endl;
+      }
+      if (is_R) {
+        std::cout << "R = " << R << " Bohr" << std::endl;
+      }
+      if (is_value) {
+        std::cout << "value = " << value << " unitless" << std::endl;
+      }
 
-  std::cout<<std::endl;
+      std::cout << std::endl;
+    }
 
-}
-
-
-double PrimitiveG::compute(VECTOR& pos){
-/**
+    double PrimitiveG::compute(VECTOR& pos) {
+      /**
   \brief Evaluate the primitive Gaussian function at given point 
   \param[in] pos The position at which the function is evaluated
   The result is stored in the member-function value
 */
 
-  VECTOR r; r = pos - R;
-  double r2 = r.length2();
-  value = FAST_POW(r.x,x_exp)*FAST_POW(r.y,y_exp)*FAST_POW(r.z,z_exp)*exp(-alpha * r2);
-  is_value = 1;
+      VECTOR r;
+      r = pos - R;
+      double r2 = r.length2();
+      value = FAST_POW(r.x, x_exp) * FAST_POW(r.y, y_exp) * FAST_POW(r.z, z_exp) * exp(-alpha * r2);
+      is_value = 1;
 
-  return value;
-}
+      return value;
+    }
 
-
-double PrimitiveG::norm2(){
-/**
+    double PrimitiveG::norm2() {
+      /**
   \brief Compute the square norm of the given primitive Gaussian, <G(A)|G(A)>
 
 */
 
-  double res = gaussian_norm2(x_exp,alpha) * gaussian_norm2(y_exp,alpha) * gaussian_norm2(z_exp,alpha);
-  return res;
+      double res = gaussian_norm2(x_exp, alpha) * gaussian_norm2(y_exp, alpha) *
+                   gaussian_norm2(z_exp, alpha);
+      return res;
 
-}// norm2
+    }  // norm2
 
-double PrimitiveG::norm1(){
-/**
+    double PrimitiveG::norm1() {
+      /**
   \brief Compute the square norm of the given primitive Gaussian, sqrt(<G(A)|G(A)>)
 
 */
 
-  return sqrt(norm2()); 
+      return sqrt(norm2());
 
-}// norm1
+    }  // norm1
 
-double PrimitiveG::normalization_factor(){
-/**
+    double PrimitiveG::normalization_factor() {
+      /**
   \brief Compute normalization factor for given primitive Gaussian
 
   double nom = pow((8.0*G_alpha),(x_exp+y_exp+z_exp))*FACTORIAL(x_exp)*FACTORIAL(y_exp)*FACTORIAL(z_exp);
@@ -301,40 +383,43 @@ double PrimitiveG::normalization_factor(){
   = 1/sqrt(<G(A)|G(A)>)
 */
 
-  double res = (1.0/sqrt(norm2()));
-  return res;
+      double res = (1.0 / sqrt(norm2()));
+      return res;
 
-}// norm
+    }  // norm
 
-void PrimitiveG::shift_position_const_ref(const VECTOR& dR){
-/**
+    void PrimitiveG::shift_position_const_ref(const VECTOR& dR) {
+      /**
   \brief Shift the center of the primitive by a given vector
   \param[in] dR The translation vector
 */
 
-  R += dR; 
-}
+      R += dR;
+    }
 
-void PrimitiveG::shift_position(VECTOR dR){  
-/**
+    void PrimitiveG::shift_position(VECTOR dR) {
+      /**
   \brief Shift the center of the primitive by a given vector - Python-friendly
   \param[in] dR The translation vector
 */
 
-  R += dR; 
-}
+      R += dR;
+    }
 
+    //=======================================================================================================
+    //===================== Overload basic functions from libmolint to Gaussian objects  ====================
 
-//=======================================================================================================
-//===================== Overload basic functions from libmolint to Gaussian objects  ====================
+    //======================== Overlaps =================================
 
-//======================== Overlaps =================================
-
-double gaussian_overlap
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize, int is_derivs,
-  VECTOR& dIdA, VECTOR& dIdB, vector<double*>& auxd,int n_aux
-){
-/**
+    double gaussian_overlap(PrimitiveG& GA,
+                            PrimitiveG& GB,
+                            int is_normalize,
+                            int is_derivs,
+                            VECTOR& dIdA,
+                            VECTOR& dIdB,
+                            vector<double*>& auxd,
+                            int n_aux) {
+      /**
   \brief Compute the overlap of two arbitrary primitive Gaussians: <G(A)|G(B)>
 
   \param[in] GA One primitive Gaussian
@@ -350,21 +435,33 @@ double gaussian_overlap
 
 */
 
-  double res = 
-  libmolint::gaussian_overlap
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdA, dIdB, auxd, n_aux
-  );
+      double res = libmolint::gaussian_overlap(GA.x_exp,
+                                               GA.y_exp,
+                                               GA.z_exp,
+                                               GA.alpha,
+                                               GA.R,
+                                               GB.x_exp,
+                                               GB.y_exp,
+                                               GB.z_exp,
+                                               GB.alpha,
+                                               GB.R,
+                                               is_normalize,
+                                               is_derivs,
+                                               dIdA,
+                                               dIdB,
+                                               auxd,
+                                               n_aux);
 
-  return res;
-}
+      return res;
+    }
 
-double gaussian_overlap
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize, int is_derivs,
-  VECTOR& dIdA, VECTOR& dIdB
-){
-/**
+    double gaussian_overlap(PrimitiveG& GA,
+                            PrimitiveG& GB,
+                            int is_normalize,
+                            int is_derivs,
+                            VECTOR& dIdA,
+                            VECTOR& dIdB) {
+      /**
   \brief Compute the overlap of two arbitrary primitive Gaussians: <G(A)|G(B)> - Python-friendly
 
   \param[in] GA One primitive Gaussian
@@ -382,20 +479,29 @@ double gaussian_overlap
 
 */
 
+      double res = libmolint::gaussian_overlap(GA.x_exp,
+                                               GA.y_exp,
+                                               GA.z_exp,
+                                               GA.alpha,
+                                               GA.R,
+                                               GB.x_exp,
+                                               GB.y_exp,
+                                               GB.z_exp,
+                                               GB.alpha,
+                                               GB.R,
+                                               is_normalize,
+                                               is_derivs,
+                                               dIdA,
+                                               dIdB);
 
-  double res = 
-  libmolint::gaussian_overlap
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdA, dIdB
-  );
+      return res;
+    }
 
-  return res;
-}
-
-boost::python::list gaussian_overlap
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize, int is_derivs){
-/**
+    boost::python::list gaussian_overlap(PrimitiveG& GA,
+                                         PrimitiveG& GB,
+                                         int is_normalize,
+                                         int is_derivs) {
+      /**
   \brief Compute the overlap of two arbitrary primitive Gaussians: <G(A)|G(B)> - Python-friendly
 
   \param[in] GA One primitive Gaussian
@@ -415,21 +521,25 @@ boost::python::list gaussian_overlap
 
 */
 
+      boost::python::list res;
+      res = libmolint::gaussian_overlap(GA.x_exp,
+                                        GA.y_exp,
+                                        GA.z_exp,
+                                        GA.alpha,
+                                        GA.R,
+                                        GB.x_exp,
+                                        GB.y_exp,
+                                        GB.z_exp,
+                                        GB.alpha,
+                                        GB.R,
+                                        is_normalize,
+                                        is_derivs);
 
-  boost::python::list res;
-  res = 
-  libmolint::gaussian_overlap
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs
-  );
+      return res;
+    }
 
-  return res;
-}
-
-double gaussian_overlap
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize){
-/**
+    double gaussian_overlap(PrimitiveG& GA, PrimitiveG& GB, int is_normalize) {
+      /**
   \brief Compute the overlap of two arbitrary primitive Gaussians: <G(A)|G(B)> - Python-friendly
 
   \param[in] GA One primitive Gaussian
@@ -442,20 +552,23 @@ double gaussian_overlap
   This version does not compute derivatives. Only the integral is computed.
 */
 
+      double res = libmolint::gaussian_overlap(GA.x_exp,
+                                               GA.y_exp,
+                                               GA.z_exp,
+                                               GA.alpha,
+                                               GA.R,
+                                               GB.x_exp,
+                                               GB.y_exp,
+                                               GB.z_exp,
+                                               GB.alpha,
+                                               GB.R,
+                                               is_normalize);
 
-  double res = 
-  libmolint::gaussian_overlap
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize
-  );
+      return res;
+    }
 
-  return res;
-}
-
-double gaussian_overlap
-( PrimitiveG& GA, PrimitiveG& GB){
-/**
+    double gaussian_overlap(PrimitiveG& GA, PrimitiveG& GB) {
+      /**
   \brief Compute the overlap of two arbitrary primitive Gaussians: <G(A)|G(B)> - Python-friendly
 
   \param[in] GA One primitive Gaussian
@@ -466,24 +579,25 @@ double gaussian_overlap
   This version does perform normalization by the default.
 */
 
+      double res = libmolint::gaussian_overlap(
+          GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R, GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R);
 
-  double res = 
-  libmolint::gaussian_overlap
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R
-  );
+      return res;
+    }
 
-  return res;
-}
+    //======================== Moments =================================
 
-
-//======================== Moments =================================
-
-double gaussian_moment
-( PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB,int is_normalize, int is_derivs,
-  VECTOR& dIdA, VECTOR& dIdR, VECTOR& dIdB, vector<double*>& auxd,int n_aux
-){
-/**
+    double gaussian_moment(PrimitiveG& GA,
+                           PrimitiveG& G,
+                           PrimitiveG& GB,
+                           int is_normalize,
+                           int is_derivs,
+                           VECTOR& dIdA,
+                           VECTOR& dIdR,
+                           VECTOR& dIdB,
+                           vector<double*>& auxd,
+                           int n_aux) {
+      /**
   \brief Compute the overlap of 3 arbitrary primitive Gaussians: <G(A)|G|G(B)> 
   Note that specific cases of such integral include dipole, multipole moments, and components of pseudopotential:
   <G(A)|R_c|G(B)>,   <G(A)|R_c * R'_c|G(B)>,   <G(A)|exp(-alp*(r-R_c))|G(B)>, etc.
@@ -503,23 +617,41 @@ double gaussian_moment
 
 */
 
+      double res = libmolint::gaussian_moment(GA.x_exp,
+                                              GA.y_exp,
+                                              GA.z_exp,
+                                              GA.alpha,
+                                              GA.R,
+                                              G.x_exp,
+                                              G.y_exp,
+                                              G.z_exp,
+                                              G.alpha,
+                                              G.R,
+                                              GB.x_exp,
+                                              GB.y_exp,
+                                              GB.z_exp,
+                                              GB.alpha,
+                                              GB.R,
+                                              is_normalize,
+                                              is_derivs,
+                                              dIdA,
+                                              dIdR,
+                                              dIdB,
+                                              auxd,
+                                              n_aux);
 
-  double res = 
-  libmolint::gaussian_moment
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    G.x_exp, G.y_exp,  G.z_exp,  G.alpha,  G.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdA, dIdR, dIdB, auxd, n_aux
-  );
+      return res;
+    }
 
-  return res;
-}
-
-double gaussian_moment
-( PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB,int is_normalize, int is_derivs,
-  VECTOR& dIdA, VECTOR& dIdR, VECTOR& dIdB
-){
-/**
+    double gaussian_moment(PrimitiveG& GA,
+                           PrimitiveG& G,
+                           PrimitiveG& GB,
+                           int is_normalize,
+                           int is_derivs,
+                           VECTOR& dIdA,
+                           VECTOR& dIdR,
+                           VECTOR& dIdB) {
+      /**
   \brief Compute the overlap of 3 arbitrary primitive Gaussians: <G(A)|G|G(B)> - Python-friendly
   Note that specific cases of such integral include dipole, multipole moments, and components of pseudopotential:
   <G(A)|R_c|G(B)>,   <G(A)|R_c * R'_c|G(B)>,   <G(A)|exp(-alp*(r-R_c))|G(B)>, etc.
@@ -541,21 +673,33 @@ double gaussian_moment
 
 */
 
+      double res = libmolint::gaussian_moment(GA.x_exp,
+                                              GA.y_exp,
+                                              GA.z_exp,
+                                              GA.alpha,
+                                              GA.R,
+                                              G.x_exp,
+                                              G.y_exp,
+                                              G.z_exp,
+                                              G.alpha,
+                                              G.R,
+                                              GB.x_exp,
+                                              GB.y_exp,
+                                              GB.z_exp,
+                                              GB.alpha,
+                                              GB.R,
+                                              is_normalize,
+                                              is_derivs,
+                                              dIdA,
+                                              dIdR,
+                                              dIdB);
 
-  double res = 
-  libmolint::gaussian_moment
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    G.x_exp, G.y_exp,  G.z_exp,  G.alpha,  G.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdA, dIdR, dIdB
-  );
+      return res;
+    }
 
-  return res;
-}
-
-boost::python::list gaussian_moment
-( PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB,int is_normalize, int is_derivs){
-/**
+    boost::python::list gaussian_moment(
+        PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB, int is_normalize, int is_derivs) {
+      /**
   \brief Compute the overlap of 3 arbitrary primitive Gaussians: <G(A)|G|G(B)> - Python-friendly
   Note that specific cases of such integral include dipole, multipole moments, and components of pseudopotential:
   <G(A)|R_c|G(B)>,   <G(A)|R_c * R'_c|G(B)>,   <G(A)|exp(-alp*(r-R_c))|G(B)>, etc.
@@ -579,22 +723,30 @@ boost::python::list gaussian_moment
 
 */
 
+      boost::python::list res;
+      res = libmolint::gaussian_moment(GA.x_exp,
+                                       GA.y_exp,
+                                       GA.z_exp,
+                                       GA.alpha,
+                                       GA.R,
+                                       G.x_exp,
+                                       G.y_exp,
+                                       G.z_exp,
+                                       G.alpha,
+                                       G.R,
+                                       GB.x_exp,
+                                       GB.y_exp,
+                                       GB.z_exp,
+                                       GB.alpha,
+                                       GB.R,
+                                       is_normalize,
+                                       is_derivs);
 
-  boost::python::list res;
-  res = 
-  libmolint::gaussian_moment
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    G.x_exp, G.y_exp,  G.z_exp,  G.alpha,  G.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs
-  );
+      return res;
+    }
 
-  return res;
-}
-
-double gaussian_moment
-( PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB,int is_normalize){
-/**
+    double gaussian_moment(PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB, int is_normalize) {
+      /**
   \brief Compute the overlap of 3 arbitrary primitive Gaussians: <G(A)|G|G(B)> - Python-friendly
   Note that specific cases of such integral include dipole, multipole moments, and components of pseudopotential:
   <G(A)|R_c|G(B)>,   <G(A)|R_c * R'_c|G(B)>,   <G(A)|exp(-alp*(r-R_c))|G(B)>, etc.
@@ -611,21 +763,28 @@ double gaussian_moment
 
 */
 
+      double res = libmolint::gaussian_moment(GA.x_exp,
+                                              GA.y_exp,
+                                              GA.z_exp,
+                                              GA.alpha,
+                                              GA.R,
+                                              G.x_exp,
+                                              G.y_exp,
+                                              G.z_exp,
+                                              G.alpha,
+                                              G.R,
+                                              GB.x_exp,
+                                              GB.y_exp,
+                                              GB.z_exp,
+                                              GB.alpha,
+                                              GB.R,
+                                              is_normalize);
 
-  double res = 
-  libmolint::gaussian_moment
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    G.x_exp, G.y_exp,  G.z_exp,  G.alpha,  G.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize
-  );
+      return res;
+    }
 
-  return res;
-}
-
-double gaussian_moment
-( PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB){
-/**
+    double gaussian_moment(PrimitiveG& GA, PrimitiveG& G, PrimitiveG& GB) {
+      /**
   \brief Compute the overlap of 3 arbitrary primitive Gaussians: <G(A)|G|G(B)> - Python-friendly
   Note that specific cases of such integral include dipole, multipole moments, and components of pseudopotential:
   <G(A)|R_c|G(B)>,   <G(A)|R_c * R'_c|G(B)>,   <G(A)|exp(-alp*(r-R_c))|G(B)>, etc.
@@ -640,28 +799,41 @@ double gaussian_moment
 
 */
 
+      double res = libmolint::gaussian_moment(GA.x_exp,
+                                              GA.y_exp,
+                                              GA.z_exp,
+                                              GA.alpha,
+                                              GA.R,
+                                              G.x_exp,
+                                              G.y_exp,
+                                              G.z_exp,
+                                              G.alpha,
+                                              G.R,
+                                              GB.x_exp,
+                                              GB.y_exp,
+                                              GB.z_exp,
+                                              GB.alpha,
+                                              GB.R);
 
-  double res = 
-  libmolint::gaussian_moment
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    G.x_exp, G.y_exp,  G.z_exp,  G.alpha,  G.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R
-  );
+      return res;
+    }
 
-  return res;
-}
+    //======================== Pseudopotentials =================================
 
-
-
-//======================== Pseudopotentials =================================
-
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   PrimitiveG&  GA, PrimitiveG& GB,
-                   int is_normalize, 
-                   int is_derivs, VECTOR& dIdR, VECTOR& dIdA, VECTOR& dIdB,
-                   vector<double*>& auxd,int n_aux
-                  ){
-/**
+    double pseudopot02(double C0,
+                       double C2,
+                       double alp,
+                       const VECTOR& R,
+                       PrimitiveG& GA,
+                       PrimitiveG& GB,
+                       int is_normalize,
+                       int is_derivs,
+                       VECTOR& dIdR,
+                       VECTOR& dIdA,
+                       VECTOR& dIdB,
+                       vector<double*>& auxd,
+                       int n_aux) {
+      /**
   \brief Compute the matrix element of a 2-nd order pseudopotential with arbitrary primitive Gaussians: <G(A)|PP|G(B)>,
   where PP = [C0 + C2*(r-R)^2]*exp(-alp*(r-R)^2) 
 
@@ -683,167 +855,253 @@ double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
 
 */
 
+      double res = libmolint::pseudopot02(C0,
+                                          C2,
+                                          alp,
+                                          R,
+                                          GA.x_exp,
+                                          GA.y_exp,
+                                          GA.z_exp,
+                                          GA.alpha,
+                                          GA.R,
+                                          GB.x_exp,
+                                          GB.y_exp,
+                                          GB.z_exp,
+                                          GB.alpha,
+                                          GB.R,
+                                          is_normalize,
+                                          is_derivs,
+                                          dIdR,
+                                          dIdA,
+                                          dIdB,
+                                          auxd,
+                                          n_aux);
 
-  double res = 
-  libmolint::pseudopot02
-  ( C0, C2, alp, R,
-    GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdR, dIdA, dIdB, auxd, n_aux
-  );
+      return res;
+    }
 
-  return res;
-}
+    double pseudopot02(double C0,
+                       double C2,
+                       double alp,
+                       const VECTOR& R,
+                       PrimitiveG& GA,
+                       PrimitiveG& GB,
+                       int is_normalize,
+                       int is_derivs,
+                       VECTOR& dIdR,
+                       VECTOR& dIdA,
+                       VECTOR& dIdB) {
+      double res = libmolint::pseudopot02(C0,
+                                          C2,
+                                          alp,
+                                          R,
+                                          GA.x_exp,
+                                          GA.y_exp,
+                                          GA.z_exp,
+                                          GA.alpha,
+                                          GA.R,
+                                          GB.x_exp,
+                                          GB.y_exp,
+                                          GB.z_exp,
+                                          GB.alpha,
+                                          GB.R,
+                                          is_normalize,
+                                          is_derivs,
+                                          dIdR,
+                                          dIdA,
+                                          dIdB);
 
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   PrimitiveG&  GA, PrimitiveG& GB,
-                   int is_normalize, 
-                   int is_derivs, VECTOR& dIdR, VECTOR& dIdA, VECTOR& dIdB
-                  ){
+      return res;
+    }
 
-  double res = 
-  libmolint::pseudopot02
-  ( C0, C2, alp, R,
-    GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdR, dIdA, dIdB
-  );
+    boost::python::list pseudopot02(double C0,
+                                    double C2,
+                                    double alp,
+                                    const VECTOR& R,
+                                    PrimitiveG& GA,
+                                    PrimitiveG& GB,
+                                    int is_normalize,
+                                    int is_derivs) {
+      boost::python::list res;
+      res = libmolint::pseudopot02(C0,
+                                   C2,
+                                   alp,
+                                   R,
+                                   GA.x_exp,
+                                   GA.y_exp,
+                                   GA.z_exp,
+                                   GA.alpha,
+                                   GA.R,
+                                   GB.x_exp,
+                                   GB.y_exp,
+                                   GB.z_exp,
+                                   GB.alpha,
+                                   GB.R,
+                                   is_normalize,
+                                   is_derivs);
 
-  return res;
-}
+      return res;
+    }
 
+    double pseudopot02(double C0,
+                       double C2,
+                       double alp,
+                       const VECTOR& R,
+                       PrimitiveG& GA,
+                       PrimitiveG& GB,
+                       int is_normalize) {
+      double res = libmolint::pseudopot02(C0,
+                                          C2,
+                                          alp,
+                                          R,
+                                          GA.x_exp,
+                                          GA.y_exp,
+                                          GA.z_exp,
+                                          GA.alpha,
+                                          GA.R,
+                                          GB.x_exp,
+                                          GB.y_exp,
+                                          GB.z_exp,
+                                          GB.alpha,
+                                          GB.R,
+                                          is_normalize);
 
-boost::python::list pseudopot02
-(double C0, double C2, double alp, const VECTOR& R,
- PrimitiveG&  GA, PrimitiveG& GB,
- int is_normalize, int is_derivs
-){
+      return res;
+    }
 
-  boost::python::list res;
-  res = libmolint::pseudopot02
-  ( C0, C2, alp, R,
-    GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs
-  );
+    double pseudopot02(
+        double C0, double C2, double alp, const VECTOR& R, PrimitiveG& GA, PrimitiveG& GB) {
+      double res = libmolint::pseudopot02(C0,
+                                          C2,
+                                          alp,
+                                          R,
+                                          GA.x_exp,
+                                          GA.y_exp,
+                                          GA.z_exp,
+                                          GA.alpha,
+                                          GA.R,
+                                          GB.x_exp,
+                                          GB.y_exp,
+                                          GB.z_exp,
+                                          GB.alpha,
+                                          GB.R);
 
-  return res;
-}
+      return res;
+    }
 
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   PrimitiveG&  GA, PrimitiveG& GB,
-                   int is_normalize
-                  ){
+    //======================== Multipoles =================================
 
-  double res = 
-  libmolint::pseudopot02
-  ( C0, C2, alp, R,
-    GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize
-  );
+    VECTOR transition_dipole_moment(PrimitiveG& GA,
+                                    PrimitiveG& GB,
+                                    int is_normalize,
+                                    int is_derivs,
+                                    MATRIX3x3& dMdA,
+                                    MATRIX3x3& dMdB,
+                                    vector<double*>& auxd,
+                                    int n_aux) {
+      VECTOR res;
+      res = libmolint::transition_dipole_moment(GA.x_exp,
+                                                GA.y_exp,
+                                                GA.z_exp,
+                                                GA.alpha,
+                                                GA.R,
+                                                GB.x_exp,
+                                                GB.y_exp,
+                                                GB.z_exp,
+                                                GB.alpha,
+                                                GB.R,
+                                                is_normalize,
+                                                is_derivs,
+                                                dMdA,
+                                                dMdB,
+                                                auxd,
+                                                n_aux);
 
-  return res;
-}
+      return res;
+    }
 
+    VECTOR transition_dipole_moment(PrimitiveG& GA,
+                                    PrimitiveG& GB,
+                                    int is_normalize,
+                                    int is_derivs,
+                                    MATRIX3x3& dMdA,
+                                    MATRIX3x3& dMdB) {
+      VECTOR res;
+      res = libmolint::transition_dipole_moment(GA.x_exp,
+                                                GA.y_exp,
+                                                GA.z_exp,
+                                                GA.alpha,
+                                                GA.R,
+                                                GB.x_exp,
+                                                GB.y_exp,
+                                                GB.z_exp,
+                                                GB.alpha,
+                                                GB.R,
+                                                is_normalize,
+                                                is_derivs,
+                                                dMdA,
+                                                dMdB);
 
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   PrimitiveG&  GA, PrimitiveG& GB
-                  ){
+      return res;
+    }
 
-  double res = 
-  libmolint::pseudopot02
-  ( C0, C2, alp, R,
-    GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R
-  );
+    boost::python::list transition_dipole_moment(PrimitiveG& GA,
+                                                 PrimitiveG& GB,
+                                                 int is_normalize,
+                                                 int is_derivs) {
+      boost::python::list res;
+      res = libmolint::transition_dipole_moment(GA.x_exp,
+                                                GA.y_exp,
+                                                GA.z_exp,
+                                                GA.alpha,
+                                                GA.R,
+                                                GB.x_exp,
+                                                GB.y_exp,
+                                                GB.z_exp,
+                                                GB.alpha,
+                                                GB.R,
+                                                is_normalize,
+                                                is_derivs);
 
-  return res;
-}
+      return res;
+    }
 
+    VECTOR transition_dipole_moment(PrimitiveG& GA, PrimitiveG& GB, int is_normalize) {
+      VECTOR res;
+      res = libmolint::transition_dipole_moment(GA.x_exp,
+                                                GA.y_exp,
+                                                GA.z_exp,
+                                                GA.alpha,
+                                                GA.R,
+                                                GB.x_exp,
+                                                GB.y_exp,
+                                                GB.z_exp,
+                                                GB.alpha,
+                                                GB.R,
+                                                is_normalize);
 
+      return res;
+    }
 
+    VECTOR transition_dipole_moment(PrimitiveG& GA, PrimitiveG& GB) {
+      VECTOR res;
+      res = libmolint::transition_dipole_moment(
+          GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R, GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R);
 
-//======================== Multipoles =================================
+      return res;
+    }
 
-VECTOR transition_dipole_moment
-( PrimitiveG& GA, PrimitiveG& GB,
-  int is_normalize,int is_derivs, MATRIX3x3& dMdA, MATRIX3x3& dMdB,
-  vector<double*>& auxd,int n_aux
-){
+    //======================== Derivative coupling integrals =================================
 
-  VECTOR res;
-  res = libmolint::transition_dipole_moment
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dMdA, dMdB, auxd, n_aux
-  );
-
-  return res;
-}
-
-VECTOR transition_dipole_moment
-( PrimitiveG& GA, PrimitiveG& GB,
-  int is_normalize,int is_derivs, MATRIX3x3& dMdA, MATRIX3x3& dMdB
-){
-
-  VECTOR res;
-  res = libmolint::transition_dipole_moment
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dMdA, dMdB
-  );
-
-  return res;
-}
-
-boost::python::list transition_dipole_moment
-( PrimitiveG& GA, PrimitiveG& GB, int is_normalize,int is_derivs){
-
-  boost::python::list res;
-  res = libmolint::transition_dipole_moment
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs
-  );
-
-  return res;
-}
-
-VECTOR transition_dipole_moment
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize){
-
-  VECTOR res;
-  res = libmolint::transition_dipole_moment
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize
-  );
-
-  return res;
-}
-
-VECTOR transition_dipole_moment
-( PrimitiveG& GA, PrimitiveG& GB){
-
-  VECTOR res;
-  res = libmolint::transition_dipole_moment
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R
-  );
-
-  return res;
-}
-
-
-//======================== Derivative coupling integrals =================================
-
-VECTOR derivative_coupling_integral
-( PrimitiveG& GA, PrimitiveG& GB,
-  int is_normalize,int is_derivs, MATRIX3x3& dMdA, MATRIX3x3& dMdB,
-  vector<double*>& auxd,int n_aux
-){
-/**
+    VECTOR derivative_coupling_integral(PrimitiveG& GA,
+                                        PrimitiveG& GB,
+                                        int is_normalize,
+                                        int is_derivs,
+                                        MATRIX3x3& dMdA,
+                                        MATRIX3x3& dMdB,
+                                        vector<double*>& auxd,
+                                        int n_aux) {
+      /**
   \brief Compute the matrix element of the derivative coupling <G(A)|d/dR_B|G(B)>
   note that the d/dR_B uses the derivative w.r.t. the coordinates of the primitive Gaussian B - otherwise it would be zero
 
@@ -860,79 +1118,109 @@ VECTOR derivative_coupling_integral
 
 */
 
+      VECTOR res;
+      res = libmolint::derivative_coupling_integral(GA.x_exp,
+                                                    GA.y_exp,
+                                                    GA.z_exp,
+                                                    GA.alpha,
+                                                    GA.R,
+                                                    GB.x_exp,
+                                                    GB.y_exp,
+                                                    GB.z_exp,
+                                                    GB.alpha,
+                                                    GB.R,
+                                                    is_normalize,
+                                                    is_derivs,
+                                                    dMdA,
+                                                    dMdB,
+                                                    auxd,
+                                                    n_aux);
 
-  VECTOR res;
-  res = libmolint::derivative_coupling_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dMdA, dMdB, auxd, n_aux
-  );
+      return res;
+    }
 
-  return res;
-}
+    VECTOR derivative_coupling_integral(PrimitiveG& GA,
+                                        PrimitiveG& GB,
+                                        int is_normalize,
+                                        int is_derivs,
+                                        MATRIX3x3& dMdA,
+                                        MATRIX3x3& dMdB) {
+      VECTOR res;
+      res = libmolint::derivative_coupling_integral(GA.x_exp,
+                                                    GA.y_exp,
+                                                    GA.z_exp,
+                                                    GA.alpha,
+                                                    GA.R,
+                                                    GB.x_exp,
+                                                    GB.y_exp,
+                                                    GB.z_exp,
+                                                    GB.alpha,
+                                                    GB.R,
+                                                    is_normalize,
+                                                    is_derivs,
+                                                    dMdA,
+                                                    dMdB);
 
-VECTOR derivative_coupling_integral
-( PrimitiveG& GA, PrimitiveG& GB,
-  int is_normalize,int is_derivs, MATRIX3x3& dMdA, MATRIX3x3& dMdB
-){
+      return res;
+    }
 
-  VECTOR res;
-  res = libmolint::derivative_coupling_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dMdA, dMdB
-  );
+    boost::python::list derivative_coupling_integral(PrimitiveG& GA,
+                                                     PrimitiveG& GB,
+                                                     int is_normalize,
+                                                     int is_derivs) {
+      boost::python::list res;
+      res = libmolint::derivative_coupling_integral(GA.x_exp,
+                                                    GA.y_exp,
+                                                    GA.z_exp,
+                                                    GA.alpha,
+                                                    GA.R,
+                                                    GB.x_exp,
+                                                    GB.y_exp,
+                                                    GB.z_exp,
+                                                    GB.alpha,
+                                                    GB.R,
+                                                    is_normalize,
+                                                    is_derivs);
 
-  return res;
-}
+      return res;
+    }
 
-boost::python::list derivative_coupling_integral
-( PrimitiveG& GA, PrimitiveG& GB, int is_normalize,int is_derivs){
+    VECTOR derivative_coupling_integral(PrimitiveG& GA, PrimitiveG& GB, int is_normalize) {
+      VECTOR res;
+      res = libmolint::derivative_coupling_integral(GA.x_exp,
+                                                    GA.y_exp,
+                                                    GA.z_exp,
+                                                    GA.alpha,
+                                                    GA.R,
+                                                    GB.x_exp,
+                                                    GB.y_exp,
+                                                    GB.z_exp,
+                                                    GB.alpha,
+                                                    GB.R,
+                                                    is_normalize);
 
-  boost::python::list res;
-  res = libmolint::derivative_coupling_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs
-  );
+      return res;
+    }
 
-  return res;
-}
+    VECTOR derivative_coupling_integral(PrimitiveG& GA, PrimitiveG& GB) {
+      VECTOR res;
+      res = libmolint::derivative_coupling_integral(
+          GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R, GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R);
 
-VECTOR derivative_coupling_integral
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize){
+      return res;
+    }
 
-  VECTOR res;
-  res = libmolint::derivative_coupling_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize
-  );
+    //======================== Kinetic integrals =================================
 
-  return res;
-}
-
-VECTOR derivative_coupling_integral
-( PrimitiveG& GA, PrimitiveG& GB){
-
-  VECTOR res;
-  res = libmolint::derivative_coupling_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R
-  );
-
-  return res;
-}
-
-
-
-//======================== Kinetic integrals =================================
-
-double kinetic_integral
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize, int is_derivs,
-  VECTOR& dIdA, VECTOR& dIdB, vector<double*>& auxd,int n_aux
-){
-/**
+    double kinetic_integral(PrimitiveG& GA,
+                            PrimitiveG& GB,
+                            int is_normalize,
+                            int is_derivs,
+                            VECTOR& dIdA,
+                            VECTOR& dIdB,
+                            vector<double*>& auxd,
+                            int n_aux) {
+      /**
   \brief Compute the matrix element of kinetic energy for arbitrary primitive Gaussians: <G(A)|T|G(B)>, where
  -1/2 * ( d^2/dx^2 + d^2/dy^2 + d^2/dz^2 ), here the derivatives are w.r.t. electronic variables, not the centers of the primitives.
 
@@ -949,81 +1237,109 @@ double kinetic_integral
 
 */
 
+      double res = libmolint::kinetic_integral(GA.x_exp,
+                                               GA.y_exp,
+                                               GA.z_exp,
+                                               GA.alpha,
+                                               GA.R,
+                                               GB.x_exp,
+                                               GB.y_exp,
+                                               GB.z_exp,
+                                               GB.alpha,
+                                               GB.R,
+                                               is_normalize,
+                                               is_derivs,
+                                               dIdA,
+                                               dIdB,
+                                               auxd,
+                                               n_aux);
 
-  double res = 
-  libmolint::kinetic_integral
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdA, dIdB, auxd, n_aux
-  );
+      return res;
+    }
 
-  return res;
-}
+    double kinetic_integral(PrimitiveG& GA,
+                            PrimitiveG& GB,
+                            int is_normalize,
+                            int is_derivs,
+                            VECTOR& dIdA,
+                            VECTOR& dIdB) {
+      double res = libmolint::kinetic_integral(GA.x_exp,
+                                               GA.y_exp,
+                                               GA.z_exp,
+                                               GA.alpha,
+                                               GA.R,
+                                               GB.x_exp,
+                                               GB.y_exp,
+                                               GB.z_exp,
+                                               GB.alpha,
+                                               GB.R,
+                                               is_normalize,
+                                               is_derivs,
+                                               dIdA,
+                                               dIdB);
 
-double kinetic_integral
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize, int is_derivs,
-  VECTOR& dIdA, VECTOR& dIdB
-){
+      return res;
+    }
 
-  double res = 
-  libmolint::kinetic_integral
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs, dIdA, dIdB
-  );
+    boost::python::list kinetic_integral(PrimitiveG& GA,
+                                         PrimitiveG& GB,
+                                         int is_normalize,
+                                         int is_derivs) {
+      boost::python::list res;
+      res = libmolint::kinetic_integral(GA.x_exp,
+                                        GA.y_exp,
+                                        GA.z_exp,
+                                        GA.alpha,
+                                        GA.R,
+                                        GB.x_exp,
+                                        GB.y_exp,
+                                        GB.z_exp,
+                                        GB.alpha,
+                                        GB.R,
+                                        is_normalize,
+                                        is_derivs);
 
-  return res;
-}
+      return res;
+    }
 
-boost::python::list kinetic_integral
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize, int is_derivs){
+    double kinetic_integral(PrimitiveG& GA, PrimitiveG& GB, int is_normalize) {
+      double res = libmolint::kinetic_integral(GA.x_exp,
+                                               GA.y_exp,
+                                               GA.z_exp,
+                                               GA.alpha,
+                                               GA.R,
+                                               GB.x_exp,
+                                               GB.y_exp,
+                                               GB.z_exp,
+                                               GB.alpha,
+                                               GB.R,
+                                               is_normalize);
 
-  boost::python::list res;
-  res = 
-  libmolint::kinetic_integral
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize, is_derivs
-  );
+      return res;
+    }
 
-  return res;
-}
+    double kinetic_integral(PrimitiveG& GA, PrimitiveG& GB) {
+      double res = libmolint::kinetic_integral(
+          GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R, GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R);
 
-double kinetic_integral
-( PrimitiveG& GA, PrimitiveG& GB,int is_normalize){
+      return res;
+    }
 
-  double res = 
-  libmolint::kinetic_integral
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    is_normalize
-  );
+    //======================== NAIs =================================
 
-  return res;
-}
-
-double kinetic_integral
-( PrimitiveG& GA, PrimitiveG& GB){
-
-  double res = 
-  libmolint::kinetic_integral
-  ( GA.x_exp,GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp,GB.y_exp, GB.z_exp, GB.alpha, GB.R
-  );
-
-  return res;
-}
-
-
-//======================== NAIs =================================
-
-double nuclear_attraction_integral
-( PrimitiveG& GA, PrimitiveG& GB, VECTOR& Rc,
-  int is_normalize, 
-  int is_derivs,  VECTOR& DA,VECTOR& DB,VECTOR& DC,
-  vector<double*>& aux,int n_aux,vector<VECTOR*>& auxv,int n_auxv
-){
-/**
+    double nuclear_attraction_integral(PrimitiveG& GA,
+                                       PrimitiveG& GB,
+                                       VECTOR& Rc,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC,
+                                       vector<double*>& aux,
+                                       int n_aux,
+                                       vector<VECTOR*>& auxv,
+                                       int n_auxv) {
+      /**
   \brief Compute the matrix element of the nuclear attraction integral for arbitrary primitive Gaussians: <G(A)|V|G(B)>, where
   V(r) = 1/|r-Rc|
 
@@ -1044,86 +1360,130 @@ double nuclear_attraction_integral
 
 */
 
+      double res = libmolint::nuclear_attraction_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          Rc,
+                                                          is_normalize,
+                                                          is_derivs,
+                                                          DA,
+                                                          DB,
+                                                          DC,
+                                                          aux,
+                                                          n_aux,
+                                                          auxv,
+                                                          n_auxv);
 
-  double res = 
-  libmolint::nuclear_attraction_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    Rc, is_normalize, is_derivs, DA, DB, DC, aux, n_aux, auxv, n_auxv
-  );
+      return res;
+    }
 
-  return res;
-}
+    double nuclear_attraction_integral(PrimitiveG& GA,
+                                       PrimitiveG& GB,
+                                       VECTOR& Rc,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC) {
+      double res = libmolint::nuclear_attraction_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          Rc,
+                                                          is_normalize,
+                                                          is_derivs,
+                                                          DA,
+                                                          DB,
+                                                          DC);
 
-double nuclear_attraction_integral
-( PrimitiveG& GA, PrimitiveG& GB, VECTOR& Rc,
-  int is_normalize, 
-  int is_derivs,  VECTOR& DA,VECTOR& DB,VECTOR& DC
-){
+      return res;
+    }
 
-  double res = 
-  libmolint::nuclear_attraction_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    Rc, is_normalize, is_derivs, DA, DB, DC  );
+    boost::python::list nuclear_attraction_integral(
+        PrimitiveG& GA, PrimitiveG& GB, VECTOR& Rc, int is_normalize, int is_derivs) {
+      boost::python::list res = libmolint::nuclear_attraction_integral(GA.x_exp,
+                                                                       GA.y_exp,
+                                                                       GA.z_exp,
+                                                                       GA.alpha,
+                                                                       GA.R,
+                                                                       GB.x_exp,
+                                                                       GB.y_exp,
+                                                                       GB.z_exp,
+                                                                       GB.alpha,
+                                                                       GB.R,
+                                                                       Rc,
+                                                                       is_normalize,
+                                                                       is_derivs);
 
-  return res;
-}
+      return res;
+    }
 
-boost::python::list nuclear_attraction_integral
-( PrimitiveG& GA, PrimitiveG& GB, VECTOR& Rc,
-  int is_normalize,  int is_derivs
-){
+    double nuclear_attraction_integral(PrimitiveG& GA,
+                                       PrimitiveG& GB,
+                                       VECTOR& Rc,
+                                       int is_normalize) {
+      double res = libmolint::nuclear_attraction_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          Rc,
+                                                          is_normalize);
 
-  boost::python::list res = 
-  libmolint::nuclear_attraction_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    Rc, is_normalize, is_derivs );
+      return res;
+    }
 
-  return res;
-}
+    double nuclear_attraction_integral(PrimitiveG& GA, PrimitiveG& GB, VECTOR& Rc) {
+      double res = libmolint::nuclear_attraction_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          Rc);
 
-double nuclear_attraction_integral
-( PrimitiveG& GA, PrimitiveG& GB, VECTOR& Rc,
-  int is_normalize
-){
+      return res;
+    }
 
-  double res = 
-  libmolint::nuclear_attraction_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    Rc, is_normalize  );
+    //======================== ERIs =================================
 
-  return res;
-}
-
-double nuclear_attraction_integral
-( PrimitiveG& GA, PrimitiveG& GB, VECTOR& Rc
-){
-
-  double res = 
-  libmolint::nuclear_attraction_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    Rc
-  );
-
-  return res;
-}
-
-
-
-
-//======================== ERIs =================================
-
-double electron_repulsion_integral
-( PrimitiveG& GA, PrimitiveG& GB, PrimitiveG& GC, PrimitiveG& GD,
-  int is_normalize, 
-  int is_derivs,  VECTOR& DA,VECTOR& DB,VECTOR& DC,VECTOR& DD,
-  vector<double*>& aux,int n_aux,vector<VECTOR*>& auxv,int n_auxv
-){
-/**
+    double electron_repulsion_integral(PrimitiveG& GA,
+                                       PrimitiveG& GB,
+                                       PrimitiveG& GC,
+                                       PrimitiveG& GD,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC,
+                                       VECTOR& DD,
+                                       vector<double*>& aux,
+                                       int n_aux,
+                                       vector<VECTOR*>& auxv,
+                                       int n_auxv) {
+      /**
   \brief Compute the matrix element of the electron repulsion integral for arbitrary primitive Gaussians: <G(A)G(B)|V|G(C)G(D)>, where
   V(r) = 1/|r1-r2|
 
@@ -1146,89 +1506,166 @@ double electron_repulsion_integral
 
 */
 
+      double res = libmolint::electron_repulsion_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          GC.x_exp,
+                                                          GC.y_exp,
+                                                          GC.z_exp,
+                                                          GC.alpha,
+                                                          GC.R,
+                                                          GD.x_exp,
+                                                          GD.y_exp,
+                                                          GD.z_exp,
+                                                          GD.alpha,
+                                                          GD.R,
+                                                          is_normalize,
+                                                          is_derivs,
+                                                          DA,
+                                                          DB,
+                                                          DC,
+                                                          DD,
+                                                          aux,
+                                                          n_aux,
+                                                          auxv,
+                                                          n_auxv);
 
-  double res = 
-  libmolint::electron_repulsion_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    GC.x_exp, GC.y_exp, GC.z_exp, GC.alpha, GC.R,
-    GD.x_exp, GD.y_exp, GD.z_exp, GD.alpha, GD.R,
-    is_normalize, is_derivs, DA, DB, DC, DD, aux, n_aux, auxv, n_auxv
-  );
+      return res;
+    }
 
-  return res;
-}
+    double electron_repulsion_integral(PrimitiveG& GA,
+                                       PrimitiveG& GB,
+                                       PrimitiveG& GC,
+                                       PrimitiveG& GD,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC,
+                                       VECTOR& DD) {
+      double res = libmolint::electron_repulsion_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          GC.x_exp,
+                                                          GC.y_exp,
+                                                          GC.z_exp,
+                                                          GC.alpha,
+                                                          GC.R,
+                                                          GD.x_exp,
+                                                          GD.y_exp,
+                                                          GD.z_exp,
+                                                          GD.alpha,
+                                                          GD.R,
+                                                          is_normalize,
+                                                          is_derivs,
+                                                          DA,
+                                                          DB,
+                                                          DC,
+                                                          DD);
 
-double electron_repulsion_integral
-( PrimitiveG& GA, PrimitiveG& GB, PrimitiveG& GC, PrimitiveG& GD,
-  int is_normalize, 
-  int is_derivs,  VECTOR& DA,VECTOR& DB,VECTOR& DC,VECTOR& DD
-){
+      return res;
+    }
 
-  double res = 
-  libmolint::electron_repulsion_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    GC.x_exp, GC.y_exp, GC.z_exp, GC.alpha, GC.R,
-    GD.x_exp, GD.y_exp, GD.z_exp, GD.alpha, GD.R,
-    is_normalize, is_derivs, DA, DB, DC, DD  );
+    boost::python::list electron_repulsion_integral(PrimitiveG& GA,
+                                                    PrimitiveG& GB,
+                                                    PrimitiveG& GC,
+                                                    PrimitiveG& GD,
+                                                    int is_normalize,
+                                                    int is_derivs) {
+      boost::python::list res = libmolint::electron_repulsion_integral(GA.x_exp,
+                                                                       GA.y_exp,
+                                                                       GA.z_exp,
+                                                                       GA.alpha,
+                                                                       GA.R,
+                                                                       GB.x_exp,
+                                                                       GB.y_exp,
+                                                                       GB.z_exp,
+                                                                       GB.alpha,
+                                                                       GB.R,
+                                                                       GC.x_exp,
+                                                                       GC.y_exp,
+                                                                       GC.z_exp,
+                                                                       GC.alpha,
+                                                                       GC.R,
+                                                                       GD.x_exp,
+                                                                       GD.y_exp,
+                                                                       GD.z_exp,
+                                                                       GD.alpha,
+                                                                       GD.R,
+                                                                       is_normalize,
+                                                                       is_derivs);
 
-  return res;
-}
+      return res;
+    }
 
-boost::python::list electron_repulsion_integral
-( PrimitiveG& GA, PrimitiveG& GB, PrimitiveG& GC, PrimitiveG& GD,
-  int is_normalize,  int is_derivs
-){
+    double electron_repulsion_integral(
+        PrimitiveG& GA, PrimitiveG& GB, PrimitiveG& GC, PrimitiveG& GD, int is_normalize) {
+      double res = libmolint::electron_repulsion_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          GC.x_exp,
+                                                          GC.y_exp,
+                                                          GC.z_exp,
+                                                          GC.alpha,
+                                                          GC.R,
+                                                          GD.x_exp,
+                                                          GD.y_exp,
+                                                          GD.z_exp,
+                                                          GD.alpha,
+                                                          GD.R,
+                                                          is_normalize);
 
-  boost::python::list res = 
-  libmolint::electron_repulsion_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    GC.x_exp, GC.y_exp, GC.z_exp, GC.alpha, GC.R,
-    GD.x_exp, GD.y_exp, GD.z_exp, GD.alpha, GD.R,
-    is_normalize, is_derivs );
+      return res;
+    }
 
-  return res;
-}
+    double electron_repulsion_integral(PrimitiveG& GA,
+                                       PrimitiveG& GB,
+                                       PrimitiveG& GC,
+                                       PrimitiveG& GD) {
+      double res = libmolint::electron_repulsion_integral(GA.x_exp,
+                                                          GA.y_exp,
+                                                          GA.z_exp,
+                                                          GA.alpha,
+                                                          GA.R,
+                                                          GB.x_exp,
+                                                          GB.y_exp,
+                                                          GB.z_exp,
+                                                          GB.alpha,
+                                                          GB.R,
+                                                          GC.x_exp,
+                                                          GC.y_exp,
+                                                          GC.z_exp,
+                                                          GC.alpha,
+                                                          GC.R,
+                                                          GD.x_exp,
+                                                          GD.y_exp,
+                                                          GD.z_exp,
+                                                          GD.alpha,
+                                                          GD.R);
 
-double electron_repulsion_integral
-( PrimitiveG& GA, PrimitiveG& GB, PrimitiveG& GC, PrimitiveG& GD,
-  int is_normalize
-){
+      return res;
+    }
 
-  double res = 
-  libmolint::electron_repulsion_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    GC.x_exp, GC.y_exp, GC.z_exp, GC.alpha, GC.R,
-    GD.x_exp, GD.y_exp, GD.z_exp, GD.alpha, GD.R,
-    is_normalize  );
-
-  return res;
-}
-
-double electron_repulsion_integral
-( PrimitiveG& GA, PrimitiveG& GB, PrimitiveG& GC, PrimitiveG& GD
-){
-
-  double res = 
-  libmolint::electron_repulsion_integral
-  ( GA.x_exp, GA.y_exp, GA.z_exp, GA.alpha, GA.R,
-    GB.x_exp, GB.y_exp, GB.z_exp, GB.alpha, GB.R,
-    GC.x_exp, GC.y_exp, GC.z_exp, GC.alpha, GC.R,
-    GD.x_exp, GD.y_exp, GD.z_exp, GD.alpha, GD.R
-  );
-
-  return res;
-}
-
-
-
-
-
-}// namespace libqobjects
-}// namespace liblibra
-
-
-
+  }  // namespace libqobjects
+}  // namespace liblibra

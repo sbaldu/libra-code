@@ -12,18 +12,17 @@
 #ifndef LIBIVR_H
 #define LIBIVR_H
 
-
 #include "ivr.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libivr{
+  namespace libivr {
 
-void export_ivr_objects();
+    void export_ivr_objects();
 
-}// namespace libivr
+  }  // namespace libivr
 
-}// liblibra
+}  // namespace liblibra
 
-#endif// LIBIVR_H
+#endif  // LIBIVR_H

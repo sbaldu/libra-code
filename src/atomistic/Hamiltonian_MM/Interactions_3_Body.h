@@ -19,74 +19,56 @@
 #include "Interactions.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_mm namespace
-namespace libhamiltonian_mm{
+    /// libhamiltonian_mm namespace
+    namespace libhamiltonian_mm {
 
-using namespace libchemobjects;
-using namespace libchemobjects::libchemsys;
-using namespace libpot;
-using namespace libcell;
-using namespace libforcefield;
+      using namespace libchemobjects;
+      using namespace libchemobjects::libchemsys;
+      using namespace libpot;
+      using namespace libcell;
+      using namespace libforcefield;
 
+      class Interaction_3_Body : public Interaction_N_Body {
+      public:
+        // Constructor & Destructor
+        Interaction_3_Body() : Interaction_N_Body(3) { int_type = 3; };
 
+        void set_coords(VECTOR* r1_, VECTOR* r2_, VECTOR* r3_);
+        void set_coords(VECTOR& r1_, VECTOR& r2_, VECTOR& r3_);
 
-class Interaction_3_Body : public Interaction_N_Body{
+        void set_transl(VECTOR* t1_, VECTOR* t2_, VECTOR* t3_);
+        void set_transl(VECTOR& t1_, VECTOR& t2_, VECTOR& t3_);
 
-public:
+        void set_forces(VECTOR* f1_, VECTOR* f2_, VECTOR* f3_);
+        void set_forces(VECTOR& f1_, VECTOR& f2_, VECTOR& f3_);
 
+        void set_charges(double* q1_, double* q2_, double* q3_);
+        void set_charges(double& q1_, double& q2_, double& q3_);
+      };
 
-    // Constructor & Destructor
-    Interaction_3_Body() : Interaction_N_Body(3){ int_type = 3; };
+      class Angle_Interaction : public Interaction_3_Body {
+      public:
+        double k_theta;
+        double theta_0;
+        double cos_theta_0;
+        double C0, C1, C2;
+        int coordination;
 
-    void set_coords(VECTOR* r1_, VECTOR* r2_, VECTOR* r3_);
-    void set_coords(VECTOR& r1_, VECTOR& r2_, VECTOR& r3_);
+        // Constructor & Destructor
+        Angle_Interaction() : Interaction_3_Body() { int_type = 30; };
 
-    void set_transl(VECTOR* t1_, VECTOR* t2_, VECTOR* t3_);
-    void set_transl(VECTOR& t1_, VECTOR& t2_, VECTOR& t3_);
+        void set_functional(std::string f);
+        void set_params(map<std::string, double>& params);
 
-    void set_forces(VECTOR* f1_, VECTOR* f2_, VECTOR* f3_);
-    void set_forces(VECTOR& f1_, VECTOR& f2_, VECTOR& f3_);
+        void compute();
+      };
 
-    void set_charges(double* q1_, double* q2_, double* q3_);
-    void set_charges(double& q1_, double& q2_, double& q3_);
+    }  // namespace libhamiltonian_mm
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-
-};
-
-
-class Angle_Interaction : public Interaction_3_Body{
-
-public:
-
-    double k_theta;
-    double theta_0;
-    double cos_theta_0;
-    double C0,C1,C2;
-    int coordination;
-
-
-    // Constructor & Destructor
-    Angle_Interaction() : Interaction_3_Body(){ int_type = 30; };
-
-    void set_functional(std::string f);
-    void set_params(map<std::string,double>& params);
-
-    void compute();
-
-};
-
-
-
-
-
-
-}// namespace libhamiltonian_mm
-}// namespace libatomistic
-}// liblibra
-
-
-#endif // INTERACTIONS_3_BODY_H
+#endif  // INTERACTIONS_3_BODY_H

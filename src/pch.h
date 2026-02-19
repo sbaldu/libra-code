@@ -1,8 +1,6 @@
 #ifndef PCH_H
 #define PCH_H
 
-
-
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
@@ -16,7 +14,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <ctime> 
+#include <ctime>
 
 #include <complex>
 #include <array>
@@ -31,10 +29,9 @@
 #include <thread>
 #include <algorithm>
 #include <map>
-#include <memory> // for std::auto_ptr<>
+#include <memory>  // for std::auto_ptr<>
 #include <set>
 #include <exception>
-
 
 // Eigen matrix algebra library
 #include <Eigen/LU>
@@ -42,7 +39,6 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Core>
 #include <Eigen/SVD>
-
 
 // Libint Gaussian integrals library
 //#include <libint2.hpp>
@@ -61,8 +57,6 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/foreach.hpp>
 
-
 #define BOOST_PYTHON_MAX_ARITY 30
 
-
-#endif // PCH_H
+#endif  // PCH_H

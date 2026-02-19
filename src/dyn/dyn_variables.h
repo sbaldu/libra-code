@@ -13,7 +13,6 @@
   \brief The file implements a class to store the dynamical variables of need for various methods
 */
 
-
 #ifndef DYN_VARIABLES_H
 #define DYN_VARIABLES_H
 
@@ -22,7 +21,7 @@
 #else
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "../math_linalg/liblinalg.h"
 #include "../math_random/librandom.h"
@@ -31,119 +30,102 @@
 #include "dyn_control_params.h"
 #include "thermostat/Thermostat.h"
 
-
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  using namespace liblinalg;
+  using namespace librandom;
+  using namespace libnhamiltonian;
 
-using namespace liblinalg;
-using namespace librandom;
-using namespace libnhamiltonian;
+  /// libdyn namespace
+  namespace libdyn {
 
+    using namespace libthermostat;
 
-/// libdyn namespace
-namespace libdyn{
+    namespace bp = boost::python;
 
-using namespace libthermostat;
+    CMATRIX transform_amplitudes(int rep_in, int rep_out, CMATRIX& C, nHamiltonian& ham);
 
-namespace bp = boost::python;
+    class dyn_variables {
+    public:
+      ///================= Dimension numbers ===================
 
-
-
-CMATRIX transform_amplitudes(int rep_in, int rep_out, CMATRIX& C, nHamiltonian& ham);
-
-
-class dyn_variables{
-
-  public:
-
-  ///================= Dimension numbers ===================
-
-  /**
+      /**
     The number of diabatic states in the data dimension
     
     Options:
      any non-negative integer number
   */
-  int ndia;
+      int ndia;
 
-
-  /**
+      /**
     The number of adiabatic states in the data dimension
     
     Options:
      any non-negative integer number
   */
-  int nadi;
+      int nadi;
 
-
-  /**
+      /**
     The number of nuclear degrees of freedom in the data dimension
     
     Options:
      any non-negative integer number
   */
-  int ndof;
+      int ndof;
 
-
-  /**
+      /**
     The number of trajectories in the data dimension
     
     Options:
      any non-negative integer number
   */
-  int ntraj;
+      int ntraj;
 
-
-  ///================= Electronic variables, for OOP implementation ===================
-  /**
+      ///================= Electronic variables, for OOP implementation ===================
+      /**
     Status of the electronic vars
 
     0 - not allocated;
     1 - allocated
   */
-  int electronic_vars_status; 
+      int electronic_vars_status;
 
-  /**
+      /**
     Electronic amplitudes in diabatic representation
     
     Options:
      CMATRIX(ndia, ntraj)
   */
-  CMATRIX* ampl_dia; 
+      CMATRIX* ampl_dia;
 
-
-  /**
+      /**
     Electronic amplitudes in adiabatic representation
     
     Options:
      CMATRIX(nadi, ntraj)
   */
-  CMATRIX* ampl_adi; 
+      CMATRIX* ampl_adi;
 
-
-  /**
+      /**
     Electronic Meyer-Miller "coordinate" variables:
     ampl_adi = (q_mm + i * p_mm)/sqrt(2)
 
     Options:
     MATRIX(nadi, ntraj)
   */
-  MATRIX* q_mm;
+      MATRIX* q_mm;
 
-
-  /**
+      /**
     Electronic Meyer-Miller "momentum" variables:
     ampl_adi = (q_mm + i * p_mm)/sqrt(2)
 
     Options:
     MATRIX(nadi, ntraj)
   */
-  MATRIX* p_mm;
+      MATRIX* p_mm;
 
-
-  /**
+      /**
     Cumulative projection matrices for adiabatic states:
 
     |psi_adi_ordered(t)> = |psi_adi_raw(t)> * proj_adi(t)
@@ -151,111 +133,99 @@ class dyn_variables{
     Options:
     vector<ntraj, CMATRIX(nadi, nadi)>
   */
-  vector<CMATRIX*> proj_adi;
+      vector<CMATRIX*> proj_adi;
 
-
-  /**
+      /**
     Electronic density matrix in diabatic representation
     
     Options:
      vector<ntraj, CMATRIX(ndia, ndia)>
   */
-  vector<CMATRIX*> dm_dia; 
+      vector<CMATRIX*> dm_dia;
 
-
-  /**
+      /**
     Electronic density matrix in adiabatic representation
     
     Options:
      vector<ntraj, CMATRIX(nadi, nadi)>
   */
-  vector<CMATRIX*> dm_adi; 
+      vector<CMATRIX*> dm_adi;
 
-
-  /**
+      /**
     Active states for each trajectory
     
     Options:
      vector<int> act_states(ntraj)
   */
-  vector<int> act_states;
-  
+      vector<int> act_states;
 
-  /**
+      /**
     Diabatic active states for each trajectory
     
     Options:
      vector<int> act_states_dia(ntraj)
   */
-  vector<int> act_states_dia;
+      vector<int> act_states_dia;
 
-
-  /**
+      /**
     Projections of adiabatic states onto the diabatic for all trajectories
 
     Options:
     vector<ntraj, CMATRIX(ndia, nadi)>
   */
-  vector<CMATRIX*> basis_transform; // same as in the Hamiltonian class
+      vector<CMATRIX*> basis_transform;  // same as in the Hamiltonian class
 
-
-  ///================= Nuclear variables, for OOP implementation ===================
-  /**
+      ///================= Nuclear variables, for OOP implementation ===================
+      /**
     Status of the nuclear vars
 
     0 - not allocated;
     1 - allocated
   */
-  int nuclear_vars_status; 
+      int nuclear_vars_status;
 
-
-  /**
+      /**
     Inverse nuclear masses
     
     Options:
      MATRIX(ndof, 1)
   */
-  MATRIX* iM; 
+      MATRIX* iM;
 
-
-  /**
+      /**
     Nuclear coordinates 
     
     Options:
      MATRIX(ndof, ntraj)
   */
-  MATRIX* q; 
+      MATRIX* q;
 
-
-  /**
+      /**
     Nuclear momenta
     
     Options:
      MATRIX(ndof, ntraj)
   */
-  MATRIX* p;
+      MATRIX* p;
 
-
-  /**
+      /**
     Nuclear forces (active)
     
     Options:
       MATRIX(ndof, ntraj)
   */
-  MATRIX* f;
+      MATRIX* f;
 
-
-
-  ///================= For A-FSSH ===================
-  /**
+      ///================= For A-FSSH ===================
+      /**
     Status of the A-FSSH vars
 
     0 - not allocated;
     1 - allocated
   */
-  int afssh_vars_status; 
+      int afssh_vars_status;
 
-  /**
+      /**
     Moments of coordinates in the adiabatic representation for all DOFs and all trajectories
     
     Options:
@@ -263,11 +233,10 @@ class dyn_variables{
 
     For Method: A-FSSH
   */
-  //CMATRIX*** dR;
-  vector< vector<CMATRIX*> > dR;
+      //CMATRIX*** dR;
+      vector<vector<CMATRIX*>> dR;
 
-
-  /**
+      /**
     Moments of momenta in the adiabatic representation for all DOFs and all trajectories
     
     Options:
@@ -276,20 +245,19 @@ class dyn_variables{
     For Method: A-FSSH
     
   */
-  //CMATRIX*** dP;
-  vector< vector<CMATRIX*> > dP;
+      //CMATRIX*** dP;
+      vector<vector<CMATRIX*>> dP;
 
-
-  ///================= For BCSH ===================
-  /**
+      ///================= For BCSH ===================
+      /**
     Status of the BCSH vars
 
     0 - not allocated;
     1 - allocated
   */
-  int bcsh_vars_status; 
+      int bcsh_vars_status;
 
-  /**
+      /**
     Reversal event matrix
     
     Options:
@@ -297,19 +265,18 @@ class dyn_variables{
 
     For Method: BCSH
   */
-  MATRIX* reversal_events;
+      MATRIX* reversal_events;
 
-  
-  ///================= For DISH ===================
-  /**
+      ///================= For DISH ===================
+      /**
     Status of the DISH vars
 
     0 - not allocated;
     1 - allocated
   */
-  int dish_vars_status;
+      int dish_vars_status;
 
-  /**
+      /**
     Coherence times
 
     Options:
@@ -317,417 +284,407 @@ class dyn_variables{
 
     For Method: DISH
   */
-  MATRIX* coherence_time;
+      MATRIX* coherence_time;
 
-
-  ///================= For FSSH2 ===================
-  /**
+      ///================= For FSSH2 ===================
+      /**
     Status of the FSSH2 vars
 
     0 - not allocated;
     1 - allocated
   */
-  int fssh2_vars_status;
+      int fssh2_vars_status;
 
-  /**
+      /**
     Electronic density matrix in diabatic representation, at previos timestep
 
     Options:
      vector<ntraj, CMATRIX(ndia, ndia)>
   */
-  vector<CMATRIX*> dm_dia_prev;
+      vector<CMATRIX*> dm_dia_prev;
 
-  /**
+      /**
     Electronic density matrix in adiabatic representation, at previous timestep
 
     Options:
      vector<ntraj, CMATRIX(nadi, nadi)>
   */
-  vector<CMATRIX*> dm_adi_prev;
+      vector<CMATRIX*> dm_adi_prev;
 
-
-  /**
+      /**
     Various kinds of errors in FSSH3 approach
     Dimensions: ntraj vectors of needed maximal size (e.g. 5 is enough for now)
   */
-  vector< vector<double> > fssh3_errors;
+      vector<vector<double>> fssh3_errors;
 
-
-  ///============ For independent-trajectory XF method such as SHXF ============
-  /**
+      ///============ For independent-trajectory XF method such as SHXF ============
+      /**
     Status of the SHXF vars
 
     0 - not allocated;
     1 - allocated
   */
-  int shxf_vars_status;
-  
-  /**
+      int shxf_vars_status;
+
+      /**
     Status of the MQCXF vars
 
     0 - not allocated;
     1 - allocated
   */
-  int mqcxf_vars_status;
+      int mqcxf_vars_status;
 
-  /**
+      /**
     Whether an adiabatic state interacts with the others
 
     Options:
      vector< vector<int> > is_mixed(ntraj, nadi)
   */
-  vector<vector<int>> is_mixed;
-  
-  /**
+      vector<vector<int>> is_mixed;
+
+      /**
     Whether the decoherence is turned on first time
 
     Options:
      vector< vector<int> > is_first(ntraj, nadi)
   */
-  vector<vector<int>> is_first;
-  
-  /**
+      vector<vector<int>> is_first;
+
+      /**
     Whether to fix an auxiliary trajectory
 
     Options:
      vector< vector<int> > is_fixed(ntraj, nadi)
   */
-  vector<vector<int>> is_fixed;
-  
-  /**
+      vector<vector<int>> is_fixed;
+
+      /**
     Whether to keep the auxiliary momenta
 
     Options:
      vector< vector<int> > is_keep(ntraj, nadi)
   */
-  vector<vector<int>> is_keep;
+      vector<vector<int>> is_keep;
 
-  /**
+      /**
     Nuclear coordinates of state-wise auxiliary trajectories
 
     Options:
      vector<ntraj, MATRIX(nadi, ndof)> 
   */
-  vector<MATRIX*> q_aux;
+      vector<MATRIX*> q_aux;
 
-  /**
+      /**
     Nuclear momenta of state-wise auxiliary trajectories
 
     Options:
      vector<ntraj, MATRIX(nadi, ndof)> 
   */
-  vector<MATRIX*> p_aux;
+      vector<MATRIX*> p_aux;
 
-  /**
+      /**
     Auxiliary momenta of previous step
 
     Options:
      vector<ntraj, MATRIX(nadi, ndof)> 
   */
-  vector<MATRIX*> p_aux_old;
-  
-  /**
+      vector<MATRIX*> p_aux_old;
+
+      /**
     Spatial derivative of the phase of coefficients of state-wise auxiliary trajectories
 
     Options:
      vector<ntraj, MATRIX(nadi, ndof)> 
   */
-  vector<MATRIX*> nab_phase;
-  
-  /**
+      vector<MATRIX*> nab_phase;
+
+      /**
     Spatial derivative of the phase of coefficients of state-wise auxiliary trajectories
 
     Options:
      vector<ntraj, MATRIX(nadi, ndof)> 
   */
-  vector<MATRIX*> nab_phase_old;
-  
-  /**
+      vector<MATRIX*> nab_phase_old;
+
+      /**
     XF Hamiltonian
 
     Options:
      vector<ntraj, MATRIX(nadi, nadi)> 
   */
-  vector<CMATRIX*> ham_xf;
-  
-  /**
+      vector<CMATRIX*> ham_xf;
+
+      /**
     Wave packet widths based on the Gaussian approximation
 
     Options:
      MATRIX(ndof, ntraj) 
   */
-  MATRIX* wp_width;
+      MATRIX* wp_width;
 
-  /**
+      /**
     Quantum momenta defined as (-1) * \nabla_nuc |\chi| / |\chi|
 
     Options:
      MATRIX(ndof, ntraj) 
   */
-  MATRIX* p_quant;
-  
-  /**
+      MATRIX* p_quant;
+
+      /**
     Exact vector potential
 
     Options:
      MATRIX(ndof, ntraj) 
   */
-  MATRIX* VP;
-  
-  /**
+      MATRIX* VP;
+
+      /**
     Decoherence force in MQCXF
 
     Options:
      MATRIX(ndof, ntraj) 
   */
-  MATRIX* f_xf;
+      MATRIX* f_xf;
 
-  ///========= For thermally-corrected NBRA ======================
-  /**
+      ///========= For thermally-corrected NBRA ======================
+      /**
     Status of the TCNBRA vars
 
     0 - not allocated;
     1 - allocated
   */
-  int tcnbra_vars_status;
-  
-  /** 
+      int tcnbra_vars_status;
+
+      /** 
     The alpha parameters to scale NACs
-  */ 
-  vector<double> thermal_correction_factors;
+  */
+      vector<double> thermal_correction_factors;
 
-
-  /**
+      /**
     Auxiliary thermostats for each trajectory
     This is a list of ntraj thermostat objects
   */
-  vector<Thermostat> tcnbra_thermostats;
+      vector<Thermostat> tcnbra_thermostats;
 
-
-  /**
+      /**
     Kinetic energies for each trajectory
   */
-  vector<double> tcnbra_ekin;
-  
+      vector<double> tcnbra_ekin;
 
-  ///================= For QTSH ===================
-  /**
+      ///================= For QTSH ===================
+      /**
     Status of the QTSH vars
 
     0 - not allocated;
     1 - allocated
   */
-  int qtsh_vars_status; 
+      int qtsh_vars_status;
 
-
-  /**
+      /**
     nonclassical force in QTSH
 
     Options:
      MATRIX(ndof, ntraj) 
   */
-  MATRIX* qtsh_f_nc;
-  
+      MATRIX* qtsh_f_nc;
 
-  ///========= For KC-RPMD ======================
-  /**
+      ///========= For KC-RPMD ======================
+      /**
     Status of the KC-RPMD vars
 
     0 - not allocated;
     1 - allocated
   */
-  int kcrpmd_vars_status;
-  
-  /** 
+      int kcrpmd_vars_status;
+
+      /** 
     The classical auxiliary electronic variable mass
-  */ 
-  vector<double> m_aux_var;
+  */
+      vector<double> m_aux_var;
 
-  /** 
+      /** 
     The classical auxiliary electronic variable coordinate
-  */ 
-  vector<double> y_aux_var;
+  */
+      vector<double> y_aux_var;
 
-  /** 
+      /** 
     The classical auxiliary electronic variable momentum
-  */ 
-  vector<double> p_aux_var;
+  */
+      vector<double> p_aux_var;
 
-  /** 
+      /** 
     The classical auxiliary electronic variable force
-  */ 
-  vector<double> f_aux_var;
+  */
+      vector<double> f_aux_var;
 
-
-  ///================= Misc ===================
-  /**
+      ///================= Misc ===================
+      /**
     The current MD time step
   */
-  int timestep; 
+      int timestep;
 
-
-  ///=============== For new decoherence method (let's call it simple_decoherence ) ==============
-  /**
+      ///=============== For new decoherence method (let's call it simple_decoherence ) ==============
+      /**
     Status of the new decoherence method vars
 
     0 - not allocated;
     1 - allocated 
   */
-  int simple_decoherence_vars_status;
+      int simple_decoherence_vars_status;
 
-  /**
+      /**
    Integrated exp( -(dt/tau(t))**2 ) over many timesteps 
    Reset to 1 at every accepted hop, separate for each trajectory
   */
-  vector< vector< vector<double> > > coherence_factors;
+      vector<vector<vector<double>>> coherence_factors;
 
-  ///====================== For average decoherence rates
-  /*
+      ///====================== For average decoherence rates
+      /*
     Stores the decoherence rates between states averaged over all trajectories
   */
 
-  MATRIX* ave_decoherence_rates;
+      MATRIX* ave_decoherence_rates;
 
-  ///====================== In dyn_variables.cpp =====================
+      ///====================== In dyn_variables.cpp =====================
 
-  void allocate_electronic_vars();
-  void allocate_nuclear_vars();
-  void allocate_afssh();
-  void allocate_bcsh();
-  void allocate_dish();
-  void allocate_fssh2();
-  void allocate_shxf();
-  void allocate_tcnbra();
-  void allocate_mqcxf();
-  void allocate_qtsh();
-  void allocate_kcrpmd();
-  void allocate_simple_decoherence();
+      void allocate_electronic_vars();
+      void allocate_nuclear_vars();
+      void allocate_afssh();
+      void allocate_bcsh();
+      void allocate_dish();
+      void allocate_fssh2();
+      void allocate_shxf();
+      void allocate_tcnbra();
+      void allocate_mqcxf();
+      void allocate_qtsh();
+      void allocate_kcrpmd();
+      void allocate_simple_decoherence();
 
+      dyn_variables(int _ndia, int _nadi, int _ndof, int _ntraj);
+      dyn_variables(const dyn_variables& x);
+      ~dyn_variables();
 
-  dyn_variables(int _ndia, int _nadi, int _ndof, int _ntraj);
-  dyn_variables(const dyn_variables& x); 
-  ~dyn_variables();
+      void set_parameters(bp::dict params);
 
-  void set_parameters(bp::dict params);
+      void set_q(MATRIX& _q) { *q = _q; }
+      void set_p(MATRIX& _p) { *p = _p; }
+      void set_f(MATRIX& _f) { *f = _f; }
 
+      CMATRIX get_ampl_adi() { return *ampl_adi; }
+      CMATRIX get_ampl_dia() { return *ampl_dia; }
+      MATRIX get_q_mm() { return *q_mm; }
+      MATRIX get_p_mm() { return *p_mm; }
+      CMATRIX get_proj_adi(int i) { return *proj_adi[i]; }
+      CMATRIX get_dm_adi(int i) { return *dm_adi[i]; }
+      CMATRIX get_dm_dia(int i) { return *dm_dia[i]; }
+      CMATRIX get_dm_adi(int i, int prev_steps);
+      CMATRIX get_dm_dia(int i, int prev_steps);
+      vector<vector<double>> get_fssh3_errors();
+      vector<double> get_fssh3_average_errors();
+      CMATRIX get_basis_transform(int itraj) { return *basis_transform[itraj]; }
+      MATRIX get_imass() { return *iM; }
+      MATRIX get_coords() { return *q; }
+      MATRIX get_momenta() { return *p; }
+      MATRIX get_forces() { return *f; }
+      MATRIX get_wp_width() { return *wp_width; }
+      MATRIX get_p_quant() { return *p_quant; }
+      MATRIX get_VP() { return *VP; }
+      MATRIX get_f_xf() { return *f_xf; }
+      MATRIX get_coords_aux(int i) { return *q_aux[i]; }
+      MATRIX get_momenta_aux(int i) { return *p_aux[i]; }
+      MATRIX get_nab_phase(int i) { return *nab_phase[i]; }
+      MATRIX get_qtsh_f_nc() { return *qtsh_f_nc; }
+      MATRIX get_ave_decoherence_rates() { return *ave_decoherence_rates; }
+      vector<double> get_m_aux_var() { return m_aux_var; }
+      vector<double> get_y_aux_var() { return y_aux_var; }
+      vector<double> get_p_aux_var() { return p_aux_var; }
+      vector<double> get_f_aux_var() { return f_aux_var; }
 
-  void set_q(MATRIX& _q){ *q = _q; }
-  void set_p(MATRIX& _p){ *p = _p; }
-  void set_f(MATRIX& _f){ *f = _f; }
+      void get_current_timestep(bp::dict params) {
+        std::string key;
+        for (int i = 0; i < len(params.values()); i++) {
+          key = bp::extract<std::string>(params.keys()[i]);
+          if (key == "timestep") {
+            timestep = bp::extract<int>(params.values()[i]);
+          } else {
+            continue;
+          }
+        }
+      }
 
-  CMATRIX get_ampl_adi(){ return *ampl_adi; }
-  CMATRIX get_ampl_dia(){ return *ampl_dia; }
-  MATRIX get_q_mm(){ return *q_mm; }
-  MATRIX get_p_mm(){ return *p_mm; }
-  CMATRIX get_proj_adi(int i){ return *proj_adi[i]; } 
-  CMATRIX get_dm_adi(int i){  return *dm_adi[i]; }
-  CMATRIX get_dm_dia(int i){  return *dm_dia[i]; }
-  CMATRIX get_dm_adi(int i, int prev_steps);
-  CMATRIX get_dm_dia(int i, int prev_steps);
-  vector< vector<double> > get_fssh3_errors();
-  vector<double> get_fssh3_average_errors();
-  CMATRIX get_basis_transform(int itraj){ return *basis_transform[itraj]; }
-  MATRIX get_imass(){ return *iM; }
-  MATRIX get_coords(){ return *q; }
-  MATRIX get_momenta(){ return *p; }
-  MATRIX get_forces(){ return *f; }
-  MATRIX get_wp_width(){ return *wp_width; }
-  MATRIX get_p_quant(){ return *p_quant; }
-  MATRIX get_VP(){ return *VP; }
-  MATRIX get_f_xf(){ return *f_xf; }
-  MATRIX get_coords_aux(int i){ return *q_aux[i]; }
-  MATRIX get_momenta_aux(int i){ return *p_aux[i]; }
-  MATRIX get_nab_phase(int i){ return *nab_phase[i]; }
-  MATRIX get_qtsh_f_nc(){ return *qtsh_f_nc; }
-  MATRIX get_ave_decoherence_rates(){ return *ave_decoherence_rates; }
-  vector<double> get_m_aux_var(){ return m_aux_var; }
-  vector<double> get_y_aux_var(){ return y_aux_var; }
-  vector<double> get_p_aux_var(){ return p_aux_var; }
-  vector<double> get_f_aux_var(){ return f_aux_var; }
-  
-  void get_current_timestep(bp::dict params){
-    std::string key;
-    for(int i=0;i<len(params.values());i++){
-      key = bp::extract<std::string>(params.keys()[i]);
-      if(key=="timestep") { timestep = bp::extract<int>(params.values()[i]); }
-      else {continue;}
-    }
-  }
-  
+      ///====================== In dyn_variables_nuclear.cpp =====================
 
+      void init_nuclear_dyn_var(bp::dict _params, Random& rnd);
+      double compute_average_kinetic_energy();
+      double compute_average_kinetic_energy(vector<int>& which_dofs);
+      double compute_kinetic_energy(int itraj);
+      double compute_kinetic_energy(int itraj, vector<int>& which_dofs);
+      vector<double> compute_kinetic_energies();
+      vector<double> compute_kinetic_energies(vector<int>& which_dofs);
 
-  ///====================== In dyn_variables_nuclear.cpp =====================
+      ///====================== In dyn_variables_electronic.cpp =====================
 
-  void init_nuclear_dyn_var(bp::dict _params, Random& rnd);
-  double compute_average_kinetic_energy();
-  double compute_average_kinetic_energy(vector<int>& which_dofs);
-  double compute_kinetic_energy(int itraj);
-  double compute_kinetic_energy(int itraj, vector<int>& which_dofs);
-  vector<double> compute_kinetic_energies();
-  vector<double> compute_kinetic_energies(vector<int>& which_dofs);
+      void update_amplitudes(dyn_control_params& dyn_params);
+      void update_amplitudes(dyn_control_params& dyn_params, nHamiltonian& ham);
+      void update_amplitudes(bp::dict dyn_params, nHamiltonian& ham);
+      void update_amplitudes(dyn_control_params& dyn_params,
+                             bp::object compute_model,
+                             bp::dict model_params);
+      void update_amplitudes(bp::dict dyn_params, bp::object compute_model, bp::dict model_params);
 
+      void update_density_matrix(dyn_control_params& dyn_params);
+      void update_density_matrix(dyn_control_params& dyn_params, nHamiltonian& ham, int lvl);
+      void update_density_matrix(bp::dict dyn_params, nHamiltonian& ham, int lvl);
+      void update_density_matrix(dyn_control_params& dyn_params,
+                                 bp::object compute_model,
+                                 bp::dict model_params,
+                                 int lvl);
+      void update_density_matrix(bp::dict dyn_params,
+                                 bp::object compute_model,
+                                 bp::dict model_params,
+                                 int lvl);
 
-  ///====================== In dyn_variables_electronic.cpp =====================
+      void update_active_states(int direction, int property);
+      void update_active_states();
+      void set_active_states_diff_rep(int rep_sh, Random& rnd);
 
-  void update_amplitudes(dyn_control_params& dyn_params);
-  void update_amplitudes(dyn_control_params& dyn_params, nHamiltonian& ham);
-  void update_amplitudes(bp::dict dyn_params, nHamiltonian& ham);
-  void update_amplitudes(dyn_control_params& dyn_params, bp::object compute_model, bp::dict model_params);
-  void update_amplitudes(bp::dict dyn_params, bp::object compute_model, bp::dict model_params);
+      void update_basis_transform(nHamiltonian& ham);
 
-  void update_density_matrix(dyn_control_params& dyn_params);
-  void update_density_matrix(dyn_control_params& dyn_params, nHamiltonian& ham, int lvl);
-  void update_density_matrix(bp::dict dyn_params, nHamiltonian& ham, int lvl);
-  void update_density_matrix(dyn_control_params& dyn_params, bp::object compute_model, bp::dict model_params, int lvl);
-  void update_density_matrix(bp::dict dyn_params, bp::object compute_model, bp::dict model_params, int lvl);
+      void init_amplitudes(bp::dict params, Random& rnd);
+      void init_density_matrix(bp::dict _params);
+      void init_active_states(bp::dict _params, Random& rnd);
+      void init_active_states_dia(bp::dict _params, Random& rnd);
+      void init_auxiliary_variables(bp::dict _params, Random& rnd);
 
-  void update_active_states(int direction, int property);
-  void update_active_states();
-  void set_active_states_diff_rep(int rep_sh, Random& rnd);
+      void init_electronic_dyn_var(bp::dict params, Random& rnd);
 
-  void update_basis_transform(nHamiltonian& ham);
+      CMATRIX compute_average_dm(int rep);
+      vector<double> compute_average_se_pop(int rep);
+      vector<double> compute_average_sh_pop(int rep);
+      vector<double> compute_average_sh_pop_TR(int rep);
+      vector<double> compute_average_mash_pop(int rep);
 
-  void init_amplitudes(bp::dict params, Random& rnd);
-  void init_density_matrix(bp::dict _params);
-  void init_active_states(bp::dict _params, Random& rnd);
-  void init_active_states_dia(bp::dict _params, Random& rnd);
-  void init_auxiliary_variables(bp::dict _params, Random& rnd);
+      MATRIX compute_coherence_indicator(int rep);
 
-  void init_electronic_dyn_var(bp::dict params, Random& rnd);
+      double compute_tcnbra_ekin();
+      double compute_tcnbra_thermostat_energy();
 
-  CMATRIX compute_average_dm(int rep);
-  vector<double> compute_average_se_pop(int rep);
-  vector<double> compute_average_sh_pop(int rep);
-  vector<double> compute_average_sh_pop_TR(int rep);
-  vector<double> compute_average_mash_pop(int rep);
+      void save_curr_dm_into_prev();
 
-  MATRIX compute_coherence_indicator(int rep);
+      double compute_kcrpmd_ekin();
 
-  double compute_tcnbra_ekin();
-  double compute_tcnbra_thermostat_energy();
+      friend bool operator==(const dyn_variables& n1, const dyn_variables& n2) {
+        return &n1 == &n2;
+      }
+      friend bool operator!=(const dyn_variables& n1, const dyn_variables& n2) {
+        return !(n1 == n2);  // only compare addresses
+      }
+    };
 
-  void save_curr_dm_into_prev();
+    //vector<int> update_active_states(vector<int>& act_states, vector<CMATRIX*>& T);
+    CMATRIX orthogonalized_T(CMATRIX& T);
 
-  double compute_kcrpmd_ekin();
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-
-  friend bool operator == (const dyn_variables& n1, const dyn_variables& n2){
-    return &n1 == &n2;
-  }
-  friend bool operator != (const dyn_variables& n1, const dyn_variables& n2){
-    return !(n1 == n2);  // only compare addresses
-  }
-
-
-};
-
-
-//vector<int> update_active_states(vector<int>& act_states, vector<CMATRIX*>& T);
-CMATRIX orthogonalized_T(CMATRIX& T);
-
-
-} // libdyn
-}// liblibra
-
-#endif // DYN_VARIABLES_H
+#endif  // DYN_VARIABLES_H

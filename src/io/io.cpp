@@ -16,29 +16,25 @@
 
 #include "io.h"
 
+/// liblibra
+namespace liblibra {
 
-/// liblibra 
-namespace liblibra{
+  /// libio namespace
+  namespace libio {
 
-/// libio namespace
-namespace libio{
-
-
-bool hasattr(boost::python::object obj, std::string attrName) {
-/** 
+    bool hasattr(boost::python::object obj, std::string attrName) {
+      /** 
   \brief Check if the Python object has a particularly-named datamember 
 
   \param[in] obj An object of Python class (note, this is not just any Python object). We will try to extract date from
                  that object
   \param[in] attrName The string containing the name of the attribute to be looked for in the object of Python class  
 */
-     return PyObject_HasAttrString(obj.ptr(), (char*)attrName.c_str());
-} 
+      return PyObject_HasAttrString(obj.ptr(), (char*)attrName.c_str());
+    }
 
-
-
-void set_value(int& is_defined, int& value, boost::python::object obj, std::string attrName){
-/** 
+    void set_value(int& is_defined, int& value, boost::python::object obj, std::string attrName) {
+      /** 
   \brief For extracting integer values from Python object to C++ representation 
 
   \param[out] is_defined In the end, it is set to 0, if no data member with requested name has been found in the Python object
@@ -48,17 +44,16 @@ void set_value(int& is_defined, int& value, boost::python::object obj, std::stri
   \param[in] attrName The string containing the name of the attribute to be looked for in the object of Python class  
 */
 
-  int has_attr=0;
-  has_attr = (int)hasattr(obj,attrName);        
-  if(has_attr){
-      value = extract<int>(obj.attr(attrName.c_str()));          
-      is_defined = 1; 
-  }
+      int has_attr = 0;
+      has_attr = (int)hasattr(obj, attrName);
+      if (has_attr) {
+        value = extract<int>(obj.attr(attrName.c_str()));
+        is_defined = 1;
+      }
+    }
 
-}
-
-void set_value(int& is_defined, double& value, boost::python::object obj, std::string attrName){
-/** 
+    void set_value(int& is_defined, double& value, boost::python::object obj, std::string attrName) {
+      /** 
   \brief For extracting double values from Python object to C++ representation 
 
   \param[out] is_defined In the end, it is set to 0, if no data member with requested name has been found in the Python object
@@ -68,17 +63,19 @@ void set_value(int& is_defined, double& value, boost::python::object obj, std::s
   \param[in] attrName The string containing the name of the attribute to be looked for in the object of Python class  
 */
 
-  int has_attr=0;
-  has_attr = (int)hasattr(obj,attrName);
-  if(has_attr){
-      value = extract<double>(obj.attr(attrName.c_str()));
-      is_defined = 1;
-  }
+      int has_attr = 0;
+      has_attr = (int)hasattr(obj, attrName);
+      if (has_attr) {
+        value = extract<double>(obj.attr(attrName.c_str()));
+        is_defined = 1;
+      }
+    }
 
-}
-
-void set_value(int& is_defined, std::string& value,boost::python::object obj, std::string attrName){
-/** 
+    void set_value(int& is_defined,
+                   std::string& value,
+                   boost::python::object obj,
+                   std::string attrName) {
+      /** 
   \brief For extracting string values from Python object to C++ representation 
 
   \param[out] is_defined In the end, it is set to 0, if no data member with requested name has been found in the Python object
@@ -88,17 +85,19 @@ void set_value(int& is_defined, std::string& value,boost::python::object obj, st
   \param[in] attrName The string containing the name of the attribute to be looked for in the object of Python class  
 */
 
-  int has_attr=0;
-  has_attr = (int)hasattr(obj,attrName);
-  if(has_attr){
-      value = extract<std::string>(obj.attr(attrName.c_str()));
-      is_defined = 1;
-  }
-}
+      int has_attr = 0;
+      has_attr = (int)hasattr(obj, attrName);
+      if (has_attr) {
+        value = extract<std::string>(obj.attr(attrName.c_str()));
+        is_defined = 1;
+      }
+    }
 
-
-void set_list(int& is_defined, vector<int>& value,boost::python::object obj,std::string attrName){
-/** 
+    void set_list(int& is_defined,
+                  vector<int>& value,
+                  boost::python::object obj,
+                  std::string attrName) {
+      /** 
   \brief For extracting vector of integers values from Python object to C++ representation 
 
   \param[out] is_defined In the end, it is set to 0, if no data member with requested name has been found in the Python object
@@ -110,25 +109,24 @@ void set_list(int& is_defined, vector<int>& value,boost::python::object obj,std:
   The vector of integers is represented in the Python object by a list of integers. This list is a class member itself.
 */
 
+      int has_attr = 0;
+      has_attr = (int)hasattr(obj, attrName);
+      if (has_attr) {
+        boost::python::list lst = extract<boost::python::list>(obj.attr(attrName.c_str()));
+        is_defined = 1;
 
-  int has_attr=0;
-  has_attr = (int)hasattr(obj,attrName);
-  if(has_attr){
-     boost::python::list lst= extract<boost::python::list>(obj.attr(attrName.c_str()));
-     is_defined = 1;
+        for (int i = 0; i < len(lst); i++) {
+          int x = extract<int>(lst[i]);
+          value.push_back(x);
+        }
+      }
+    }
 
-     for(int i=0;i<len(lst);i++){
-     int x = extract<int>(lst[i]);
-     value.push_back(x);
-     }
-
-  }
-
-}
-
-
-void set_list(int& is_defined, vector<double>& value,boost::python::object obj,std::string attrName){
-/** 
+    void set_list(int& is_defined,
+                  vector<double>& value,
+                  boost::python::object obj,
+                  std::string attrName) {
+      /** 
   \brief For extracting vector of double values from Python object to C++ representation 
 
   \param[out] is_defined In the end, it is set to 0, if no data member with requested name has been found in the Python object
@@ -140,23 +138,23 @@ void set_list(int& is_defined, vector<double>& value,boost::python::object obj,s
   The vector of integers is represented in the Python object by a list of doubles. This list is a class member itself.
 */
 
+      int has_attr = 0;
+      has_attr = (int)hasattr(obj, attrName);
+      if (has_attr) {
+        boost::python::list lst = extract<boost::python::list>(obj.attr(attrName.c_str()));
+        is_defined = 1;
 
-  int has_attr=0;
-  has_attr = (int)hasattr(obj,attrName);
-  if(has_attr){
-     boost::python::list lst= extract<boost::python::list>(obj.attr(attrName.c_str()));
-     is_defined = 1;
-
-     for(int i=0;i<len(lst);i++){
-     double x = extract<double>(lst[i]);
-     value.push_back(x);
-     }
-
-  }
-
-}
-void set_list(int& is_defined, vector<std::string>& value,boost::python::object obj,std::string attrName){
-/** 
+        for (int i = 0; i < len(lst); i++) {
+          double x = extract<double>(lst[i]);
+          value.push_back(x);
+        }
+      }
+    }
+    void set_list(int& is_defined,
+                  vector<std::string>& value,
+                  boost::python::object obj,
+                  std::string attrName) {
+      /** 
   \brief For extracting vector of string values from Python object to C++ representation 
 
   \param[out] is_defined In the end, it is set to 0, if no data member with requested name has been found in the Python object
@@ -168,39 +166,25 @@ void set_list(int& is_defined, vector<std::string>& value,boost::python::object 
   The vector of integers is represented in the Python object by a list of strings. This list is a class member itself.
 */
 
+      int has_attr = 0;
+      has_attr = (int)hasattr(obj, attrName);
+      if (has_attr) {
+        boost::python::list lst = extract<boost::python::list>(obj.attr(attrName.c_str()));
+        is_defined = 1;
 
-  int has_attr=0;
-  has_attr = (int)hasattr(obj,attrName);
-  if(has_attr){
-     boost::python::list lst= extract<boost::python::list>(obj.attr(attrName.c_str()));
-     is_defined = 1;
+        for (int i = 0; i < len(lst); i++) {
+          std::string x = extract<std::string>(lst[i]);
+          value.push_back(x);
+        }
+      }
+    }
 
-     for(int i=0;i<len(lst);i++){
-     std::string x = extract<std::string>(lst[i]);
-     value.push_back(x);
-     }
+    //----------------- XML via property_tree ---------------------------
 
-  }
+    //----------------------------------------------------
 
-}
-
-//----------------- XML via property_tree ---------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-//----------------------------------------------------
-
-void save_xml(std::string filename, boost::property_tree::ptree& pt){
-/** 
+    void save_xml(std::string filename, boost::property_tree::ptree& pt) {
+      /** 
   \brief Save the property tree object as an XML file
 
   \param[in] filename The name of the file to which the property tree object will be printed out
@@ -208,15 +192,13 @@ void save_xml(std::string filename, boost::property_tree::ptree& pt){
 
 */
 
+      //  boost::property_tree::xml_writer_settings<char> settings(' ', 4);
+      //  write_xml(filename, pt, std::locale(), settings);
+      write_xml(filename, pt, std::locale(), xml_writer_settings('\t', 1));
+    }
 
-//  boost::property_tree::xml_writer_settings<char> settings(' ', 4);
-//  write_xml(filename, pt, std::locale(), settings);
-  write_xml(filename, pt, std::locale(), xml_writer_settings('\t', 1));
-
-}
-
-void load_xml(std::string filename, boost::property_tree::ptree& pt){
-/** 
+    void load_xml(std::string filename, boost::property_tree::ptree& pt) {
+      /** 
   \brief Load the property tree object from an XML file
 
   \param[in] filename The name of the file from which the property tree object will be loaded
@@ -224,12 +206,10 @@ void load_xml(std::string filename, boost::property_tree::ptree& pt){
 
 */
 
+      read_xml(filename, pt);
+    }
 
-  read_xml(filename, pt);
-
-}
-
-/*
+    /*
 std::string load_xml(std::string filename, boost::property_tree::ptree& pt){
 
   read_xml(filename, pt);
@@ -237,119 +217,150 @@ std::string load_xml(std::string filename, boost::property_tree::ptree& pt){
 }
 */
 
-
-
-
-int read_file(std::string filename,int verbose,vector<std::string>& A){
-/**********************************************************************
+    int read_file(std::string filename, int verbose, vector<std::string>& A) {
+      /**********************************************************************
   This function reads file <filename> and stores it as a vector of strings
   each string is a line of the file
 **********************************************************************/
 
-  // Prepare A
-  if(A.size()>0){ A.clear(); }
+      // Prepare A
+      if (A.size() > 0) {
+        A.clear();
+      }
 
-  // Read the file
-  if(verbose==1){ cout<<"Reading file"<<filename<<endl; }
-  ifstream f;
-  f.open(filename.c_str(),ios::in);
-  if(f.is_open()){
-    // Estimate the number of lines
-    int nlines = 0;
-    while(!f.eof()){ std::string line; getline(f,line); nlines++; }
-    A.reserve(int(nlines*1.25));
-    // Reset file position to beginning
-    f.clear();
-    f.seekg (0, ios::beg);
+      // Read the file
+      if (verbose == 1) {
+        cout << "Reading file" << filename << endl;
+      }
+      ifstream f;
+      f.open(filename.c_str(), ios::in);
+      if (f.is_open()) {
+        // Estimate the number of lines
+        int nlines = 0;
+        while (!f.eof()) {
+          std::string line;
+          getline(f, line);
+          nlines++;
+        }
+        A.reserve(int(nlines * 1.25));
+        // Reset file position to beginning
+        f.clear();
+        f.seekg(0, ios::beg);
 
-    // Actually put the file content in memory
-    while(!f.eof()){ std::string line; getline(f,line); A.push_back(line);  }
-  }else{ cout<<"Error: Can not open file "<<filename<<endl; }
-  f.close();
+        // Actually put the file content in memory
+        while (!f.eof()) {
+          std::string line;
+          getline(f, line);
+          A.push_back(line);
+        }
+      } else {
+        cout << "Error: Can not open file " << filename << endl;
+      }
+      f.close();
 
-  return A.size();
-}
+      return A.size();
+    }
 
-
-void file2matrix(std::string filename,vector< vector<double> >& M){
-/*****************************************************************
+    void file2matrix(std::string filename, vector<vector<double> >& M) {
+      /*****************************************************************
   This function reads the content of the tabular (2D) file into matrix M
 *****************************************************************/
-  if(M.size()>0){ M.clear(); }
-  ifstream in;
-  in.open(filename.c_str(),ios::in);
-  if(in.is_open()){
-    std::string s;
-    while(!in.eof()){
-      vector<double> line; // line of the file
-      getline(in,s);
-      stringstream ss(s,stringstream::in|stringstream::out);
-      while(ss>>s){  line.push_back(atof(s.c_str()));   }
-      if(line.size()>0) { M.push_back(line); }
+      if (M.size() > 0) {
+        M.clear();
+      }
+      ifstream in;
+      in.open(filename.c_str(), ios::in);
+      if (in.is_open()) {
+        std::string s;
+        while (!in.eof()) {
+          vector<double> line;  // line of the file
+          getline(in, s);
+          stringstream ss(s, stringstream::in | stringstream::out);
+          while (ss >> s) {
+            line.push_back(atof(s.c_str()));
+          }
+          if (line.size() > 0) {
+            M.push_back(line);
+          }
+        }
+      } else {
+        cout << "Error: Can not open file " << filename << ". Check if this file exists\n";
+        exit(0);
+      }
+      in.close();
     }
-  }else{ cout<<"Error: Can not open file "<<filename<<". Check if this file exists\n"; exit(0);}
-  in.close();
-}
 
-void file2matrix(std::string filename,vector< vector<double> >& M,double scl){
-/*****************************************************************
+    void file2matrix(std::string filename, vector<vector<double> >& M, double scl) {
+      /*****************************************************************
   This function reads the contend of the tabular (2D) file into matrix M and scales
   the read data by factor scl
 *****************************************************************/
-  if(M.size()>0){ M.clear(); }
-  ifstream in;
-  in.open(filename.c_str(),ios::in);
-  if(in.is_open()){
-    std::string s;
-    while(!in.eof()){
-      vector<double> line; // line of the file
-      getline(in,s);
-      stringstream ss(s,stringstream::in|stringstream::out);
-      while(ss>>s){  line.push_back(scl*atof(s.c_str()));   }
-      if(line.size()>0) { M.push_back(line); }
+      if (M.size() > 0) {
+        M.clear();
+      }
+      ifstream in;
+      in.open(filename.c_str(), ios::in);
+      if (in.is_open()) {
+        std::string s;
+        while (!in.eof()) {
+          vector<double> line;  // line of the file
+          getline(in, s);
+          stringstream ss(s, stringstream::in | stringstream::out);
+          while (ss >> s) {
+            line.push_back(scl * atof(s.c_str()));
+          }
+          if (line.size() > 0) {
+            M.push_back(line);
+          }
+        }
+      } else {
+        cout << "Error: Can not open file " << filename << ". Check if this file exists\n";
+        exit(0);
+      }
+      in.close();
     }
-  }else{ cout<<"Error: Can not open file "<<filename<<". Check if this file exists\n"; exit(0);}
-  in.close();
-}
 
-
-void file2matrix(std::string filename,vector< vector<int> >& M){
-/*****************************************************************
+    void file2matrix(std::string filename, vector<vector<int> >& M) {
+      /*****************************************************************
   This function reads the content of the tabular (2D) file into matrix M
   Version overloaded for int
 *****************************************************************/
-  if(M.size()>0){ M.clear(); }
-  ifstream in;
-  in.open(filename.c_str(),ios::in);
-  if(in.is_open()){
-    std::string s;
-    while(!in.eof()){
-      vector<int> line; // line of the file
-      getline(in,s);
-      stringstream ss(s,stringstream::in|stringstream::out);
-      while(ss>>s){  line.push_back(atoi(s.c_str()));   }
-      if(line.size()>0) { M.push_back(line);     }
+      if (M.size() > 0) {
+        M.clear();
+      }
+      ifstream in;
+      in.open(filename.c_str(), ios::in);
+      if (in.is_open()) {
+        std::string s;
+        while (!in.eof()) {
+          vector<int> line;  // line of the file
+          getline(in, s);
+          stringstream ss(s, stringstream::in | stringstream::out);
+          while (ss >> s) {
+            line.push_back(atoi(s.c_str()));
+          }
+          if (line.size() > 0) {
+            M.push_back(line);
+          }
+        }
+      } else {
+        cout << "Error: Can not open file " << filename << ". Check if this file exists\n";
+        exit(0);
+      }
+      in.close();
     }
-  }else{ cout<<"Error: Can not open file "<<filename<<". Check if this file exists\n"; exit(0);}
-  in.close();
-}
 
-void show_2D(vector< vector<double> >& in){
-/******************************************************************
+    void show_2D(vector<vector<double> >& in) {
+      /******************************************************************
   This function prints out the matrix in a tabular form
 ******************************************************************/
-  for(int i=0;i<in.size();i++){
-    for(int j=0;j<in[i].size();j++){
-      cout<<"in["<<i<<"]["<<j<<"]="<<in[i][j]<<" ";
+      for (int i = 0; i < in.size(); i++) {
+        for (int j = 0; j < in[i].size(); j++) {
+          cout << "in[" << i << "][" << j << "]=" << in[i][j] << " ";
+        }
+        cout << endl;
+      }
     }
-    cout<<endl;
-  }
-}
 
-
-
-
-
-}// libio
-}// liblibra
-
+  }  // namespace libio
+}  // namespace liblibra

@@ -31,18 +31,21 @@
 
 #include "ivr.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libivr namespace
-namespace libivr{
+  /// libivr namespace
+  namespace libivr {
 
-
-void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,
-                 vector<MATRIX>& q, vector<MATRIX>& p, vector<int>& status,
-                 int ivr_opt, int observable_type, int observable_label){
-/**
+    void compute_tcf(vector<complex<double> >& TCF,
+                     vector<int>& MCnum,
+                     vector<MATRIX>& q,
+                     vector<MATRIX>& p,
+                     vector<int>& status,
+                     int ivr_opt,
+                     int observable_type,
+                     int observable_label) {
+      /**
 
   \brief A generic routine to compute unnormalized TCF
 
@@ -65,49 +68,50 @@ void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,
 
 */
 
-  int Ntime = TCF.size();
+      int Ntime = TCF.size();
 
-  for(int i = 0; i < Ntime; i++){    MCnum[i] += status[i];   }
-
-
-  if(ivr_opt==0){  /// Husimi
-
-    for(int i = 0; i < Ntime; i++){  
-      if(status[i]==1){
-
-        TCF[i] = TCF[i] + mat_elt_HUS_B(q[i], p[i], observable_type, observable_label);
-
+      for (int i = 0; i < Ntime; i++) {
+        MCnum[i] += status[i];
       }
-    } // for i
 
-  }/// Husimi
+      if (ivr_opt == 0) {  /// Husimi
 
+        for (int i = 0; i < Ntime; i++) {
+          if (status[i] == 1) {
+            TCF[i] = TCF[i] + mat_elt_HUS_B(q[i], p[i], observable_type, observable_label);
+          }
+        }  // for i
 
-  else if(ivr_opt==1){  /// LS-IVR
+      }  /// Husimi
 
-    for(int i = 0; i < Ntime; i++){  
-      if(status[i]==1){
+      else if (ivr_opt == 1) {  /// LS-IVR
 
-        TCF[i] = TCF[i] + mat_elt_LSC_B(q[i], p[i], observable_type, observable_label);
+        for (int i = 0; i < Ntime; i++) {
+          if (status[i] == 1) {
+            TCF[i] = TCF[i] + mat_elt_LSC_B(q[i], p[i], observable_type, observable_label);
+          }
+        }  // for i
 
-      }
-    } // for i
+      }  /// LS-IVR
+    }
 
-  }/// LS-IVR
-
-
-
-
-}
-
-
-
-
-void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,  ivr_params& prms,
-                 vector<MATRIX>& q,  vector<MATRIX>& p,  vector<int>& status, vector<double>& action,vector< vector<MATRIX> >& Mono,
-                 vector<MATRIX>& qp, vector<MATRIX>& pp, vector<int>& statusp,vector<double>& actionp,vector< vector<MATRIX> >& Monop,
-                 int ivr_opt, int observable_type, int observable_label){
-/**
+    void compute_tcf(vector<complex<double> >& TCF,
+                     vector<int>& MCnum,
+                     ivr_params& prms,
+                     vector<MATRIX>& q,
+                     vector<MATRIX>& p,
+                     vector<int>& status,
+                     vector<double>& action,
+                     vector<vector<MATRIX> >& Mono,
+                     vector<MATRIX>& qp,
+                     vector<MATRIX>& pp,
+                     vector<int>& statusp,
+                     vector<double>& actionp,
+                     vector<vector<MATRIX> >& Monop,
+                     int ivr_opt,
+                     int observable_type,
+                     int observable_label) {
+      /**
 
   \brief A generic routine to compute unnormalized TCF
 
@@ -138,156 +142,149 @@ void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,  ivr_params
 
 */
 
-  int i;
-  int Ndof = q[0].n_rows;
-  int Ntime = TCF.size();
+      int i;
+      int Ndof = q[0].n_rows;
+      int Ntime = TCF.size();
 
-  for(i = 0; i < Ntime; i++){   MCnum[i] += status[i] * statusp[i];     }
-
-
-  MATRIX qIn(prms.get_qIn());
-  MATRIX pIn(prms.get_pIn());
-  MATRIX Width0(prms.get_Width0()); 
-  MATRIX invWidth0(prms.get_invWidth0());
-  MATRIX WidthT(prms.get_WidthT()); 
-  MATRIX invWidthT(prms.get_invWidthT());
-  MATRIX TuningQ(prms.get_TuningQ());
-  MATRIX invTuningQ(prms.get_invTuningQ());
-  MATRIX TuningP(prms.get_TuningP());
-  MATRIX invTuningP(prms.get_invTuningP());
-
-
-
-  if(ivr_opt==0){  /// FF_MQC
-
-
-    MATRIX norm(Ndof, Ndof); norm  = invTuningQ * invTuningP;
-    double normC = 1.0;
-    for(i = 0; i<Ndof; i++){   normC = normC * norm.get(i,i);   }
-    normC = sqrt(normC);
-
-
-    MATRIX qav(Ndof, 1); qav = 0.5*(q[0] + qp[0]);
-    MATRIX pav(Ndof, 1); pav = 0.5*(p[0] + pp[0]);
-
-    complex<double> ovlp = CS_overlap(qav, pav, qIn, pIn, Width0, invWidth0);
-    double sampling = (std::conj(ovlp) * ovlp).real();
-
-
-    // INITIAL COHERENT STATE OVERLAPS
-    ovlp  = CS_overlap(q[0],  p[0],  qIn, pIn, Width0, invWidth0);
-    complex<double> ovlpp = CS_overlap(qp[0], pp[0], qIn, pIn, Width0, invWidth0);
-
-    // OVERLAP RATIO
-    complex<double> OverlapR = (std::conj(ovlpp) * ovlp)/sampling;
-
-
-    int Maslov  = 0;
-    complex<double> prev(1.0, 0.0);
-
-    for(i = 0; i < Ntime; i++){  
-
-      if(status[i]==1 && statusp[i]==1){
-
-
-        // POSITION MATRIX ELEMENT AT TIME t
-        complex<double> posn = mat_elt_FF_B(q[i], p[i], qp[i], pp[i], WidthT, invWidthT, observable_type, observable_label);
-
-        // MONODROMY MATRICES FOR PREFACTOR
-        vector<CMATRIX> Mfwd(4);  
-        Mfwd[0] = CMATRIX(Mono[i][0]);
-        Mfwd[1] = CMATRIX(Mono[i][1]);
-        Mfwd[2] = CMATRIX(Mono[i][2]);
-        Mfwd[3] = CMATRIX(Mono[i][3]);
-
-        vector<CMATRIX> Mbck(4);  
-        Mbck[0] = CMATRIX(Mono[i][3]).T();
-        Mbck[1] =-1.0 * CMATRIX(Mono[i][1]).T();
-        Mbck[2] =-1.0 * CMATRIX(Mono[i][2]).T();
-        Mbck[3] = CMATRIX(Mono[i][0]).T();
-
-        // CALCULATE PREFACTOR
-        complex<double> pref;
-        pref = MQC_prefactor_FF_G( Mfwd, Mbck, prms);
-
-
-        // TRACK MASLOV INDEX
-        if ((std::abs(pref)<0.0) && (pref.imag()*prev.imag()<0.0) ) { Maslov = Maslov + 1; }
-        prev  = pref;
-
-        // CALCULATE TCF
-        double argg = action[i] - actionp[i];
-        TCF[i] = TCF[i] + normC * OverlapR * pow(-1.0, Maslov) * posn * sqrt(pref) * complex<double>(cos(argg), sin(argg));
-
+      for (i = 0; i < Ntime; i++) {
+        MCnum[i] += status[i] * statusp[i];
       }
-    } // for i
 
-  }/// FF_QMC
+      MATRIX qIn(prms.get_qIn());
+      MATRIX pIn(prms.get_pIn());
+      MATRIX Width0(prms.get_Width0());
+      MATRIX invWidth0(prms.get_invWidth0());
+      MATRIX WidthT(prms.get_WidthT());
+      MATRIX invWidthT(prms.get_invWidthT());
+      MATRIX TuningQ(prms.get_TuningQ());
+      MATRIX invTuningQ(prms.get_invTuningQ());
+      MATRIX TuningP(prms.get_TuningP());
+      MATRIX invTuningP(prms.get_invTuningP());
 
+      if (ivr_opt == 0) {  /// FF_MQC
 
-  if(ivr_opt==1){  /// DHK
+        MATRIX norm(Ndof, Ndof);
+        norm = invTuningQ * invTuningP;
+        double normC = 1.0;
+        for (i = 0; i < Ndof; i++) {
+          normC = normC * norm.get(i, i);
+        }
+        normC = sqrt(normC);
 
-    vector<int> Maslov(2, 0);
-    vector<complex<double> > pref(2, complex<double>(1.0, 0.0)); 
-    vector<complex<double> > prev(2, complex<double>(1.0, 0.0)); 
+        MATRIX qav(Ndof, 1);
+        qav = 0.5 * (q[0] + qp[0]);
+        MATRIX pav(Ndof, 1);
+        pav = 0.5 * (p[0] + pp[0]);
 
+        complex<double> ovlp = CS_overlap(qav, pav, qIn, pIn, Width0, invWidth0);
+        double sampling = (std::conj(ovlp) * ovlp).real();
 
-    // INITIAL COHERENT STATE OVERLAPS
-    complex<double> ovlp  = CS_overlap(q[0],  p[0],  qIn, pIn, Width0, invWidth0);
-    complex<double> ovlpp = CS_overlap(qp[0], pp[0], qIn, pIn, Width0, invWidth0);
+        // INITIAL COHERENT STATE OVERLAPS
+        ovlp = CS_overlap(q[0], p[0], qIn, pIn, Width0, invWidth0);
+        complex<double> ovlpp = CS_overlap(qp[0], pp[0], qIn, pIn, Width0, invWidth0);
 
-    // OVERLAP RATIO
-    complex<double> OverlapR = 1.0/(std::conj(ovlpp) * ovlp);
+        // OVERLAP RATIO
+        complex<double> OverlapR = (std::conj(ovlpp) * ovlp) / sampling;
 
+        int Maslov = 0;
+        complex<double> prev(1.0, 0.0);
 
+        for (i = 0; i < Ntime; i++) {
+          if (status[i] == 1 && statusp[i] == 1) {
+            // POSITION MATRIX ELEMENT AT TIME t
+            complex<double> posn = mat_elt_FF_B(
+                q[i], p[i], qp[i], pp[i], WidthT, invWidthT, observable_type, observable_label);
 
-    for(i = 0; i < Ntime; i++){  
+            // MONODROMY MATRICES FOR PREFACTOR
+            vector<CMATRIX> Mfwd(4);
+            Mfwd[0] = CMATRIX(Mono[i][0]);
+            Mfwd[1] = CMATRIX(Mono[i][1]);
+            Mfwd[2] = CMATRIX(Mono[i][2]);
+            Mfwd[3] = CMATRIX(Mono[i][3]);
 
-      if(status[i]==1 && statusp[i]==1){
+            vector<CMATRIX> Mbck(4);
+            Mbck[0] = CMATRIX(Mono[i][3]).T();
+            Mbck[1] = -1.0 * CMATRIX(Mono[i][1]).T();
+            Mbck[2] = -1.0 * CMATRIX(Mono[i][2]).T();
+            Mbck[3] = CMATRIX(Mono[i][0]).T();
 
-        // POSITION MATRIX ELEMENT AT TIME t
-        complex<double> posn = mat_elt_FF_B(q[i], p[i], qp[i], pp[i], WidthT, invWidthT, observable_type, observable_label);
+            // CALCULATE PREFACTOR
+            complex<double> pref;
+            pref = MQC_prefactor_FF_G(Mfwd, Mbck, prms);
 
-        // MONODROMY MATRICES FOR PREFACTOR
-        vector<CMATRIX> Mfwd(4);  
-        Mfwd[0] = CMATRIX(Mono[i][0]);
-        Mfwd[1] = CMATRIX(Mono[i][1]);
-        Mfwd[2] = CMATRIX(Mono[i][2]);
-        Mfwd[3] = CMATRIX(Mono[i][3]);
+            // TRACK MASLOV INDEX
+            if ((std::abs(pref) < 0.0) && (pref.imag() * prev.imag() < 0.0)) {
+              Maslov = Maslov + 1;
+            }
+            prev = pref;
 
-        vector<CMATRIX> Mbck(4);  
-        Mbck[0] = CMATRIX(Mono[i][3]).T();
-        Mbck[1] =-1.0 * CMATRIX(Mono[i][1]).T();
-        Mbck[2] =-1.0 * CMATRIX(Mono[i][2]).T();
-        Mbck[3] = CMATRIX(Mono[i][0]).T();
+            // CALCULATE TCF
+            double argg = action[i] - actionp[i];
+            TCF[i] = TCF[i] + normC * OverlapR * pow(-1.0, Maslov) * posn * sqrt(pref) *
+                                  complex<double>(cos(argg), sin(argg));
+          }
+        }  // for i
 
-        // CALCULATE PREFACTOR
-        pref = DHK_prefactor(Mfwd, Mbck, prms);
+      }  /// FF_QMC
 
-        // TRACK MASLOV INDEX
-        if ((std::abs(pref[0])<0.0) && (pref[0].imag()*prev[0].imag()<0.0) ) { Maslov[0] = Maslov[0] + 1; }
-        if ((std::abs(pref[1])<0.0) && (pref[1].imag()*prev[1].imag()<0.0) ) { Maslov[1] = Maslov[1] + 1; }
-        prev  = pref;
+      if (ivr_opt == 1) {  /// DHK
 
+        vector<int> Maslov(2, 0);
+        vector<complex<double> > pref(2, complex<double>(1.0, 0.0));
+        vector<complex<double> > prev(2, complex<double>(1.0, 0.0));
 
-        // CALCULATE TCF
-        double argg = action[i] - actionp[i];
-        TCF[i] = TCF[i] + OverlapR * pow(-1.0, Maslov[0]+Maslov[1]) * posn * sqrt(pref[0]*pref[1]) * complex<double>(cos(argg), sin(argg));
+        // INITIAL COHERENT STATE OVERLAPS
+        complex<double> ovlp = CS_overlap(q[0], p[0], qIn, pIn, Width0, invWidth0);
+        complex<double> ovlpp = CS_overlap(qp[0], pp[0], qIn, pIn, Width0, invWidth0);
 
+        // OVERLAP RATIO
+        complex<double> OverlapR = 1.0 / (std::conj(ovlpp) * ovlp);
 
-      }// if trajectories are included
+        for (i = 0; i < Ntime; i++) {
+          if (status[i] == 1 && statusp[i] == 1) {
+            // POSITION MATRIX ELEMENT AT TIME t
+            complex<double> posn = mat_elt_FF_B(
+                q[i], p[i], qp[i], pp[i], WidthT, invWidthT, observable_type, observable_label);
 
-    }// for i
+            // MONODROMY MATRICES FOR PREFACTOR
+            vector<CMATRIX> Mfwd(4);
+            Mfwd[0] = CMATRIX(Mono[i][0]);
+            Mfwd[1] = CMATRIX(Mono[i][1]);
+            Mfwd[2] = CMATRIX(Mono[i][2]);
+            Mfwd[3] = CMATRIX(Mono[i][3]);
 
-  }// DHK
+            vector<CMATRIX> Mbck(4);
+            Mbck[0] = CMATRIX(Mono[i][3]).T();
+            Mbck[1] = -1.0 * CMATRIX(Mono[i][1]).T();
+            Mbck[2] = -1.0 * CMATRIX(Mono[i][2]).T();
+            Mbck[3] = CMATRIX(Mono[i][0]).T();
 
+            // CALCULATE PREFACTOR
+            pref = DHK_prefactor(Mfwd, Mbck, prms);
 
+            // TRACK MASLOV INDEX
+            if ((std::abs(pref[0]) < 0.0) && (pref[0].imag() * prev[0].imag() < 0.0)) {
+              Maslov[0] = Maslov[0] + 1;
+            }
+            if ((std::abs(pref[1]) < 0.0) && (pref[1].imag() * prev[1].imag() < 0.0)) {
+              Maslov[1] = Maslov[1] + 1;
+            }
+            prev = pref;
 
-}
+            // CALCULATE TCF
+            double argg = action[i] - actionp[i];
+            TCF[i] = TCF[i] + OverlapR * pow(-1.0, Maslov[0] + Maslov[1]) * posn *
+                                  sqrt(pref[0] * pref[1]) * complex<double>(cos(argg), sin(argg));
 
+          }  // if trajectories are included
 
-void normalize_tcf(vector< complex<double> >& TCF, vector<int>& MCnum){
-/**
+        }  // for i
+
+      }  // DHK
+    }
+
+    void normalize_tcf(vector<complex<double> >& TCF, vector<int>& MCnum) {
+      /**
   \brief A generic routine to normalized TCF
   Call this function once you have had enough Monte Carlo sampling events executed
      
@@ -301,24 +298,24 @@ void normalize_tcf(vector< complex<double> >& TCF, vector<int>& MCnum){
 
 */
 
-  if(TCF.size()!=MCnum.size()){
-    cout<<"Error in normalize_tcf: The number of elements in TCF ("<<TCF.size()<<") is not consistent\
-    with the number of elements in MCnum ("<<MCnum.size()<<")\n";
-    exit(0);
-  }
+      if (TCF.size() != MCnum.size()) {
+        cout << "Error in normalize_tcf: The number of elements in TCF (" << TCF.size()
+             << ") is not consistent\
+    with the number of elements in MCnum ("
+             << MCnum.size() << ")\n";
+        exit(0);
+      }
 
-  int Ntime = TCF.size();
+      int Ntime = TCF.size();
 
-   for(int j = 0; j < Ntime; j++){
+      for (int j = 0; j < Ntime; j++) {
+        if (MCnum[j] == 0) {
+          TCF[j] = complex<double>(0.0, 0.0);
+        } else {
+          TCF[j] = TCF[j] * (1.0 / float(MCnum[j]));
+        }
+      }
+    }
 
-     if(MCnum[j]==0){  TCF[j] = complex<double>(0.0, 0.0); }
-     else{ TCF[j] = TCF[j] * (1.0 / float(MCnum[j])); }
-
-   }
-
-}
-
-
-}/// namespace libivr
-}/// liblibra
-
+  }  // namespace libivr
+}  // namespace liblibra

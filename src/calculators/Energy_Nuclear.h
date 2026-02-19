@@ -20,19 +20,18 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-/// libcalculators namespace
-namespace libcalculators{
+  /// libcalculators namespace
+  namespace libcalculators {
 
-double energy_nucl(vector<VECTOR>& R, vector<double>& Zeff);
-double energy_nucl(vector<VECTOR>& R, vector<double>& Zeff, vector<VECTOR>& G);
+    double energy_nucl(vector<VECTOR>& R, vector<double>& Zeff);
+    double energy_nucl(vector<VECTOR>& R, vector<double>& Zeff, vector<VECTOR>& G);
 
+  }  // namespace libcalculators
 
-}// namespace libcalculators
+}  // namespace liblibra
 
-}// liblibra
-
-#endif // ENERGY_NUCLEAR_H
+#endif  // ENERGY_NUCLEAR_H

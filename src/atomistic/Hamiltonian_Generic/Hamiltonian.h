@@ -26,20 +26,18 @@
 #include "../../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libhamiltonian namespace
+  namespace libatomistic {
 
-/// libhamiltonian namespace
-namespace libatomistic{
+    /// libhamiltonian_generic namespace
+    namespace libhamiltonian_generic {
 
-/// libhamiltonian_generic namespace
-namespace libhamiltonian_generic{
+      using namespace liblinalg;
 
-
-using namespace liblinalg;
-
-class Hamiltonian{
-/**
+      class Hamiltonian {
+        /**
   This is our functor class: it manages customized Hamiltonian calculations
                              customization is realized via inheritance
                              common interface is realized via virtual functions
@@ -68,110 +66,117 @@ class Hamiltonian{
   in efficient classes, they will simply not be used
 */
 
-//protected:
-public:
+        //protected:
+      public:
+        int rep;    ///< representation = 0 - for diabatic, 1 - for adiabatic
+        int nelec;  ///< number of electronic degrees of freedom (energy levels)
+        int nnucl;  ///< number of nuclear degrees of freedom - expected
 
-  int rep;                   ///< representation = 0 - for diabatic, 1 - for adiabatic
-  int nelec;                 ///< number of electronic degrees of freedom (energy levels)
-  int nnucl;                 ///< number of nuclear degrees of freedom - expected
+        // Model-specific parameters
+        vector<double>
+            params;  ///< double-valued parameters of the Hamiltonian (the meaning is specific to each Hamiltonian type)
+        vector<double> q;  ///< nuclear coordinates - here, they act as parameters
+        vector<double> v;  ///< nuclear velocities: v = dq/dt  - here, they act as parameters
 
-  // Model-specific parameters
-  vector<double> params;     ///< double-valued parameters of the Hamiltonian (the meaning is specific to each Hamiltonian type)
-  vector<double> q;          ///< nuclear coordinates - here, they act as parameters
-  vector<double> v;          ///< nuclear velocities: v = dq/dt  - here, they act as parameters
+        // Diabatic representation
+        MATRIX* ham_dia;  ///< Hamiltonian in diabatic representation
+        vector<MATRIX*>
+            d1ham_dia;  ///< derivatives of the ham_dia w.r.t. all atomic DOFs: q0, q1, .. qN
+        vector<MATRIX*>
+            d2ham_dia;  ///< derivatives of the ham_dia w.r.t. all atomic DOFs: q00, q01, ..., q0N, q10, q11, ... qNN
 
-  // Diabatic representation
-  MATRIX* ham_dia;           ///< Hamiltonian in diabatic representation
-  vector<MATRIX*> d1ham_dia; ///< derivatives of the ham_dia w.r.t. all atomic DOFs: q0, q1, .. qN 
-  vector<MATRIX*> d2ham_dia; ///< derivatives of the ham_dia w.r.t. all atomic DOFs: q00, q01, ..., q0N, q10, q11, ... qNN
+        // Adiabatic representation
+        MATRIX* ham_adi;  ///< Hamiltonian in adiabatic representation
+        vector<MATRIX*>
+            d1ham_adi;  ///< first order derivative couplings: <i|d/dR|j> - is computed from the transformation coefficients
 
-  // Adiabatic representation
-  MATRIX* ham_adi;           ///< Hamiltonian in adiabatic representation
-  vector<MATRIX*> d1ham_adi; ///< first order derivative couplings: <i|d/dR|j> - is computed from the transformation coefficients
+        int status_dia;  ///< Control variable of the diabatic calculations - to keep track of the computational state of the
+        ///< object of this calss - needed to avoid unnecessary computations
+        ///< if 0 - computations are outdated; 1 - computations are up to date
+        int status_adi;  ///< Control variable of the adiabatic calculations - to keep track of the computational state of the
+                         ///< object of this calss - needed to avoid unnecessary computations
+                         ///< if 0 - computations are outdated; 1 - computations are up to date
 
-  int status_dia;    ///< Control variable of the diabatic calculations - to keep track of the computational state of the
-                     ///< object of this calss - needed to avoid unnecessary computations
-                     ///< if 0 - computations are outdated; 1 - computations are up to date
-  int status_adi;    ///< Control variable of the adiabatic calculations - to keep track of the computational state of the
-                     ///< object of this calss - needed to avoid unnecessary computations                                
-                     ///< if 0 - computations are outdated; 1 - computations are up to date                              
+        //public:
 
-//public:
+        // Constructors
+        Hamiltonian();
 
-  // Constructors
-  Hamiltonian(); 
+        // Use default copy constructor
+        //Hamiltonian(const Hamiltonian&);
 
-  // Use default copy constructor
-  //Hamiltonian(const Hamiltonian&);
+        // Destructor
+        virtual ~Hamiltonian();  ///< This destructor does nothing - but in fact this is intended so the el and mol objects are not
+        ///< destroyed, and the references are copied verbatim (not their content) - this helps prevent
+        ///< additional overhead due to construction of el and mol objects
 
-  // Destructor
-  virtual ~Hamiltonian();    ///< This destructor does nothing - but in fact this is intended so the el and mol objects are not 
-                             ///< destroyed, and the references are copied verbatim (not their content) - this helps prevent 
-                             ///< additional overhead due to construction of el and mol objects
+        //  void set_status(int st_){ status = st_; }
+        //  int get_status(){ return status; }
 
-//  void set_status(int st_){ status = st_; }
-//  int get_status(){ return status; }
-
-
-  /** NOTE!!! It is very important to provide a minimal implementation of virtual methods
+        /** NOTE!!! It is very important to provide a minimal implementation of virtual methods
   // in the source file (Hamiltonian.cpp)
   // Otherwise the symbols remain undefined in the resulting library
   // This is a nasty bug to be aware of. 
   // See for example: http://stackoverflow.com/questions/1458180/vtable-for-referenced-from-compile-error-xcode/1478553#1478553
   // Updates coordinates, velocities, etc. - all nuclear information
   */
-//  virtual void update_nuclear(Nuclear* mol);
+        //  virtual void update_nuclear(Nuclear* mol);
 
-//  virtual void set_q(vector<double>&){ ;; }
+        //  virtual void set_q(vector<double>&){ ;; }
 
+        virtual void set_rep(int rep_);
 
-  virtual void set_rep(int rep_);
+        // Set parameters
+        virtual void set_params(vector<double>& params_) {
+          ;
+          ;
+        }
+        virtual void set_params(boost::python::list params_);
+        virtual void set_q(vector<double>& q_);
+        virtual void set_q(boost::python::list q_);
+        virtual void set_v(vector<double>& v_);
+        virtual void set_v(boost::python::list v_);
 
-  // Set parameters
-  virtual void set_params(vector<double>& params_){ ;; }
-  virtual void set_params(boost::python::list params_);
-  virtual void set_q(vector<double>& q_);
-  virtual void set_q(boost::python::list q_);
-  virtual void set_v(vector<double>& v_);
-  virtual void set_v(boost::python::list v_);
+        // Access to actual data
+        virtual MATRIX get_ham_dia() { return *ham_dia; }
+        virtual MATRIX get_ham_adi() { return *ham_adi; }
+        virtual MATRIX get_d1ham_dia(int i) { return *d1ham_dia[i]; }
+        virtual MATRIX get_d1ham_adi(int i) { return *d1ham_adi[i]; }
 
-  // Access to actual data
-  virtual MATRIX get_ham_dia(){ return *ham_dia; }
-  virtual MATRIX get_ham_adi(){ return *ham_adi; }
-  virtual MATRIX get_d1ham_dia(int i){ return *d1ham_dia[i]; }
-  virtual MATRIX get_d1ham_adi(int i){ return *d1ham_adi[i]; }
+        // This function performs actual computations
+        virtual void compute();
+        virtual void compute_diabatic() {
+          ;
+          ;
+        }
+        virtual void compute_adiabatic() {
+          ;
+          ;
+        }
 
+        // Calculation methods
+        virtual std::complex<double> H(int, int);  ///< Hamiltonian
+        virtual std::complex<double> dHdq(int i,
+                                          int j,
+                                          int n);  ///< Hamiltonian first-order derivative
+        virtual std::complex<double> D(
+            int i, int j, int n);  ///< derivative coupling                 <i|d/dR_n|j>
+        virtual std::complex<double> nac(
+            int i, int j);  ///< non-adiabatic coupling              <i|d/dt|j>
+        virtual std::complex<double> Hvib(
+            int i, int j);  ///< vibronic Hamiltonian (for TD-SE)    H - i*hbar*nac
 
-  // This function performs actual computations
-  virtual void compute();
-  virtual void compute_diabatic(){ ;; }  
-  virtual void compute_adiabatic(){ ;; }  
+        friend bool operator==(const Hamiltonian& h1, const Hamiltonian& h2) { return &h1 == &h2; }
+        friend bool operator!=(const Hamiltonian& h1, const Hamiltonian& h2) {
+          return !(h1 == h2);  // only compare addresses
+        }
+      };
 
+      typedef std::vector<Hamiltonian>
+          HamiltonianList;  ///< data type for keeping a list of generic Hamiltonians of their derived classes
 
-  // Calculation methods
-  virtual std::complex<double> H(int, int);             ///< Hamiltonian
-  virtual std::complex<double> dHdq(int i,int j,int n); ///< Hamiltonian first-order derivative  
-  virtual std::complex<double> D(int i,int j,int n);    ///< derivative coupling                 <i|d/dR_n|j>
-  virtual std::complex<double> nac(int i,int j);        ///< non-adiabatic coupling              <i|d/dt|j>
-  virtual std::complex<double> Hvib(int i,int j);       ///< vibronic Hamiltonian (for TD-SE)    H - i*hbar*nac
+    }  // namespace libhamiltonian_generic
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-
-  friend bool operator == (const Hamiltonian& h1, const Hamiltonian& h2){
-    return &h1 == &h2;
-  }
-  friend bool operator != (const Hamiltonian& h1, const Hamiltonian& h2){
-    return !(h1 == h2);  // only compare addresses
-  }
-
-
-
-};
-
-typedef std::vector<Hamiltonian> HamiltonianList;  ///< data type for keeping a list of generic Hamiltonians of their derived classes
-
-
-}// namespace libhamiltonian_generic
-}// namespace libatomistic
-}// liblibra
-
-#endif // HAMILTONIAN_H
+#endif  // HAMILTONIAN_H

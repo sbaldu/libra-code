@@ -19,24 +19,22 @@
 #include "../pch.h"
 #else
 #include <stdlib.h>
-#endif 
+#endif
 
 #include "nHamiltonian.h"
 #include "../math_meigen/libmeigen.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libnhamiltonian namespace 
-namespace libnhamiltonian{
+  /// libnhamiltonian namespace
+  namespace libnhamiltonian {
 
+    using namespace liblinalg;
+    using namespace libmeigen;
 
-using namespace liblinalg;
-using namespace libmeigen;
-
-
-double RPMD_internal_potential(const MATRIX& q, const MATRIX& invM, double beta){
-/**
+    double RPMD_internal_potential(const MATRIX& q, const MATRIX& invM, double beta) {
+      /**
   Compute the ring polymer internal potential Uint
 
   q - is a ndof x ntraj matrix of coordinates
@@ -44,24 +42,25 @@ double RPMD_internal_potential(const MATRIX& q, const MATRIX& invM, double beta)
   beta - the inverse temperature Boltzmann factor in atomic units
 */
 
-  int ndof = q.n_rows;
-  int ntraj = q.n_cols;
+      int ndof = q.n_rows;
+      int ntraj = q.n_cols;
 
-  int dof, traj;
+      int dof, traj;
 
-  double en;
+      double en;
 
-  if(ntraj==1){
-    en = 0.0;
-  }
-  else{ cout<<"Error in RPMD_internal_potential(), not implemented for quantum nuclei\n"; exit(0); }
+      if (ntraj == 1) {
+        en = 0.0;
+      } else {
+        cout << "Error in RPMD_internal_potential(), not implemented for quantum nuclei\n";
+        exit(0);
+      }
 
-  return en;
-}
+      return en;
+    }
 
-
-MATRIX RPMD_internal_force(const MATRIX& q, const MATRIX& invM, double beta){
-/**
+    MATRIX RPMD_internal_force(const MATRIX& q, const MATRIX& invM, double beta) {
+      /**
   Compute the ring polymer internal potential Uint
 
   q - is a ndof x ntraj matrix of coordinates
@@ -73,24 +72,24 @@ MATRIX RPMD_internal_force(const MATRIX& q, const MATRIX& invM, double beta){
 
 */
 
-  int ndof = q.n_rows;
-  int ntraj = q.n_cols;
+      int ndof = q.n_rows;
+      int ntraj = q.n_cols;
 
-  int dof, traj;
+      int dof, traj;
 
-  MATRIX f(ndof, ntraj);
+      MATRIX f(ndof, ntraj);
 
-  if(ntraj==1){
-    for(dof=0; dof<ndof; dof++){   
-      f.set(dof, 0, 0.0);
-    }// for dof
-  }
-  else{ cout<<"Error in RPMD_internal_force(), not implemented for quantum nuclei\n"; exit(0); }
+      if (ntraj == 1) {
+        for (dof = 0; dof < ndof; dof++) {
+          f.set(dof, 0, 0.0);
+        }  // for dof
+      } else {
+        cout << "Error in RPMD_internal_force(), not implemented for quantum nuclei\n";
+        exit(0);
+      }
 
-  return f;
-}
+      return f;
+    }
 
-
-}// namespace libnhamiltonian
-}// liblibra
-
+  }  // namespace libnhamiltonian
+}  // namespace liblibra

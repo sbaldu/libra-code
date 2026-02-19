@@ -77,50 +77,44 @@
 //#include "output.h"
 //#include "memorymanag.h"
 
-
 /// We incorporate all the definitions into the liblibra namespace
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// Also, to keep everything organized, lets also create a libergoescf namespace
-/// to keep all the original developments in there
-/// libergoescf namespace 
-namespace libergoscf{
+  /// Also, to keep everything organized, lets also create a libergoescf namespace
+  /// to keep all the original developments in there
+  /// libergoescf namespace
+  namespace libergoscf {
 
+    static void remove_zeros(basisset_atom_struct* currAtom,
+                             int shellBaseIndex,
+                             int noOfShellsCurrBatch) {
+      /**  Remove zero coefficients. */
 
-static void
-remove_zeros(basisset_atom_struct* currAtom,
-             int shellBaseIndex, int noOfShellsCurrBatch) {
-  /**  Remove zero coefficients. */
+      for (int i = 0; i < noOfShellsCurrBatch; i++) {
+        int cnt = 0;
 
-  for(int i = 0; i < noOfShellsCurrBatch; i++) {
-    int cnt = 0;
-
-   /**Basically, we pack all non-zero contraction coefficients such that there are 
+        /**Basically, we pack all non-zero contraction coefficients such that there are 
    no zeroes in a congruent region
    */
 
-    for(int j = 0; j < currAtom->shells[shellBaseIndex+i].contrCount; j++) {
+        for (int j = 0; j < currAtom->shells[shellBaseIndex + i].contrCount; j++) {
+          ergo_real currCoeff = currAtom->shells[shellBaseIndex + i].coeffList[j];
+          ergo_real currExponent = currAtom->shells[shellBaseIndex + i].exponentList[j];
 
-      ergo_real currCoeff    = currAtom->shells[shellBaseIndex+i].coeffList[j];
-      ergo_real currExponent = currAtom->shells[shellBaseIndex+i].exponentList[j];
+          if (currCoeff != 0) {
+            currAtom->shells[shellBaseIndex + i].coeffList[cnt] = currCoeff;
+            currAtom->shells[shellBaseIndex + i].exponentList[cnt] = currExponent;
+            cnt++;
+          }
 
-      if(currCoeff != 0) {
-	currAtom->shells[shellBaseIndex+i].coeffList[cnt] = currCoeff;
-	currAtom->shells[shellBaseIndex+i].exponentList[cnt] = currExponent;
-	cnt++;
+        } /*  END FOR j */
+        currAtom->shells[shellBaseIndex + i].contrCount = cnt;
 
-      }
+      } /*  END FOR i         */
+    }
 
-    } /*  END FOR j */
-    currAtom->shells[shellBaseIndex+i].contrCount = cnt;
-
-  } /*  END FOR i         */
-
-}
-
-
-/** read_basisset_file: reads a basis set from fileName. The basis set
+    /** read_basisset_file: reads a basis set from fileName. The basis set
    exponents and contraction coefficients are placed in result.  The
    reading procedure is bit convoluted because the basis set file
    follows the Fortran syntax, with wrapping and skipping empty
@@ -133,30 +127,33 @@ remove_zeros(basisset_atom_struct* currAtom,
    ANO-type basis sets...
 */
 
-/* The original signature
+    /* The original signature
 int 
 read_basisset_file(basisset_struct* result, const char* fileName,
                    int dirc, const char *dirv[],
                    int print_raw)
-*/ 
+*/
 
-int basisset_struct::read_basisset_file(std::string fileName,int print_raw){
+    int basisset_struct::read_basisset_file(std::string fileName, int print_raw) {
+      enum {
+        END_PARSING,
+        ATOM_EXPECTED,
+        SHELL_EXPECTED,
+        SHELL_OR_ATOM_EXPECTED,
+        CONTRACTION_BLOCK_EXPECTED
+      } state;
+      int uncontracted = 0;
+      char line[256];
+      basisset_atom_struct* currAtom = NULL;
+      int atomType = -1;
+      int spdf = -1;
+      int shellBaseIndex = -1;
+      int expNo = -1;
+      FILE* f = NULL;
 
-  enum { END_PARSING, ATOM_EXPECTED, SHELL_EXPECTED,
-         SHELL_OR_ATOM_EXPECTED, CONTRACTION_BLOCK_EXPECTED } state;
-  int uncontracted = 0;
-  char line[256];
-  basisset_atom_struct* currAtom = NULL;
-  int atomType = -1;
-  int spdf = -1;
-  int shellBaseIndex = -1;
-  int expNo = -1;
-  FILE* f = NULL;
+      f = fopen(fileName.c_str(), "rt");
 
-
-  f = fopen(fileName.c_str(), "rt");
-
-/*
+      /*
   if(!fileName) {
 //    do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: fileName == NULL.");
     return -1;
@@ -179,251 +176,239 @@ int basisset_struct::read_basisset_file(std::string fileName,int print_raw){
     }
   }
 */
-      
-  if(f == NULL)
-    {
-//      do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error opening file '%s'", fileName);
-      return -1;
-    }
-  
-  /*  now create basis set by reading buf2 */
 
-//  memset(result, 0, sizeof(basisset_struct));
-  int noOfAtomTypes = 0;
-  state = ATOM_EXPECTED;
-  int lineNo = 0;
-  int lineConsumed = 1;
-  ergo_real currExponent = 0;
-
-  /* start global parsing loop */
-  do {
-    int dummy;
-    if(lineConsumed) {
-      if(fgets(line, sizeof(line), f) == NULL) {
-        state = END_PARSING;
-        break;
-      }
-      lineConsumed = 0;
-      lineNo++;
-    }
-
-
-    for(int cc = strlen(line)-1; cc>=0 && isspace(line[cc]); cc--)
-      line[cc] = '\0';
-        
-    if(line[0] == '$' || line[0] == '!' || line[0] == '#'||
-       line[0] == '*' || line[0] == '\0'|| line[0] == '\n') {
-      lineConsumed = 1; /* skip the comment and move on */
-      continue;
-    }
-
-    switch(state) {
-    case ATOM_EXPECTED:
-      if(line[0] == 'a' || line[0] == 'A') {
-        noOfAtomTypes++;
-        atomType = atoi(line+1);
-//        int atomType = atoi(line+1);
-//        if(print_raw) 
-//          do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, "Basis set for atom of Z=%d", atomType);
-
-        state = SHELL_EXPECTED;
-        if(atomType <= 0){
-//            do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: (atomType <= 0) "
-//                      " in line %d %s\n", lineNo, fileName);
-          return -1;
-        }
-
-        if(atomType >= MAX_NO_OF_ATOM_TYPES){
-//            do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
-//                      "(atomType >= MAX_NO_OF_ATOM_TYPES) in line %d %s\n",
-//                      lineNo, fileName);
-          return -1;
-        }
-
-        currAtom = &atoms[atomType];
-
-        //cout<<"currAtom->noOfShells = "<<currAtom->noOfShells<<endl;
-        //cout<<result->atoms[atomType].noOfShells<<endl;
-        spdf = 0;
-        shellBaseIndex = 0;
-      }
-      lineConsumed = 1;
-      break;
-
-    case SHELL_OR_ATOM_EXPECTED:
-      if(line[0] == 'a' || line[0] == 'A') {
-        state = ATOM_EXPECTED;
-        /* fininalize current atom data */
-        if(currAtom == NULL || shellBaseIndex < 0)
-          return -1;
-        currAtom->noOfShells = shellBaseIndex;
-        break;
-      } /* else fall through */
-
-    case SHELL_EXPECTED:
-      if(shellBaseIndex < 0)
+      if (f == NULL) {
+        //      do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error opening file '%s'", fileName);
         return -1;
-      int noOfExponents, noOfShellsCurrBatch;
-      if(sscanf(line, "%d %d %d",
-                &noOfExponents, &noOfShellsCurrBatch, &dummy ) != 3)
-        {
-//          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
-//                    "Shell data expected in line %d:\n%s", lineNo, line);
-          return -1;
-        }
-      if(noOfExponents <= 0)
-        {
-//          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
-//                    "(noOfExponents <= 0) in line %d %s\n", lineNo, fileName);
-          return -1;
-        }
-      if(noOfExponents >= MAX_NO_OF_CONTR)
-        {
-//          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
-//                    "(noOfExponents >= MAX_NO_OF_CONTR) in line %d\n",
-//                    lineNo);
-          return -1;
-        }
-      if(noOfShellsCurrBatch < 0)
-        {
-//          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
-//                    "(noOfShellsCurrBatch < 0) in line %d", lineNo);
-          return -1;
-        }
-      if(noOfShellsCurrBatch == 0) {
-        /*  special case: uncontracted, expect only one column */
-        noOfShellsCurrBatch = noOfExponents;
-        uncontracted = 1;
-      } else uncontracted = 0;
+      }
 
-      if(shellBaseIndex + noOfShellsCurrBatch >= MAX_NO_OF_SHELLS_PER_ATOM)
-        {
-//          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: too many shells.");
-          return -1;
+      /*  now create basis set by reading buf2 */
+
+      //  memset(result, 0, sizeof(basisset_struct));
+      int noOfAtomTypes = 0;
+      state = ATOM_EXPECTED;
+      int lineNo = 0;
+      int lineConsumed = 1;
+      ergo_real currExponent = 0;
+
+      /* start global parsing loop */
+      do {
+        int dummy;
+        if (lineConsumed) {
+          if (fgets(line, sizeof(line), f) == NULL) {
+            state = END_PARSING;
+            break;
+          }
+          lineConsumed = 0;
+          lineNo++;
         }
-      /* initialize shell data. Set the contraction count to its upper
+
+        for (int cc = strlen(line) - 1; cc >= 0 && isspace(line[cc]); cc--)
+          line[cc] = '\0';
+
+        if (line[0] == '$' || line[0] == '!' || line[0] == '#' || line[0] == '*' ||
+            line[0] == '\0' || line[0] == '\n') {
+          lineConsumed = 1; /* skip the comment and move on */
+          continue;
+        }
+
+        switch (state) {
+          case ATOM_EXPECTED:
+            if (line[0] == 'a' || line[0] == 'A') {
+              noOfAtomTypes++;
+              atomType = atoi(line + 1);
+              //        int atomType = atoi(line+1);
+              //        if(print_raw)
+              //          do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, "Basis set for atom of Z=%d", atomType);
+
+              state = SHELL_EXPECTED;
+              if (atomType <= 0) {
+                //            do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: (atomType <= 0) "
+                //                      " in line %d %s\n", lineNo, fileName);
+                return -1;
+              }
+
+              if (atomType >= MAX_NO_OF_ATOM_TYPES) {
+                //            do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
+                //                      "(atomType >= MAX_NO_OF_ATOM_TYPES) in line %d %s\n",
+                //                      lineNo, fileName);
+                return -1;
+              }
+
+              currAtom = &atoms[atomType];
+
+              //cout<<"currAtom->noOfShells = "<<currAtom->noOfShells<<endl;
+              //cout<<result->atoms[atomType].noOfShells<<endl;
+              spdf = 0;
+              shellBaseIndex = 0;
+            }
+            lineConsumed = 1;
+            break;
+
+          case SHELL_OR_ATOM_EXPECTED:
+            if (line[0] == 'a' || line[0] == 'A') {
+              state = ATOM_EXPECTED;
+              /* fininalize current atom data */
+              if (currAtom == NULL || shellBaseIndex < 0)
+                return -1;
+              currAtom->noOfShells = shellBaseIndex;
+              break;
+            } /* else fall through */
+
+          case SHELL_EXPECTED:
+            if (shellBaseIndex < 0)
+              return -1;
+            int noOfExponents, noOfShellsCurrBatch;
+            if (sscanf(line, "%d %d %d", &noOfExponents, &noOfShellsCurrBatch, &dummy) != 3) {
+              //          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
+              //                    "Shell data expected in line %d:\n%s", lineNo, line);
+              return -1;
+            }
+            if (noOfExponents <= 0) {
+              //          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
+              //                    "(noOfExponents <= 0) in line %d %s\n", lineNo, fileName);
+              return -1;
+            }
+            if (noOfExponents >= MAX_NO_OF_CONTR) {
+              //          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
+              //                    "(noOfExponents >= MAX_NO_OF_CONTR) in line %d\n",
+              //                    lineNo);
+              return -1;
+            }
+            if (noOfShellsCurrBatch < 0) {
+              //          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: "
+              //                    "(noOfShellsCurrBatch < 0) in line %d", lineNo);
+              return -1;
+            }
+            if (noOfShellsCurrBatch == 0) {
+              /*  special case: uncontracted, expect only one column */
+              noOfShellsCurrBatch = noOfExponents;
+              uncontracted = 1;
+            } else
+              uncontracted = 0;
+
+            if (shellBaseIndex + noOfShellsCurrBatch >= MAX_NO_OF_SHELLS_PER_ATOM) {
+              //          do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error in read_basisset_file: too many shells.");
+              return -1;
+            }
+            /* initialize shell data. Set the contraction count to its upper
          limit. remove_zeros() will later check for a better, lower
          value. */
-      for(int i = 0; i < noOfShellsCurrBatch; i++) {
-        cout<<"in for i\n";
-	if(currAtom == NULL || spdf < 0){
-	  return -1;
-        }
-        atoms[atomType].shells[shellBaseIndex+i].type = spdf;
-        atoms[atomType].shells[shellBaseIndex+i].contrCount = noOfExponents;
-      }
-      expNo = 0;
-      state = CONTRACTION_BLOCK_EXPECTED;
-//      if(print_raw)
-//        do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, 
-//                  "Block for L=%d primitives: %d contracted: %d",
-//                  spdf, noOfExponents, noOfShellsCurrBatch);
+            for (int i = 0; i < noOfShellsCurrBatch; i++) {
+              cout << "in for i\n";
+              if (currAtom == NULL || spdf < 0) {
+                return -1;
+              }
+              atoms[atomType].shells[shellBaseIndex + i].type = spdf;
+              atoms[atomType].shells[shellBaseIndex + i].contrCount = noOfExponents;
+            }
+            expNo = 0;
+            state = CONTRACTION_BLOCK_EXPECTED;
+            //      if(print_raw)
+            //        do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS,
+            //                  "Block for L=%d primitives: %d contracted: %d",
+            //                  spdf, noOfExponents, noOfShellsCurrBatch);
 
-      lineConsumed = 1;
-      break;
+            lineConsumed = 1;
+            break;
 
-    case CONTRACTION_BLOCK_EXPECTED:
-      currExponent = atof(line);
-      if(currExponent <= 0) {
-//	do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error: (currExponent <= 0) in line %d", lineNo);
-	return -1;
-      }
-      if(currAtom == NULL || shellBaseIndex < 0 || expNo < 0)
-        return -1;
-      if(uncontracted) {
-        for(int i = 0; i < noOfShellsCurrBatch; i++) {
-          currAtom->shells[shellBaseIndex+i].exponentList[expNo] =
-            currExponent;
-          currAtom->shells[shellBaseIndex+i].coeffList[expNo] =
-            i == expNo ? 1.0 : 0.0;
-        }
-      } else {
-        int idx = 0;
-        /* skip exponent */
-        while(line[idx] && isspace(line[idx]))  idx++;
-        for(int i = 0; i < noOfShellsCurrBatch; i++) {
-          currAtom->shells[shellBaseIndex+i].exponentList[expNo] =
-            currExponent;
-          while(line[idx] && !isspace(line[idx])) idx++;
-          while(line[idx] && isspace(line[idx]))  idx++;
-          if( !line[idx] ) {
-	    /* Second line begins when we are about to read 7th
+          case CONTRACTION_BLOCK_EXPECTED:
+            currExponent = atof(line);
+            if (currExponent <= 0) {
+              //	do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "error: (currExponent <= 0) in line %d", lineNo);
+              return -1;
+            }
+            if (currAtom == NULL || shellBaseIndex < 0 || expNo < 0)
+              return -1;
+            if (uncontracted) {
+              for (int i = 0; i < noOfShellsCurrBatch; i++) {
+                currAtom->shells[shellBaseIndex + i].exponentList[expNo] = currExponent;
+                currAtom->shells[shellBaseIndex + i].coeffList[expNo] = i == expNo ? 1.0 : 0.0;
+              }
+            } else {
+              int idx = 0;
+              /* skip exponent */
+              while (line[idx] && isspace(line[idx]))
+                idx++;
+              for (int i = 0; i < noOfShellsCurrBatch; i++) {
+                currAtom->shells[shellBaseIndex + i].exponentList[expNo] = currExponent;
+                while (line[idx] && !isspace(line[idx]))
+                  idx++;
+                while (line[idx] && isspace(line[idx]))
+                  idx++;
+                if (!line[idx]) {
+                  /* Second line begins when we are about to read 7th
 	       contraction coefficient (i=6), third line for 14th
 	       (i=13), fourth for i=20 etc. If this pattern does not
 	       match, warn the user. */
-//	    if( i != 6 && (i+1) % 7 != 0 )
-//	      do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "WARN: line %d has trailing data: '%s'"
-//			"non-conformant basis set file for i=%d.",
-//			lineNo, line + idx, i);
-	    if(fgets(line, sizeof(line), f) == NULL) {
-//	      do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "reading error when continuing shell data.");
-	      return -1;
-	    }
-	    lineNo++;
-	    idx = 0;
-	    while(line[idx] && isspace(line[idx]))  idx++;
-	  }
-          currAtom->shells[shellBaseIndex+i].coeffList[expNo] =
-            atof(line + idx);
-        }  /*  END FOR i */
-      }
-      if(print_raw) {
-        char line[256], eee[20];
-        line[0] = '\0';
-        for(int i = 0; i<noOfShellsCurrBatch; i++) {
-          sprintf(eee, "%10.5f",
-                  (double)currAtom->shells[shellBaseIndex+i].coeffList[expNo]);
-          strcat(line, eee);
+                  //	    if( i != 6 && (i+1) % 7 != 0 )
+                  //	      do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "WARN: line %d has trailing data: '%s'"
+                  //			"non-conformant basis set file for i=%d.",
+                  //			lineNo, line + idx, i);
+                  if (fgets(line, sizeof(line), f) == NULL) {
+                    //	      do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "reading error when continuing shell data.");
+                    return -1;
+                  }
+                  lineNo++;
+                  idx = 0;
+                  while (line[idx] && isspace(line[idx]))
+                    idx++;
+                }
+                currAtom->shells[shellBaseIndex + i].coeffList[expNo] = atof(line + idx);
+              } /*  END FOR i */
+            }
+            if (print_raw) {
+              char line[256], eee[20];
+              line[0] = '\0';
+              for (int i = 0; i < noOfShellsCurrBatch; i++) {
+                sprintf(
+                    eee, "%10.5f", (double)currAtom->shells[shellBaseIndex + i].coeffList[expNo]);
+                strcat(line, eee);
+              }
+              //        do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS,
+              //                  "%d %12.6f: %s", expNo, (double)currExponent, line);
+            }
+            if (++expNo == noOfExponents) {
+              remove_zeros(currAtom, shellBaseIndex, noOfShellsCurrBatch);
+              shellBaseIndex += noOfShellsCurrBatch;
+              spdf++;
+              state = SHELL_OR_ATOM_EXPECTED;
+            }
+            lineConsumed = 1;
+            break;
+          case END_PARSING:
+            /*  do nothing */
+            break;
         }
-//        do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, 
-//                  "%d %12.6f: %s", expNo, (double)currExponent, line);
+      } while (state != END_PARSING);
+      fclose(f);
+
+      /* fininalize current atom data */
+      if (currAtom == NULL || shellBaseIndex < 0) {
+        return -1;
       }
-      if(++expNo == noOfExponents) {
-        remove_zeros(currAtom, shellBaseIndex, noOfShellsCurrBatch);
-        shellBaseIndex += noOfShellsCurrBatch;
-        spdf++;
-        state = SHELL_OR_ATOM_EXPECTED;
-      }
-      lineConsumed = 1;
-      break;
-    case END_PARSING:
-      /*  do nothing */
-      break;
+      currAtom->noOfShells = shellBaseIndex;
+
+      /*  Postprocessing... */
+      /*  set shell ID for each shell in basis set */
+      int currShellID = 0;
+      for (int i = 0; i < MAX_NO_OF_ATOM_TYPES; i++) {
+        int noOfShells = atoms[i].noOfShells;
+
+        for (int j = 0; j < noOfShells; j++) {
+          currShellID++;
+          atoms[i].shells[j].shell_ID = currShellID;
+
+        } /*  END FOR j */
+      } /*  END FOR i */
+      //  do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, "total number of shells in basis set: %i", currShellID);
+      //  do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, "Basis set file '%s' processed OK, noOfAtomTypes = %i",
+      //            fileName, noOfAtomTypes);
+
+      cout << "1.5\n";
+
+      return 0;
     }
-  } while(state != END_PARSING);
-  fclose(f);
 
-  /* fininalize current atom data */
-  if(currAtom == NULL || shellBaseIndex < 0){
-    return -1;
-  }
-  currAtom->noOfShells = shellBaseIndex;
-
-
-  /*  Postprocessing... */
-  /*  set shell ID for each shell in basis set */
-  int currShellID = 0;
-  for(int i = 0; i < MAX_NO_OF_ATOM_TYPES; i++) {
-    int noOfShells = atoms[i].noOfShells;
-
-    for(int j = 0; j < noOfShells; j++) {
-      currShellID++;
-      atoms[i].shells[j].shell_ID = currShellID;
-
-    } /*  END FOR j */
-  } /*  END FOR i */
-//  do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, "total number of shells in basis set: %i", currShellID);
-//  do_output(LOG_CAT_INFO, LOG_AREA_INTEGRALS, "Basis set file '%s' processed OK, noOfAtomTypes = %i",
-//            fileName, noOfAtomTypes);
-
-  cout<<"1.5\n";
-
-  return 0;
-}
-
-
-
-
-}// libergoscf
-}// liblibra
-
+  }  // namespace libergoscf
+}  // namespace liblibra

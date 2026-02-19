@@ -14,24 +14,20 @@
         
 */
 
-
 #ifndef LIB_SOLVERS_H
 #define LIB_SOLVERS_H
 
 #include "DIIS.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libsolvers namespace
+  namespace libsolvers {
 
-/// libsolvers namespace
-namespace libsolvers{
+    void export_solvers_objects();
 
+  }  // namespace libsolvers
+}  // namespace liblibra
 
-void export_solvers_objects();
-
-
-}// namespace libsolvers
-}// liblibra
-
-#endif// LIB_SOLVERS_H
+#endif  // LIB_SOLVERS_H

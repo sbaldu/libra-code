@@ -20,17 +20,14 @@
 #include "Excitation.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libcommon_types namespace
-namespace libcommon_types{
+  /// libcommon_types namespace
+  namespace libcommon_types {
 
+    void export_common_types_objects();
 
-void export_common_types_objects();
+  }  // namespace libcommon_types
+}  // namespace liblibra
 
-
-}// namespace libcommon_types
-}// namespace liblibra
-
-
-#endif// LIB_COMMON_TYPES_H
+#endif  // LIB_COMMON_TYPES_H

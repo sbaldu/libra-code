@@ -16,106 +16,120 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-using namespace liblinalg;
+  using namespace libio;
+  using namespace liblinalg;
 
+  namespace libcontext {
 
-namespace libcontext{
+    //class Context;
 
-//class Context;
+    class Context {
+      std::string
+          path;  // the top-most level of the property tree = the name of the variable of the "context" type
+      char path_separator;                 //
+      boost::property_tree::ptree ctx_pt;  // This is the internal representation of the data
 
-class Context{
+    public:
+      //------------------------------------------------
+      Context() {
+        path = "glob_context";
+        path_separator = '.';
+      }
+      Context(std::string filename) {
+        path_separator = '.';
+        libio::load_xml(filename, ctx_pt);
+        int i = 0;
+        BOOST_FOREACH (ptree::value_type& v, ctx_pt) {
+          if (i == 0) {
+            path = v.first;
+          }
+          i++;
+        }
+      }
+      Context(const Context& c) {
+        ctx_pt = c.ctx_pt;
+        path = c.path;
+        path_separator = c.path_separator;
+      }
+      Context(const boost::property_tree::ptree& pt, std::string _path, char _path_separator) {
+        ctx_pt = pt;
+        path = _path;
+        path_separator = _path_separator;
+      }
 
-  std::string path;  // the top-most level of the property tree = the name of the variable of the "context" type
-  char path_separator; //
-  boost::property_tree::ptree ctx_pt; // This is the internal representation of the data
+      virtual ~Context() {}
 
-  public:
+      // Manupulation of the "path": These functions are essentially for getting and setting the name of the context variable (path)
+      void set_path(std::string new_path);
+      void set_path_separator(char _path_separator) { path_separator = _path_separator; }
+      std::string get_path();
 
- 
-  //------------------------------------------------
-  Context() { path = "glob_context"; path_separator = '.'; } 
-  Context(std::string filename){ 
-    path_separator = '.';
-    libio::load_xml(filename, ctx_pt);
-    int i= 0; BOOST_FOREACH(ptree::value_type &v, ctx_pt){ if(i==0){ path = v.first; } i++;  }
-  }
-  Context(const Context& c){  ctx_pt = c.ctx_pt; path = c.path; path_separator = c.path_separator; } 
-  Context(const boost::property_tree::ptree& pt, std::string _path, char _path_separator)
-  { ctx_pt = pt; path = _path; path_separator = _path_separator; } 
+      // Add new variables to data-structure
+      template <typename X>
+      void add(std::string varname, X varval) {
+        libio::save(ctx_pt, path + path_separator + varname, path_separator, varval);
+      }
 
-  virtual ~Context(){}
+      void add_context(Context ctxt);
 
-  // Manupulation of the "path": These functions are essentially for getting and setting the name of the context variable (path)
-  void set_path(std::string new_path);
-  void set_path_separator(char _path_separator){ path_separator = _path_separator; }
-  std::string get_path();
+      int size();
 
+      Context get_child(std::string _path, std::string varname, Context default_val);
+      Context get_child(std::string varname, Context default_val);
+      vector<Context> get_children(std::string _path, std::string varname);
+      vector<Context> get_children(std::string varname);
+      vector<Context> get_children_all(std::string _path);
+      vector<Context> get_children_all();
 
-  // Add new variables to data-structure
-  template <typename X>
-  void add(std::string varname, X varval){   libio::save(ctx_pt, path+path_separator+varname, path_separator, varval);  }
+      void show_children(std::string _path);
+      void show_children();
 
-  void add_context(Context ctxt);
+      // Get value for given variable name, if exist in datastructure. Or return default value
+      template <typename X>
+      X get1(std::string varname, X default_val) {
+        int st;
+        X varval;
 
-  int size();
+        libio::load(ctx_pt, path + path_separator + varname, path_separator, varval, st);
+        //    libio::load(ctx_pt, varname, path_separator, varval, st);
+        if (st) {
+          return varval;
+        } else {
+          return default_val;
+        }
+      }
 
+      template <typename X>
+      X get2(std::string varname, X& default_val) {
+        int st;
+        X varval;
 
+        liblinalg::load(ctx_pt, path + path_separator + varname, path_separator, varval, st);
+        //    liblinalg::load(ctx_pt, varname, path_separator, varval, st);
+        if (st) {
+          return varval;
+        } else {
+          return default_val;
+        }
+      }
 
-  Context get_child(std::string _path, std::string varname, Context default_val);
-  Context get_child(std::string varname, Context default_val);
-  vector<Context> get_children(std::string _path, std::string varname);
-  vector<Context> get_children(std::string varname);
-  vector<Context> get_children_all(std::string _path);
-  vector<Context> get_children_all();
-
-  void show_children(std::string _path);
-  void show_children();
-
-
-
-  // Get value for given variable name, if exist in datastructure. Or return default value
-  template <typename X>
-  X get1(std::string varname, X default_val){   
-    int st;
-    X varval; 
-
-    libio::load(ctx_pt, path+path_separator+varname, path_separator, varval, st); 
-//    libio::load(ctx_pt, varname, path_separator, varval, st); 
-    if(st){ return varval; }else{ return default_val; }
-
-  }
-
-  template <typename X>
-  X get2(std::string varname, X& default_val){   
-    int st;
-    X varval; 
-
-    liblinalg::load(ctx_pt, path+path_separator+varname, path_separator, varval, st); 
-//    liblinalg::load(ctx_pt, varname, path_separator, varval, st); 
-    if(st){ return varval; }else{ return default_val; }
-
-  }
-
-
-  template<typename X>
-  X get_value(){
-  /** 
+      template <typename X>
+      X get_value() {
+        /** 
     \brief Extracts the value from the current node of the property tree
     \param[in] pt Is the property tree from which we want to extract the value
   */
 
-    try{  return ctx_pt.get_value<X>();    }
-    catch(std::exception& e){ cout<<"Error in get_value()!\n"; }
-  }
+        try {
+          return ctx_pt.get_value<X>();
+        } catch (std::exception& e) {
+          cout << "Error in get_value()!\n";
+        }
+      }
 
-
-
-
-
-/*
+      /*
   // Get value for given variable name, if exist in datastructure. Or return default value
   int get(std::string varname,int default_val);
   vector<int> get(std::string varname,vector<int> default_val);
@@ -139,31 +153,20 @@ class Context{
   vector<MATRIX> get(std::string varname,vector<MATRIX> default_val);
 */
 
+      friend int operator==(const Context& ctx1, const Context& ctx2) { return (&ctx1 == &ctx2); }
+      friend int operator!=(const Context& ctx1, const Context& ctx2) { return !(ctx1 == ctx2); }
 
+      void save_xml(std::string filename) { libio::save_xml(filename, ctx_pt); }
+      void load_xml(std::string filename) { libio::load_xml(filename, ctx_pt); }
+    };
 
+    typedef std::vector<Context> ContextList;  ///< Data type that holds a vector of Context objects
+    typedef std::vector<vector<Context> >
+        ContextMap;  ///< Data type that holds the table (grid) of Context objects
 
-  friend int operator == (const Context& ctx1, const Context& ctx2){
-    return (&ctx1 == &ctx2);
-  }
-  friend int operator != (const Context& ctx1, const Context& ctx2){
-    return !(ctx1==ctx2);
-  }
+    void export_Context_objects();
 
+  }  // namespace libcontext
+}  // namespace liblibra
 
- 
-  void save_xml(std::string filename){ libio::save_xml(filename, ctx_pt); }
-  void load_xml(std::string filename){ libio::load_xml(filename, ctx_pt); }
-
-
-};
-
-typedef std::vector<Context> ContextList;  ///< Data type that holds a vector of Context objects
-typedef std::vector<vector<Context> > ContextMap;  ///< Data type that holds the table (grid) of Context objects
-
-
-void export_Context_objects();
-
-}// namespace libcontext
-}// liblibra
-
-#endif // CONTEXT_H
+#endif  // CONTEXT_H

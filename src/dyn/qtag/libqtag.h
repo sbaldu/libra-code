@@ -17,27 +17,21 @@
 #ifndef LIB_QTAG_H
 #define LIB_QTAG_H
 
-
 #include "qtag.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libqtag namespace
+    namespace libqtag {
 
-/// libqtag namespace
-namespace libqtag{
+      void export_qtag_objects();
 
+    }  // namespace libqtag
+  }  // namespace libdyn
+}  // namespace liblibra
 
-void export_qtag_objects();
-
-
-}// namespace libqtag
-}// namespace libdyn
-}// liblibra
-
-
-
-#endif// LIB_QTAG_H
+#endif  // LIB_QTAG_H

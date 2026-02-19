@@ -16,29 +16,43 @@
 #include "../math_specialfunctions/libspecialfunctions.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libspecialfunctions;
+  using namespace liblinalg;
+  using namespace libspecialfunctions;
 
+  namespace libpot {
 
-namespace libpot{
+    //------------------ Dihedral/Torsion potentials ------------------------------
 
+    double Dihedral_General(VECTOR& ri,
+                            VECTOR& rj,
+                            VECTOR& rk,
+                            VECTOR& rl, /*Inputs*/
+                            VECTOR& fi,
+                            VECTOR& fj,
+                            VECTOR& fk,
+                            VECTOR& fl, /*Outputs*/
+                            double Vphi,
+                            double phi0,
+                            int n,
+                            int opt /*Parameters*/
+    );
+    double Dihedral_Fourier(VECTOR& ri,
+                            VECTOR& rj,
+                            VECTOR& rk,
+                            VECTOR& rl, /*Inputs*/
+                            VECTOR& fi,
+                            VECTOR& fj,
+                            VECTOR& fk,
+                            VECTOR& fl, /*Outputs*/
+                            double Vphi1,
+                            double Vphi2,
+                            double Vphi3,
+                            int opt /*Parameters*/
+    );
 
+  }  // namespace libpot
+}  // namespace liblibra
 
-
-//------------------ Dihedral/Torsion potentials ------------------------------
-
-double Dihedral_General(VECTOR& ri,VECTOR& rj,VECTOR& rk,VECTOR& rl, /*Inputs*/
-                        VECTOR& fi,VECTOR& fj,VECTOR& fk,VECTOR& fl, /*Outputs*/
-                        double Vphi,double phi0,int n,int opt        /*Parameters*/
-                        );
-double Dihedral_Fourier(VECTOR& ri,VECTOR& rj,VECTOR& rk,VECTOR& rl,    /*Inputs*/
-                        VECTOR& fi,VECTOR& fj,VECTOR& fk,VECTOR& fl,    /*Outputs*/
-                        double Vphi1,double Vphi2,double Vphi3,int opt  /*Parameters*/
-                        );
-
-}// namespace libpot
-}// liblibra
-
-#endif //POTENTIALS_DIHEDRALS_H
+#endif  //POTENTIALS_DIHEDRALS_H

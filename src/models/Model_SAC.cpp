@@ -17,18 +17,20 @@
 #include "Model_SAC.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libmodels namespace
+  namespace libmodels {
 
-/// libmodels namespace
-namespace libmodels{
-
-
-void model_SAC(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia, vector<CMATRIX>& dc1_dia,
-               vector<double>& q, vector<double>& params){ 
-/*** 
+    void model_SAC(CMATRIX& Hdia,
+                   CMATRIX& Sdia,
+                   vector<CMATRIX>& d1ham_dia,
+                   vector<CMATRIX>& dc1_dia,
+                   vector<double>& q,
+                   vector<double>& params) {
+      /*** 
     To use with the nHamiltonian class
 
   \param[out] Hdia  The Hamiltonian in the diabatic basis (diabatic Hamiltonian)
@@ -53,50 +55,65 @@ void model_SAC(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia, vector<
   H_01 = C*exp(-D*x^2)
 */
 
-    double e;
+      double e;
 
-    // SAC potetnial
-    // Default parameters
-    double A = 0.010;  double B = 1.600;
-    double C = 0.005;  double D = 1.00;
+      // SAC potetnial
+      // Default parameters
+      double A = 0.010;
+      double B = 1.600;
+      double C = 0.005;
+      double D = 1.00;
 
-    if(params.size()>=4){
-      A = params[0];    B = params[1];
-      C = params[2];    D = params[3];
+      if (params.size() >= 4) {
+        A = params[0];
+        B = params[1];
+        C = params[2];
+        D = params[3];
+      }
+
+      double H00, H01;
+      double dH00, dH01;
+
+      // H00;  H11 = -H00
+      if (q[0] >= 0) {
+        e = exp(-B * q[0]);
+        H00 = A * (1.0 - e);
+        dH00 = A * B * e;
+      } else {
+        e = exp(B * q[0]);
+        H00 = A * (e - 1.0);
+        dH00 = A * B * e;
+      }
+
+      // H01 = H10
+      H01 = C * exp(-D * q[0] * q[0]);
+      dH01 = -2.0 * D * q[0] * H01;
+
+      Sdia.set(0, 0, 1.0, 0.0);
+      Sdia.set(0, 1, 0.0, 0.0);
+      Sdia.set(1, 0, 0.0, 0.0);
+      Sdia.set(1, 1, 1.0, 0.0);
+
+      Hdia.set(0, 0, H00, 0.0);
+      Hdia.set(0, 1, H01, 0.0);
+      Hdia.set(1, 0, H01, 0.0);
+      Hdia.set(1, 1, -H00, 0.0);
+
+      //  d Hdia / dq_0
+      d1ham_dia[0].set(0, 0, dH00, 0.0);
+      d1ham_dia[0].set(0, 1, dH01, 0.0);
+      d1ham_dia[0].set(1, 0, dH01, 0.0);
+      d1ham_dia[0].set(1, 1, -dH00, 0.0);
+
+      //  <dia| d/dq_0| dia >
+      dc1_dia[0].set(0, 0, 0.0, 0.0);
+      dc1_dia[0].set(0, 1, 0.0, 0.0);
+      dc1_dia[0].set(1, 0, 0.0, 0.0);
+      dc1_dia[0].set(1, 1, 0.0, 0.0);
     }
 
-    double H00, H01;
-    double dH00, dH01;
-
-    // H00;  H11 = -H00
-    if(q[0]>=0){  e = exp(-B*q[0]);  H00 = A*(1.0 - e);  dH00 = A*B*e;  } 
-    else{      e = exp(B*q[0]);  H00 = A*(e - 1.0);  dH00 = A*B*e;   }
-
-    // H01 = H10
-    H01 = C*exp(-D*q[0]*q[0]);   dH01 = -2.0*D*q[0]*H01;
-
-
-    Sdia.set(0,0, 1.0, 0.0);  Sdia.set(0,1, 0.0, 0.0);
-    Sdia.set(1,0, 0.0, 0.0);  Sdia.set(1,1, 1.0, 0.0);
-
-    Hdia.set(0,0, H00, 0.0);  Hdia.set(0,1,  H01, 0.0);
-    Hdia.set(1,0, H01, 0.0);  Hdia.set(1,1, -H00, 0.0);
-
-    //  d Hdia / dq_0
-    d1ham_dia[0].set(0,0, dH00, 0.0);   d1ham_dia[0].set(0,1, dH01, 0.0);
-    d1ham_dia[0].set(1,0, dH01, 0.0);   d1ham_dia[0].set(1,1,-dH00, 0.0);
-
-    //  <dia| d/dq_0| dia >
-    dc1_dia[0].set(0,0, 0.0, 0.0);   dc1_dia[0].set(0,1, 0.0, 0.0);
-    dc1_dia[0].set(1,0, 0.0, 0.0);   dc1_dia[0].set(1,1, 0.0, 0.0);
-
-
-}
-
-
-
-void SAC_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params){ 
-/**
+    void SAC_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params) {
+      /**
   \param[in] x The nuclear coordinate (1D)
   \param[out] H The pointer to the matrix in which the Hamiltonian will be written
   \param[out] dH The pointer to the matrix in which the 1-st order derivatives of the Hamiltonian will be written
@@ -117,53 +134,61 @@ void SAC_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& param
   H_01 = C*exp(-D*x^2)
 */
 
+      if (H->n_elts != 4) {
+        std::cout << "Error in SAC_Ham: H matrix must be allocated\n";
+        exit(0);
+      }
+      if (dH->n_elts != 4) {
+        std::cout << "Error in SAC_Ham: dH matrix must be allocated\n";
+        exit(0);
+      }
+      if (d2H->n_elts != 4) {
+        std::cout << "Error in SAC_Ham: d2H matrix must be allocated\n";
+        exit(0);
+      }
 
-  if(H->n_elts!=4){ std::cout<<"Error in SAC_Ham: H matrix must be allocated\n"; exit(0);}
-  if(dH->n_elts!=4){ std::cout<<"Error in SAC_Ham: dH matrix must be allocated\n"; exit(0);}
-  if(d2H->n_elts!=4){ std::cout<<"Error in SAC_Ham: d2H matrix must be allocated\n"; exit(0);}
+      double e;
 
+      // SAC potetnial
+      // Default parameters
+      double A = 0.010;
+      double B = 1.600;
+      double C = 0.005;
+      double D = 1.00;
 
-  double e;
+      if (params.size() >= 4) {
+        A = params[0];
+        B = params[1];
+        C = params[2];
+        D = params[3];
+      }
 
-  // SAC potetnial
-  // Default parameters
-  double A = 0.010;  double B = 1.600;
-  double C = 0.005;  double D = 1.00;
+      // H00
+      if (x >= 0) {
+        e = exp(-B * x);
+        H->M[0] = A * (1.0 - e);
+        dH->M[0] = A * B * e;
+        d2H->M[0] = -B * dH->M[0];
+      } else {
+        e = exp(B * x);
+        H->M[0] = A * (e - 1.0);
+        dH->M[0] = A * B * e;
+        d2H->M[0] = B * dH->M[0];
+      }
 
-  if(params.size()>=4){
-    A = params[0];    B = params[1];
-    C = params[2];    D = params[3];
-  }
+      // H11
+      H->M[3] = -H->M[0];
+      dH->M[3] = -dH->M[0];
+      d2H->M[3] = -d2H->M[0];
 
-  // H00
-  if(x>=0){ 
-    e = exp(-B*x); 
-    H->M[0] = A*(1.0 - e);
-    dH->M[0] = A*B*e;
-    d2H->M[0] = -B*dH->M[0];
-  } 
-  else{
-    e = exp(B*x);
-    H->M[0] = A*(e - 1.0);
-    dH->M[0] = A*B*e;
-    d2H->M[0] = B*dH->M[0];
-  }
+      // H01 and H10
+      H->M[1] = H->M[2] = C * exp(-D * x * x);
+      dH->M[1] = dH->M[2] = -2.0 * D * x * H->M[1];
+      d2H->M[1] = d2H->M[2] = (-2.0 * D * H->M[1] - 2.0 * D * x * dH->M[1]);
+    }
 
-  // H11
-  H->M[3] = -H->M[0]; 
-  dH->M[3] = -dH->M[0];
-  d2H->M[3] = -d2H->M[0];
-  
-  // H01 and H10
-  H->M[1] = H->M[2] = C*exp(-D*x*x);
-  dH->M[1] = dH->M[2] = -2.0*D*x*H->M[1];
-  d2H->M[1] = d2H->M[2] = (-2.0*D*H->M[1] - 2.0*D*x*dH->M[1]);
-
-
-}
-
-boost::python::list SAC_Ham(double x, boost::python::list params_){ 
-/**
+    boost::python::list SAC_Ham(double x, boost::python::list params_) {
+      /**
   \param[in] x The nuclear coordinate (1D)
   \param[in] params The model parameters: can be up to 4 parameters (see the chart below). Otherwise, the default
   values will be used:
@@ -187,25 +212,26 @@ boost::python::list SAC_Ham(double x, boost::python::list params_){
 
 */
 
-  MATRIX H(2,2);
-  MATRIX dH(2,2);
-  MATRIX d2H(2,2);
+      MATRIX H(2, 2);
+      MATRIX dH(2, 2);
+      MATRIX d2H(2, 2);
 
-  int sz = boost::python::len(params_);
-  vector<double> params(sz,0.0);
-  for(int i=0;i<sz;i++){ params[i] = boost::python::extract<double>(params_[i]);  }
+      int sz = boost::python::len(params_);
+      vector<double> params(sz, 0.0);
+      for (int i = 0; i < sz; i++) {
+        params[i] = boost::python::extract<double>(params_[i]);
+      }
 
-  SAC_Ham(x,&H,&dH,&d2H,params);
+      SAC_Ham(x, &H, &dH, &d2H, params);
 
-  boost::python::list res;
-  res.append(x);
-  res.append(H);
-  res.append(dH);
-  res.append(d2H);
- 
-  return res;
+      boost::python::list res;
+      res.append(x);
+      res.append(H);
+      res.append(dH);
+      res.append(d2H);
 
-}
+      return res;
+    }
 
-}// namespace libmodels
-}// liblibra
+  }  // namespace libmodels
+}  // namespace liblibra

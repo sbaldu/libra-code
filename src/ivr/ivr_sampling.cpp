@@ -34,15 +34,13 @@
 
 #include "ivr.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  namespace libivr {
 
-namespace libivr{
-
-MATRIX ivr_Husimi(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd){
-/**
+    MATRIX ivr_Husimi(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd) {
+      /**
   \brief Multi-dimensional  Husimi-IVR MonteCarlo
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -55,29 +53,28 @@ MATRIX ivr_Husimi(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd){
 
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_Husimi: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_Husimi: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  MATRIX res(Ndof,2);  ///< first column is position, second is momentum
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      MATRIX res(Ndof, 2);  ///< first column is position, second is momentum
 
-    double s = sqrt(Width0.get(i,i));
-    res.set(i, 0, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q
-    res.set(i, 1,    s    * rnd.normal() + pIn.get(i,0) );  // p
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
+        res.set(i, 0, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q
+        res.set(i, 1, s * rnd.normal() + pIn.get(i, 0));          // p
 
-  }// for i
+      }  // for i
 
-  return res;
-}
+      return res;
+    }
 
-
-vector<MATRIX> ivr_Husimi(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, int sample_size){
-/**
+    vector<MATRIX> ivr_Husimi(
+        MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, int sample_size) {
+      /**
   \brief Multi-dimensional  Husimi-IVR MonteCarlo
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -90,34 +87,31 @@ vector<MATRIX> ivr_Husimi(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd,
   Return value: a vector of Ndof x 2 matrices with q (column 0) and p (column 1)
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_Husimi: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_Husimi: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  vector<MATRIX> res(sample_size, MATRIX(Ndof,2));  ///< first column is position, second is momentum
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      vector<MATRIX> res(sample_size,
+                         MATRIX(Ndof, 2));  ///< first column is position, second is momentum
 
-    double s = sqrt(Width0.get(i,i));
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
 
-    for(int j=0; j<sample_size; j++){
-        res[j].set(i, 0, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q
-        res[j].set(i, 1,    s    * rnd.normal() + pIn.get(i,0) );  // p
+        for (int j = 0; j < sample_size; j++) {
+          res[j].set(i, 0, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q
+          res[j].set(i, 1, s * rnd.normal() + pIn.get(i, 0));          // p
 
-    }// for j - all sampling points
-  }// for i - all dofs
+        }  // for j - all sampling points
+      }  // for i - all dofs
 
-  return res;
+      return res;
+    }
 
-}
-
-
-
-MATRIX ivr_LSC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd){
-/**
+    MATRIX ivr_LSC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd) {
+      /**
   \brief Multi-dimensional  LSC-IVR MonteCarlo 
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -132,12 +126,11 @@ MATRIX ivr_LSC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd){
 
 */
 
-  return ivr_Husimi(qIn, pIn, Width0, rnd);
+      return ivr_Husimi(qIn, pIn, Width0, rnd);
+    }
 
-}
-
-vector<MATRIX> ivr_LSC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, int sample_size){
-/**
+    vector<MATRIX> ivr_LSC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, int sample_size) {
+      /**
   \brief Multi-dimensional  LSC-IVR MonteCarlo
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -152,13 +145,11 @@ vector<MATRIX> ivr_LSC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, in
   This implementation is exactly the same as Husimi-IVR
 */
 
-  return ivr_Husimi(qIn, pIn, Width0, rnd, sample_size);
-}
+      return ivr_Husimi(qIn, pIn, Width0, rnd, sample_size);
+    }
 
-
-
-MATRIX ivr_DHK(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd){
-/**
+    MATRIX ivr_DHK(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd) {
+      /**
   \brief Multi-dimensional  DHK-IVR MonteCarlo 
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -171,33 +162,29 @@ MATRIX ivr_DHK(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd){
 
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_DHK: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_DHK: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  MATRIX res(Ndof,4);  
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      MATRIX res(Ndof, 4);
 
-    double s = sqrt(Width0.get(i,i));
-    res.set(i, 0, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q0
-    res.set(i, 1,    s    * rnd.normal() + pIn.get(i,0) );  // p0
-    res.set(i, 2, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q0'
-    res.set(i, 3,    s    * rnd.normal() + pIn.get(i,0) );  // p0'
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
+        res.set(i, 0, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q0
+        res.set(i, 1, s * rnd.normal() + pIn.get(i, 0));          // p0
+        res.set(i, 2, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q0'
+        res.set(i, 3, s * rnd.normal() + pIn.get(i, 0));          // p0'
 
+      }  // for i
 
-  }// for i
+      return res;
+    }
 
-  return res;
-
-}
-
-
-vector<MATRIX> ivr_DHK(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, int sample_size){
-/**
+    vector<MATRIX> ivr_DHK(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, int sample_size) {
+      /**
   \brief Multi-dimensional  DHK-IVR MonteCarlo 
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -210,39 +197,38 @@ vector<MATRIX> ivr_DHK(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, Random& rnd, in
   Return value: a vector of Ndof x 4 matrices with q (column 0) and p (column 1), q' (column 2), p' (column 3)
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_DHK: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_DHK: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  vector<MATRIX> res(sample_size, MATRIX(Ndof,4));  ///< (q0, p0, q0', p0')
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      vector<MATRIX> res(sample_size, MATRIX(Ndof, 4));  ///< (q0, p0, q0', p0')
 
-    double s = sqrt(Width0.get(i,i));
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
 
-    for(int j=0; j<sample_size; j++){
-        res[j].set(i, 0, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q
-        res[j].set(i, 1,    s    * rnd.normal() + pIn.get(i,0) );  // p
-        res[j].set(i, 2, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q
-        res[j].set(i, 3,    s    * rnd.normal() + pIn.get(i,0) );  // p
+        for (int j = 0; j < sample_size; j++) {
+          res[j].set(i, 0, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q
+          res[j].set(i, 1, s * rnd.normal() + pIn.get(i, 0));          // p
+          res[j].set(i, 2, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q
+          res[j].set(i, 3, s * rnd.normal() + pIn.get(i, 0));          // p
 
+        }  // for j - all sampling points
+      }  // for i - all dofs
 
-    }// for j - all sampling points
-  }// for i - all dofs
+      return res;
+    }
 
-  return res;
-
-}
-
-
-
-
-
-MATRIX ivr_FB_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& TuningQ, MATRIX& TuningP, int flag, Random& rnd){
-/**
+    MATRIX ivr_FB_MQC(MATRIX& qIn,
+                      MATRIX& pIn,
+                      MATRIX& Width0,
+                      MATRIX& TuningQ,
+                      MATRIX& TuningP,
+                      int flag,
+                      Random& rnd) {
+      /**
   \brief Multi-dimensional  FB-MQC-IVR MonteCarlo: for general B = B(q,p)
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -263,37 +249,45 @@ MATRIX ivr_FB_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& TuningQ, MAT
 
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_FB_MQC: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_FB_MQC: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  MATRIX res(Ndof,4);  
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      MATRIX res(Ndof, 4);
 
-    double s = sqrt(Width0.get(i,i));
-    double sq = 0.0;
-    double sp = 0.0;
-    if(flag==0 || flag==1){   sp = 1.0/sqrt(TuningP.get(i,i));   }
-    if(flag==0 || flag==2){   sq = 1.0/sqrt(TuningQ.get(i,i));   }
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
+        double sq = 0.0;
+        double sp = 0.0;
+        if (flag == 0 || flag == 1) {
+          sp = 1.0 / sqrt(TuningP.get(i, i));
+        }
+        if (flag == 0 || flag == 2) {
+          sq = 1.0 / sqrt(TuningQ.get(i, i));
+        }
 
-    res.set(i, 0, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q0
-    res.set(i, 1,    s    * rnd.normal() + pIn.get(i,0) );  // p0
-    res.set(i, 2,   sq    * rnd.normal() );                 // Dq = qt' - qt
-    res.set(i, 3,   sp    * rnd.normal() );                 // Dp = pt' - pt
+        res.set(i, 0, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q0
+        res.set(i, 1, s * rnd.normal() + pIn.get(i, 0));          // p0
+        res.set(i, 2, sq * rnd.normal());                         // Dq = qt' - qt
+        res.set(i, 3, sp * rnd.normal());                         // Dp = pt' - pt
 
-  }// for i
+      }  // for i
 
-  return res;
+      return res;
+    }
 
-}
-
-
-vector<MATRIX> ivr_FB_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& TuningQ, MATRIX& TuningP, int flag, Random& rnd, int sample_size){
-/**
+    vector<MATRIX> ivr_FB_MQC(MATRIX& qIn,
+                              MATRIX& pIn,
+                              MATRIX& Width0,
+                              MATRIX& TuningQ,
+                              MATRIX& TuningP,
+                              int flag,
+                              Random& rnd,
+                              int sample_size) {
+      /**
   \brief Multi-dimensional  FB-MQC-IVR MonteCarlo: for general B = B(q,p)
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -315,41 +309,41 @@ vector<MATRIX> ivr_FB_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& Tuni
 
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_FB_MQC: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_FB_MQC: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  vector<MATRIX> res(sample_size, MATRIX(Ndof,4));  
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      vector<MATRIX> res(sample_size, MATRIX(Ndof, 4));
 
-    double s = sqrt(Width0.get(i,i));
-    double sq = 0.0;
-    double sp = 0.0;
-    if(flag==0 || flag==1){   sp = 1.0/sqrt(TuningP.get(i,i));   }
-    if(flag==0 || flag==2){   sq = 1.0/sqrt(TuningQ.get(i,i));   }
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
+        double sq = 0.0;
+        double sp = 0.0;
+        if (flag == 0 || flag == 1) {
+          sp = 1.0 / sqrt(TuningP.get(i, i));
+        }
+        if (flag == 0 || flag == 2) {
+          sq = 1.0 / sqrt(TuningQ.get(i, i));
+        }
 
-    for(int j=0; j<sample_size; j++){
+        for (int j = 0; j < sample_size; j++) {
+          res[j].set(i, 0, (1.0 / s) * rnd.normal() + qIn.get(i, 0));  // q0
+          res[j].set(i, 1, s * rnd.normal() + pIn.get(i, 0));          // p0
+          res[j].set(i, 2, sq * rnd.normal());                         // Dq = qt' - qt
+          res[j].set(i, 3, sp * rnd.normal());                         // Dp = pt' - pt
 
-      res[j].set(i, 0, (1.0/s) * rnd.normal() + qIn.get(i,0) );  // q0
-      res[j].set(i, 1,    s    * rnd.normal() + pIn.get(i,0) );  // p0
-      res[j].set(i, 2,   sq    * rnd.normal() );                 // Dq = qt' - qt
-      res[j].set(i, 3,   sp    * rnd.normal() );                 // Dp = pt' - pt
+        }  // for j - all sampling points
+      }  // for i - all DOFs
 
-    }// for j - all sampling points
-  }// for i - all DOFs
+      return res;
+    }
 
-  return res;
-
-}
-
-
-
-MATRIX ivr_FF_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& TuningQ, MATRIX& TuningP, Random& rnd){
-/**
+    MATRIX ivr_FF_MQC(
+        MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& TuningQ, MATRIX& TuningP, Random& rnd) {
+      /**
   \brief Multi-dimensional  FF-MQC-IVR MonteCarlo: for general B
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -369,41 +363,43 @@ MATRIX ivr_FF_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& TuningQ, MAT
 
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_FF_MQC: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_FF_MQC: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  MATRIX res(Ndof,4);  
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      MATRIX res(Ndof, 4);
 
-    double s = sqrt(Width0.get(i,i));
-    double sq = 1.0/sqrt(TuningQ.get(i,i));
-    double sp = 1.0/sqrt(TuningP.get(i,i));
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
+        double sq = 1.0 / sqrt(TuningQ.get(i, i));
+        double sp = 1.0 / sqrt(TuningP.get(i, i));
 
-    double qav = (1.0/s) * rnd.normal() + qIn.get(i,0);
-    double pav = s * rnd.normal() + pIn.get(i,0);
-    double Dq0 = sq    * rnd.normal();
-    double Dp0 = sp    * rnd.normal();
+        double qav = (1.0 / s) * rnd.normal() + qIn.get(i, 0);
+        double pav = s * rnd.normal() + pIn.get(i, 0);
+        double Dq0 = sq * rnd.normal();
+        double Dp0 = sp * rnd.normal();
 
-    res.set(i, 0,  qav - 0.5 * Dq0);  // q0
-    res.set(i, 1,  pav - 0.5 * Dp0);  // p0
-    res.set(i, 2,  qav + 0.5 * Dq0);  // q0'
-    res.set(i, 3,  pav + 0.5 * Dp0);  // p0'
+        res.set(i, 0, qav - 0.5 * Dq0);  // q0
+        res.set(i, 1, pav - 0.5 * Dp0);  // p0
+        res.set(i, 2, qav + 0.5 * Dq0);  // q0'
+        res.set(i, 3, pav + 0.5 * Dp0);  // p0'
 
+      }  // for i
 
-  }// for i
+      return res;
+    }
 
-  return res;
-
-}
-
-
-vector<MATRIX> ivr_FF_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& TuningQ, MATRIX& TuningP, Random& rnd, int sample_size){
-/**
+    vector<MATRIX> ivr_FF_MQC(MATRIX& qIn,
+                              MATRIX& pIn,
+                              MATRIX& Width0,
+                              MATRIX& TuningQ,
+                              MATRIX& TuningP,
+                              Random& rnd,
+                              int sample_size) {
+      /**
   \brief Multi-dimensional  FF-MQC-IVR MonteCarlo: for general B
   \param[in] qIn - initial coordinates (Ndof x 1 matrix)
   \param[in] pIn - initial momenta (Ndof x 1 matrix)
@@ -423,41 +419,36 @@ vector<MATRIX> ivr_FF_MQC(MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& Tuni
 
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in ivr_FF_MQC: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
-  
-  int Ndof = qIn.n_rows;
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in ivr_FF_MQC: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  vector<MATRIX> res(sample_size, MATRIX(Ndof,4));  
+      int Ndof = qIn.n_rows;
 
-  for(int i=0; i<Ndof; i++){
+      vector<MATRIX> res(sample_size, MATRIX(Ndof, 4));
 
-    double s = sqrt(Width0.get(i,i));
-    double sq = 1.0/sqrt(TuningQ.get(i,i));
-    double sp = 1.0/sqrt(TuningP.get(i,i));
+      for (int i = 0; i < Ndof; i++) {
+        double s = sqrt(Width0.get(i, i));
+        double sq = 1.0 / sqrt(TuningQ.get(i, i));
+        double sp = 1.0 / sqrt(TuningP.get(i, i));
 
-    for(int j=0;j<sample_size;j++){
+        for (int j = 0; j < sample_size; j++) {
+          double qav = (1.0 / s) * rnd.normal() + qIn.get(i, 0);
+          double pav = s * rnd.normal() + pIn.get(i, 0);
+          double Dq0 = sq * rnd.normal();
+          double Dp0 = sp * rnd.normal();
 
-      double qav = (1.0/s) * rnd.normal() + qIn.get(i,0);
-      double pav = s * rnd.normal() + pIn.get(i,0);
-      double Dq0 = sq    * rnd.normal();
-      double Dp0 = sp    * rnd.normal();
+          res[j].set(i, 0, qav - 0.5 * Dq0);  // q0
+          res[j].set(i, 1, pav - 0.5 * Dp0);  // p0
+          res[j].set(i, 2, qav + 0.5 * Dq0);  // q0'
+          res[j].set(i, 3, pav + 0.5 * Dp0);  // p0'
 
-      res[j].set(i, 0,  qav - 0.5 * Dq0);  // q0
-      res[j].set(i, 1,  pav - 0.5 * Dp0);  // p0
-      res[j].set(i, 2,  qav + 0.5 * Dq0);  // q0'
-      res[j].set(i, 3,  pav + 0.5 * Dp0);  // p0'
+        }  // for j - all samples
+      }  // for i - all DOFs
 
-    }// for j - all samples
-  }// for i - all DOFs
+      return res;
+    }
 
-  return res;
-
-}
-
-
-}// namespace libivr
-}// liblibra
-
+  }  // namespace libivr
+}  // namespace liblibra

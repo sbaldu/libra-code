@@ -17,22 +17,28 @@
 #include "Basis.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libqobjects;
+  using namespace liblinalg;
+  using namespace libqobjects;
 
-/// libbasis namespace
-namespace libbasis{
+  /// libbasis namespace
+  namespace libbasis {
 
-
-
-void update_derivative_coupling_matrix
-(int x_period,int y_period,int z_period,const VECTOR& t1, const VECTOR& t2, const VECTOR& t3,
- vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
- vector<AO>& basis_ao, int c, MATRIX& Dao_x, MATRIX& Dao_y, MATRIX& Dao_z
-){
-/**
+    void update_derivative_coupling_matrix(int x_period,
+                                           int y_period,
+                                           int z_period,
+                                           const VECTOR& t1,
+                                           const VECTOR& t2,
+                                           const VECTOR& t3,
+                                           vector<vector<int> >& atom_to_ao_map,
+                                           vector<int>& ao_to_atom_map,
+                                           vector<AO>& basis_ao,
+                                           int c,
+                                           MATRIX& Dao_x,
+                                           MATRIX& Dao_y,
+                                           MATRIX& Dao_z) {
+      /**
   \brief Update the derivative coupling matrix (in AO basis): <AO(i)|d/dR_c|AO(j)>
   \param[in] x_period Then number of periodic shells in X direction: 0 - only the central shell, 1 - [-1,0,1], etc.
   \param[in] y_period Then number of periodic shells in Y direction: 0 - only the central shell, 1 - [-1,0,1], etc.
@@ -52,65 +58,57 @@ void update_derivative_coupling_matrix
   This function also takes periodic images of the system into account
 */
 
-  int i,j,n,I,J;
-  VECTOR dIdA,dIdB,TV, Rij,Rij0;
-  double dist, dist_min;  
-  int opt_x,opt_y,opt_z;
+      int i, j, n, I, J;
+      VECTOR dIdA, dIdB, TV, Rij, Rij0;
+      double dist, dist_min;
+      int opt_x, opt_y, opt_z;
 
-  int Norb = basis_ao.size();
+      int Norb = basis_ao.size();
 
-  Dao_x = 0.0;
-  Dao_y = 0.0;
-  Dao_z = 0.0;
- 
-  for(j=0;j<Norb;j++){      
+      Dao_x = 0.0;
+      Dao_y = 0.0;
+      Dao_z = 0.0;
 
-    if(c==ao_to_atom_map[j]){
+      for (j = 0; j < Norb; j++) {
+        if (c == ao_to_atom_map[j]) {
+          for (i = 0; i < Norb; i++) {
+            VECTOR Dao;
+            Dao = 0.0;  // sum from all periodic contributions
 
-      for(i=0;i<Norb;i++){
+            for (int nx = -x_period; nx <= x_period; nx++) {
+              for (int ny = -y_period; ny <= y_period; ny++) {
+                for (int nz = -z_period; nz <= z_period; nz++) {
+                  // This summation corresponds to k = 0 (Gamma-point)
+                  TV = nx * t1 + ny * t2 + nz * t3;
 
-        VECTOR Dao; Dao = 0.0; // sum from all periodic contributions
+                  //if(i==j){      }
+                  if (ao_to_atom_map[i] == ao_to_atom_map[j]) {
+                  }  // orbitals on the same atom - no NAC
+                  else {
+                    basis_ao[j].shift_position(TV);
 
-        for(int nx=-x_period;nx<=x_period;nx++){
-          for(int ny=-y_period;ny<=y_period;ny++){
-            for(int nz=-z_period;nz<=z_period;nz++){
-        
-              // This summation corresponds to k = 0 (Gamma-point)    
-              TV = nx*t1 + ny*t2 + nz*t3;
-        
-              //if(i==j){      }
-              if(ao_to_atom_map[i]==ao_to_atom_map[j]){  } // orbitals on the same atom - no NAC
-              else{
-        
-                basis_ao[j].shift_position(TV);
-        
-                VECTOR dao;
-                dao = derivative_coupling_integral(&basis_ao[i], &basis_ao[j]); //<i|d/dR_a|j> where a - is the atom of orbital j
-                Dao += dao;
-        
-                basis_ao[j].shift_position(-TV);
-        
-              }// i != j
-        
-            }// for nz
-          }// for ny
-        }// for nx 
+                    VECTOR dao;
+                    dao = derivative_coupling_integral(
+                        &basis_ao[i],
+                        &basis_ao[j]);  //<i|d/dR_a|j> where a - is the atom of orbital j
+                    Dao += dao;
 
-        Dao_x.M[i*Norb+j] = Dao.x;
-        Dao_y.M[i*Norb+j] = Dao.y;
-        Dao_z.M[i*Norb+j] = Dao.z;
+                    basis_ao[j].shift_position(-TV);
 
-      }// for i
-    }// if c==ao_to_atom_map[j]
-  }// for j
+                  }  // i != j
 
+                }  // for nz
+              }  // for ny
+            }  // for nx
 
+            Dao_x.M[i * Norb + j] = Dao.x;
+            Dao_y.M[i * Norb + j] = Dao.y;
+            Dao_z.M[i * Norb + j] = Dao.z;
 
+          }  // for i
+        }  // if c==ao_to_atom_map[j]
+      }  // for j
+    }
 
-}
-
-
-
-
-}//namespace libbasis
-}//namespace liblibra
+  }  //namespace libbasis
+}  //namespace liblibra

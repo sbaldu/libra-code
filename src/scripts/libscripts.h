@@ -14,18 +14,14 @@
 
 #include "state/libstate.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libscripts{
+  namespace libscripts {
 
+    void export_scripts_objects();
 
-void export_scripts_objects();
+  }  // namespace libscripts
+}  // namespace liblibra
 
-
-}// namespace libscripts
-}// liblibra
-
-#endif // LIBSCRIPTS_H
-
+#endif  // LIBSCRIPTS_H

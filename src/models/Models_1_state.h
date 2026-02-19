@@ -21,31 +21,42 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libmodels namespace
+  namespace libmodels {
 
-/// libmodels namespace
-namespace libmodels{
+    vector<double> set_params_1S_1D_poly4(std::string model);
 
+    void model_1S_1D_poly2(CMATRIX& Hdia,
+                           CMATRIX& Sdia,
+                           vector<CMATRIX>& d1ham_dia,
+                           vector<CMATRIX>& dc1_dia,
+                           vector<double>& q,
+                           vector<double>& params);
+    void model_1S_1D_poly2(CMATRIX* Hdia,
+                           CMATRIX* Sdia,
+                           vector<CMATRIX*>& d1ham_dia,
+                           vector<CMATRIX*>& dc1_dia,
+                           vector<double>& q,
+                           vector<double>& params);
 
-vector<double> set_params_1S_1D_poly4(std::string model);
+    void model_1S_1D_poly4(CMATRIX& Hdia,
+                           CMATRIX& Sdia,
+                           vector<CMATRIX>& d1ham_dia,
+                           vector<CMATRIX>& dc1_dia,
+                           vector<double>& q,
+                           vector<double>& params);
+    void model_1S_1D_poly4(CMATRIX* Hdia,
+                           CMATRIX* Sdia,
+                           vector<CMATRIX*>& d1ham_dia,
+                           vector<CMATRIX*>& dc1_dia,
+                           vector<double>& q,
+                           vector<double>& params);
 
-void model_1S_1D_poly2(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia, vector<CMATRIX>& dc1_dia,
-                        vector<double>& q, vector<double>& params);
-void model_1S_1D_poly2(CMATRIX* Hdia, CMATRIX* Sdia, vector<CMATRIX*>& d1ham_dia, vector<CMATRIX*>& dc1_dia,
-                       vector<double>& q, vector<double>& params);
+  }  // namespace libmodels
+}  // namespace liblibra
 
-
-void model_1S_1D_poly4(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia, vector<CMATRIX>& dc1_dia,
-                        vector<double>& q, vector<double>& params);
-void model_1S_1D_poly4(CMATRIX* Hdia, CMATRIX* Sdia, vector<CMATRIX*>& d1ham_dia, vector<CMATRIX*>& dc1_dia,
-                        vector<double>& q, vector<double>& params);
-
-
-
-}// namespace libmodels
-}// liblibra
-
-#endif // MODELS_1_STATE_H
+#endif  // MODELS_1_STATE_H

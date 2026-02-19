@@ -20,7 +20,6 @@
 #ifndef ENERGY_AND_FORCES_H
 #define ENERGY_AND_FORCES_H
 
-
 // External dependencies
 #include "../math_linalg/liblinalg.h"
 #include "../nhamiltonian/libnhamiltonian.h"
@@ -33,53 +32,51 @@
 #include "dyn_variables.h"
 #include "../Units.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libnhamiltonian;
+  using namespace libnhamiltonian;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-using namespace libnuclear;
-using namespace libelectronic;
-//using namespace libensemble;
+    using namespace libnuclear;
+    using namespace libelectronic;
+    //using namespace libensemble;
 
+    double compute_kinetic_energy(MATRIX& p, MATRIX& invM, vector<int>& which_dofs);
+    double compute_kinetic_energy(MATRIX& p, MATRIX& invM);
 
-double compute_kinetic_energy(MATRIX& p, MATRIX& invM, vector<int>& which_dofs);
-double compute_kinetic_energy(MATRIX& p, MATRIX& invM);
+    vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM, vector<int>& which_dofs);
+    vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM);
 
-vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM, vector<int>& which_dofs);
-vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM);
+    CMATRIX tsh_indx2ampl(vector<int>& res, int nstates);
 
+    double average_potential_energy(dyn_control_params& prms,
+                                    dyn_variables& dyn_vars,
+                                    nHamiltonian& ham);
+    double average_potential_energy(bp::dict prms, dyn_variables& dyn_vars, nHamiltonian& ham);
 
+    vector<double> potential_energies(dyn_control_params& prms,
+                                      dyn_variables& dyn_vars,
+                                      nHamiltonian& ham);
+    vector<double> potential_energies(bp::dict prms, dyn_variables& dyn_vars, nHamiltonian& ham);
 
-CMATRIX tsh_indx2ampl(vector<int>& res, int nstates);
+    //MATRIX aux_get_forces(dyn_control_params& prms, dyn_variables& dynvars,  nHamiltonian& ham);
+    //MATRIX aux_get_forces(bp::dict prms, dyn_variables& dynvars, nHamiltonian& ham);
+    void update_forces(dyn_control_params& prms, dyn_variables& dynvars, nHamiltonian& ham);
+    void update_forces(bp::dict prms, dyn_variables& dynvars, nHamiltonian& ham);
 
-
-double average_potential_energy(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham);
-double average_potential_energy(bp::dict prms, dyn_variables& dyn_vars, nHamiltonian& ham);
-
-vector<double> potential_energies(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham);
-vector<double> potential_energies(bp::dict prms, dyn_variables& dyn_vars, nHamiltonian& ham);
-
-
-//MATRIX aux_get_forces(dyn_control_params& prms, dyn_variables& dynvars,  nHamiltonian& ham);
-//MATRIX aux_get_forces(bp::dict prms, dyn_variables& dynvars, nHamiltonian& ham);
-void update_forces(dyn_control_params& prms, dyn_variables& dynvars,  nHamiltonian& ham);
-void update_forces(bp::dict prms, dyn_variables& dynvars, nHamiltonian& ham);
-
-/* old way
+    /* old way
 MATRIX aux_get_forces(dyn_control_params& prms, CMATRIX& amplitudes, vector<CMATRIX>& projectors, vector<int>& act_states, 
                       nHamiltonian& ham);
 MATRIX aux_get_forces(bp::dict prms, CMATRIX& amplitudes, vector<CMATRIX>& projectors, vector<int>& act_states, 
                       nHamiltonian& ham);
 */
-vector<CMATRIX> get_Eadi(nHamiltonian& ham);
-vector<CMATRIX> get_Eadi(nHamiltonian* ham);
+    vector<CMATRIX> get_Eadi(nHamiltonian& ham);
+    vector<CMATRIX> get_Eadi(nHamiltonian* ham);
 
-/*
+    /*
 double compute_kinetic_energy(Nuclear* mol);
 double compute_kinetic_energy(Nuclear& mol);
 double compute_kinetic_energy(Ensemble& ens);
@@ -94,7 +91,7 @@ double compute_forces(Ensemble& ens,int opt);
 
 */
 
-}// namespace libdyn
-}// liblibra
+  }  // namespace libdyn
+}  // namespace liblibra
 
-#endif // ENERGY_AND_FORCES_H
+#endif  // ENERGY_AND_FORCES_H

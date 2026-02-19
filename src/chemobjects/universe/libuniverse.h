@@ -21,19 +21,18 @@
 #include "Universe.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libchemobjects namespace
-namespace libchemobjects{
+  /// libchemobjects namespace
+  namespace libchemobjects {
 
-/// libuniverse namespace
-namespace libuniverse{
+    /// libuniverse namespace
+    namespace libuniverse {
 
-void export_Universe_objects();
+      void export_Universe_objects();
 
+    }  // namespace libuniverse
+  }  // namespace libchemobjects
+}  // namespace liblibra
 
-}// namespace libuniverse
-}// namespace libchemobjects
-}// liblibra
-
-#endif // LIB_UNIVERSE_H
+#endif  // LIB_UNIVERSE_H

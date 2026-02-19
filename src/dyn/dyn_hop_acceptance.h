@@ -25,38 +25,53 @@
 #include "dyn_variables.h"
 #include "../Units.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-using namespace libnhamiltonian;
-namespace bp = boost::python;
+  using namespace libio;
+  using namespace libnhamiltonian;
+  namespace bp = boost::python;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-int can_rescale_along_vector(double E_old, double E_new, MATRIX& p, MATRIX& invM, MATRIX& t, vector<int>& which_dofs);
-int can_rescale_along_vector(double E_old, double E_new, MATRIX& p, MATRIX& invM, MATRIX& t);
+    int can_rescale_along_vector(
+        double E_old, double E_new, MATRIX& p, MATRIX& invM, MATRIX& t, vector<int>& which_dofs);
+    int can_rescale_along_vector(double E_old, double E_new, MATRIX& p, MATRIX& invM, MATRIX& t);
 
-void rescale_along_vector(double E_old, double E_new, MATRIX& p, MATRIX& invM, MATRIX& t, int do_reverse, vector<int>& which_dofs);
-void rescale_along_vector(double E_old, double E_new, MATRIX& p, MATRIX& invM, MATRIX& t, int do_reverse);
+    void rescale_along_vector(double E_old,
+                              double E_new,
+                              MATRIX& p,
+                              MATRIX& invM,
+                              MATRIX& t,
+                              int do_reverse,
+                              vector<int>& which_dofs);
+    void rescale_along_vector(
+        double E_old, double E_new, MATRIX& p, MATRIX& invM, MATRIX& t, int do_reverse);
 
-vector<double> Boltz_quant_prob(vector<double>& E, double T);
-double Boltz_cl_prob(double E, double T);
-double Boltz_cl_prob_up(double E, double T);
-double HO_prob(vector<double>& E, vector<int>& qn, double T, vector<double>& prob);
-double HO_prob_up(vector<double>& E, vector<int>& qn, double T, vector<double>& prob);
-double boltz_factor(double E_new, double E_old, double T, int boltz_opt);
+    vector<double> Boltz_quant_prob(vector<double>& E, double T);
+    double Boltz_cl_prob(double E, double T);
+    double Boltz_cl_prob_up(double E, double T);
+    double HO_prob(vector<double>& E, vector<int>& qn, double T, vector<double>& prob);
+    double HO_prob_up(vector<double>& E, vector<int>& qn, double T, vector<double>& prob);
+    double boltz_factor(double E_new, double E_old, double T, int boltz_opt);
 
+    vector<int> accept_hops(dyn_variables& dyn_var,
+                            nHamiltonian& ham,
+                            vector<int>& proposed_states,
+                            vector<int>& initial_states,
+                            dyn_control_params& prms,
+                            Random& rnd,
+                            vector<int>& which_trajectories);
 
-vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham,vector<int>& proposed_states, vector<int>& initial_states, 
-          dyn_control_params& prms,Random& rnd,  vector<int>& which_trajectories);
+    vector<int> accept_hops(dyn_variables& dyn_var,
+                            nHamiltonian& ham,
+                            vector<int>& proposed_states,
+                            vector<int>& initial_states,
+                            dyn_control_params& prms,
+                            Random& rnd);
 
-vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham,vector<int>& proposed_states, vector<int>& initial_states,
-          dyn_control_params& prms,Random& rnd);
-
-/**
+    /**
 vector<int> accept_hops(dyn_control_params& prms,
        MATRIX& q, MATRIX& p, MATRIX& invM, CMATRIX& C, 
        nHamiltonian& ham, vector<int>& proposed_states, vector<int>& initial_states, Random& rnd,
@@ -67,25 +82,26 @@ vector<int> accept_hops(dyn_control_params& prms,
        nHamiltonian& ham, vector<int>& proposed_states, vector<int>& initial_states, Random& rnd);
 */
 
-/*
+    /*
 vector<int> where_can_we_hop(int traj, dyn_control_params& prms,
        MATRIX& q, MATRIX& p,  MATRIX& invM, CMATRIX& Coeff, 
        nHamiltonian& ham, vector<int>& act_states, Random& rnd);
 */
-vector<int> where_can_we_hop(int traj, dyn_variables& dyn_var, nHamiltonian& ham, dyn_control_params& prms,Random& rnd);
+    vector<int> where_can_we_hop(
+        int traj, dyn_variables& dyn_var, nHamiltonian& ham, dyn_control_params& prms, Random& rnd);
 
-
-/*
+    /*
 void handle_hops_nuclear(dyn_control_params& prms,
        MATRIX& q, MATRIX& p, MATRIX& invM, CMATRIX& C,
        nHamiltonian& ham, vector<int>& new_states, vector<int>& old_states);
 */
-void handle_hops_nuclear(dyn_variables& dyn_var, nHamiltonian& ham,
-   vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms);
+    void handle_hops_nuclear(dyn_variables& dyn_var,
+                             nHamiltonian& ham,
+                             vector<int>& new_states,
+                             vector<int>& old_states,
+                             dyn_control_params& prms);
 
+  }  // namespace libdyn
+}  // namespace liblibra
 
-}// namespace libdyn
-}// liblibra
-
-#endif // DYN_HOP_ACCEPTANCE_H
-
+#endif  // DYN_HOP_ACCEPTANCE_H

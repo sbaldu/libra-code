@@ -21,78 +21,70 @@
 #include "../../math_linalg/liblinalg.h"
 #include "../../math_meigen/libmeigen.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libhamiltonian namespace
+  namespace libhamiltonian {
 
-/// libhamiltonian namespace
-namespace libhamiltonian{
+    using namespace libhamiltonian_generic;
+    using namespace liblinalg;
+    using namespace libmeigen;
 
-using namespace libhamiltonian_generic;
-using namespace liblinalg;
-using namespace libmeigen;
+    /// libhamiltonian_extern namespace
+    namespace libhamiltonian_extern {
 
-/// libhamiltonian_extern namespace
-namespace libhamiltonian_extern{
-
-
-class Hamiltonian_Extern : public Hamiltonian{
-/**
+      class Hamiltonian_Extern : public Hamiltonian {
+        /**
   This is a class derived from the generic Hamiltonian class, so it inherits many of its properties
   //  We will use the Hamiltonian's members directly (see in Hamiltonian.h )
 */
 
-  int adiabatic_opt; ///< defines how to perform adiabatic calculations: either use bound adiabatic matrices (0, default), or to
-                     ///< perform diabatic -> adiabatic transformation (1)
-  int vibronic_opt;  ///< defines how to perform vibronic Hamiltonian calculations: either use bound vibronic matrix (0, default), or to
-                     ///< perform honest computations using electronic Hamiltonian and derivative couplings (1)
+        int adiabatic_opt;  ///< defines how to perform adiabatic calculations: either use bound adiabatic matrices (0, default), or to
+                            ///< perform diabatic -> adiabatic transformation (1)
+        int vibronic_opt;  ///< defines how to perform vibronic Hamiltonian calculations: either use bound vibronic matrix (0, default), or to
+        ///< perform honest computations using electronic Hamiltonian and derivative couplings (1)
 
+        // Bind status (bs_)
+        int bs_ham_dia;    ///< bind status of diabatic Hamiltonian
+        int bs_d1ham_dia;  ///< bind status of first-order derivatives of the diabatic Hamiltonian
+        int bs_d2ham_dia;  ///< bind status of second-order derivatives of the diabatic Hamiltonian
+        int bs_ham_adi;    ///< bind status of adiabatic Hamiltonian
+        int bs_d1ham_adi;  ///< bind status of first-order derivatives of the adiabatic Hamiltonian
+        int bs_ham_vib;    ///< bind status of the vibronic Hamiltonian
 
-  // Bind status (bs_)
-  int bs_ham_dia;   ///< bind status of diabatic Hamiltonian
-  int bs_d1ham_dia; ///< bind status of first-order derivatives of the diabatic Hamiltonian
-  int bs_d2ham_dia; ///< bind status of second-order derivatives of the diabatic Hamiltonian
-  int bs_ham_adi;   ///< bind status of adiabatic Hamiltonian                                
-  int bs_d1ham_adi; ///< bind status of first-order derivatives of the adiabatic Hamiltonian                     
-  int bs_ham_vib;   ///< bind status of the vibronic Hamiltonian
+        CMATRIX* ham_vib;  ///< Vibronic Hamiltonian
 
-  CMATRIX* ham_vib;  ///< Vibronic Hamiltonian 
-  
-   
-public:
+      public:
+        /// Constructor: only allocates memory and sets up related variables
+        Hamiltonian_Extern(int _nelec, int _nnucl);
 
-  /// Constructor: only allocates memory and sets up related variables
-  Hamiltonian_Extern(int _nelec, int _nnucl);
+        /// Destructor
+        ~Hamiltonian_Extern();
 
-  /// Destructor
-  ~Hamiltonian_Extern();
+        /// Set parameters
+        void set_adiabatic_opt(int);
+        void set_vibronic_opt(int vib_opt);
 
-  /// Set parameters
-  void set_adiabatic_opt(int);
-  void set_vibronic_opt(int vib_opt);
+        void bind_ham_dia(MATRIX& _ham_dia);
+        void bind_d1ham_dia(vector<MATRIX>& _d1ham_dia);
+        void bind_d2ham_dia(vector<MATRIX>& _d2ham_dia);
+        void bind_ham_adi(MATRIX& _ham_adi);
+        void bind_d1ham_adi(vector<MATRIX>& _d1ham_adi);
+        void bind_ham_vib(CMATRIX& _ham_vib);
 
-  void bind_ham_dia(MATRIX& _ham_dia);
-  void bind_d1ham_dia(vector<MATRIX>& _d1ham_dia);
-  void bind_d2ham_dia(vector<MATRIX>& _d2ham_dia);
-  void bind_ham_adi(MATRIX& _ham_adi);
-  void bind_d1ham_adi(vector<MATRIX>& _d1ham_adi);
-  void bind_ham_vib(CMATRIX& _ham_vib);
+        // Perform actual computations - this will construct the internals of the object of this type
+        void compute_diabatic();
+        void compute_adiabatic();
 
+        std::complex<double> Hvib(int i, int j);
+      };
 
-  // Perform actual computations - this will construct the internals of the object of this type
-  void compute_diabatic();
-  void compute_adiabatic();
+      typedef std::vector<Hamiltonian_Extern>
+          Hamiltonian_ExternList;  /// data type for keeping a list of external Hamiltonians of their derived classes
 
-  std::complex<double> Hvib(int i,int j);
+    }  // namespace libhamiltonian_extern
+  }  // namespace libhamiltonian
+}  // namespace liblibra
 
-};
-
-typedef std::vector<Hamiltonian_Extern> Hamiltonian_ExternList;  /// data type for keeping a list of external Hamiltonians of their derived classes
-
-
-}// namespace libhamiltonian_extern
-}// namespace libmodel
-}// liblibra
-
-#endif // HAMILTONIAN_EXTERN_H
+#endif  // HAMILTONIAN_EXTERN_H

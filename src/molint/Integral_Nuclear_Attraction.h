@@ -15,46 +15,92 @@
 #include "../math_specialfunctions/libspecialfunctions.h"
 #include "../math_linalg/liblinalg.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libspecialfunctions;
-using namespace liblinalg;
+  using namespace libspecialfunctions;
+  using namespace liblinalg;
 
-namespace libmolint{
+  namespace libmolint {
 
+    double nuclear_attraction_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       VECTOR& Rc,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC,
+                                       vector<double*>& aux,
+                                       int n_aux,
+                                       vector<VECTOR*>& auxv,
+                                       int n_auxv);
 
-double nuclear_attraction_integral(int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-                                   int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-                                   VECTOR& Rc,int is_normalize, 
-                                   int is_derivs, VECTOR& DA,VECTOR& DB, VECTOR& DC,
-                                   vector<double*>& aux,int n_aux,vector<VECTOR*>& auxv,int n_auxv                                   
-                                  );
+    double nuclear_attraction_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       VECTOR& Rc,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC);
 
-double nuclear_attraction_integral(int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-                                   int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-                                   VECTOR& Rc,int is_normalize, 
-                                   int is_derivs, VECTOR& DA, VECTOR& DB, VECTOR& DC
-                                  );
+    boost::python::list nuclear_attraction_integral(int nxa,
+                                                    int nya,
+                                                    int nza,
+                                                    double alp_a,
+                                                    VECTOR& Ra,
+                                                    int nxb,
+                                                    int nyb,
+                                                    int nzb,
+                                                    double alp_b,
+                                                    VECTOR& Rb,
+                                                    VECTOR& Rc,
+                                                    int is_normalize,
+                                                    int is_derivs);
 
-boost::python::list nuclear_attraction_integral(int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-                                     int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-                                     VECTOR& Rc, int is_normalize, int is_derivs
-                                    );
+    double nuclear_attraction_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       VECTOR& Rc,
+                                       int is_normalize);
 
-double nuclear_attraction_integral(int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-                        int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-                        VECTOR& Rc, int is_normalize
-                       );
+    double nuclear_attraction_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       VECTOR& Rc);
 
-double nuclear_attraction_integral(int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-                        int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb, VECTOR& Rc
-                       );
+  }  // namespace libmolint
+}  // namespace liblibra
 
-
-}// namespace libmolint
-}// namespace liblinalg
-
-
-#endif // INTEGRAL_NUCLEAR_ATTRACTION_H
+#endif  // INTEGRAL_NUCLEAR_ATTRACTION_H

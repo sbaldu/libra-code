@@ -19,14 +19,13 @@
 #include "Model_cubic.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libmodels namespace
-namespace libmodels{
+  /// libmodels namespace
+  namespace libmodels {
 
-
-void cubic_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params){ 
-/** The metastable potential - e.g. see Donoso, A.; Martens, C. Quantum Tunneling Using Entangled Classical Trajectories. Phys. Rev. Lett. 2001, 87, 223202.
+    void cubic_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params) {
+      /** The metastable potential - e.g. see Donoso, A.; Martens, C. Quantum Tunneling Using Entangled Classical Trajectories. Phys. Rev. Lett. 2001, 87, 223202.
   The default parameters are chosen to make 2 bound state, so the system is highly quantum-mechanical
 
   \param[in] x The nuclear coordinate (1D)
@@ -46,37 +45,47 @@ void cubic_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& par
   H_00 = 0.5*m*w^2 * x^2 - (b/3) * x^3
 */
 
+      if (H->n_elts != 1) {
+        std::cout << "Error in cubic_Ham: H matrix must be allocated\n";
+        exit(0);
+      }
+      if (dH->n_elts != 1) {
+        std::cout << "Error in cubic_Ham: dH matrix must be allocated\n";
+        exit(0);
+      }
+      if (d2H->n_elts != 1) {
+        std::cout << "Error in cubic_Ham: d2H matrix must be allocated\n";
+        exit(0);
+      }
 
-  if(H->n_elts!=1){ std::cout<<"Error in cubic_Ham: H matrix must be allocated\n"; exit(0);}
-  if(dH->n_elts!=1){ std::cout<<"Error in cubic_Ham: dH matrix must be allocated\n"; exit(0);}
-  if(d2H->n_elts!=1){ std::cout<<"Error in cubic_Ham: d2H matrix must be allocated\n"; exit(0);}
+      double e;
 
-  double e;
+      // Default parameters: this corresponds to the barrier height: V_Eq = 0.015   at   q_eq = 0.6709
+      double m = 2000.0;  ///< mass m
+      double w = 0.010;   ///< omega
+      double b = 0.2981;  ///< cubic term
+      double mw2 = m * w * w;
+      double x2 = x * x;
+      double x3 = x2 * x;
 
-  // Default parameters: this corresponds to the barrier height: V_Eq = 0.015   at   q_eq = 0.6709
-  double m = 2000.0;  ///< mass m
-  double w = 0.010;   ///< omega 
-  double b = 0.2981;  ///< cubic term
-  double mw2 = m*w*w;
-  double x2 = x*x;
-  double x3 = x2*x;
-  
+      if (params.size() >= 1) {
+        m = params[0];
+      }
+      if (params.size() >= 2) {
+        w = params[1];
+      }
+      if (params.size() >= 3) {
+        b = params[2];
+      }
 
-  if(params.size()>=1){   m = params[0];    }
-  if(params.size()>=2){   w = params[1];    }
-  if(params.size()>=3){   b = params[2];    }
+      // H00
+      H->M[0] = 0.5 * mw2 * x2 - (b / 3.0) * x3;
+      dH->M[0] = mw2 * x - b * x2;
+      d2H->M[0] = mw2 - 2.0 * b * x;
+    }
 
-
-  // H00
-  H->M[0] = 0.5*mw2*x2 - (b/3.0)*x3;
-  dH->M[0] = mw2*x - b*x2;
-  d2H->M[0] = mw2 - 2.0*b*x;
-
-  
-}
-
-boost::python::list cubic_Ham(double x, boost::python::list params_){ 
-/** The metastable potential - e.g. see Donoso, A.; Martens, C. Quantum Tunneling Using Entangled Classical Trajectories. Phys. Rev. Lett. 2001, 87, 223202.
+    boost::python::list cubic_Ham(double x, boost::python::list params_) {
+      /** The metastable potential - e.g. see Donoso, A.; Martens, C. Quantum Tunneling Using Entangled Classical Trajectories. Phys. Rev. Lett. 2001, 87, 223202.
   The default parameters are chosen to make 2 bound state, so the system is highly quantum-mechanical
 
   This is Python-friendly version
@@ -105,25 +114,26 @@ boost::python::list cubic_Ham(double x, boost::python::list params_){
 
 */
 
-  MATRIX H(2,2);
-  MATRIX dH(2,2);
-  MATRIX d2H(2,2);
+      MATRIX H(2, 2);
+      MATRIX dH(2, 2);
+      MATRIX d2H(2, 2);
 
-  int sz = boost::python::len(params_);
-  vector<double> params(sz,0.0);
-  for(int i=0;i<sz;i++){ params[i] = boost::python::extract<double>(params_[i]);  }
+      int sz = boost::python::len(params_);
+      vector<double> params(sz, 0.0);
+      for (int i = 0; i < sz; i++) {
+        params[i] = boost::python::extract<double>(params_[i]);
+      }
 
-  cubic_Ham(x,&H,&dH,&d2H,params);
+      cubic_Ham(x, &H, &dH, &d2H, params);
 
-  boost::python::list res;
-  res.append(x);
-  res.append(H);
-  res.append(dH);
-  res.append(d2H);
- 
-  return res;
+      boost::python::list res;
+      res.append(x);
+      res.append(H);
+      res.append(dH);
+      res.append(d2H);
 
-}
+      return res;
+    }
 
-}// namespace libmodels
-}// liblibra
+  }  // namespace libmodels
+}  // namespace liblibra

@@ -12,20 +12,17 @@
 #ifndef LIBDATA_H
 #define LIBDATA_H
 
-
 #include "DATA.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdata namespace
-namespace libdata{
+  /// libdata namespace
+  namespace libdata {
 
+    void export_Data_objects();
 
-void export_Data_objects();
+  }  // namespace libdata
+}  // namespace liblibra
 
-
-}// namespace libdata
-}// namespace liblibra
-
-#endif// LIBDATA_H
+#endif  // LIBDATA_H

@@ -19,93 +19,68 @@
 #include "Interactions.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_mm namespace
-namespace libhamiltonian_mm{
+    /// libhamiltonian_mm namespace
+    namespace libhamiltonian_mm {
 
-using namespace libchemobjects;
-using namespace libchemobjects::libchemsys;
-using namespace libpot;
-using namespace libcell;
-using namespace libforcefield;
+      using namespace libchemobjects;
+      using namespace libchemobjects::libchemsys;
+      using namespace libpot;
+      using namespace libcell;
+      using namespace libforcefield;
 
+      class Interaction_4_Body : public Interaction_N_Body {
+      public:
+        // Constructor & Destructor
+        Interaction_4_Body() : Interaction_N_Body(4) { int_type = 4; };
 
+        void set_coords(VECTOR* r1_, VECTOR* r2_, VECTOR* r3_, VECTOR* r4_);
+        void set_coords(VECTOR& r1_, VECTOR& r2_, VECTOR& r3_, VECTOR& r4_);
 
+        void set_transl(VECTOR* t1_, VECTOR* t2_, VECTOR* t3_, VECTOR* t4_);
+        void set_transl(VECTOR& t1_, VECTOR& t2_, VECTOR& t3_, VECTOR& t4_);
 
-class Interaction_4_Body : public Interaction_N_Body{
+        void set_forces(VECTOR* f1_, VECTOR* f2_, VECTOR* f3_, VECTOR* f4_);
+        void set_forces(VECTOR& f1_, VECTOR& f2_, VECTOR& f3_, VECTOR& f4_);
 
-public:
+        void set_charges(double* q1_, double* q2_, double* q3_, double* q4_);
+        void set_charges(double& q1_, double& q2_, double& q3_, double& q4_);
+      };
 
+      class Dihedral_Interaction : public Interaction_4_Body {
+      public:
+        double Vphi, phi0;
+        double Vphi1, Vphi2, Vphi3;
+        int opt, n;
 
-    // Constructor & Destructor
-    Interaction_4_Body() :  Interaction_N_Body(4){ int_type = 4; };
+        // Constructor & Destructor
+        Dihedral_Interaction() : Interaction_4_Body() { int_type = 40; };
 
-    void set_coords(VECTOR* r1_, VECTOR* r2_, VECTOR* r3_, VECTOR* r4_);
-    void set_coords(VECTOR& r1_, VECTOR& r2_, VECTOR& r3_, VECTOR& r4_);
+        void set_functional(std::string f);
+        void set_params(map<std::string, double>& params);
 
-    void set_transl(VECTOR* t1_, VECTOR* t2_, VECTOR* t3_, VECTOR* t4_);
-    void set_transl(VECTOR& t1_, VECTOR& t2_, VECTOR& t3_, VECTOR& t4_);
+        void compute();
+      };
 
-    void set_forces(VECTOR* f1_, VECTOR* f2_, VECTOR* f3_, VECTOR* f4_);
-    void set_forces(VECTOR& f1_, VECTOR& f2_, VECTOR& f3_, VECTOR& f4_);
+      class OOP_Interaction : public Interaction_4_Body {
+      public:
+        double K, C0, C1, C2, xi_0;
+        int opt;
 
-    void set_charges(double* q1_, double* q2_, double* q3_, double* q4_);
-    void set_charges(double& q1_, double& q2_, double& q3_, double& q4_);
+        // Constructor & Destructor
+        OOP_Interaction() : Interaction_4_Body() { int_type = 41; };
 
-};
+        void set_functional(std::string f);
+        void set_params(map<std::string, double>& params);
 
+        void compute();
+      };
 
-class Dihedral_Interaction : public Interaction_4_Body{
+    }  // namespace libhamiltonian_mm
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-public:
-
-    double Vphi,phi0;
-    double Vphi1,Vphi2,Vphi3;
-    int opt,n;
-
-    // Constructor & Destructor
-    Dihedral_Interaction() : Interaction_4_Body(){ int_type = 40; };
-
-    void set_functional(std::string f);
-    void set_params(map<std::string,double>& params);
-
-    void compute();
-};
-
-
-
-class OOP_Interaction : public Interaction_4_Body{
-
-public:
-
-
-    double K,C0,C1,C2,xi_0;
-    int opt;
-
-    // Constructor & Destructor
-    OOP_Interaction() : Interaction_4_Body(){ int_type = 41; };
-
-    void set_functional(std::string f);
-    void set_params(map<std::string,double>& params);
-
-    void compute();
-};
-
-
-
-
-
-
-
-
-
-
-}// namespace libhamiltonian_mm
-}// namespace libatomistic
-}// liblibra
-
-
-#endif // INTERACTIONS_4_BODY_H
+#endif  // INTERACTIONS_4_BODY_H

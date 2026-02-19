@@ -18,10 +18,8 @@
 #include "Excitation.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libcontrol_parameters namespace
-namespace libcommon_types{
-
-}
-}
+  /// libcontrol_parameters namespace
+  namespace libcommon_types {}
+}  // namespace liblibra

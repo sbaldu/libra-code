@@ -17,24 +17,22 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Core>
 #include <Eigen/SVD>
-#endif 
+#endif
 
 #include "mEigen.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace Eigen;
-using namespace std;
-using namespace liblinalg;
+  using namespace Eigen;
+  using namespace std;
+  using namespace liblinalg;
 
-/// libmeigen namespace
-namespace libmeigen{
+  /// libmeigen namespace
+  namespace libmeigen {
 
-
-
-void FullPivLU_decomposition(MATRIX& A, MATRIX& P, MATRIX& L, MATRIX& U, MATRIX& Q){
-/** A wrapper of Eigen::FullPivLU<MatrixXd>.matrixLU() 
+    void FullPivLU_decomposition(MATRIX& A, MATRIX& P, MATRIX& L, MATRIX& U, MATRIX& Q) {
+      /** A wrapper of Eigen::FullPivLU<MatrixXd>.matrixLU() 
    A - the source matrix
    P - the permutation matrix
    L - lower triangular
@@ -48,51 +46,49 @@ void FullPivLU_decomposition(MATRIX& A, MATRIX& P, MATRIX& L, MATRIX& U, MATRIX&
 
 */
 
-  int N = A.n_cols;
-  int i,j;
+      int N = A.n_cols;
+      int i, j;
 
-  MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      a(i,j) = A.M[i*N+j];
-    }// for j
-  }// for i
+      MatrixXd a(N, N);
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          a(i, j) = A.M[i * N + j];
+        }  // for j
+      }  // for i
 
-  Eigen::FullPivLU<MatrixXd> lu(a);
+      Eigen::FullPivLU<MatrixXd> lu(a);
 
+      MatrixXd l(N, N);
+      l = lu.matrixLU().triangularView<StrictlyLower>();
 
-  MatrixXd l(N,N); 
-  l = lu.matrixLU().triangularView<StrictlyLower>();
+      MatrixXd u(N, N);
+      u = lu.matrixLU().triangularView<Upper>();
 
-  MatrixXd u(N,N);
-  u = lu.matrixLU().triangularView<Upper>();
+      MatrixXd p(N, N);
+      p = lu.permutationP();
 
-  MatrixXd p(N,N);
-  p = lu.permutationP(); 
+      MatrixXd q(N, N);
+      q = lu.permutationQ();
 
-  MatrixXd q(N,N);
-  q = lu.permutationQ(); 
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          P.M[i * N + j] = p(i, j);
 
+          L.M[i * N + j] = l(i, j);
+          if (i == j) {
+            L.M[i * N + j] = 1.0;
+          }
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      P.M[i*N+j] = p(i,j);
+          U.M[i * N + j] = u(i, j);
 
-      L.M[i*N+j] = l(i,j);
-      if(i==j){   L.M[i*N+j] = 1.0;  }
+          Q.M[i * N + j] = q(i, j);
 
-      U.M[i*N+j] = u(i,j);
+        }  // for j
+      }  // for i
+    }
 
-      Q.M[i*N+j] = q(i,j);
-
-    }// for j
-  }// for i
-  
-}
-
-
-void FullPivLU_decomposition(CMATRIX& A, CMATRIX& P, CMATRIX& L, CMATRIX& U, CMATRIX& Q){
-/** A wrapper of Eigen::FullPivLU<MatrixXcd>.matrixLU() 
+    void FullPivLU_decomposition(CMATRIX& A, CMATRIX& P, CMATRIX& L, CMATRIX& U, CMATRIX& Q) {
+      /** A wrapper of Eigen::FullPivLU<MatrixXcd>.matrixLU() 
    A - the source matrix
    P - the permutation matrix
    L - lower triangular
@@ -106,54 +102,49 @@ void FullPivLU_decomposition(CMATRIX& A, CMATRIX& P, CMATRIX& L, CMATRIX& U, CMA
 
 */
 
+      int N = A.n_cols;
+      int i, j;
 
-  int N = A.n_cols;
-  int i,j;
+      MatrixXcd a(N, N);
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          a(i, j) = A.M[i * N + j];
+        }  // for j
+      }  // for i
 
-  MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      a(i,j) = A.M[i*N+j];
-    }// for j
-  }// for i
+      Eigen::FullPivLU<MatrixXcd> lu(a);
 
-  Eigen::FullPivLU<MatrixXcd> lu(a);
+      MatrixXcd l(N, N);
+      l = lu.matrixLU().triangularView<StrictlyLower>();
 
+      MatrixXcd u(N, N);
+      u = lu.matrixLU().triangularView<Upper>();
 
-  MatrixXcd l(N,N); 
-  l = lu.matrixLU().triangularView<StrictlyLower>();
+      MatrixXcd p(N, N);
+      p = lu.permutationP();
 
-  MatrixXcd u(N,N);
-  u = lu.matrixLU().triangularView<Upper>();
+      MatrixXcd q(N, N);
+      q = lu.permutationQ();
 
-  MatrixXcd p(N,N);
-  p = lu.permutationP(); 
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          P.M[i * N + j] = p(i, j);
 
-  MatrixXcd q(N,N);
-  q = lu.permutationQ(); 
+          L.M[i * N + j] = l(i, j);
+          if (i == j) {
+            L.M[i * N + j] = 1.0;
+          }
 
+          U.M[i * N + j] = u(i, j);
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      P.M[i*N+j] = p(i,j);
+          Q.M[i * N + j] = q(i, j);
 
-      L.M[i*N+j] = l(i,j);
-      if(i==j){   L.M[i*N+j] = 1.0;  }
+        }  // for j
+      }  // for i
+    }
 
-      U.M[i*N+j] = u(i,j);
-
-      Q.M[i*N+j] = q(i,j);
-
-    }// for j
-  }// for i
-  
-}
-
-
-
-
-void JacobiSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
-/** 
+    void JacobiSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V) {
+      /** 
 
    A wrapper of Eigen::JacobiSVD<MatrixXd> class
 
@@ -164,48 +155,43 @@ void JacobiSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
 
 */
 
-  
+      int N = A.n_cols;
+      int i, j;
 
-  int N = A.n_cols;
-  int i,j;
+      MatrixXcd a(N, N);
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          a(i, j) = A.M[i * N + j];
+        }  // for j
+      }  // for i
 
-  MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      a(i,j) = A.M[i*N+j];
-    }// for j
-  }// for i
+      Eigen::JacobiSVD<Eigen::MatrixXcd> svd(a, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
+      MatrixXcd u(N, N);
+      MatrixXcd s(N, 1);
+      MatrixXcd v(N, N);
 
-  Eigen::JacobiSVD<Eigen::MatrixXcd> svd(a, Eigen::ComputeFullU | Eigen::ComputeFullV);
+      u = svd.matrixU();
+      s = svd.singularValues();
+      v = svd.matrixV();
 
-  MatrixXcd u(N,N); 
-  MatrixXcd s(N,1); 
-  MatrixXcd v(N,N); 
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          U.M[i * N + j] = u(i, j);
+          V.M[i * N + j] = v(i, j);
 
-  u = svd.matrixU();
-  s = svd.singularValues();
-  v = svd.matrixV();
+          if (j == i) {
+            S.M[i * N + i] = s(i, 0);
+          } else {
+            S.M[i * N + j] = complex<double>(0.0, 0.0);
+          }
 
-  for(i=0;i<N;i++){
+        }  // for j
+      }  // for i
+    }
 
-    for(j=0;j<N;j++){
-
-      U.M[i*N+j] = u(i,j);
-      V.M[i*N+j] = v(i,j);
-
-      if(j==i){    S.M[i*N+i] = s(i,0); }
-      else{ S.M[i*N+j] = complex<double>(0.0, 0.0); }
-
-
-    }// for j
-  }// for i
-  
-}
-
-
-void BDCSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
-/** 
+    void BDCSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V) {
+      /** 
 
    A wrapper of Eigen::BDCSVD<MatrixXd> class
 
@@ -216,48 +202,43 @@ void BDCSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
 
 */
 
-  
+      int N = A.n_cols;
+      int i, j;
 
-  int N = A.n_cols;
-  int i,j;
+      MatrixXcd a(N, N);
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          a(i, j) = A.M[i * N + j];
+        }  // for j
+      }  // for i
 
-  MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      a(i,j) = A.M[i*N+j];
-    }// for j
-  }// for i
+      Eigen::BDCSVD<Eigen::MatrixXcd> svd(a, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
+      MatrixXcd u(N, N);
+      MatrixXcd s(N, 1);
+      MatrixXcd v(N, N);
 
-  Eigen::BDCSVD<Eigen::MatrixXcd> svd(a, Eigen::ComputeFullU | Eigen::ComputeFullV);
+      u = svd.matrixU();
+      s = svd.singularValues();
+      v = svd.matrixV();
 
-  MatrixXcd u(N,N); 
-  MatrixXcd s(N,1); 
-  MatrixXcd v(N,N); 
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          U.M[i * N + j] = u(i, j);
+          V.M[i * N + j] = v(i, j);
 
-  u = svd.matrixU();
-  s = svd.singularValues();
-  v = svd.matrixV();
+          if (j == i) {
+            S.M[i * N + i] = s(i, 0);
+          } else {
+            S.M[i * N + j] = complex<double>(0.0, 0.0);
+          }
 
-  for(i=0;i<N;i++){
+        }  // for j
+      }  // for i
+    }
 
-    for(j=0;j<N;j++){
-
-      U.M[i*N+j] = u(i,j);
-      V.M[i*N+j] = v(i,j);
-
-      if(j==i){    S.M[i*N+i] = s(i,0); }
-      else{ S.M[i*N+j] = complex<double>(0.0, 0.0); }
-
-    }// for j
-  }// for i
-  
-}
-
-
-
-void LLT_decomposition(MATRIX& A, MATRIX& L){
-/** A wrapper of Eigen::LLT<MatrixXd>.matrixL()
+    void LLT_decomposition(MATRIX& A, MATRIX& L) {
+      /** A wrapper of Eigen::LLT<MatrixXd>.matrixL()
    A - the source matrix
    L - lower triangular
 
@@ -267,28 +248,24 @@ void LLT_decomposition(MATRIX& A, MATRIX& L){
 
 */
 
-  int N = A.n_cols;
-  int i,j;
+      int N = A.n_cols;
+      int i, j;
 
-  MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      a(i,j) = A.M[i*N+j];
-    }// for j
-  }// for i
+      MatrixXd a(N, N);
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          a(i, j) = A.M[i * N + j];
+        }  // for j
+      }  // for i
 
-  Eigen::MatrixXd l( a.llt().matrixL() );
+      Eigen::MatrixXd l(a.llt().matrixL());
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
-      L.M[i*N+j] = l(i,j);
-    }// for j
-  }// for i
+      for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+          L.M[i * N + j] = l(i, j);
+        }  // for j
+      }  // for i
+    }
 
-}
-
-
-
-
-}// namespace libmeigen
-}// namespace liblibra
+  }  // namespace libmeigen
+}  // namespace liblibra

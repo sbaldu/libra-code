@@ -16,52 +16,55 @@
 #ifndef HAMILTONIAN_HF_H
 #define HAMILTONIAN_HF_H
 
-
 #include "Electronic_Structure.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_qm namespace
-namespace libhamiltonian_qm{
+    /// libhamiltonian_qm namespace
+    namespace libhamiltonian_qm {
 
+      // Hamiltonian_HF.cpp
+      void Hamiltonian_core_hf(System& syst,
+                               vector<AO>& basis_ao,
+                               Control_Parameters& prms,
+                               Model_Parameters& modprms,
+                               vector<vector<int> >& atom_to_ao_map,
+                               vector<int>& ao_to_atom_map,
+                               MATRIX* Hao,
+                               MATRIX* Sao,
+                               int DF);
 
+      void Hamiltonian_core_hf(System& syst,
+                               vector<AO>& basis_ao,
+                               Control_Parameters& prms,
+                               Model_Parameters& modprms,
+                               vector<vector<int> >& atom_to_ao_map,
+                               vector<int>& ao_to_atom_map,
+                               MATRIX& Hao,
+                               MATRIX& Sao,
+                               int DF);
 
-// Hamiltonian_HF.cpp
-void Hamiltonian_core_hf
-( System& syst, vector<AO>& basis_ao, 
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
-  MATRIX* Hao, MATRIX* Sao, int DF
-);
+      void Hamiltonian_Fock_hf(Electronic_Structure* el,
+                               System& syst,
+                               vector<AO>& basis_ao,
+                               Control_Parameters& prms,
+                               Model_Parameters& modprms,
+                               vector<vector<int> >& atom_to_ao_map,
+                               vector<int>& ao_to_atom_map);
 
+      void Hamiltonian_Fock_hf(Electronic_Structure& el,
+                               System& syst,
+                               vector<AO>& basis_ao,
+                               Control_Parameters& prms,
+                               Model_Parameters& modprms,
+                               vector<vector<int> >& atom_to_ao_map,
+                               vector<int>& ao_to_atom_map);
 
-void Hamiltonian_core_hf
-( System& syst, vector<AO>& basis_ao, 
-  Control_Parameters& prms, Model_Parameters& modprms,
-  vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
-  MATRIX& Hao, MATRIX& Sao, int DF
-);
+    }  // namespace libhamiltonian_qm
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-
-void Hamiltonian_Fock_hf(Electronic_Structure* el, System& syst, vector<AO>& basis_ao,
-                         Control_Parameters& prms,Model_Parameters& modprms,
-                         vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map
-                        );
-
-void Hamiltonian_Fock_hf(Electronic_Structure& el, System& syst, vector<AO>& basis_ao,
-                         Control_Parameters& prms,Model_Parameters& modprms,
-                         vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map
-                        );
-
-
-
-
-}// namespace libhamiltonian_qm
-}// namespace libatomistic
-}// liblibra
-
-#endif // HAMILTONIAN_HF_H
+#endif  // HAMILTONIAN_HF_H

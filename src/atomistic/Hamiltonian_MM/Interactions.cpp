@@ -17,174 +17,130 @@
 #include "Interactions.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_mm namespace
-namespace libhamiltonian_mm{
+    /// libhamiltonian_mm namespace
+    namespace libhamiltonian_mm {
 
+      map<std::string, double> dict2map(boost::python::dict d) {
+        std::string key;
+        double value;
+        map<std::string, double> res;
 
-map<std::string, double> dict2map(boost::python::dict d){
+        for (int i = 0; i < len(d.values()); i++) {
+          key = extract<std::string>(d.keys()[i]);
+          value = extract<double>(d.values()[i]);
 
-  std::string key;
-  double value;
-  map<std::string, double> res;
+          res.insert(std::pair<std::string, double>(key, value));
+        }
 
-  for(int i=0;i<len(d.values());i++){
-    key = extract<std::string>(d.keys()[i]);
-    value = extract<double>(d.values()[i]);
+        return res;
+      }
 
-    res.insert( std::pair<std::string, double>(key, value) ); 
-  }
+      //========================================================
+      // Basic functionality of the Interaction class
+      //========================================================
 
-  return res;
-}
-
-
-//========================================================
-// Basic functionality of the Interaction class
-//========================================================
-
-Interaction_N_Body::Interaction_N_Body(){  
-/**
+      Interaction_N_Body::Interaction_N_Body() {
+        /**
   Do nothing
 */
-    Nbody = 0;
+        Nbody = 0;
 
-    is_active = 1;    // set it up to active by default
-    int_type = -1;    // Undefined
-    functional = -1;  // Undefined 
+        is_active = 1;    // set it up to active by default
+        int_type = -1;    // Undefined
+        functional = -1;  // Undefined
 
-    energy = 0.0;     // Energy 
-    stress_at = 0.0;  // stress tensor
+        energy = 0.0;     // Energy
+        stress_at = 0.0;  // stress tensor
 
-    Hess = NULL;      // Hessian
+        Hess = NULL;  // Hessian
+      }
 
-}
-
-Interaction_N_Body::Interaction_N_Body(int Nbody_){  
-/**
+      Interaction_N_Body::Interaction_N_Body(int Nbody_) {
+        /**
   Allocates memory for the pointers
 */
 
-    Nbody = Nbody_;
+        Nbody = Nbody_;
 
-    r = vector<VECTOR*>(Nbody, NULL);
-    t = vector<VECTOR*>(Nbody, NULL);
-    f = vector<VECTOR*>(Nbody, NULL);
-    q = vector<double*>(Nbody, NULL);
+        r = vector<VECTOR*>(Nbody, NULL);
+        t = vector<VECTOR*>(Nbody, NULL);
+        f = vector<VECTOR*>(Nbody, NULL);
+        q = vector<double*>(Nbody, NULL);
 
+        is_active = 1;    // set it up to active by default
+        int_type = -1;    // Undefined
+        functional = -1;  // Undefined
 
-    is_active = 1;    // set it up to active by default
-    int_type = -1;    // Undefined
-    functional = -1;  // Undefined 
+        energy = 0.0;     // Energy
+        stress_at = 0.0;  // stress tensor
 
-    energy = 0.0;     // Energy 
-    stress_at = 0.0;  // stress tensor
+        Hess = NULL;  // Hessian
+      }
 
-    Hess = NULL;      // Hessian
+      void Interaction_N_Body::set_coords(VECTOR& r_, int indx) { r[indx] = &r_; }  // set_coords
 
-}
+      void Interaction_N_Body::set_coords(vector<VECTOR*>& r_, vector<int>& indxs) {
+        address_subset<VECTOR>(r, r_, indxs);
 
+      }  // set_coords
 
-void Interaction_N_Body::set_coords(VECTOR& r_, int indx){
+      void Interaction_N_Body::set_coords(vector<VECTOR>& r_, vector<int>& indxs) {
+        address_subset<VECTOR>(r, r_, indxs);
 
-    r[indx] = &r_; 
+      }  // set_coords
 
-}// set_coords
+      void Interaction_N_Body::set_transl(VECTOR& t_, int indx) { t[indx] = &t_; }  // set_transl
 
+      void Interaction_N_Body::set_transl(vector<VECTOR*>& t_, vector<int>& indxs) {
+        address_subset<VECTOR>(t, t_, indxs);
 
-void Interaction_N_Body::set_coords(vector<VECTOR*>& r_, vector<int>& indxs){
+      }  // set_transl
 
-    address_subset<VECTOR>(r, r_, indxs);
+      void Interaction_N_Body::set_transl(vector<VECTOR>& t_, vector<int>& indxs) {
+        address_subset<VECTOR>(t, t_, indxs);
 
-}// set_coords
+      }  // set_transl
 
-void Interaction_N_Body::set_coords(vector<VECTOR>& r_, vector<int>& indxs){
+      void Interaction_N_Body::set_forces(VECTOR& f_, int indx) { f[indx] = &f_; }  // set_forces
 
-    address_subset<VECTOR>(r, r_, indxs);
+      void Interaction_N_Body::set_forces(vector<VECTOR*>& f_, vector<int>& indxs) {
+        address_subset<VECTOR>(f, f_, indxs);
 
-}// set_coords
+      }  // set_forces
 
+      void Interaction_N_Body::set_forces(vector<VECTOR>& f_, vector<int>& indxs) {
+        address_subset<VECTOR>(f, f_, indxs);
 
+      }  // set_forces
 
-void Interaction_N_Body::set_transl(VECTOR& t_, int indx){
+      void Interaction_N_Body::set_charges(double& q_, int indx) { q[indx] = &q_; }  // set_charges
 
-    t[indx] = &t_; 
+      void Interaction_N_Body::set_charges(vector<double*>& q_, vector<int>& indxs) {
+        address_subset<double>(q, q_, indxs);
 
-}// set_transl
+      }  // set_charges
 
-void Interaction_N_Body::set_transl(vector<VECTOR*>& t_, vector<int>& indxs){
+      void Interaction_N_Body::set_charges(vector<double>& q_, vector<int>& indxs) {
+        address_subset<double>(q, q_, indxs);
 
-    address_subset<VECTOR>(t, t_, indxs);
+      }  // set_charges
 
-}// set_transl
+      void Interaction_N_Body::set_hessian(MATRIX& Hess_, vector<int>& Hess_stenc_) {
+        Hess = &Hess_;
 
-void Interaction_N_Body::set_transl(vector<VECTOR>& t_, vector<int>& indxs){
+        Hess_stenc = Hess_stenc_;
 
-    address_subset<VECTOR>(t, t_, indxs);
+      }  // set Hessian
 
-}// set_transl
+      void Interaction_N_Body::set_functional(std::string f) {
+        ;
+        ;
+      }
 
-
-
-void Interaction_N_Body::set_forces(VECTOR& f_, int indx){
-
-    f[indx] = &f_; 
-
-}// set_forces
-
-void Interaction_N_Body::set_forces(vector<VECTOR*>& f_, vector<int>& indxs){
-
-    address_subset<VECTOR>(f, f_, indxs);
-
-}// set_forces
-
-void Interaction_N_Body::set_forces(vector<VECTOR>& f_, vector<int>& indxs){
-
-    address_subset<VECTOR>(f, f_, indxs);
-
-}// set_forces
-
-
-void Interaction_N_Body::set_charges(double& q_, int indx){
-
-    q[indx] = &q_; 
-
-}// set_charges
-
-
-void Interaction_N_Body::set_charges(vector<double*>& q_, vector<int>& indxs){
-
-    address_subset<double>(q, q_, indxs);
-
-}// set_charges
-
-void Interaction_N_Body::set_charges(vector<double>& q_, vector<int>& indxs){
-
-    address_subset<double>(q, q_, indxs);
-
-}// set_charges
-
-void Interaction_N_Body::set_hessian(MATRIX& Hess_, vector<int>& Hess_stenc_){
-
-    Hess = &Hess_;
-
-    Hess_stenc = Hess_stenc_;
-
-}// set Hessian
-
-
-void Interaction_N_Body::set_functional(std::string f){
- ;;
-}
-
-
-
-
-
-
-}// namespace libhamiltonian_mm
-}// namespace libatomistic 
-}// liblibra
+    }  // namespace libhamiltonian_mm
+  }  // namespace libatomistic
+}  // namespace liblibra

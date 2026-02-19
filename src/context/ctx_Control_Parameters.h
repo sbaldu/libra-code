@@ -14,22 +14,18 @@
 
 #include "Context.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-using namespace liblinalg;
+  using namespace libio;
+  using namespace liblinalg;
 
+  namespace libcontext {
 
-namespace libcontext{
-
-
-class ctx_Control_Parameters : public Context{
-
-public:
-  // Here I only describe the semantics of the variables 
-  /**  
+    class ctx_Control_Parameters : public Context {
+    public:
+      // Here I only describe the semantics of the variables
+      /**  
   // <calculations>
   std::string hamiltonian;       // Possible: eht, indo, cndo2, etc.
   std::string spin_method;       // Possible:  restricted, unrestricted
@@ -174,18 +170,17 @@ public:
   
   **/
 
-//--------- Methods ----------
-   ctx_Control_Parameters();
-  ~ctx_Control_Parameters(){ ;; }
+      //--------- Methods ----------
+      ctx_Control_Parameters();
+      ~ctx_Control_Parameters() {
+        ;
+        ;
+      }
+    };
 
-};
+    void export_ctx_Control_Parameters_objects();
 
+  }  // namespace libcontext
+}  // namespace liblibra
 
-void export_ctx_Control_Parameters_objects();
-
-
-}// namespace libcontext
-}// liblibra
-
-
-#endif // ctx_CONTROL_PARAMETERS_H
+#endif  // ctx_CONTROL_PARAMETERS_H

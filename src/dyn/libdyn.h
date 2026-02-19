@@ -17,7 +17,6 @@
 #ifndef LIBDYN_H
 #define LIBDYN_H
 
-
 // Dynamics classes
 #include "nuclear/libnuclear.h"
 #include "Dynamics.h"
@@ -38,20 +37,15 @@
 //#include "Dynamics_Nuclear.h"
 //#include "Dynamics_Ensemble.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    void export_Dyn_objects();
 
+  }  // namespace libdyn
+}  // namespace liblibra
 
-void export_Dyn_objects();
-
-
-}// namespace libdyn
-}// liblibra
-
-#endif // LIBDYN_H
-
+#endif  // LIBDYN_H

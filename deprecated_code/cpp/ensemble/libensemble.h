@@ -17,26 +17,21 @@
 #ifndef LIB_ENSEMBLE_H
 #define LIB_ENSEMBLE_H
 
-
 #include "Ensemble.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace 
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libensemble namespace 
-namespace libensemble{
+    /// libensemble namespace
+    namespace libensemble {
 
+      void export_Ensemble_objects();
 
-void export_Ensemble_objects();
+    }  // namespace libensemble
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-}// namespace libensemble
-}// namespace libdyn
-}// liblibra
-
-
-
-#endif// LIB_ENSEMBLE_H
+#endif  // LIB_ENSEMBLE_H

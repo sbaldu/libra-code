@@ -26,26 +26,23 @@
 #endif
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
+  using namespace boost::python;
 
-/// liboperators namespace
-namespace liboperators{
+  /// liboperators namespace
+  namespace liboperators {
 
+    void rotate(double&, double&, double);
+    boost::python::list expt_rotate(double x, double y, double phi);
 
-void rotate(double&, double&, double);
-boost::python::list expt_rotate(double x,double y,double phi);
+    void shift(double&, double);
+    double expt_shift(double x, double phi);
 
-void shift(double&, double);
-double expt_shift(double x,double phi);
+    void scale(double&, double);
+    double expt_scale(double x, double phi);
 
-void scale(double&, double);
-double expt_scale(double x,double phi);
+  }  // namespace liboperators
+}  // namespace liblibra
 
-
-}// namespace liboperators
-}// namespace liblibra
-
-
-#endif // OPERATORS_H
+#endif  // OPERATORS_H

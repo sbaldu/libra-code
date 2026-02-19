@@ -17,86 +17,156 @@
 #ifndef QTAG_H
 #define QTAG_H
 
-
 #include "../../math_linalg/liblinalg.h"
 #include "../../nhamiltonian/libnhamiltonian.h"
 #include "../dyn_control_params.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libnhamiltonian;
-namespace bp = boost::python;
+  using namespace liblinalg;
+  using namespace libnhamiltonian;
+  namespace bp = boost::python;
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libqtag namespace
+    namespace libqtag {
 
-/// libqtag namespace
-namespace libqtag{
+      ///=============== (qtag.cpp) ===================
 
+      /// Wavefunction
+      CMATRIX qtag_psi(MATRIX& q, MATRIX& q1, MATRIX& p1, MATRIX& alp1, MATRIX& s1, CMATRIX& Coeff);
 
-///=============== (qtag.cpp) ===================
+      /// Elementary overlap matrix
+      CMATRIX qtag_overlap_elementary(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s);
 
-/// Wavefunction
-CMATRIX qtag_psi(MATRIX& q, MATRIX& q1, MATRIX& p1, MATRIX& alp1, MATRIX& s1, CMATRIX& Coeff);
+      /// Elementary kinetic matrix
+      CMATRIX qtag_kinetic_elementary(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, MATRIX& invM);
 
-/// Elementary overlap matrix
-CMATRIX qtag_overlap_elementary(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s);
+      /// Global overlap matrix
+      CMATRIX qtag_overlap(vector<int>& active_states, CMATRIX& ovlp, int nstates);
 
-/// Elementary kinetic matrix
-CMATRIX qtag_kinetic_elementary(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, MATRIX& invM);
+      /// Bra-Ket Averaged Taylor expnasion Approximation
+      complex<double> BAT(CMATRIX* Ham1,
+                          CMATRIX* Ham2,
+                          vector<CMATRIX*>& dHam1,
+                          vector<CMATRIX*>& dHam2,
+                          MATRIX& q1,
+                          MATRIX& p1,
+                          MATRIX& s1,
+                          MATRIX& alp1,
+                          int n1,
+                          MATRIX& q2,
+                          MATRIX& p2,
+                          MATRIX& s2,
+                          MATRIX& alp2,
+                          int n2);
 
-/// Global overlap matrix
-CMATRIX qtag_overlap(vector<int>& active_states, CMATRIX& ovlp, int nstates);
+      complex<double> BATe(int i,
+                           int j,
+                           MATRIX& q1,
+                           MATRIX& p1,
+                           MATRIX& s1,
+                           MATRIX& alp1,
+                           int n1,
+                           MATRIX& q2,
+                           MATRIX& p2,
+                           MATRIX& s2,
+                           MATRIX& alp2,
+                           int n2,
+                           double AA,
+                           double BB,
+                           double CC,
+                           nHamiltonian& ham);
 
-/// Bra-Ket Averaged Taylor expnasion Approximation
-complex<double> BAT(CMATRIX* Ham1, CMATRIX* Ham2, vector<CMATRIX*>& dHam1, vector<CMATRIX*>& dHam2,
-                    MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1, 
-                    MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2);
+      /// Local Harmonic approximation to Hamiltonian
+      complex<double> LHA(CMATRIX* Ham1,
+                          CMATRIX* Ham2,
+                          vector<CMATRIX*>& dHam1,
+                          vector<CMATRIX*>& dHam2,
+                          vector<CMATRIX*>& d2Ham1,
+                          vector<CMATRIX*>& d2Ham2,
+                          MATRIX& q1,
+                          MATRIX& p1,
+                          MATRIX& s1,
+                          MATRIX& alp1,
+                          int n1,
+                          MATRIX& q2,
+                          MATRIX& p2,
+                          MATRIX& s2,
+                          MATRIX& alp2,
+                          int n2);
 
-complex<double> BATe(int i, int j,
-                     MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1,
-                     MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2,
-                     double AA, double BB, double CC, nHamiltonian& ham);
+      complex<double> LHAe(int i,
+                           int j,
+                           MATRIX& q1,
+                           MATRIX& p1,
+                           MATRIX& s1,
+                           MATRIX& alp1,
+                           int n1,
+                           MATRIX& q2,
+                           MATRIX& p2,
+                           MATRIX& s2,
+                           MATRIX& alp2,
+                           int n2,
+                           double AA,
+                           double BB,
+                           double CC,
+                           nHamiltonian& ham);
 
-/// Local Harmonic approximation to Hamiltonian
-complex<double> LHA(CMATRIX* Ham1, CMATRIX* Ham2, 
-                    vector<CMATRIX*>& dHam1, vector<CMATRIX*>& dHam2,
-                    vector<CMATRIX*>& d2Ham1, vector<CMATRIX*>& d2Ham2,
-                    MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1, 
-                    MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2);
+      /// Elementary potential & coupling matrix
+      CMATRIX qtag_potential(MATRIX& q1,
+                             MATRIX& p1,
+                             MATRIX& s1,
+                             MATRIX& alp1,
+                             int n1,
+                             vector<int>& traj_on_surf_n1,
+                             MATRIX& q2,
+                             MATRIX& p2,
+                             MATRIX& s2,
+                             MATRIX& alp2,
+                             int n2,
+                             vector<int>& traj_on_surf_n2,
+                             nHamiltonian& ham,
+                             int method,
+                             std::array<double, 3> ABC);
+      CMATRIX qtag_potential(MATRIX& q1,
+                             MATRIX& p1,
+                             MATRIX& s1,
+                             MATRIX& alp1,
+                             int n1,
+                             vector<int>& traj_on_surf_n1,
+                             MATRIX& q2,
+                             MATRIX& p2,
+                             MATRIX& s2,
+                             MATRIX& alp2,
+                             int n2,
+                             vector<int>& traj_on_surf_n2,
+                             nHamiltonian& ham,
+                             int method);
 
-complex<double> LHAe(int i, int j, 
-                     MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1,
-                     MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2,
-                     double AA, double BB, double CC, nHamiltonian& ham);
+      /// super-Hamiltonian and super-Overlap for all trajectories
+      void qtag_hamiltonian_and_overlap(MATRIX& q,
+                                        MATRIX& p,
+                                        MATRIX& alp,
+                                        MATRIX& s,
+                                        CMATRIX& Coeff,
+                                        vector<int>& active_states,
+                                        MATRIX& invM,
+                                        nHamiltonian& ham,
+                                        bp::object compute_ham_funct,
+                                        bp::dict compute_ham_params,
+                                        bp::dict& dyn_params,
+                                        CMATRIX& super_ovlp,
+                                        CMATRIX& super_ham);
 
-/// Elementary potential & coupling matrix
-CMATRIX qtag_potential(MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1, vector<int>& traj_on_surf_n1,
-                       MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2, vector<int>& traj_on_surf_n2,
-                       nHamiltonian& ham, int method, std::array<double,3> ABC);
-CMATRIX qtag_potential(MATRIX& q1, MATRIX& p1, MATRIX& s1, MATRIX& alp1, int n1, vector<int>& traj_on_surf_n1,
-                       MATRIX& q2, MATRIX& p2, MATRIX& s2, MATRIX& alp2, int n2, vector<int>& traj_on_surf_n2,
-                       nHamiltonian& ham, int method);
+      /// QTAG momentum
+      CMATRIX qtag_momentum(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coeff);
 
-/// super-Hamiltonian and super-Overlap for all trajectories
-void qtag_hamiltonian_and_overlap(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coeff,
-                                  vector<int>& active_states, MATRIX& invM, 
-                                  nHamiltonian& ham, bp::object compute_ham_funct, bp::dict compute_ham_params,
-                                  bp::dict& dyn_params,
-                                  CMATRIX& super_ovlp, CMATRIX& super_ham);
-
-/// QTAG momentum
-CMATRIX qtag_momentum(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coeff);
-
-
-
-
-}// namespace libqtag
-}// namespace libdyn
-}// liblibra
+    }  // namespace libqtag
+  }  // namespace libdyn
+}  // namespace liblibra
 
 #endif  // QTAG_H

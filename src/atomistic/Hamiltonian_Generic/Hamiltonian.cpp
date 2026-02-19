@@ -18,63 +18,58 @@
 #include "../../pch.h"
 #else
 #include <stdlib.h>
-#endif 
+#endif
 #include "Hamiltonian.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libhamiltonian namespace 
-namespace libatomistic{
+  /// libhamiltonian namespace
+  namespace libatomistic {
 
+    /// libhamiltonian_generic namespace
+    namespace libhamiltonian_generic {
 
-/// libhamiltonian_generic namespace
-namespace libhamiltonian_generic{
-
-
-Hamiltonian::Hamiltonian(){ 
-/** Default constructor of base (generic Hamiltonian) class
+      Hamiltonian::Hamiltonian() {
+        /** Default constructor of base (generic Hamiltonian) class
 */
-//cout<<"Base Ham. constructor\n";
-}
+        //cout<<"Base Ham. constructor\n";
+      }
 
-Hamiltonian::~Hamiltonian(){ 
-//cout<<"Base Ham. destructor\n"; 
-}
+      Hamiltonian::~Hamiltonian() {
+        //cout<<"Base Ham. destructor\n";
+      }
 
-void Hamiltonian::set_rep(int rep_){
-/**
+      void Hamiltonian::set_rep(int rep_) {
+        /**
   Set a wavefunction representation, which affects the Hamiltonian calculations
 
   \param[in] _rep The representation. Possible options: 0 (for diabatic) and 1 (for adiabatic)
 */
 
-  rep = rep_;
-}
+        rep = rep_;
+      }
 
-
-void Hamiltonian::set_params(boost::python::list params_){
-/**
+      void Hamiltonian::set_params(boost::python::list params_) {
+        /**
   Set the parameters of the Hamiltonian
   So far, the model Hamiltonians are implied
   \param[in] params_ The Python list of double-valued parameters to feed into the Hamiltonian
 */
 
-  int sz = boost::python::len(params_);
-  vector<double> tmp_params(sz, 0.0);
+        int sz = boost::python::len(params_);
+        vector<double> tmp_params(sz, 0.0);
 
-  // Now copy input params:
-  for(int i=0;i<sz; i++){
-    tmp_params[i] = boost::python::extract<double>(params_[i]);
-  }
+        // Now copy input params:
+        for (int i = 0; i < sz; i++) {
+          tmp_params[i] = boost::python::extract<double>(params_[i]);
+        }
 
-  set_params(tmp_params);
+        set_params(tmp_params);
+      }
 
-}
-
-void Hamiltonian::set_q(vector<double>& q_){
-/**
+      void Hamiltonian::set_q(vector<double>& q_) {
+        /**
   Update Hamiltonian coordinates (all are the real-valued scalars)
 
   \param[in] q The vector of real-valued coordinates to be used for Hamiltonian calculations.
@@ -83,13 +78,13 @@ void Hamiltonian::set_q(vector<double>& q_){
   From the prafmatic point of view, if you call this function - expect slower performance.
 */
 
-  q = q_;
-  status_dia = 0;
-  status_adi = 0;
-}
+        q = q_;
+        status_dia = 0;
+        status_adi = 0;
+      }
 
-void Hamiltonian::set_q(boost::python::list q_){
-/**
+      void Hamiltonian::set_q(boost::python::list q_) {
+        /**
   Update Hamiltonian coordinates (all are real-valued scalars - the components of the Python list) - Python-friendly
 
   \param[in] q The Python list of real-valued coordinates to be used for Hamiltonian calculations.
@@ -98,19 +93,18 @@ void Hamiltonian::set_q(boost::python::list q_){
   From the prafmatic point of view, if you call this function - expect slower performance.
 */
 
- 
-  int sz = boost::python::len(q_);
-  vector<double> tmp_q(sz,0.0);
+        int sz = boost::python::len(q_);
+        vector<double> tmp_q(sz, 0.0);
 
-  for(int i=0;i<sz; i++){
-    tmp_q[i] = boost::python::extract<double>(q_[i]);
-  }
+        for (int i = 0; i < sz; i++) {
+          tmp_q[i] = boost::python::extract<double>(q_[i]);
+        }
 
-  set_q(tmp_q);
-}
+        set_q(tmp_q);
+      }
 
-void Hamiltonian::set_v(vector<double>& v_){
-/**
+      void Hamiltonian::set_v(vector<double>& v_) {
+        /**
   Update Hamiltonian velocities (all are real-valued scalars)
 
   \param[in] v The vector of real-valued velocities to be used for Hamiltonian calculations.
@@ -122,12 +116,12 @@ void Hamiltonian::set_v(vector<double>& v_){
   calculations imply electronic structure calculations
 */
 
-  v = v_;
-  status_adi = 0;  // only affects adiabatic computations
-}
+        v = v_;
+        status_adi = 0;  // only affects adiabatic computations
+      }
 
-void Hamiltonian::set_v(boost::python::list v_){
-/**
+      void Hamiltonian::set_v(boost::python::list v_) {
+        /**
   Update Hamiltonian velocities (all are real-valued scalars -the components of Python list) - Python-friendly 
 
   \param[in] v The vector of real-valued velocities to be used for Hamiltonian calculations.
@@ -139,20 +133,18 @@ void Hamiltonian::set_v(boost::python::list v_){
   calculations imply electronic structure calculations
 */
 
-  int sz = boost::python::len(v_);
-  vector<double> tmp_v(sz,0.0);
+        int sz = boost::python::len(v_);
+        vector<double> tmp_v(sz, 0.0);
 
-  for(int i=0;i<sz; i++){
-    tmp_v[i] = boost::python::extract<double>(v_[i]);
-  }
+        for (int i = 0; i < sz; i++) {
+          tmp_v[i] = boost::python::extract<double>(v_[i]);
+        }
 
-  set_v(tmp_v);
+        set_v(tmp_v);
+      }
 
-}
-
-
-void Hamiltonian::compute(){
-/**
+      void Hamiltonian::compute() {
+        /**
   Peform actual Hamiltonian computations (is not up to date)
 
   The computations of either diabatiatic or adiabatic or both Hamiltonians are invoked, depending
@@ -168,15 +160,15 @@ void Hamiltonian::compute(){
 
 */
 
-  if(rep==0){  compute_diabatic();   }
-  else if(rep==1){  compute_adiabatic();  }
+        if (rep == 0) {
+          compute_diabatic();
+        } else if (rep == 1) {
+          compute_adiabatic();
+        }
+      }
 
-}
-
-
-
-std::complex<double> Hamiltonian::H(int i,int j){
-/**
+      std::complex<double> Hamiltonian::H(int i, int j) {
+        /**
   Return electronic Hamiltonian matrix element
 
   The returned Hamiltonian depends on the selected representation - can be either diabatic or adiabatic.
@@ -187,21 +179,19 @@ std::complex<double> Hamiltonian::H(int i,int j){
 
 */
 
+        std::complex<double> res(0.0, 0.0);
 
-  std::complex<double> res(0.0,0.0);
+        if (rep == 0) {  // Diabatic Hamiltonian - real, symmetric => Hermitian
+          res = std::complex<double>(ham_dia->get(i, j), 0.0);
+        } else if (rep == 1) {  // Adiabatic Hamiltonian - real, symmetric => Hermitian
+          res = std::complex<double>(ham_adi->get(i, j), 0.0);
+        }
 
-  if(rep==0){    // Diabatic Hamiltonian - real, symmetric => Hermitian
-    res = std::complex<double>( ham_dia->get(i,j), 0.0 );
-  }
-  else if(rep==1){    // Adiabatic Hamiltonian - real, symmetric => Hermitian
-    res = std::complex<double>( ham_adi->get(i,j), 0.0 );
-  }
+        return res;
+      }
 
-  return res;
-}
-
-std::complex<double> Hamiltonian::dHdq(int i,int j,int n){
-/**
+      std::complex<double> Hamiltonian::dHdq(int i, int j, int n) {
+        /**
   Return the derivative of electronic Hamiltonian matrix element w.r.t. nuclear DOF
 
   The returned Hamiltonian depends on the selected representation - can be either diabatic or adiabatic.
@@ -213,22 +203,19 @@ std::complex<double> Hamiltonian::dHdq(int i,int j,int n){
 
 */
 
+        std::complex<double> res(0.0, 0.0);
 
-  std::complex<double> res(0.0,0.0);
+        if (rep == 0) {  // Diabatic Hamiltonian - real, symmetric => Hermitian
+          res = std::complex<double>(d1ham_dia[n]->get(i, j), 0.0);
+        } else if (rep == 1) {  // Adiabatic Hamiltonian - real, symmetric => Hermitian
+          res = std::complex<double>(d1ham_adi[n]->get(i, j), 0.0);
+        }
 
-  if(rep==0){    // Diabatic Hamiltonian - real, symmetric => Hermitian
-    res = std::complex<double>( d1ham_dia[n]->get(i,j), 0.0 );
-  }
-  else if(rep==1){    // Adiabatic Hamiltonian - real, symmetric => Hermitian
-    res = std::complex<double>( d1ham_adi[n]->get(i,j), 0.0 );
-  }
+        return res;
+      }
 
-  return res;
-}
-
-
-std::complex<double> Hamiltonian::D(int i,int j,int n){
-/**
+      std::complex<double> Hamiltonian::D(int i, int j, int n) {
+        /**
   Return the derivative coupling matrix element w.r.t. nuclear DOF
 
   The returned coupling depends on the selected representation - can be either diabatic or adiabatic.
@@ -242,29 +229,28 @@ std::complex<double> Hamiltonian::D(int i,int j,int n){
 
 */
 
-  std::complex<double> res(0.0,0.0);
+        std::complex<double> res(0.0, 0.0);
 
-  if(rep==0){    // Diabatic Hamiltonian - real, symmetric => Hermitian
-    res = std::complex<double>(0.0,0.0);
-  }
-  else if(rep==1){    // Adiabatic Hamiltonian - real, symmetric => Hermitian
-    if(i!=j){  
+        if (rep == 0) {  // Diabatic Hamiltonian - real, symmetric => Hermitian
+          res = std::complex<double>(0.0, 0.0);
+        } else if (rep == 1) {  // Adiabatic Hamiltonian - real, symmetric => Hermitian
+          if (i != j) {
+            //      cout<<"in Hamiltonian::D  ... ham_adi = \n"<<*ham_adi<<endl;
 
-//      cout<<"in Hamiltonian::D  ... ham_adi = \n"<<*ham_adi<<endl;
+            double dE = (ham_adi->get(j, j) - ham_adi->get(i, i));
+            if (fabs(dE) < 1e-10) {
+              dE = 1e-10 * (dE > 0.0 ? 1.0 : -1.0);
+            }
 
-      double dE = (ham_adi->get(j,j) - ham_adi->get(i,i) );
-      if(fabs(dE)<1e-10){ dE = 1e-10 * (dE>0.0 ? 1.0 : -1.0); }
+            res = std::complex<double>(d1ham_adi[n]->get(i, j) / dE, 0.0);
+          }
+        }
 
-      res = std::complex<double>( d1ham_adi[n]->get(i,j)/dE, 0.0 );
+        return res;
+      }
 
-    }
-  }
-
-  return res;
-}
-
-std::complex<double> Hamiltonian::nac(int i,int j){
-/**
+      std::complex<double> Hamiltonian::nac(int i, int j) {
+        /**
   Return the nonadiabatic coupling matrix element
 
   The returned coupling depends on the selected representation - can be either diabatic or adiabatic.
@@ -278,17 +264,16 @@ std::complex<double> Hamiltonian::nac(int i,int j){
 
 */
 
+        std::complex<double> res(0.0, 0.0);
 
-  std::complex<double> res(0.0,0.0);
+        for (int n = 0; n < nnucl; n++) {
+          res += D(i, j, n) * v[n];
+        }
+        return res;
+      }
 
-  for(int n=0;n<nnucl;n++){
-    res += D(i,j,n) * v[n]; 
-  }
-  return res;
-}
-
-std::complex<double> Hamiltonian::Hvib(int i,int j){
-/**
+      std::complex<double> Hamiltonian::Hvib(int i, int j) {
+        /**
   Return the vibronic Hamiltonian matrix element
 
   The returned Hamiltonian depends on the selected representation - can be either diabatic or adiabatic.
@@ -297,19 +282,17 @@ std::complex<double> Hamiltonian::Hvib(int i,int j){
   \param[in] i index of electronic state
   \param[in] j index of electronic state
 */
- 
-  const double hbar = 1.0;  // in atomic units
 
-  std::complex<double> ham_ = H(i,j);
-  std::complex<double> nac_ = nac(i,j);
+        const double hbar = 1.0;  // in atomic units
 
-  std::complex<double> res(ham_.real(), ham_.imag() - hbar* nac_.real() );
+        std::complex<double> ham_ = H(i, j);
+        std::complex<double> nac_ = nac(i, j);
 
-  return res;
-}
+        std::complex<double> res(ham_.real(), ham_.imag() - hbar * nac_.real());
 
+        return res;
+      }
 
-}// namespace libhamiltonian_generic
-}// namespace libatomistic
-}// liblibra
-
+    }  // namespace libhamiltonian_generic
+  }  // namespace libatomistic
+}  // namespace liblibra

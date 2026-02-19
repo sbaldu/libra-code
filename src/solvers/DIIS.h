@@ -14,7 +14,6 @@
         
 */
 
-
 #ifndef DIIS_H
 #define DIIS_H
 
@@ -23,50 +22,43 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
-using namespace liblinalg;
+  using namespace boost::python;
+  using namespace liblinalg;
 
+  /// libsolvers namespace
+  namespace libsolvers {
 
-/// libsolvers namespace
-namespace libsolvers{
-
-
-class DIIS{
-/**
+    class DIIS {
+      /**
   This is the class that handles DIIS (direct inversion of the iterative space) method
 */
-  void update_diis_coefficients();
+      void update_diis_coefficients();
 
-public:
+    public:
+      DIIS(int _N_diis_max, int Norb);  ///< Constructor
 
-  DIIS(int _N_diis_max,int Norb);  ///< Constructor
+      void add_diis_matrices(MATRIX* X, MATRIX* err);
+      void add_diis_matrices(MATRIX& X, MATRIX& err);
 
-  void add_diis_matrices(MATRIX* X, MATRIX* err);
-  void add_diis_matrices(MATRIX& X, MATRIX& err);
+      void extrapolate_matrix(MATRIX* X_ext);
+      void extrapolate_matrix(MATRIX& X_ext);
 
-  void extrapolate_matrix(MATRIX* X_ext);
-  void extrapolate_matrix(MATRIX& X_ext);
+      int N_diis_max;  ///< Length of DIIS history (size of the lists)
 
+      int N_diis;                ///< current # of matrices stored
+      int N_diis_eff;            ///< effective size of the DIIS matrix (such that it is full-rank)
+      vector<MATRIX*> diis_X;    ///< diis iteration of objective matrices (typically Fock matrices)
+      vector<MATRIX*> diis_err;  ///< diis error matrices
+      vector<double> diis_c;     ///< diis extrapolation coefficients
 
+      boost::python::list get_diis_X();
+      boost::python::list get_diis_err();
+      boost::python::list get_diis_c();
+    };
 
-  int N_diis_max;                ///< Length of DIIS history (size of the lists)  
+  }  // namespace libsolvers
+}  // namespace liblibra
 
-  int N_diis;                    ///< current # of matrices stored
-  int N_diis_eff;                ///< effective size of the DIIS matrix (such that it is full-rank)
-  vector<MATRIX*> diis_X;        ///< diis iteration of objective matrices (typically Fock matrices)
-  vector<MATRIX*> diis_err;      ///< diis error matrices
-  vector<double>  diis_c;        ///< diis extrapolation coefficients
-
-
-  boost::python::list get_diis_X();
-  boost::python::list get_diis_err();
-  boost::python::list get_diis_c();
-
-};
-
-}// libsolvers namespace
-}// liblibra
-
-#endif // DIIS_H 
+#endif  // DIIS_H

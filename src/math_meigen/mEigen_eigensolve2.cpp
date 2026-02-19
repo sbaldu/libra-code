@@ -15,25 +15,22 @@
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 #include <Eigen/Core>
-#endif 
+#endif
 
 #include "mEigen.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace Eigen;
-using namespace std;
-using namespace liblinalg;
+  using namespace Eigen;
+  using namespace std;
+  using namespace liblinalg;
 
-/// libmeigen namespace
-namespace libmeigen{
+  /// libmeigen namespace
+  namespace libmeigen {
 
-
-
-
-void solve_eigen(CMATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
-/** Solve H * C = C * E
+    void solve_eigen(CMATRIX* H, CMATRIX* E, CMATRIX* C, int symm) {
+      /** Solve H * C = C * E
  i-th column of C contains i-th MO (coefficients of expansion in terms of AOs)
  C[i][j] - is the weight of j-th AO in i-th MO
 
@@ -42,26 +39,23 @@ void solve_eigen(CMATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
  here we actually specialize the generalized eigensolver.
 */
 
-  int N_bas = H->n_cols;
-  CMATRIX* S; S = new CMATRIX(N_bas,N_bas); S->diag(N_bas, 1.0);
+      int N_bas = H->n_cols;
+      CMATRIX* S;
+      S = new CMATRIX(N_bas, N_bas);
+      S->diag(N_bas, 1.0);
 
-  solve_eigen(H, S, E, C, symm);  
+      solve_eigen(H, S, E, C, symm);
 
-  delete S;
-}
+      delete S;
+    }
 
+    void solve_eigen(CMATRIX& H, CMATRIX& E, CMATRIX& C, int symm) {
+      /** Solve H * C = C * E */
+      solve_eigen(&H, &E, &C, symm);
+    }
 
-void solve_eigen(CMATRIX& H, CMATRIX& E, CMATRIX& C, int symm){
-/** Solve H * C = C * E */
-  solve_eigen(&H, &E, &C, symm);  
-}
-
-
-
-
-
-void solve_eigen(MATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
-/** Solve H * C = C * E
+    void solve_eigen(MATRIX* H, CMATRIX* E, CMATRIX* C, int symm) {
+      /** Solve H * C = C * E
  i-th column of C contains i-th MO (coefficients of expansion in terms of AOs)
  C[i][j] - is the weight of j-th AO in i-th MO
 
@@ -70,26 +64,23 @@ void solve_eigen(MATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
  here we actually specialize the generalized eigensolver.
 */
 
-  int N_bas = H->n_cols;
-  MATRIX* S; S = new MATRIX(N_bas,N_bas); S->diag(N_bas, 1.0);
+      int N_bas = H->n_cols;
+      MATRIX* S;
+      S = new MATRIX(N_bas, N_bas);
+      S->diag(N_bas, 1.0);
 
-  solve_eigen(H, S, E, C, symm);  
+      solve_eigen(H, S, E, C, symm);
 
-  delete S;
-}
+      delete S;
+    }
 
+    void solve_eigen(MATRIX& H, CMATRIX& E, CMATRIX& C, int symm) {
+      /** Solve H * C = C * E */
+      solve_eigen(&H, &E, &C, symm);
+    }
 
-void solve_eigen(MATRIX& H, CMATRIX& E, CMATRIX& C, int symm){
-/** Solve H * C = C * E */
-  solve_eigen(&H, &E, &C, symm);  
-}
-
-
-
-
-
-void solve_eigen(MATRIX* H, MATRIX* E, MATRIX* C, int symm){
-/** Solve H * C = C * E
+    void solve_eigen(MATRIX* H, MATRIX* E, MATRIX* C, int symm) {
+      /** Solve H * C = C * E
  i-th column of C contains i-th MO (coefficients of expansion in terms of AOs)
  C[i][j] - is the weight of j-th AO in i-th MO
 
@@ -98,22 +89,20 @@ void solve_eigen(MATRIX* H, MATRIX* E, MATRIX* C, int symm){
  here we actually specialize the generalized eigensolver.
 */
 
-  int N_bas = H->n_cols;
-  MATRIX* S; S = new MATRIX(N_bas,N_bas); S->diag(N_bas, 1.0);
+      int N_bas = H->n_cols;
+      MATRIX* S;
+      S = new MATRIX(N_bas, N_bas);
+      S->diag(N_bas, 1.0);
 
-  solve_eigen(H, S, E, C, symm);  
+      solve_eigen(H, S, E, C, symm);
 
-  delete S;
-}
+      delete S;
+    }
 
+    void solve_eigen(MATRIX& H, MATRIX& E, MATRIX& C, int symm) {
+      /** Solve H * C = C * E */
+      solve_eigen(&H, &E, &C, symm);
+    }
 
-void solve_eigen(MATRIX& H, MATRIX& E, MATRIX& C, int symm){
-/** Solve H * C = C * E */
-  solve_eigen(&H, &E, &C, symm);  
-}
-
-
-
-
-}// namespace libmeigen
-}// namespace liblibra
+  }  // namespace libmeigen
+}  // namespace liblibra

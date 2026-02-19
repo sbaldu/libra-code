@@ -15,18 +15,14 @@
 #include "NeuralNetwork.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libann namespace
-namespace libann{
+  /// libann namespace
+  namespace libann {
 
+    void export_NeuralNetwork_objects();
 
-void export_NeuralNetwork_objects();
+  }  // namespace libann
+}  // namespace liblibra
 
-
-}// namespace libann
-}// namespace liblibra
-
-#endif // LIBANN_H
-
-
+#endif  // LIBANN_H

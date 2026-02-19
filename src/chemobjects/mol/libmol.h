@@ -12,25 +12,20 @@
 #ifndef LIB_MOL_H
 #define LIB_MOL_H
 
-
 #include "Atom.h"
 #include "Group.h"
 #include "Molecule.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libchemobjects{
-namespace libmol{
+  namespace libchemobjects {
+    namespace libmol {
 
+      void export_Mol_objects();
 
-void export_Mol_objects();
+    }  // namespace libmol
+  }  // namespace libchemobjects
+}  // namespace liblibra
 
-
-}// namespace libmol
-}// namespace libchemobjects
-}// liblibra
-
-
-
-#endif// LIB_MOL_H
+#endif  // LIB_MOL_H

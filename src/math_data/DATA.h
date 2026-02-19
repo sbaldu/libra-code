@@ -25,115 +25,123 @@
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
-#endif 
+#endif
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
-using namespace std;
+  using namespace boost::python;
+  using namespace std;
 
+  /// libdata namespace
+  namespace libdata {
 
-/// libdata namespace
-namespace libdata{
+    //========================= Class DATA ====================================
+    // This class implements data analysis methods and in fact a collection of
+    // statistical analysis tools
+    // A tool may also be convenient for operations with 1D arrays of numerical data
 
-//========================= Class DATA ====================================
-// This class implements data analysis methods and in fact a collection of
-// statistical analysis tools
-// A tool may also be convenient for operations with 1D arrays of numerical data
+    class DATA {
+    public:
+      std::vector<double> Data;
 
-class DATA{
+      // Data properties are:
+      // Estimators
+      double ave;
+      int is_ave;  // average
+      double var;
+      int is_var;  // variance
+      double sd;
+      int is_sd;  // sample standard deviation (unbiased estimator for variance)
+      double se;
+      int is_se;  // srandard deviation of mean
+      double mse;
+      int is_mse;  // mean square error
+      double mae;
+      int is_mae;  // mean absolute error
+      double rmse;
+      int is_rmse;  // root mean square error
 
-  public:
+      // Minimax
+      double min_val;
+      int is_min_val;  // minimal value
+      int min_indx;
+      int is_min_indx;  // index of the minimal entry
+      double max_val;
+      int is_max_val;  // maximal value
+      int max_indx;
+      int is_max_indx;  // index of the maximal entry
 
-  std::vector<double> Data;
+      // Operations
+      // Data scaling
+      double scale_factor;
+      int is_scale_factor;  // if we scale initial data
+      double shift_amount;
+      int is_shift_amount;  // if we shift initial data
 
-  // Data properties are:
-  // Estimators
-  double ave;             int is_ave;        // average
-  double var;             int is_var;        // variance
-  double sd;              int is_sd;         // sample standard deviation (unbiased estimator for variance)
-  double se;              int is_se;         // srandard deviation of mean
-  double mse;             int is_mse;        // mean square error
-  double mae;             int is_mae;        // mean absolute error
-  double rmse;            int is_rmse;       // root mean square error
+      // Constructors
+      DATA() {
+        is_ave = 0;
+        is_var = 0;
+        is_sd = 0;
+        is_se = 0;
+        is_mse = 0;
+        is_mae = 0;
+        is_rmse = 0;
 
-  // Minimax
-  double min_val;         int is_min_val;    // minimal value
-  int min_indx;           int is_min_indx;   // index of the minimal entry
-  double max_val;         int is_max_val;        // maximal value
-  int max_indx;           int is_max_indx;   // index of the maximal entry
+        is_min_val = 0;
+        is_min_indx = 0;
+        is_max_val = 0;
+        is_max_indx = 0;
 
-  // Operations
-  // Data scaling
-  double scale_factor;    int is_scale_factor; // if we scale initial data
-  double shift_amount;    int is_shift_amount; // if we shift initial data
+        scale_factor = 1.0;
+        is_scale_factor = 1;
+        shift_amount = 0.0;
+        is_shift_amount = 1;
+      }
+      DATA(vector<double>);
+      DATA(int, double*);
+      DATA(boost::python::list);
 
-  // Constructors
-  DATA(){
-     is_ave = 0;
-     is_var = 0;
-     is_sd  = 0;
-     is_se  = 0;
-     is_mse = 0;
-     is_mae = 0;
-     is_rmse= 0;
+      // Copy constructor
+      DATA(const DATA& d);
 
-     is_min_val = 0;
-     is_min_indx = 0;
-     is_max_val = 0;
-     is_max_indx = 0;
+      // Destructors
+      ~DATA();
 
-     scale_factor = 1.0;  is_scale_factor = 1;
-     shift_amount = 0.0;  is_shift_amount = 1;
+      // Overloaded operators
+      DATA& operator=(const DATA&);
 
-  }
-  DATA(vector<double>);
-  DATA(int,double*);
-  DATA(boost::python::list);
+      friend int operator==(const DATA& d1, const DATA& d2);
+      friend int operator!=(const DATA& d1, const DATA& d2);
 
-  // Copy constructor
-  DATA(const DATA& d);
+      // Data Manipulation
+      int LinearTransformData(double, double);
+      int invLinearTransformData();
+      int ScaleData(double);
+      int ScaleData(double, double);
+      int ShiftData(double);
+      int NormalizeData();
 
-  // Destructors
-  ~DATA();
+      // For data interface
+      int PutData(vector<double>&);  // from DATA to vector<double>
+      int GetData(vector<double>&);  // from vector<double> to DATA - similar to constructor
 
+      // Descriptive Statistics
+      int Calculate_Estimators(double&, double&, double&, double&, double&, double&, double&);
+      int Calculate_Estimators();
+      int Calculate_MiniMax(double&, int&, double&, int&);
+      int Calculate_MiniMax();
+      int Calculate_Distribution(vector<double>&, vector<double>&, vector<double>&);
+      boost::python::list Calculate_Distribution(boost::python::list Interval);
 
-  // Overloaded operators
-  DATA& operator=(const DATA&);
+      // Regression
+      //int Lin_Regression(int, double& ,double& ,double&, double&);
+    };
 
-  friend int operator == (const DATA& d1, const DATA& d2);
-  friend int operator != (const DATA& d1, const DATA& d2);
+    typedef std::vector<DATA> DATAList;
 
-  // Data Manipulation
-  int LinearTransformData(double,double);
-  int invLinearTransformData();
-  int ScaleData(double);
-  int ScaleData(double,double);
-  int ShiftData(double);
-  int NormalizeData();
+  }  // namespace libdata
+}  // namespace liblibra
 
-  // For data interface
-  int PutData(vector<double>&); // from DATA to vector<double>
-  int GetData(vector<double>&); // from vector<double> to DATA - similar to constructor
-
-  // Descriptive Statistics
-  int Calculate_Estimators(double&,double&,double&,double&,double&,double&,double&);
-  int Calculate_Estimators();
-  int Calculate_MiniMax(double&,int&,double&,int&);
-  int Calculate_MiniMax();
-  int Calculate_Distribution(vector<double>&,vector<double>&,vector<double>&);
-  boost::python::list Calculate_Distribution(boost::python::list Interval);
-
-  // Regression
-  //int Lin_Regression(int, double& ,double& ,double&, double&);
-
-
-};
-
-  typedef std::vector<DATA> DATAList;
-
-}// namespace libdata
-}// namespace liblibra
-
-#endif // DATA_H
+#endif  // DATA_H

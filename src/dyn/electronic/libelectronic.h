@@ -17,26 +17,21 @@
 #ifndef LIB_ELECTRONIC_H
 #define LIB_ELECTRONIC_H
 
-
 #include "Electronic.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libelectronic namespace
+    namespace libelectronic {
 
-/// libelectronic namespace
-namespace libelectronic{
+      void export_Electronic_objects();
 
+    }  // namespace libelectronic
+  }  // namespace libdyn
+}  // namespace liblibra
 
-void export_Electronic_objects();
-
-
-}// namespace libdyn
-}// namespace libelectronic
-}// liblibra
-
-
-#endif// LIB_ELECTRONIC_H
+#endif  // LIB_ELECTRONIC_H

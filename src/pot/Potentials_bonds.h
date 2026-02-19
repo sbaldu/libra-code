@@ -15,46 +15,64 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  namespace libpot {
 
-namespace libpot{
+    //------------------ Bond potentials ------------------------------
 
-//------------------ Bond potentials ------------------------------
+    double Bond_Harmonic(VECTOR& ri,
+                         VECTOR& rj, /*Inputs*/
+                         VECTOR& fi,
+                         VECTOR& fj, /*Outputs*/
+                         double K,
+                         double r0); /*Parameters*/
+    double Bond_Harmonic(VECTOR& ri,
+                         VECTOR& rj, /*Inputs*/
+                         VECTOR& fi,
+                         VECTOR& fj, /*Outputs*/
+                         MATRIX& Hess,
+                         double K,
+                         double r0,
+                         int opt); /*Parameters*/
 
-double Bond_Harmonic(VECTOR& ri,VECTOR& rj,  /*Inputs*/
-                     VECTOR& fi,VECTOR& fj,  /*Outputs*/
-                      double K, double r0);  /*Parameters*/
-double Bond_Harmonic(VECTOR& ri,VECTOR& rj,  /*Inputs*/
-                     VECTOR& fi,VECTOR& fj,  /*Outputs*/
-                     MATRIX& Hess,
-                      double K, double r0, int opt);  /*Parameters*/
+    boost::python::list Bond_Harmonic(VECTOR ri,
+                                      VECTOR rj, /*Inputs*/
+                                      double K,
+                                      double r0); /*Parameters*/
+    boost::python::list Bond_Harmonic(VECTOR ri,
+                                      VECTOR rj, /*Inputs*/
+                                      double K,
+                                      double r0,
+                                      int opt); /*Parameters*/
 
-boost::python::list Bond_Harmonic(VECTOR ri,VECTOR rj,    /*Inputs*/
-                                  double K, double r0);   /*Parameters*/
-boost::python::list Bond_Harmonic(VECTOR ri,VECTOR rj,    /*Inputs*/
-                                  double K, double r0, int opt);  /*Parameters*/
+    double Bond_Quartic(VECTOR& ri,
+                        VECTOR& rj, /*Inputs*/
+                        VECTOR& fi,
+                        VECTOR& fj, /*Outputs*/
+                        double K,
+                        double r0); /*Parameters*/
+    boost::python::list Bond_Quartic(VECTOR ri,
+                                     VECTOR rj, /*Inputs*/
+                                     double K,
+                                     double r0); /*Parameters*/
 
+    double Bond_Morse(VECTOR& ri,
+                      VECTOR& rj, /*Inputs*/
+                      VECTOR& fi,
+                      VECTOR& fj, /*Outputs*/
+                      double D,
+                      double r0,
+                      double alp); /*Parameters*/
+    boost::python::list Bond_Morse(VECTOR ri,
+                                   VECTOR rj, /*Inputs*/
+                                   double D,
+                                   double r0,
+                                   double alp); /*Parameters*/
 
+  }  // namespace libpot
+}  // namespace liblibra
 
-double Bond_Quartic(VECTOR& ri,VECTOR& rj,  /*Inputs*/
-                    VECTOR& fi,VECTOR& fj,  /*Outputs*/
-                    double K, double r0);   /*Parameters*/
-boost::python::list Bond_Quartic(VECTOR ri,VECTOR rj,    /*Inputs*/
-                                 double K, double r0);   /*Parameters*/
-
-
-double Bond_Morse(VECTOR& ri,VECTOR& rj,            /*Inputs*/
-                  VECTOR& fi,VECTOR& fj,            /*Outputs*/
-                  double D, double r0,double alp);  /*Parameters*/
-boost::python::list Bond_Morse(VECTOR ri,VECTOR rj,              /*Inputs*/
-                               double D, double r0,double alp);  /*Parameters*/
-
-
-
-}// namespace libpot
-}// liblibra
-
-#endif // POTENTIALS_BONDS_H
+#endif  // POTENTIALS_BONDS_H

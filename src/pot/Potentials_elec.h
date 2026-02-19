@@ -14,30 +14,30 @@
     
 */
 
-
 #ifndef POTENTIALS_ELEC_H
 #define POTENTIALS_ELEC_H
 
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-namespace libpot{
+  namespace libpot {
 
+    //------------------------- Electrostatic potentials ----------------------------------------
 
+    double Elec_Coulomb(VECTOR& ri,
+                        VECTOR& rj, /*Inputs*/
+                        VECTOR& fi,
+                        VECTOR& fj, /*Outputs*/
+                        double qi,
+                        double qj,
+                        double eps,
+                        double delta); /*Parameters*/
 
-//------------------------- Electrostatic potentials ----------------------------------------
+  }  //namespace libpot
+}  // namespace liblibra
 
-double Elec_Coulomb(VECTOR& ri,VECTOR& rj,     /*Inputs*/
-                    VECTOR& fi,VECTOR& fj,     /*Outputs*/
-                    double qi,double qj,
-                    double eps,double delta);  /*Parameters*/
-
-
-} //namespace libpot
-}// liblibra
-
-#endif //POTENTIALS_ELEC_H
+#endif  //POTENTIALS_ELEC_H

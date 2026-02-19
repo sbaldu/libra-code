@@ -20,17 +20,14 @@
 #include "opt.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libopt namespace
-namespace libopt{
+  /// libopt namespace
+  namespace libopt {
 
+    void export_opt_objects();
 
-void export_opt_objects();
+  }  // namespace libopt
+}  // namespace liblibra
 
-
-}// namespace libopt
-}// liblibra
-
-#endif // LIBOPT_H
-
+#endif  // LIBOPT_H

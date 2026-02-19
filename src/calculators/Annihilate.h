@@ -20,18 +20,17 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-/// libcalculators namespace
-namespace libcalculators{
+  /// libcalculators namespace
+  namespace libcalculators {
 
-void annihilate(int Na, int Nb, MATRIX* Pa, MATRIX* Pb, MATRIX* Ra, MATRIX* Rb);
-void annihilate(int Na, int Nb, MATRIX* Pa, MATRIX* Pb);
+    void annihilate(int Na, int Nb, MATRIX* Pa, MATRIX* Pb, MATRIX* Ra, MATRIX* Rb);
+    void annihilate(int Na, int Nb, MATRIX* Pa, MATRIX* Pb);
 
+  }  // namespace libcalculators
+}  // namespace liblibra
 
-}// namespace libcalculators
-}// liblibra
-
-#endif // ANNIHILATE_H
+#endif  // ANNIHILATE_H

@@ -21,14 +21,13 @@
 #include "dyn_projectors.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace 
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-
-double compute_kinetic_energy(MATRIX& p, MATRIX& invM, vector<int>& which_dofs){
-/**
+    double compute_kinetic_energy(MATRIX& p, MATRIX& invM, vector<int>& which_dofs) {
+      /**
   \brief Compute kinetic energy of nuclear DOFs
   \param[in] p [ndof x ntraj] Momenta of ntraj replicas of the system with ndof 
   nuclear DOFs
@@ -39,41 +38,37 @@ double compute_kinetic_energy(MATRIX& p, MATRIX& invM, vector<int>& which_dofs){
 
   This is the classical nuclear kinetic energy
 */
-  int ndof = which_dofs.size(); ///p.n_rows;
-  int ntraj = p.n_cols;
+      int ndof = which_dofs.size();  ///p.n_rows;
+      int ntraj = p.n_cols;
 
-  double Ekin = 0.0;
-  
-    
-  for(int idof=0; idof < ndof; idof++){ 
+      double Ekin = 0.0;
 
-    int dof = which_dofs[idof];
+      for (int idof = 0; idof < ndof; idof++) {
+        int dof = which_dofs[idof];
 
-    double sum = 0.0;
-    for(int traj=0; traj < ntraj; traj++){    
-      sum = p.get(dof, traj) * p.get(dof, traj);
+        double sum = 0.0;
+        for (int traj = 0; traj < ntraj; traj++) {
+          sum = p.get(dof, traj) * p.get(dof, traj);
+        }
+        Ekin += sum * invM.get(dof, 0);
+      }
+      Ekin *= 0.5;
+
+      return Ekin;
     }
-    Ekin += sum * invM.get(dof, 0);
-  }
-  Ekin *= 0.5;
 
-  return Ekin;
+    double compute_kinetic_energy(MATRIX& p, MATRIX& invM) {
+      int ndof = p.n_rows;
+      vector<int> which_dofs(ndof);
+      for (int i = 0; i < ndof; i++) {
+        which_dofs[i] = i;
+      }
 
-}
+      return compute_kinetic_energy(p, invM, which_dofs);
+    }
 
-double compute_kinetic_energy(MATRIX& p, MATRIX& invM){
-
-  int ndof = p.n_rows;
-  vector<int> which_dofs(ndof);
-  for(int i = 0; i < ndof; i++){  which_dofs[i] = i; }
-
-  return compute_kinetic_energy(p, invM, which_dofs);
-
-}
-
-
-vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM, vector<int>& which_dofs){
-/**
+    vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM, vector<int>& which_dofs) {
+      /**
   \brief Compute trajectory-resolved kinetic energies of nuclear DOFs
 
   \param[in] p [ndof x ntraj] Momenta of ntraj replicas of the system with ndof 
@@ -82,100 +77,88 @@ vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM, vector<int>& wh
 
   This is the classical nuclear kinetic energy
 */
-  int ndof = which_dofs.size(); ///p.n_rows;
-  int ntraj = p.n_cols;
+      int ndof = which_dofs.size();  ///p.n_rows;
+      int ntraj = p.n_cols;
 
-  vector<double> Ekin(ntraj, 0.0);
-  
-  for(int traj=0; traj < ntraj; traj++){    
+      vector<double> Ekin(ntraj, 0.0);
 
-    double sum = 0.0;
+      for (int traj = 0; traj < ntraj; traj++) {
+        double sum = 0.0;
 
-    for(int idof=0; idof < ndof; idof++){ 
+        for (int idof = 0; idof < ndof; idof++) {
+          int dof = which_dofs[idof];
+          sum += p.get(dof, traj) * invM.get(dof, 0) * p.get(dof, traj);
+        }
+        sum *= 0.5;
 
-      int dof = which_dofs[idof];
-      sum += p.get(dof, traj) * invM.get(dof, 0) * p.get(dof, traj);
+        Ekin[traj] = sum;
+
+      }  // for traj
+
+      return Ekin;
     }
-    sum *= 0.5;
 
-    Ekin[traj] = sum;
+    vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM) {
+      int ndof = p.n_rows;
+      vector<int> which_dofs(ndof);
+      for (int i = 0; i < ndof; i++) {
+        which_dofs[i] = i;
+      }
 
-  }// for traj
+      return compute_kinetic_energies(p, invM, which_dofs);
+    }
 
-  return Ekin;
-
-}
-
-
-
-vector<double> compute_kinetic_energies(MATRIX& p, MATRIX& invM){
-
-  int ndof = p.n_rows;
-  vector<int> which_dofs(ndof);
-  for(int i = 0; i < ndof; i++){  which_dofs[i] = i; }
-
-  return compute_kinetic_energies(p, invM, which_dofs);
-
-}
-
-
-
-
-
-CMATRIX tsh_indx2ampl(vector<int>& res, int nstates){
-/**
+    CMATRIX tsh_indx2ampl(vector<int>& res, int nstates) {
+      /**
   Convert the active state index to the vector with occupation numbers
   This is done for 1 or many trajectories
 */
 
-  int ntraj = res.size();
-  CMATRIX ampl(nstates, ntraj);
+      int ntraj = res.size();
+      CMATRIX ampl(nstates, ntraj);
 
-  
-  for(int traj = 0; traj < ntraj; traj++){
+      for (int traj = 0; traj < ntraj; traj++) {
+        ampl.set(res[traj], traj, complex<double>(1.0, 0.0));
+      }
 
-    ampl.set(res[traj], traj, complex<double>(1.0, 0.0));
+      return ampl;
+    }
 
-  }
+    double average_potential_energy(dyn_control_params& prms,
+                                    dyn_variables& dyn_vars,
+                                    nHamiltonian& ham) {
+      vector<double> res(dyn_vars.ntraj, 0.0);
+      res = potential_energies(prms, dyn_vars, ham);
 
-  return ampl;
+      double ave = 0.0;
+      for (int itraj = 0; itraj < dyn_vars.ntraj; itraj++) {
+        ave += res[itraj];
+      }
+      ave /= double(dyn_vars.ntraj);
 
-}
+      return ave;
+    }
 
+    double average_potential_energy(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham) {
+      dyn_control_params prms;
+      prms.set_parameters(params);
 
-double average_potential_energy(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham){
+      return average_potential_energy(prms, dyn_vars, ham);
+    }
 
-  vector<double> res(dyn_vars.ntraj, 0.0);
-  res = potential_energies(prms, dyn_vars, ham);
+    vector<double> potential_energies(dyn_control_params& prms,
+                                      dyn_variables& dyn_vars,
+                                      nHamiltonian& ham) {
+      int itraj;
+      int ntraj = dyn_vars.ntraj;
+      int nadi = dyn_vars.nadi;
+      int ndia = dyn_vars.ndia;
 
-  double ave = 0.0;
-  for(int itraj = 0; itraj < dyn_vars.ntraj; itraj++){  ave += res[itraj]; }
-  ave /= double(dyn_vars.ntraj);
-  
-  return ave;
-}
+      vector<int> id(2, 0);
 
-double average_potential_energy(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham){
+      vector<double> res(ntraj, 0.0);
 
-  dyn_control_params prms;
-  prms.set_parameters(params);
-
-  return average_potential_energy(prms, dyn_vars, ham);
-}
-
-
-vector<double> potential_energies(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham){
-
-  int itraj;
-  int ntraj = dyn_vars.ntraj;
-  int nadi = dyn_vars.nadi;
-  int ndia = dyn_vars.ndia;
-
-  vector<int> id(2,0);
-
-  vector<double> res(ntraj, 0.0);
-
-/*
+      /*
   if(prms.force_method==0){  // No forces
 
     // Don't compute forces at all - e.g. in NBRA
@@ -183,316 +166,330 @@ vector<double> potential_energies(dyn_control_params& prms, dyn_variables& dyn_v
 
   }// NBRA
 */
-  if(prms.force_method==0 || prms.force_method==1){   // State-specific forces
+      if (prms.force_method == 0 || prms.force_method == 1) {  // State-specific forces
 
-    // TSH or adiabatic (including excited states)
-    // state-specific forces
+        // TSH or adiabatic (including excited states)
+        // state-specific forces
 
-    vector<int> effective_states(ntraj, 0);
-    if(prms.rep_sh==1){ effective_states = dyn_vars.act_states; }
-    else if(prms.rep_sh==0){ effective_states = dyn_vars.act_states_dia; }
+        vector<int> effective_states(ntraj, 0);
+        if (prms.rep_sh == 1) {
+          effective_states = dyn_vars.act_states;
+        } else if (prms.rep_sh == 0) {
+          effective_states = dyn_vars.act_states_dia;
+        }
 
-    if(prms.enforce_state_following==1){ 
-      for(itraj=0; itraj<ntraj; itraj++){ effective_states[itraj] = prms.enforced_state_index; }
+        if (prms.enforce_state_following == 1) {
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            effective_states[itraj] = prms.enforced_state_index;
+          }
+        }
+
+        // Diabatic
+        if (prms.rep_force == 0) {
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            id[1] = itraj;
+            int ist = effective_states[itraj];
+            res[itraj] = ham.get_ham_dia(id).get(ist, ist).real();
+          }
+        }
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            id[1] = itraj;
+            int ist = effective_states[itraj];
+
+            //CMATRIX& T = *dyn_vars.proj_adi[itraj];
+            int nst = dyn_vars.nadi;
+            res[itraj] = ham.get_ham_adi(id).get(ist, ist).real();
+          }  // for itraj
+        }  // rep_force == 1
+
+      }  // TSH && adiabatic
+
+      else if (prms.force_method == 2) {  // Ehrenfest forces
+
+        // Diabatic
+        if (prms.rep_force == 0) {
+          CMATRIX coeff(ndia, 1);
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            id[1] = itraj;
+            coeff = dyn_vars.ampl_dia->col(itraj);
+            res[itraj] = ham.Ehrenfest_energy_dia(coeff, id).real();
+          }
+        }
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          CMATRIX coeff(nadi, 1);
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            id[1] = itraj;
+            coeff = dyn_vars.ampl_adi->col(itraj);
+            res[itraj] = ham.Ehrenfest_energy_adi(coeff, id, *(dyn_vars.proj_adi[itraj])).real();
+          }
+        }
+
+      }  // Ehrenfest
+
+      else if (prms.force_method == 3) {  // QTSH
+
+        vector<int> effective_states(ntraj, 0);
+        if (prms.rep_sh == 1) {
+          effective_states = dyn_vars.act_states;
+        } else if (prms.rep_sh == 0) {
+          effective_states = dyn_vars.act_states_dia;
+        }
+
+        if (prms.enforce_state_following == 1) {
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            effective_states[itraj] = prms.enforced_state_index;
+          }
+        }
+
+        // Diabatic
+        if (prms.rep_force == 0) {
+          CMATRIX coeff(ndia, 1);
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            id[1] = itraj;
+            int ist = effective_states[itraj];
+            res[itraj] = ham.get_ham_dia(id).get(ist, ist).real();  // diagonal energy
+
+            coeff = dyn_vars.ampl_dia->col(itraj);
+            res[itraj] += ham.QTSH_energy_dia(coeff, id).real();  // coherence energy
+          }
+        }
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          //CMATRIX coeff(nadi, 1);
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            id[1] = itraj;
+            int ist = effective_states[itraj];
+            res[itraj] = ham.get_ham_adi(id).get(ist, ist).real();  // diagonal energy
+
+            // No need to add the coherence term directly in the adiabatic representation due to the kinetic energy contribution of the kinematic momentum
+            // coeff = dyn_vars.ampl_adi->col(itraj);
+            // res[itraj] += ham.QTSH_energy_adi(coeff, id, *(dyn_vars.proj_adi[itraj]) ).real(); // coherence energy
+          }  // for itraj
+        }  // rep_force == 1
+
+      } else if (prms.force_method == 4) {  // KC-RPMD force
+
+        // Diabatic
+        if (prms.rep_force == 0) {
+          double Veff;
+          double beta = (hartree / boltzmann) / prms.Temperature;
+          double eta = prms.kcrpmd_eta;
+          double a = prms.kcrpmd_a;
+          double b = prms.kcrpmd_b;
+          double c = prms.kcrpmd_c;
+          double d = prms.kcrpmd_d;
+          Veff = ham.kcrpmd_effective_potential(
+              dyn_vars.y_aux_var, *dyn_vars.q, *dyn_vars.iM, beta, eta, a, b, c, d);
+          for (itraj = 0; itraj < ntraj; itraj++) {
+            id[1] = itraj;
+            res[itraj] = Veff;
+          }
+        }
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          cout
+              << "Error in potential_energies(): KC-RPMD works exclusively within diabatic bases\n";
+          exit(0);
+        }
+
+      }  // KC-RPMD
+
+      return res;
     }
 
-    // Diabatic 
-    if(prms.rep_force==0){  
-      for(itraj=0; itraj<ntraj; itraj++){
-        id[1] = itraj;
-        int ist = effective_states[itraj];
-        res[itraj] = ham.get_ham_dia(id).get(ist, ist).real();   
-      }
+    vector<double> potential_energies(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham) {
+      dyn_control_params prms;
+      prms.set_parameters(params);
+
+      return potential_energies(prms, dyn_vars, ham);
     }
-    // Adiabatic 
-    else if(prms.rep_force==1){  
-      for(itraj=0; itraj<ntraj; itraj++){
-        id[1] = itraj;
-        int ist = effective_states[itraj];
 
-        //CMATRIX& T = *dyn_vars.proj_adi[itraj];
-        int nst = dyn_vars.nadi;
-        res[itraj] = ham.get_ham_adi(id).get(ist,ist).real();
-      }// for itraj
-    }// rep_force == 1
-
-  }// TSH && adiabatic
-
-  else if(prms.force_method==2){  // Ehrenfest forces
-
-    // Diabatic 
-    if(prms.rep_force==0){ 
-      CMATRIX coeff(ndia, 1);
-      for(itraj=0; itraj<ntraj; itraj++){
-        id[1] = itraj;
-        coeff = dyn_vars.ampl_dia->col(itraj);
-        res[itraj] = ham.Ehrenfest_energy_dia(coeff, id).real();
-      }
-    }
-    // Adiabatic 
-    else if(prms.rep_force==1){  
-      CMATRIX coeff(nadi, 1);
-      for(itraj=0; itraj<ntraj; itraj++){
-        id[1] = itraj;
-        coeff = dyn_vars.ampl_adi->col(itraj);
-        res[itraj] = ham.Ehrenfest_energy_adi(coeff, id, *(dyn_vars.proj_adi[itraj]) ).real();
-      }
-    }
-  
-  }// Ehrenfest
-
-  else if(prms.force_method==3){ // QTSH
-    
-    vector<int> effective_states(ntraj, 0);
-    if(prms.rep_sh==1){ effective_states = dyn_vars.act_states; }
-    else if(prms.rep_sh==0){ effective_states = dyn_vars.act_states_dia; }
-    
-    if(prms.enforce_state_following==1){ 
-      for(itraj=0; itraj<ntraj; itraj++){ effective_states[itraj] = prms.enforced_state_index; }
-    }
-    
-    // Diabatic 
-    if(prms.rep_force==0){ 
-      CMATRIX coeff(ndia, 1);
-      for(itraj=0; itraj<ntraj; itraj++){
-        id[1] = itraj;
-        int ist = effective_states[itraj];
-        res[itraj] = ham.get_ham_dia(id).get(ist, ist).real(); // diagonal energy
-        
-        coeff = dyn_vars.ampl_dia->col(itraj);
-        res[itraj] += ham.QTSH_energy_dia(coeff, id).real(); // coherence energy
-      }
-    }
-    // Adiabatic 
-    else if(prms.rep_force==1){  
-      //CMATRIX coeff(nadi, 1);
-      for(itraj=0; itraj<ntraj; itraj++){
-        id[1] = itraj;
-        int ist = effective_states[itraj];
-        res[itraj] = ham.get_ham_adi(id).get(ist,ist).real(); // diagonal energy
-
-        // No need to add the coherence term directly in the adiabatic representation due to the kinetic energy contribution of the kinematic momentum
-        // coeff = dyn_vars.ampl_adi->col(itraj);
-        // res[itraj] += ham.QTSH_energy_adi(coeff, id, *(dyn_vars.proj_adi[itraj]) ).real(); // coherence energy
-      }// for itraj
-    }// rep_force == 1
-
-  }
-  else if(prms.force_method==4){  // KC-RPMD force
-
-    // Diabatic 
-    if(prms.rep_force==0){ 
-      double Veff;
-      double beta = (hartree/boltzmann) / prms.Temperature; 
-      double eta = prms.kcrpmd_eta; 
-      double a = prms.kcrpmd_a; 
-      double b = prms.kcrpmd_b; 
-      double c = prms.kcrpmd_c; 
-      double d = prms.kcrpmd_d; 
-      Veff = ham.kcrpmd_effective_potential(dyn_vars.y_aux_var, *dyn_vars.q, *dyn_vars.iM, beta, eta, a, b, c, d);
-      for(itraj=0; itraj<ntraj; itraj++){
-        id[1] = itraj;
-        res[itraj] = Veff;
-      }
-    }
-    // Adiabatic
-    else if(prms.rep_force==1){
-      cout<<"Error in potential_energies(): KC-RPMD works exclusively within diabatic bases\n"; exit(0);
-    }
-  
-  }// KC-RPMD
-
-
-  return res;
-}
-
-vector<double> potential_energies(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham){
-
-  dyn_control_params prms;
-  prms.set_parameters(params);
-
-  return potential_energies(prms, dyn_vars, ham);
-
-}
-
-//MATRIX aux_get_forces(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham){
-void update_forces(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham){
-  /**
+    //MATRIX aux_get_forces(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham){
+    void update_forces(dyn_control_params& prms, dyn_variables& dyn_vars, nHamiltonian& ham) {
+      /**
     Compute the force depending on the method used
   */
 
-  int ndof = ham.nnucl;
-  int nst = ham.nadi;
-  int ntraj = dyn_vars.ntraj;
+      int ndof = ham.nnucl;
+      int nst = ham.nadi;
+      int ntraj = dyn_vars.ntraj;
 
-  //MATRIX F(ndof, ntraj);
-  CMATRIX f_all(nst, ndof);
-  CMATRIX f_diag(nst, nst);
-  CMATRIX f(ndof, 1);
-  vector<int> id(2, 0); 
-  
+      //MATRIX F(ndof, ntraj);
+      CMATRIX f_all(nst, ndof);
+      CMATRIX f_diag(nst, nst);
+      CMATRIX f(ndof, 1);
+      vector<int> id(2, 0);
 
-  if(prms.force_method==0){  // No forces
+      if (prms.force_method == 0) {  // No forces
 
-    // Don't compute forces at all - e.g. in NBRA
+        // Don't compute forces at all - e.g. in NBRA
 
-  }// NBRA
+      }  // NBRA
 
-  if(prms.force_method==1){   // State-specific forces
+      if (prms.force_method == 1) {  // State-specific forces
 
-    // TSH or adiabatic (including excited states)
-    // state-specific forces   
-    vector<int> effective_states(ntraj, 0);
-    if(prms.rep_sh==1){ effective_states = dyn_vars.act_states; }
-    else if(prms.rep_sh==0){ effective_states = dyn_vars.act_states_dia; }
-  
-    if(prms.enforce_state_following==1){ // NBRA-like enforcement: adiabatic dynamics, in terms of forces 
-      for(int itraj=0; itraj<ntraj; itraj++){ effective_states[itraj] = prms.enforced_state_index; }
-    }
+        // TSH or adiabatic (including excited states)
+        // state-specific forces
+        vector<int> effective_states(ntraj, 0);
+        if (prms.rep_sh == 1) {
+          effective_states = dyn_vars.act_states;
+        } else if (prms.rep_sh == 0) {
+          effective_states = dyn_vars.act_states_dia;
+        }
 
-    // Diabatic 
-    if(prms.rep_force==0){  *dyn_vars.f = ham.forces_dia(effective_states).real();   }
+        if (prms.enforce_state_following ==
+            1) {  // NBRA-like enforcement: adiabatic dynamics, in terms of forces
+          for (int itraj = 0; itraj < ntraj; itraj++) {
+            effective_states[itraj] = prms.enforced_state_index;
+          }
+        }
 
-    // Adiabatic 
-    else if(prms.rep_force==1){  
-      *dyn_vars.f = ham.forces_adi(effective_states).real(); 
+        // Diabatic
+        if (prms.rep_force == 0) {
+          *dyn_vars.f = ham.forces_dia(effective_states).real();
+        }
 
-    }// rep_force == 1
-  }// TSH && adiabatic
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          *dyn_vars.f = ham.forces_adi(effective_states).real();
 
-  else if(prms.force_method==2){  // Ehrenfest forces
-    // Diabatic 
-    if(prms.rep_force==0){  
-     *dyn_vars.f = ham.Ehrenfest_forces_dia(*dyn_vars.ampl_dia, 1).real(); 
- 
+        }  // rep_force == 1
+      }  // TSH && adiabatic
 
-     //cout<<"dia MF forces\n"; dyn_vars.f->show_matrix();
-     //cout<<"adi MF forces\n"; ham.Ehrenfest_forces_adi(*dyn_vars.ampl_adi, 1).real().show_matrix();
-    }
+      else if (prms.force_method == 2) {  // Ehrenfest forces
+        // Diabatic
+        if (prms.rep_force == 0) {
+          *dyn_vars.f = ham.Ehrenfest_forces_dia(*dyn_vars.ampl_dia, 1).real();
 
-    // Adiabatic 
-    else if(prms.rep_force==1){
-      int option = 0; // default value for NAC-based integrators
+          //cout<<"dia MF forces\n"; dyn_vars.f->show_matrix();
+          //cout<<"adi MF forces\n"; ham.Ehrenfest_forces_adi(*dyn_vars.ampl_adi, 1).real().show_matrix();
+        }
 
-      if(prms.electronic_integrator==0 || 
-         prms.electronic_integrator==1 ||
-         prms.electronic_integrator==2 ||
-         prms.electronic_integrator==10 ||
-         prms.electronic_integrator==11 ||
-         prms.electronic_integrator==12 ){ option = 1; } 
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          int option = 0;  // default value for NAC-based integrators
 
-      option = 0;
-      //*dyn_vars.f = ham.Ehrenfest_forces_adi(*dyn_vars.ampl_adi, 1, option, dyn_vars.proj_adi).real();
-      *dyn_vars.f = ham.Ehrenfest_forces_adi(*dyn_vars.ampl_adi, 1, option).real();
-/*
+          if (prms.electronic_integrator == 0 || prms.electronic_integrator == 1 ||
+              prms.electronic_integrator == 2 || prms.electronic_integrator == 10 ||
+              prms.electronic_integrator == 11 || prms.electronic_integrator == 12) {
+            option = 1;
+          }
+
+          option = 0;
+          //*dyn_vars.f = ham.Ehrenfest_forces_adi(*dyn_vars.ampl_adi, 1, option, dyn_vars.proj_adi).real();
+          *dyn_vars.f = ham.Ehrenfest_forces_adi(*dyn_vars.ampl_adi, 1, option).real();
+          /*
       CMATRIX& U = *ham.basis_transform;
       CMATRIX& C = *dyn_vars.ampl_adi;
       double nrm = (C.H() * U * U.H() * C).get(0,0).real();
       cout<<"nrm in Ehrenfest frcs = "<<nrm<<endl;
 */
-    }     
-  }// Ehrenfest
-  else if(prms.force_method==3){  // QTSH forces
-    // Effective force determined by the TSH procedure 
-    vector<int> effective_states(ntraj, 0);
-    if(prms.rep_sh==1){ effective_states = dyn_vars.act_states; }
-    else if(prms.rep_sh==0){ effective_states = dyn_vars.act_states_dia; }
-  
-    if(prms.enforce_state_following==1){ // NBRA-like enforcement: adiabatic dynamics, in terms of forces 
-      for(int itraj=0; itraj<ntraj; itraj++){ effective_states[itraj] = prms.enforced_state_index; }
+        }
+      }  // Ehrenfest
+      else if (prms.force_method == 3) {  // QTSH forces
+        // Effective force determined by the TSH procedure
+        vector<int> effective_states(ntraj, 0);
+        if (prms.rep_sh == 1) {
+          effective_states = dyn_vars.act_states;
+        } else if (prms.rep_sh == 0) {
+          effective_states = dyn_vars.act_states_dia;
+        }
+
+        if (prms.enforce_state_following ==
+            1) {  // NBRA-like enforcement: adiabatic dynamics, in terms of forces
+          for (int itraj = 0; itraj < ntraj; itraj++) {
+            effective_states[itraj] = prms.enforced_state_index;
+          }
+        }
+
+        // Diabatic
+        if (prms.rep_force == 0) {
+          *dyn_vars.f = ham.forces_dia(effective_states).real();
+        }
+
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          *dyn_vars.f = ham.forces_adi(effective_states).real();
+        }  // rep_force == 1
+
+        // Off-diagonal Hellmann-Feynman force calculations
+        if (prms.rep_force == 0) {
+          *dyn_vars.qtsh_f_nc = ham.QTSH_forces_dia(*dyn_vars.ampl_dia, 1).real();
+        } else if (prms.rep_force == 1) {
+          int option = 0;  // default value for NAC-based integrators
+
+          if (prms.electronic_integrator == 0 || prms.electronic_integrator == 1 ||
+              prms.electronic_integrator == 2 || prms.electronic_integrator == 10 ||
+              prms.electronic_integrator == 11 || prms.electronic_integrator == 12) {
+            option = 2;
+          }
+
+          option = prms.qtsh_force_option;
+
+          *dyn_vars.qtsh_f_nc = ham.QTSH_forces_adi(*dyn_vars.ampl_adi, 1, option).real();
+        }
+
+      }  // QTSH
+      else if (prms.force_method == 4) {  // KC-RPMD forces
+        // Diabatic
+        if (prms.rep_force == 0) {
+          double beta = (hartree / boltzmann) / prms.Temperature;
+          double eta = prms.kcrpmd_eta;
+          double a = prms.kcrpmd_a;
+          double b = prms.kcrpmd_b;
+          double c = prms.kcrpmd_c;
+          double d = prms.kcrpmd_d;
+          *dyn_vars.f = ham.kcrpmd_effective_force(
+              dyn_vars.y_aux_var, *dyn_vars.q, *dyn_vars.iM, beta, eta, a, b, c, d);
+        }
+
+        // Adiabatic
+        else if (prms.rep_force == 1) {
+          cout << "Error in update_forces(): KC-RPMD works exclusively within diabatic bases\n";
+          exit(0);
+        }
+      }  // KC-RPMD
+
+      //  return F;
     }
 
-    // Diabatic 
-    if(prms.rep_force==0){  *dyn_vars.f = ham.forces_dia(effective_states).real();   }
+    //MATRIX aux_get_forces(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham){
+    void update_forces(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham) {
+      dyn_control_params prms;
+      prms.set_parameters(params);
 
-    // Adiabatic 
-    else if(prms.rep_force==1){  
-      *dyn_vars.f = ham.forces_adi(effective_states).real(); 
-    }// rep_force == 1
-
-    // Off-diagonal Hellmann-Feynman force calculations
-    if(prms.rep_force==0){  
-      *dyn_vars.qtsh_f_nc = ham.QTSH_forces_dia(*dyn_vars.ampl_dia, 1).real();
-    }
-    else if(prms.rep_force==1){
-      int option = 0; // default value for NAC-based integrators
-
-      if(prms.electronic_integrator==0 || 
-         prms.electronic_integrator==1 ||
-         prms.electronic_integrator==2 ||
-         prms.electronic_integrator==10 ||
-         prms.electronic_integrator==11 ||
-         prms.electronic_integrator==12 ){ option = 2; } 
-
-      option = prms.qtsh_force_option;
-
-      *dyn_vars.qtsh_f_nc = ham.QTSH_forces_adi(*dyn_vars.ampl_adi, 1, option).real();
+      update_forces(prms, dyn_vars, ham);
+      //  return aux_get_forces(prms, dyn_vars, ham);
     }
 
-  }// QTSH
-  else if(prms.force_method==4){  // KC-RPMD forces
-    // Diabatic 
-    if(prms.rep_force==0){  
-     double beta = (hartree/boltzmann) / prms.Temperature; 
-     double eta = prms.kcrpmd_eta; 
-     double a = prms.kcrpmd_a; 
-     double b = prms.kcrpmd_b; 
-     double c = prms.kcrpmd_c; 
-     double d = prms.kcrpmd_d; 
-     *dyn_vars.f = ham.kcrpmd_effective_force(dyn_vars.y_aux_var, *dyn_vars.q, *dyn_vars.iM, beta, eta, a, b, c, d);
+    vector<CMATRIX> get_Eadi(nHamiltonian& ham) {
+      int nst = ham.nadi;
+      int ntraj = ham.children.size();
+
+      vector<CMATRIX> Eadi(ntraj, CMATRIX(nst, nst));
+
+      for (int traj = 0; traj < ntraj; traj++) {
+        Eadi[traj] = ham.children[traj]->get_ham_adi();
+      }
+
+      return Eadi;
     }
 
-    // Adiabatic 
-    else if(prms.rep_force==1){ cout<<"Error in update_forces(): KC-RPMD works exclusively within diabatic bases\n"; exit(0); }
-  }// KC-RPMD
+    vector<CMATRIX> get_Eadi(nHamiltonian* ham) {
+      int nst = ham->nadi;
+      int ntraj = ham->children.size();
 
-//  return F;
-}
+      vector<CMATRIX> Eadi(ntraj, CMATRIX(nst, nst));
 
-//MATRIX aux_get_forces(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham){
-void update_forces(bp::dict params, dyn_variables& dyn_vars, nHamiltonian& ham){
+      for (int traj = 0; traj < ntraj; traj++) {
+        Eadi[traj] = ham->children[traj]->get_ham_adi();
+      }
 
-  dyn_control_params prms;
-  prms.set_parameters(params);
+      return Eadi;
+    }
 
-  update_forces(prms, dyn_vars, ham);
-//  return aux_get_forces(prms, dyn_vars, ham);
-  
-}
-
-
-
-vector<CMATRIX> get_Eadi(nHamiltonian& ham){
-
-  int nst = ham.nadi;
-  int ntraj = ham.children.size();
-
-  vector<CMATRIX> Eadi(ntraj, CMATRIX(nst, nst));
-
-  for(int traj=0; traj<ntraj; traj++){
-    Eadi[traj] = ham.children[traj]->get_ham_adi(); 
-  }
-
-  return Eadi;
-
-}
-
-vector<CMATRIX> get_Eadi(nHamiltonian* ham){
-
-  int nst = ham->nadi;
-  int ntraj = ham->children.size();
-
-  vector<CMATRIX> Eadi(ntraj, CMATRIX(nst, nst));
-
-  for(int traj=0; traj<ntraj; traj++){
-    Eadi[traj] = ham->children[traj]->get_ham_adi();
-  }
-
-  return Eadi;
-
-}
-
-
-
-}// namespace libdyn
-}// liblibra
+  }  // namespace libdyn
+}  // namespace liblibra

@@ -17,25 +17,21 @@
 #ifndef LIB_HAMILTONIAN_QM_H
 #define LIB_HAMILTONIAN_QM_H
 
-
 #include "Hamiltonian_QM.h"
 #include "SCF.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libatomistic{
+  namespace libatomistic {
 
-/// libhamiltonian_qm namespace
-namespace libhamiltonian_qm{
+    /// libhamiltonian_qm namespace
+    namespace libhamiltonian_qm {
 
+      void export_hamiltonian_qm_objects();
 
-void export_hamiltonian_qm_objects();
+    }  // namespace libhamiltonian_qm
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-
-
-}// namespace libhamiltonian_qm
-}// namespace libatomistic
-}// liblibra
-
-#endif// LIB_HAMILTONIAN_QM_H
+#endif  // LIB_HAMILTONIAN_QM_H

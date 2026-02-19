@@ -19,17 +19,14 @@
 #include "ctx_Control_Parameters.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libcontext{
+  namespace libcontext {
 
+    void export_context_objects();
 
-void export_context_objects();
+  }  // namespace libcontext
 
+}  // namespace liblibra
 
-}// namespace libcontext
-
-}// liblibra
-
-
-#endif// LIB_CONTEXT_H
+#endif  // LIB_CONTEXT_H

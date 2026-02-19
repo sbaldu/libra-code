@@ -19,53 +19,43 @@
 #else
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "libintegrators.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libdyn namespace
+  namespace libintegrators {
 
-/// libdyn namespace
-namespace libintegrators{
+    namespace bp = boost::python;
 
-namespace bp = boost::python;
-
-
-void export_integrators_objects(){
-/** 
+    void export_integrators_objects() {
+      /** 
   \brief Exporter of libintegrators classes and functions
 
 */
 
-  CMATRIX (*expt_RK4_v1)
-  (CMATRIX& q, double dt, bp::object compute_derivatives, bp::object function_params) = &RK4; 
+      CMATRIX(*expt_RK4_v1)
+      (CMATRIX & q, double dt, bp::object compute_derivatives, bp::object function_params) = &RK4;
 
-  def("RK4", expt_RK4_v1);
+      def("RK4", expt_RK4_v1);
 
-
-}// export_integrators_objects()
-
-
-
+    }  // export_integrators_objects()
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygintegrators){
+    BOOST_PYTHON_MODULE(cygintegrators) {
 #else
-BOOST_PYTHON_MODULE(libintegrators){
+    BOOST_PYTHON_MODULE(libintegrators) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-  export_integrators_objects();
+      export_integrators_objects();
+    }
 
-}
-
-
-}// libintegrators
-}// liblibra
-
+  }  // namespace libintegrators
+}  // namespace liblibra

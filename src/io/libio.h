@@ -17,21 +17,17 @@
 #ifndef LIB_IO_H
 #define LIB_IO_H
 
-
 #include "io.h"
 
-/// liblibra 
-namespace liblibra{
+/// liblibra
+namespace liblibra {
 
-/// libio namespace
-namespace libio{
+  /// libio namespace
+  namespace libio {
 
+    void export_io_objects();
 
-void export_io_objects();
+  }  // namespace libio
+}  // namespace liblibra
 
-
-}// namespace libio
-} // liblibra
-
-
-#endif// LIB_IO_H
+#endif  // LIB_IO_H

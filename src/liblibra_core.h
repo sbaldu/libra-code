@@ -55,7 +55,6 @@
 #include "basis_setups/libbasis_setups.h"
 #include "libint2_wrappers/liblibint2_wrappers.h"
 
-
 #include "atomistic/libatomistic.h"
 
 #include "nhamiltonian/libnhamiltonian.h"
@@ -73,7 +72,6 @@
 
 #include "integrators/libintegrators.h"
 
-
 #include "montecarlo/libmontecarlo.h"
 #include "opt/libopt.h"
 
@@ -81,15 +79,10 @@
 #include "realtype.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  void export_libra_core_objects();
 
-void export_libra_core_objects();
+}  // namespace liblibra
 
-
-}// liblibra
-
-
-
-#endif // LIBLIBRA_CORE_H
-
+#endif  // LIBLIBRA_CORE_H

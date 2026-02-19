@@ -16,18 +16,16 @@
 #include "Universe.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libchemobjects namespace
+  namespace libchemobjects {
 
-/// libchemobjects namespace
-namespace libchemobjects{
+    /// libuniverse namespace
+    namespace libuniverse {
 
-/// libuniverse namespace
-namespace libuniverse{
-
-
-void Universe::Add_Element_To_Periodic_Table(Element rec){
-/**
+      void Universe::Add_Element_To_Periodic_Table(Element rec) {
+        /**
   \brief Adding (chemical) Element object to the Universe object.
   \param[in] rec The input Element object to be added as a record in the Universe object
 
@@ -39,62 +37,64 @@ void Universe::Add_Element_To_Periodic_Table(Element rec){
   if there is an error.
 
 */
-  int res = 1;
-  map<std::string,Element>::iterator it;
-  if(rec.is_Elt_name){
-    it = PeriodicTable.find(rec.Elt_name);
-    if(it!=PeriodicTable.end()){
-    // Element has been succesfully found
-    // That means the element already exist
-    res = 0;
-    }
-  }
-  else{
-    std::cout<<"To add element record to the Periodic Table its Elt_name property should be defined"<<std::endl;
-    res = -1;
-  }
-  if(res==1){
-    // We will add this element to the Periodic Table
-    PeriodicTable[rec.Elt_name] = rec;
-  }
-  else if(res==0){
-    // In this case we need to merge rec with existing atom record
-  }
-}
+        int res = 1;
+        map<std::string, Element>::iterator it;
+        if (rec.is_Elt_name) {
+          it = PeriodicTable.find(rec.Elt_name);
+          if (it != PeriodicTable.end()) {
+            // Element has been succesfully found
+            // That means the element already exist
+            res = 0;
+          }
+        } else {
+          std::cout << "To add element record to the Periodic Table its Elt_name property should "
+                       "be defined"
+                    << std::endl;
+          res = -1;
+        }
+        if (res == 1) {
+          // We will add this element to the Periodic Table
+          PeriodicTable[rec.Elt_name] = rec;
+        } else if (res == 0) {
+          // In this case we need to merge rec with existing atom record
+        }
+      }
 
-
-Element Universe::Get_Element(std::string elt){
-/**
+      Element Universe::Get_Element(std::string elt) {
+        /**
   \brief Retrieve the chemical element record in the Universe object by the name of the element
   \param[in] elt The element name: e.g. Na, Ca, Fr, Mo, Ru, H, F, etc
 */
- int res = 0;
- Element el;
-  // Very first step - check for periodic system!
-  if(PeriodicTable.size()>0){
-  }else{
-    std::cout<<"Error:There is no any periodic system of elements defined in Universe"<<std::endl;
-    std::cout<<"      First you shoud load properties of elements to existing Universe"<<std::endl;
-    exit(10);
-  }
+        int res = 0;
+        Element el;
+        // Very first step - check for periodic system!
+        if (PeriodicTable.size() > 0) {
+        } else {
+          std::cout << "Error:There is no any periodic system of elements defined in Universe"
+                    << std::endl;
+          std::cout << "      First you shoud load properties of elements to existing Universe"
+                    << std::endl;
+          exit(10);
+        }
 
-  map<std::string,Element>::iterator it;
-  it = PeriodicTable.find(elt);
-  if(it!=PeriodicTable.end()){   res = 1;  }
-  else{  res = 0;
-    std::cout<<"Can not find element "<<elt<<" in periodic system defined in this Universe"<<std::endl;
-    exit(11);
-  }
+        map<std::string, Element>::iterator it;
+        it = PeriodicTable.find(elt);
+        if (it != PeriodicTable.end()) {
+          res = 1;
+        } else {
+          res = 0;
+          std::cout << "Can not find element " << elt
+                    << " in periodic system defined in this Universe" << std::endl;
+          exit(11);
+        }
 
-  if(res){
-    el = (*it).second; // Copy element properties
-  }
-  return el;
-}
+        if (res) {
+          el = (*it).second;  // Copy element properties
+        }
+        return el;
+      }
 
+    }  // namespace libuniverse
+  }  // namespace libchemobjects
 
-}// namespace libuniverse
-}// namespace libchemobjects
-
-}// liblibra
-
+}  // namespace liblibra

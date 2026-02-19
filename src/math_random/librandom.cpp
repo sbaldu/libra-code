@@ -20,74 +20,63 @@
 
 #include "librandom.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
+  using namespace boost::python;
 
-/// librandom namespace
-namespace librandom{
+  /// librandom namespace
+  namespace librandom {
 
+    void export_Random_objects() {
+      //  double (*expt_scale1)(double, double) = &expt_scale;
+      //  def("scale", expt_scale1);
 
-void export_Random_objects(){
+      class_<Random>("Random", init<>())
+          //      .def("__copy__", &generic__copy__<Random>)
+          //      .def("__deepcopy__", &generic__deepcopy__<Random>)
 
+          .def("uniform", &Random::uniform)
+          .def("p_uniform", &Random::p_uniform)
 
-//  double (*expt_scale1)(double, double) = &expt_scale;
-//  def("scale", expt_scale1);
+          .def("exponential", &Random::exponential)
+          .def("p_exponential", &Random::p_exponential)
 
-  class_<Random>("Random",init<>())
-//      .def("__copy__", &generic__copy__<Random>)
-//      .def("__deepcopy__", &generic__deepcopy__<Random>)
+          .def("normal", &Random::normal)
+          .def("p_normal", &Random::p_normal)
 
-      .def("uniform",&Random::uniform)
-      .def("p_uniform",&Random::p_uniform)
+          .def("gamma", &Random::gamma)
+          .def("p_gamma", &Random::p_gamma)
 
-      .def("exponential",&Random::exponential)
-      .def("p_exponential",&Random::p_exponential)
+          .def("beta", &Random::beta)
+          .def("p_beta", &Random::p_beta)
 
-      .def("normal",&Random::normal)
-      .def("p_normal",&Random::p_normal)
+          .def("poiss1", &Random::poiss1)
+          .def("poiss2", &Random::poiss2)
+          .def("p_poiss", &Random::p_poiss)
 
-      .def("gamma",&Random::gamma)
-      .def("p_gamma",&Random::p_gamma)
+          .def("voron", &Random::voron)
 
-      .def("beta",&Random::beta)
-      .def("p_beta",&Random::p_beta)
+          // Poisson distribution
+          //  int poiss(double lambda,double t);
+          //  void poiss(double lambda,double maxT,double dt,vector< pair<double,int> >& out);
 
-      .def("poiss1",&Random::poiss1)
-      .def("poiss2",&Random::poiss2)
-      .def("p_poiss",&Random::p_poiss)
-
-      .def("voron",&Random::voron)
-
-  // Poisson distribution
-//  int poiss(double lambda,double t);
-//  void poiss(double lambda,double maxT,double dt,vector< pair<double,int> >& out);
-
-
-  ;
-
-
-}
-
+          ;
+    }
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygrandom){
+    BOOST_PYTHON_MODULE(cygrandom) {
 #else
-BOOST_PYTHON_MODULE(librandom){
+    BOOST_PYTHON_MODULE(librandom) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-//  export_Mathematics_objects();
-  export_Random_objects();
+      //  export_Mathematics_objects();
+      export_Random_objects();
+    }
 
-}
-
-}// librandom
-}// liblibra
-
-
+  }  // namespace librandom
+}  // namespace liblibra

@@ -24,34 +24,34 @@
 #include "../model_parameters/libmodel_parameters.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace std;
-using namespace liblinalg;
-using namespace libqobjects;
-using namespace libbasis;
-using namespace libmodel_parameters;
+  using namespace std;
+  using namespace liblinalg;
+  using namespace libqobjects;
+  using namespace libbasis;
+  using namespace libmodel_parameters;
 
+  namespace libbasis_setups {
 
-namespace libbasis_setups{
+    // Basis_STO_3G_DZ.cpp
 
+    void set_basis_STO_3G_DZ(vector<std::string>& at_type,
+                             vector<VECTOR>& R,
+                             Model_Parameters& modpar,
+                             int verb,
+                             vector<AO>& basis_ao,
+                             int& Nelec,
+                             int& Norb,
+                             vector<vector<int> >& atom_to_ao_map,
+                             vector<int>& ao_to_atom_map);
 
+    boost::python::list set_basis_STO_3G_DZ(vector<std::string>& at_type,
+                                            vector<VECTOR>& R,
+                                            Model_Parameters& modpar,
+                                            int verb);
 
+  }  // namespace libbasis_setups
+}  // namespace liblibra
 
-// Basis_STO_3G_DZ.cpp
-
-void set_basis_STO_3G_DZ(vector<std::string>& at_type, vector<VECTOR>& R,  Model_Parameters& modpar, int verb,
-  vector<AO>& basis_ao, int& Nelec, int& Norb, 
-  vector<vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map);
-
-boost::python::list set_basis_STO_3G_DZ(vector<std::string>& at_type, vector<VECTOR>& R,  Model_Parameters& modpar, int verb);
-
-
-
-}// namespace libbasis_setups
-}// namespace liblibra
-
-
-
-#endif // BASIS_SETUPS_H
-
+#endif  // BASIS_SETUPS_H

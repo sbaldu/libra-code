@@ -18,16 +18,18 @@
 #include "Bands.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libcalculators namespace
+  namespace libcalculators {
 
-/// libcalculators namespace
-namespace libcalculators{
-
-void excite(int I, int J, vector< pair<int,double> >& occ_ini, vector< pair<int,double> >& occ_fin){
-/**
+    void excite(int I,
+                int J,
+                vector<pair<int, double> >& occ_ini,
+                vector<pair<int, double> >& occ_fin) {
+      /**
   \brief Create a list representing a I --> J ecxitation
 
   basically, vector< pair<int,double> > datastructure represents Slater determinant (by selecting ordering of orbitals in
@@ -37,28 +39,43 @@ void excite(int I, int J, vector< pair<int,double> >& occ_ini, vector< pair<int,
   \param[out] occ_fin  final occupation list
 */
 
+      int Norb = occ_ini.size();
 
-  int Norb = occ_ini.size();
+      if (I < 0) {
+        std::cout << "Error: source orbital index(" << I << ") can not be negative\n";
+        exit(0);
+      }
+      if (J < 0) {
+        std::cout << "Error: target orbital index(" << J << ") can not be negative\n";
+        exit(0);
+      }
+      if (I >= Norb) {
+        std::cout << "Error: source orbital index(" << I
+                  << ") exceeds the number of orbitals in the active space(" << Norb << ")\n";
+        exit(0);
+      }
+      if (J >= Norb) {
+        std::cout << "Error: target orbital index(" << J
+                  << ") exceeds the number of orbitals in the active space(" << Norb << ")\n";
+        exit(0);
+      }
 
-  if(I<0){ std::cout<<"Error: source orbital index("<<I<<") can not be negative\n";  exit(0); }
-  if(J<0){ std::cout<<"Error: target orbital index("<<J<<") can not be negative\n";  exit(0); }
-  if(I>=Norb){ std::cout<<"Error: source orbital index("<<I<<") exceeds the number of orbitals in the active space("<<Norb<<")\n";  exit(0); }
-  if(J>=Norb){ std::cout<<"Error: target orbital index("<<J<<") exceeds the number of orbitals in the active space("<<Norb<<")\n";  exit(0); }
+      if (occ_fin.size() > 0) {
+        occ_fin.clear();
+      }  // clean result
 
+      for (int i = 0; i < Norb; i++) {
+        occ_fin.push_back(occ_ini[i]);
+      }  // copy initial to final
 
-  if(occ_fin.size()>0){  occ_fin.clear(); }                    // clean result
+      // Swap populations I-th and J-th orbitals
+      double pop = occ_fin[I].second;
+      occ_fin[I].second = occ_fin[J].second;
+      occ_fin[J].second = pop;
+    }
 
-  for(int i=0;i<Norb;i++){  occ_fin.push_back(occ_ini[i]);  }  // copy initial to final
-
-  // Swap populations I-th and J-th orbitals
-  double pop = occ_fin[I].second; 
-  occ_fin[I].second = occ_fin[J].second;
-  occ_fin[J].second = pop;
-   
-}
-
-boost::python::list excite(int I, int J, boost::python::list occ_ini){
-/**
+    boost::python::list excite(int I, int J, boost::python::list occ_ini) {
+      /**
   \brief Create a list representing a I --> J ecxitation (Python-friendly)
 
   basically, vector< pair<int,double> > datastructure represents Slater determinant (by selecting ordering of orbitals in
@@ -68,126 +85,114 @@ boost::python::list excite(int I, int J, boost::python::list occ_ini){
   \param[in]  occ_ini  initial occupation list 
 */
 
-  vector< pair<int,double> > occ_i;
-  vector< pair<int,double> > occ_f;
+      vector<pair<int, double> > occ_i;
+      vector<pair<int, double> > occ_f;
 
-  convert_1(occ_ini, occ_i);
+      convert_1(occ_ini, occ_i);
 
-  excite(I,J,occ_i, occ_f);
+      excite(I, J, occ_i, occ_f);
 
-  return convert_2(occ_f);
-
-}
-
-
-
-void excite(int Norb, excitation& ex, 
-            int Nocc_alp, vector< pair<int,double> >& occ_alp,
-            int Nocc_bet, vector< pair<int,double> >& occ_bet){
-// N-order excitation
-// 
-// from[0] -> to[0]
-// from[1] -> to[0] 
-// ...
-// from[N] -> to[N]
-// Example: from = [ 0A, 0B] to = [1A, 1B] - double excitation of 0A -> 1A & 0B -> 1B
-// Here 0 = HOMO, -1 = HOMO-1, 1 = LUMO, 2 = LUMO+1, etc.
-
-// This function annihilates on <from> whatever is there and adds it to <to> whatever exists there already
-// This function changes occ_alp and occ_bet - these are both input and output variables
-
-  cout<<"In excite(...)\n";
-  cout<<"Excitation size = "<<ex.size<<endl;
-  for(int i=0;i<ex.size;i++){
-
-    int source_indx = 0;
-    int target_indx = 0;
-    double source_pop = 0.0;
-    double target_pop = 0.0;
-
-    if(ex.from_spin[i]==1){
-      source_pop = occ_alp[Nocc_alp + ex.from_orbit[i] - 1].second;
-
-      cout<<"Source is alpha\n";
-      cout<<"Source indx = "<<Nocc_alp + ex.from_orbit[i] - 1<<endl;
-      cout<<"Source population = "<<source_pop<<endl;
-    }
-    else if(ex.from_spin[i]==-1){
-      source_pop = occ_bet[Nocc_bet + ex.from_orbit[i] - 1].second;
-
-      cout<<"Source is beta\n";
-      cout<<"Source indx = "<<Nocc_bet + ex.from_orbit[i] - 1<<endl;
-      cout<<"Source population = "<<source_pop<<endl;
-
+      return convert_2(occ_f);
     }
 
+    void excite(int Norb,
+                excitation& ex,
+                int Nocc_alp,
+                vector<pair<int, double> >& occ_alp,
+                int Nocc_bet,
+                vector<pair<int, double> >& occ_bet) {
+      // N-order excitation
+      //
+      // from[0] -> to[0]
+      // from[1] -> to[0]
+      // ...
+      // from[N] -> to[N]
+      // Example: from = [ 0A, 0B] to = [1A, 1B] - double excitation of 0A -> 1A & 0B -> 1B
+      // Here 0 = HOMO, -1 = HOMO-1, 1 = LUMO, 2 = LUMO+1, etc.
 
-    if(ex.to_spin[i]==1){
-      target_pop = occ_alp[Nocc_alp + ex.to_orbit[i] - 1].second;
+      // This function annihilates on <from> whatever is there and adds it to <to> whatever exists there already
+      // This function changes occ_alp and occ_bet - these are both input and output variables
 
-      cout<<"Target is alpha\n";
-      cout<<"Target indx = "<<Nocc_alp + ex.to_orbit[i] - 1<<endl;
-      cout<<"Target population = "<<target_pop<<endl;
+      cout << "In excite(...)\n";
+      cout << "Excitation size = " << ex.size << endl;
+      for (int i = 0; i < ex.size; i++) {
+        int source_indx = 0;
+        int target_indx = 0;
+        double source_pop = 0.0;
+        double target_pop = 0.0;
 
-    }
-    else if(ex.to_spin[i]==-1){
-      target_pop = occ_bet[Nocc_bet + ex.to_orbit[i] - 1].second;
+        if (ex.from_spin[i] == 1) {
+          source_pop = occ_alp[Nocc_alp + ex.from_orbit[i] - 1].second;
 
-      cout<<"Target is beta\n";
-      cout<<"Target indx = "<<Nocc_bet + ex.to_orbit[i] - 1<<endl;
-      cout<<"Target population = "<<target_pop<<endl;
+          cout << "Source is alpha\n";
+          cout << "Source indx = " << Nocc_alp + ex.from_orbit[i] - 1 << endl;
+          cout << "Source population = " << source_pop << endl;
+        } else if (ex.from_spin[i] == -1) {
+          source_pop = occ_bet[Nocc_bet + ex.from_orbit[i] - 1].second;
 
-    }
+          cout << "Source is beta\n";
+          cout << "Source indx = " << Nocc_bet + ex.from_orbit[i] - 1 << endl;
+          cout << "Source population = " << source_pop << endl;
+        }
 
+        if (ex.to_spin[i] == 1) {
+          target_pop = occ_alp[Nocc_alp + ex.to_orbit[i] - 1].second;
 
-    if(source_pop<=(1.0-target_pop)){    // There is plenty of room in target
-      cout<<"Population to transfer is: "<<source_pop<<endl;
-      // Annihilate population on source orbitals
-      if(ex.from_spin[i]==1){
-        occ_alp[Nocc_alp + ex.from_orbit[i] - 1].second -= source_pop; // take all population off     
-      }
-      else if(ex.from_spin[i]==-1){
-        occ_bet[Nocc_bet + ex.from_orbit[i] - 1].second -= source_pop; // take all population off     
-      }
+          cout << "Target is alpha\n";
+          cout << "Target indx = " << Nocc_alp + ex.to_orbit[i] - 1 << endl;
+          cout << "Target population = " << target_pop << endl;
 
-      // Create population on target orbitals
-      if(ex.to_spin[i]==1){
-        occ_alp[Nocc_alp + ex.to_orbit[i] - 1].second += source_pop;
-      }
-      else if(ex.to_spin[i]==-1){
-        occ_bet[Nocc_bet + ex.to_orbit[i] - 1].second += source_pop;
-      }
+        } else if (ex.to_spin[i] == -1) {
+          target_pop = occ_bet[Nocc_bet + ex.to_orbit[i] - 1].second;
 
-    }
-    else{  // In this case there is more that can be take from the source than can be put to the target
-      cout<<"Population to transfer is: "<<(1.0-target_pop)<<endl;
+          cout << "Target is beta\n";
+          cout << "Target indx = " << Nocc_bet + ex.to_orbit[i] - 1 << endl;
+          cout << "Target population = " << target_pop << endl;
+        }
 
-      // Annihilate population on source orbitals
-      if(ex.from_spin[i]==1){
-        occ_alp[Nocc_alp + ex.from_orbit[i] - 1].second -= (1.0-target_pop); // take all population off     
-      }
-      else if(ex.from_spin[i]==-1){
-        occ_bet[Nocc_bet + ex.from_orbit[i] - 1].second -= (1.0-target_pop); // take all population off     
-      }
+        if (source_pop <= (1.0 - target_pop)) {  // There is plenty of room in target
+          cout << "Population to transfer is: " << source_pop << endl;
+          // Annihilate population on source orbitals
+          if (ex.from_spin[i] == 1) {
+            occ_alp[Nocc_alp + ex.from_orbit[i] - 1].second -=
+                source_pop;  // take all population off
+          } else if (ex.from_spin[i] == -1) {
+            occ_bet[Nocc_bet + ex.from_orbit[i] - 1].second -=
+                source_pop;  // take all population off
+          }
 
-      // Create population on target orbitals
-      if(ex.to_spin[i]==1){
-        occ_alp[Nocc_alp + ex.to_orbit[i] - 1].second += (1.0-target_pop);
-      }
-      else if(ex.to_spin[i]==-1){
-        occ_bet[Nocc_bet + ex.to_orbit[i] - 1].second += (1.0-target_pop);
-      }
+          // Create population on target orbitals
+          if (ex.to_spin[i] == 1) {
+            occ_alp[Nocc_alp + ex.to_orbit[i] - 1].second += source_pop;
+          } else if (ex.to_spin[i] == -1) {
+            occ_bet[Nocc_bet + ex.to_orbit[i] - 1].second += source_pop;
+          }
 
-    }
-    
-    
-  }// for i
+        } else {  // In this case there is more that can be take from the source than can be put to the target
+          cout << "Population to transfer is: " << (1.0 - target_pop) << endl;
 
-} // excite(...)
+          // Annihilate population on source orbitals
+          if (ex.from_spin[i] == 1) {
+            occ_alp[Nocc_alp + ex.from_orbit[i] - 1].second -=
+                (1.0 - target_pop);  // take all population off
+          } else if (ex.from_spin[i] == -1) {
+            occ_bet[Nocc_bet + ex.from_orbit[i] - 1].second -=
+                (1.0 - target_pop);  // take all population off
+          }
 
+          // Create population on target orbitals
+          if (ex.to_spin[i] == 1) {
+            occ_alp[Nocc_alp + ex.to_orbit[i] - 1].second += (1.0 - target_pop);
+          } else if (ex.to_spin[i] == -1) {
+            occ_bet[Nocc_bet + ex.to_orbit[i] - 1].second += (1.0 - target_pop);
+          }
+        }
 
+      }  // for i
 
-/*
+    }  // excite(...)
+
+    /*
 
 void compute_excitations(Control_Parameters& prms,Model_Parameters& modprms,Nuclear& mol,
                          vector<int>& fragment, vector<int>& basis_fo,vector<AO>& basis_ao,vector<vector<int> >& at_orbitals,
@@ -293,10 +298,6 @@ void compute_excitations(Control_Parameters& prms,Model_Parameters& modprms,Nucl
 }
 */
 
+  }  // namespace libcalculators
 
-
-}// namespace libcalculators
-
-}// liblibra
-
-
+}  // namespace liblibra

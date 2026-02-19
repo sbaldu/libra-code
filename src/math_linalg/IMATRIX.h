@@ -22,65 +22,57 @@
 
 */
 
-
 #ifndef IMATRIX_H
 #define IMATRIX_H
 
 #include "base_matrix.h"
 //#include "MATRIX.h"
 
-/// liblibra 
-namespace liblibra{
+/// liblibra
+namespace liblibra {
 
-using namespace std;
+  using namespace std;
 
+  /// liblinalg namespace
+  namespace liblinalg {
 
-/// liblinalg namespace
-namespace liblinalg{
-
-
-
-class IMATRIX : public base_matrix< int >{
-/**
+    class IMATRIX : public base_matrix<int> {
+      /**
   The class representing an arbitrary-sized integer-valued matrices
 */
 
-public:
-
-  ///========= Constructors and destructors ===============
-  IMATRIX() : base_matrix< int >() { }
-  IMATRIX(int i, int j) : base_matrix< int >(i,j) { }
-/*
+    public:
+      ///========= Constructors and destructors ===============
+      IMATRIX() : base_matrix<int>() {}
+      IMATRIX(int i, int j) : base_matrix<int>(i, j) {}
+      /*
   CMATRIX(const CMATRIX& ob) : base_matrix< complex<double> >(ob) {   }
 
 */
-  IMATRIX(const IMATRIX& ob) {
-    n_rows = ob.n_rows;  ///< The number of rows
-    n_cols = ob.n_cols;  ///< The number of colomns
-    n_elts = ob.n_elts;  ///< The number of elements
-    M = new int[n_elts];
-    memcpy(M, ob.M, sizeof(int)*n_elts);    
-  }
+      IMATRIX(const IMATRIX& ob) {
+        n_rows = ob.n_rows;  ///< The number of rows
+        n_cols = ob.n_cols;  ///< The number of colomns
+        n_elts = ob.n_elts;  ///< The number of elements
+        M = new int[n_elts];
+        memcpy(M, ob.M, sizeof(int) * n_elts);
+      }
 
+      /// Type-specific Constructors
+      IMATRIX(vector<vector<int> >& mtx);
 
-  /// Type-specific Constructors
-  IMATRIX(vector< vector<int> >& mtx);  
+      ///< Create the int-valued matrix from a real-valued matrix by converting the numbers to ints
+      //  IMATRIX(MATRIX& mtx);
 
-  ///< Create the int-valued matrix from a real-valued matrix by converting the numbers to ints
-//  IMATRIX(MATRIX& mtx);  
+      ~IMATRIX() {}
 
- ~IMATRIX(){}
+      ///========== Getters and setters ====================
+      /// Inherit the base methods
 
+      using base_matrix<int>::set;
+      using base_matrix<int>::get;
 
-  ///========== Getters and setters ====================
-  /// Inherit the base methods
-
-  using base_matrix< int >::set;
-  using base_matrix< int >::get;
-
-
-  ///< Sets the indx's emelent of the M array to the input value (real and imaginary components)  
-/*
+      ///< Sets the indx's emelent of the M array to the input value (real and imaginary components)
+      /*
   void set(int indx, int value){
     set(indx, value);
   }
@@ -100,116 +92,122 @@ public:
   }
 */
 
-  ///=========== Extractions ======================
-//  using base_matrix<int>::col;
-//  using base_matrix<int>::row;
+      ///=========== Extractions ======================
+      //  using base_matrix<int>::col;
+      //  using base_matrix<int>::row;
 
+      ///========= Initialization =====================
+      using base_matrix<int>::diag;
+      using base_matrix<int>::identity;
+      using base_matrix<int>::Init;
+      using base_matrix<int>::InitSquareMatrix;
+      using base_matrix<int>::Init_Unit_Matrix;
 
-  ///========= Initialization =====================
-  using base_matrix< int >::diag;
-  using base_matrix< int >::identity;
-  using base_matrix< int >::Init;
-  using base_matrix< int >::InitSquareMatrix;
-  using base_matrix< int >::Init_Unit_Matrix;
+      /// For Backward-compatibility
+      void load_identity() {
+        identity();
+      }  ///< Reset the caller matrix to the identity matrix (all real)
 
-  /// For Backward-compatibility
-  void load_identity(){ identity(); } ///< Reset the caller matrix to the identity matrix (all real)
+      ///========= Operations =====================
+      using base_matrix<int>::add;
+      using base_matrix<int>::scale;
+      using base_matrix<int>::product;
+      using base_matrix<int>::dot_product;
 
+      ///========= Transformation =====================
+      using base_matrix<int>::Transpose;
+      //  using base_matrix< int >::T;
+      using base_matrix<int>::swap_cols;
+      using base_matrix<int>::swap_rows;
+      using base_matrix<int>::permute_cols;
+      using base_matrix<int>::permute_rows;
 
-  ///========= Operations =====================
-  using base_matrix< int >::add;
-  using base_matrix< int >::scale;
-  using base_matrix< int >::product;
-  using base_matrix< int >::dot_product;
+      ///========== Return derivative matrices ===========
+      IMATRIX T();         ///< Returns the matrix which is transposed w.r.t. the caller matrix
+      IMATRIX col(int i);  ///< takes given column and makes it n x 1 IMATRIX
+      IMATRIX row(int i);  ///< takes given column and makes it n x 1 IMATRIX
 
+      ///================ Matrix properties =====================
+      /// Inherited properties
 
-  ///========= Transformation =====================
-  using base_matrix< int >::Transpose;
-//  using base_matrix< int >::T;
-  using base_matrix< int >::swap_cols;
-  using base_matrix< int >::swap_rows;
-  using base_matrix< int >::permute_cols;
-  using base_matrix< int >::permute_rows;
- 
+      using base_matrix<int>::tr;
+      using base_matrix<int>::sum;
+      using base_matrix<int>::sum_col;
+      using base_matrix<int>::sum_row;
+      using base_matrix<int>::prod_col;
+      using base_matrix<int>::prod_row;
 
-  ///========== Return derivative matrices ===========
-  IMATRIX T();   ///< Returns the matrix which is transposed w.r.t. the caller matrix
-  IMATRIX col(int i); ///< takes given column and makes it n x 1 IMATRIX
-  IMATRIX row(int i); ///< takes given column and makes it n x 1 IMATRIX
+      int max_elt();
+      void FindMaxNondiagonalElement(int& row, int& col, int& value);
+      void max_nondiagonal(int& row, int& col);  // Backward-compatibility
 
+      void max_col_elt(
+          int,
+          int&,
+          int&);  ///< Finds the maximal element (in abs. value) and its index in a given column
+      void min_col_elt(
+          int,
+          int&,
+          int&);  ///< Finds the maximal element (in abs. value) and its index in a given column
+      void max_row_elt(
+          int,
+          int&,
+          int&);  ///< Finds the maximal element (in abs. value) and its index in a given row
+      void min_row_elt(
+          int,
+          int&,
+          int&);  ///< Finds the maximal element (in abs. value) and its index in a given row
+      boost::python::list max_col_elt(
+          int);  ///< Finds the maximal element (in abs. value) and its index in a given column
+      boost::python::list min_col_elt(
+          int);  ///< Finds the maximal element (in abs. value) and its index in a given column
+      boost::python::list max_row_elt(
+          int);  ///< Finds the maximal element (in abs. value) and its index in a given row
+      boost::python::list min_row_elt(
+          int);  ///< Finds the maximal element (in abs. value) and its index in a given row
 
-  ///================ Matrix properties =====================
-  /// Inherited properties
+      ///=================== Matrix IO and preparation ===================
+      using base_matrix<int>::bin_dump;
+      using base_matrix<int>::bin_load;
+      using base_matrix<int>::show_matrix;
+      using base_matrix<int>::Load_Matrix_From_File;
+      using base_matrix<int>::show_matrix_address;
 
-  using base_matrix< int >::tr;
-  using base_matrix< int >::sum;
-  using base_matrix< int >::sum_col;
-  using base_matrix< int >::sum_row;
-  using base_matrix< int >::prod_col;
-  using base_matrix< int >::prod_row;
+      ///================ Operator overloads =====================
 
+      using base_matrix<int>::operator=;
+      using base_matrix<int>::operator+=;
+      using base_matrix<int>::operator-=;
+      using base_matrix<int>::operator*=;
+      using base_matrix<int>::operator/=;
 
-  int max_elt();
-  void FindMaxNondiagonalElement(int& row, int& col, int& value);
-  void max_nondiagonal(int& row,int& col); // Backward-compatibility
+      IMATRIX operator+(const IMATRIX& rhs);
+      IMATRIX operator+(int rhs);
 
-  void max_col_elt(int, int&, int&); ///< Finds the maximal element (in abs. value) and its index in a given column
-  void min_col_elt(int, int&, int&); ///< Finds the maximal element (in abs. value) and its index in a given column
-  void max_row_elt(int, int&, int&); ///< Finds the maximal element (in abs. value) and its index in a given row
-  void min_row_elt(int, int&, int&); ///< Finds the maximal element (in abs. value) and its index in a given row
-  boost::python::list max_col_elt(int); ///< Finds the maximal element (in abs. value) and its index in a given column
-  boost::python::list min_col_elt(int); ///< Finds the maximal element (in abs. value) and its index in a given column
-  boost::python::list max_row_elt(int); ///< Finds the maximal element (in abs. value) and its index in a given row
-  boost::python::list min_row_elt(int); ///< Finds the maximal element (in abs. value) and its index in a given row
+      IMATRIX operator-(const IMATRIX& rhs);
+      IMATRIX operator-(int rhs);
 
-
-
-  ///=================== Matrix IO and preparation ===================  
-  using base_matrix< int >::bin_dump;
-  using base_matrix< int >::bin_load;
-  using base_matrix< int >::show_matrix;
-  using base_matrix< int >::Load_Matrix_From_File;
-  using base_matrix< int >::show_matrix_address;
-
-
-  ///================ Operator overloads =====================
-
-  using base_matrix< int >::operator=;
-  using base_matrix< int >::operator+=;
-  using base_matrix< int >::operator-=;
-  using base_matrix< int >::operator*=;
-  using base_matrix< int >::operator/=;
-
-
-  IMATRIX operator+(const IMATRIX& rhs);
-  IMATRIX operator+(int rhs);
-
-  IMATRIX operator-(const IMATRIX& rhs);
-  IMATRIX operator-(int rhs);
-
-/*
+      /*
   void operator+=(int f);
   void operator-=(int f);
 */
-  IMATRIX operator*(const IMATRIX& ob);
-  friend IMATRIX operator*(const IMATRIX& ob, int f);
-  friend IMATRIX operator*(int f, const IMATRIX& ob);
+      IMATRIX operator*(const IMATRIX& ob);
+      friend IMATRIX operator*(const IMATRIX& ob, int f);
+      friend IMATRIX operator*(int f, const IMATRIX& ob);
 
-/*
+      /*
   void operator*=(int f);
   void operator/=(int f);
 */
-  IMATRIX operator/(int f);
+      IMATRIX operator/(int f);
+    };
 
-                 
-};
+    typedef std::vector<IMATRIX>
+        IMATRIXList;  ///< Data type holding a list of arbitrary-size complex-valued matrices
+    typedef std::vector<vector<IMATRIX> >
+        IMATRIXMap;  ///< Data type for storing the table (grid) of the arbitrary-size complex-valued matrices
 
+  }  //namespace liblinalg
+}  // namespace liblibra
 
-
-typedef std::vector<IMATRIX> IMATRIXList;  ///< Data type holding a list of arbitrary-size complex-valued matrices
-typedef std::vector<vector<IMATRIX> > IMATRIXMap; ///< Data type for storing the table (grid) of the arbitrary-size complex-valued matrices
-
-}//namespace liblinalg
-}// liblibra
-
-#endif // IMATRIX_H
+#endif  // IMATRIX_H

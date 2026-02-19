@@ -19,19 +19,15 @@
 
 #include "integrators.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libintegrators{
+  /// libdyn namespace
+  namespace libintegrators {
 
+    void export_integrators_objects();
 
-void export_integrators_objects();
+  }  // namespace libintegrators
+}  // namespace liblibra
 
-
-}// namespace libintegrators
-}// liblibra
-
-#endif // LIBINTEGRATORS_H
-
+#endif  // LIBINTEGRATORS_H

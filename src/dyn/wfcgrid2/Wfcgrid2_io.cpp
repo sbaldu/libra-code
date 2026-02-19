@@ -18,22 +18,21 @@
 #include "../../math_meigen/libmeigen.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
-using namespace libwfcgrid;
+    using namespace libwfcgrid;
 
-/// libwfcgrid namespace
-namespace libwfcgrid2{
+    /// libwfcgrid namespace
+    namespace libwfcgrid2 {
 
-using namespace libmeigen;
+      using namespace libmeigen;
 
-
-
-void Wfcgrid2::print_wfc_1D(std::string prefix, int rep, vector<int>& states, int do_real, int do_imag, int do_dens){
-/**
+      void Wfcgrid2::print_wfc_1D(
+          std::string prefix, int rep, vector<int>& states, int do_real, int do_imag, int do_dens) {
+        /**
   \brief Print a 1D wavefunction into 3 files: real part, imaginary part, and the probability density (if requested)
   \param[in] prefix The prefix of the filenames to which the wfc will be printed out
   \param[in] rep The wavefunction representation: 0 - diabatic, 1 - adiabatic 
@@ -45,98 +44,107 @@ void Wfcgrid2::print_wfc_1D(std::string prefix, int rep, vector<int>& states, in
   for 1D profile on XY plane
 */
 
-  int nx; 
-  int Nx = npts[0];
-  int st;
-  int nst = states.size();
+        int nx;
+        int Nx = npts[0];
+        int st;
+        int nst = states.size();
 
-  std::string filename, reps;
-  stringstream ss1(stringstream::in | stringstream::out);
+        std::string filename, reps;
+        stringstream ss1(stringstream::in | stringstream::out);
 
-  ss1 << rep;  ss1 >> reps;
+        ss1 << rep;
+        ss1 >> reps;
 
-  //====================== Real part ====================
-  if(do_real){ 
-    filename = prefix+"_real_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Real part ====================
+        if (do_real) {
+          filename = prefix + "_real_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_dia[nx].get(states[st],0).real(); }
-        out<<endl;
-      }// for nx
-    }// rep ==0
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_adi[nx].get(states[st],0).real(); }
-        out<<endl;
-      }// for nx
-    }// rep ==1
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << rgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << PSI_dia[nx].get(states[st], 0).real();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==0
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << rgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << PSI_adi[nx].get(states[st], 0).real();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==1
 
-    out.close();
-  }
-
-  //====================== Imaginary part ====================
-  if(do_imag){ 
-    filename = prefix+"_imag_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
-
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_dia[nx].get(states[st],0).imag(); }
-        out<<endl;
-      }// for nx
-    }// rep ==0
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_adi[nx].get(states[st],0).imag(); }
-        out<<endl;
-      }// for nx
-    }// rep ==1
-
-    out.close();
-  }
-
-  //====================== Probability density ====================
-  if(do_dens){ 
-    filename = prefix+"_dens_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
-
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   
-          double dens = real(std::conj(PSI_dia[nx].get(states[st],0)) * PSI_dia[nx].get(states[st],0));
-          out<<"  "<<dens;
+          out.close();
         }
-        out<<endl;
-      }// for nx
-    }// rep ==0
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){
-          double dens = real(std::conj(PSI_adi[nx].get(states[st],0)) * PSI_adi[nx].get(states[st],0));
-          out<<"  "<<dens; 
+
+        //====================== Imaginary part ====================
+        if (do_imag) {
+          filename = prefix + "_imag_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
+
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << rgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << PSI_dia[nx].get(states[st], 0).imag();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==0
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << rgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << PSI_adi[nx].get(states[st], 0).imag();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==1
+
+          out.close();
         }
-        out<<endl;
-      }// for nx
-    }// rep ==1
 
-    out.close();
-  }
+        //====================== Probability density ====================
+        if (do_dens) {
+          filename = prefix + "_dens_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << rgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                double dens = real(std::conj(PSI_dia[nx].get(states[st], 0)) *
+                                   PSI_dia[nx].get(states[st], 0));
+                out << "  " << dens;
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==0
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << rgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                double dens = real(std::conj(PSI_adi[nx].get(states[st], 0)) *
+                                   PSI_adi[nx].get(states[st], 0));
+                out << "  " << dens;
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==1
 
-}// print_wfc_1D
+          out.close();
+        }
 
+      }  // print_wfc_1D
 
-
-void Wfcgrid2::print_reci_wfc_1D(std::string prefix, int rep, vector<int>& states, int do_real, int do_imag, int do_dens){
-/**
+      void Wfcgrid2::print_reci_wfc_1D(
+          std::string prefix, int rep, vector<int>& states, int do_real, int do_imag, int do_dens) {
+        /**
   \brief Print reciprocal representation of a 1D wavefunction into 3 files: 
   real part, imaginary part, and the probability density (if requested)
   \param[in] prefix The prefix of the filenames to which the wfc will be printed out
@@ -149,100 +157,107 @@ void Wfcgrid2::print_reci_wfc_1D(std::string prefix, int rep, vector<int>& state
   for 1D profile on XY plane
 */
 
-  int nx; 
-  int Nx = npts[0];
-  int st;
-  int nst = states.size();
+        int nx;
+        int Nx = npts[0];
+        int st;
+        int nst = states.size();
 
-  std::string filename, reps;
-  stringstream ss1(stringstream::in | stringstream::out);
+        std::string filename, reps;
+        stringstream ss1(stringstream::in | stringstream::out);
 
-  ss1 << rep;  ss1 >> reps;
+        ss1 << rep;
+        ss1 >> reps;
 
-  //====================== Real part ====================
-  if(do_real){ 
-    filename = prefix+"_real_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Real part ====================
+        if (do_real) {
+          filename = prefix + "_real_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_dia[nx].get(states[st],0).real(); }       
-        out<<endl;
-      }// for nx
-    }// rep ==0
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_adi[nx].get(states[st],0).real(); }       
-        out<<endl;
-      }// for nx
-    }// rep ==1
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << 2.0 * M_PI * kgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << reciPSI_dia[nx].get(states[st], 0).real();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==0
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << 2.0 * M_PI * kgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << reciPSI_adi[nx].get(states[st], 0).real();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
-  //====================== Imaginary part ====================
-  if(do_imag){ 
-    filename = prefix+"_imag_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Imaginary part ====================
+        if (do_imag) {
+          filename = prefix + "_imag_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_dia[nx].get(states[st],0).imag(); }       
-        out<<endl;
-      }// for nx
-    }// rep ==0
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_adi[nx].get(states[st],0).imag(); }       
-        out<<endl;
-      }// for nx
-    }// rep ==1
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << 2.0 * M_PI * kgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << reciPSI_dia[nx].get(states[st], 0).imag();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==0
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << 2.0 * M_PI * kgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                out << "  " << reciPSI_adi[nx].get(states[st], 0).imag();
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
-  //====================== Probability density ====================
-  if(do_dens){ 
-    filename = prefix+"_dens_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Probability density ====================
+        if (do_dens) {
+          filename = prefix + "_dens_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   
-          double dens = real(std::conj(reciPSI_dia[nx].get(states[st],0)) * reciPSI_dia[nx].get(states[st],0));
-          out<<"  "<<dens; 
-        }       
-        out<<endl;
-      }// for nx
-    }// rep ==0
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        out<<2.0*M_PI*kgrid[0]->get(nx);        
-        for(st=0; st<nst; st++){   
-          double dens = real(std::conj(reciPSI_adi[nx].get(states[st],0)) * reciPSI_adi[nx].get(states[st],0));
-          out<<"  "<<dens; 
-        }       
-        out<<endl;
-      }// for nx
-    }// rep ==1
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << 2.0 * M_PI * kgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                double dens = real(std::conj(reciPSI_dia[nx].get(states[st], 0)) *
+                                   reciPSI_dia[nx].get(states[st], 0));
+                out << "  " << dens;
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==0
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              out << 2.0 * M_PI * kgrid[0]->get(nx);
+              for (st = 0; st < nst; st++) {
+                double dens = real(std::conj(reciPSI_adi[nx].get(states[st], 0)) *
+                                   reciPSI_adi[nx].get(states[st], 0));
+                out << "  " << dens;
+              }
+              out << endl;
+            }  // for nx
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
+      }  // print_reci_wfc_1D
 
-}// print_reci_wfc_1D
-
-
-
-
-
-void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real, int do_imag, int do_dens){
-/**
+      void Wfcgrid2::print_wfc_2D(
+          std::string prefix, int rep, int state, int do_real, int do_imag, int do_dens) {
+        /**
   \brief Print a 2D wavefunction into 3 files: real part, imaginary part, and the probability density (if requested)
   \param[in] prefix The prefix of the filenames to which the wfc will be printed out
   \param[in] rep The wavefunction representation: 0 - diabatic, 1 - adiabatic 
@@ -254,119 +269,129 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
   for 2D profile on XY plane
 */
 
-  int nx, ny, indx; 
-  int Nx = npts[0];
-  int Ny = npts[1];
-  vector<int> ipt(2, 0);
+        int nx, ny, indx;
+        int Nx = npts[0];
+        int Ny = npts[1];
+        vector<int> ipt(2, 0);
 
-  std::string filename, reps;
-  stringstream ss1(stringstream::in | stringstream::out);
+        std::string filename, reps;
+        stringstream ss1(stringstream::in | stringstream::out);
 
-  ss1 << rep;  ss1 >> reps;
+        ss1 << rep;
+        ss1 >> reps;
 
-  //====================== Real part ====================
-  if(do_real){ 
-    filename = prefix+"_real_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Real part ====================
+        if (do_real) {
+          filename = prefix + "_real_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_dia[indx].get(state,0).real()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
-    }// rep ==0
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << rgrid[0]->get(nx) << "  " << rgrid[1]->get(ny) << "  "
+                    << PSI_dia[indx].get(state, 0).real() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
+          }  // rep ==0
 
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_adi[indx].get(state,0).real()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << rgrid[0]->get(nx) << "  " << rgrid[1]->get(ny) << "  "
+                    << PSI_adi[indx].get(state, 0).real() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
 
-    }// rep ==1
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
-  //====================== Imaginary part ====================
-  if(do_imag){ 
-    filename = prefix+"_imag_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Imaginary part ====================
+        if (do_imag) {
+          filename = prefix + "_imag_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_dia[indx].get(state,0).imag()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
-    }// rep ==0
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << rgrid[0]->get(nx) << "  " << rgrid[1]->get(ny) << "  "
+                    << PSI_dia[indx].get(state, 0).imag() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
+          }  // rep ==0
 
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_adi[indx].get(state,0).imag()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << rgrid[0]->get(nx) << "  " << rgrid[1]->get(ny) << "  "
+                    << PSI_adi[indx].get(state, 0).imag() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
 
-    }// rep ==1
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
-  //====================== Probability density ====================
-  if(do_dens){ 
-    filename = prefix+"_dens_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Probability density ====================
+        if (do_dens) {
+          filename = prefix + "_dens_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          double dens = (std::conj(PSI_dia[indx].get(state,0)) * PSI_dia[indx].get(state,0) ).real();
-          out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<dens<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
-    }// rep ==0
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                double dens =
+                    (std::conj(PSI_dia[indx].get(state, 0)) * PSI_dia[indx].get(state, 0)).real();
+                out << rgrid[0]->get(nx) << "  " << rgrid[1]->get(ny) << "  " << dens << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
+          }  // rep ==0
 
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          double dens = (std::conj(PSI_adi[indx].get(state,0)) * PSI_adi[indx].get(state,0) ).real();
-          out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<dens<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                double dens =
+                    (std::conj(PSI_adi[indx].get(state, 0)) * PSI_adi[indx].get(state, 0)).real();
+                out << rgrid[0]->get(nx) << "  " << rgrid[1]->get(ny) << "  " << dens << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
 
-    }// rep ==1
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
+      }  // print_wfc_2D
 
-}// print_wfc_2D
-
-
-
-
-void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_real, int do_imag, int do_dens){
-/**
+      void Wfcgrid2::print_reci_wfc_2D(
+          std::string prefix, int rep, int state, int do_real, int do_imag, int do_dens) {
+        /**
   \brief Print a reciprocal-space 2D wavefunction into 3 files: real part, imaginary part, and the probability density (if requested)
   \param[in] prefix The prefix of the filenames to which the wfc will be printed out
   \param[in] rep The wavefunction representation: 0 - diabatic, 1 - adiabatic 
@@ -378,119 +403,130 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
   for 2D profile on XY plane
 */
 
-  int nx, ny, indx; 
-  int Nx = npts[0];
-  int Ny = npts[1];
-  vector<int> ipt(2, 0);
+        int nx, ny, indx;
+        int Nx = npts[0];
+        int Ny = npts[1];
+        vector<int> ipt(2, 0);
 
-  std::string filename, reps;
-  stringstream ss1(stringstream::in | stringstream::out);
+        std::string filename, reps;
+        stringstream ss1(stringstream::in | stringstream::out);
 
-  ss1 << rep;  ss1 >> reps;
+        ss1 << rep;
+        ss1 >> reps;
 
-  //====================== Real part ====================
-  if(do_real){ 
-    filename = prefix+"_real_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Real part ====================
+        if (do_real) {
+          filename = prefix + "_real_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_dia[indx].get(state,0).real()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
-    }// rep ==0
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << 2.0 * M_PI * kgrid[0]->get(nx) << "  " << 2.0 * M_PI * kgrid[1]->get(ny)
+                    << "  " << reciPSI_dia[indx].get(state, 0).real() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
+          }  // rep ==0
 
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_adi[indx].get(state,0).real()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << 2.0 * M_PI * kgrid[0]->get(nx) << "  " << 2.0 * M_PI * kgrid[1]->get(ny)
+                    << "  " << reciPSI_adi[indx].get(state, 0).real() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
 
-    }// rep ==1
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
-  //====================== Imaginary part ====================
-  if(do_imag){ 
-    filename = prefix+"_imag_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Imaginary part ====================
+        if (do_imag) {
+          filename = prefix + "_imag_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_dia[indx].get(state,0).imag()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
-    }// rep ==0
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << 2.0 * M_PI * kgrid[0]->get(nx) << "  " << 2.0 * M_PI * kgrid[1]->get(ny)
+                    << "  " << reciPSI_dia[indx].get(state, 0).imag() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
+          }  // rep ==0
 
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_adi[indx].get(state,0).imag()<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                out << 2.0 * M_PI * kgrid[0]->get(nx) << "  " << 2.0 * M_PI * kgrid[1]->get(ny)
+                    << "  " << reciPSI_adi[indx].get(state, 0).imag() << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
 
-    }// rep ==1
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
-  //====================== Probability density ====================
-  if(do_dens){ 
-    filename = prefix+"_dens_rep_"+reps;
-    ofstream out(filename.c_str(),ios::out);
+        //====================== Probability density ====================
+        if (do_dens) {
+          filename = prefix + "_dens_rep_" + reps;
+          ofstream out(filename.c_str(), ios::out);
 
-    if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          double dens = (std::conj(reciPSI_dia[indx].get(state,0)) * reciPSI_dia[indx].get(state,0) ).real();
-          out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<dens<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
-    }// rep ==0
+          if (rep == 0) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                double dens =
+                    (std::conj(reciPSI_dia[indx].get(state, 0)) * reciPSI_dia[indx].get(state, 0))
+                        .real();
+                out << 2.0 * M_PI * kgrid[0]->get(nx) << "  " << 2.0 * M_PI * kgrid[1]->get(ny)
+                    << "  " << dens << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
+          }  // rep ==0
 
-    else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
-          ipt[0] = nx; ipt[1] = ny;
-          indx = imap(ipt);
-          double dens = (std::conj(reciPSI_adi[indx].get(state,0)) * reciPSI_adi[indx].get(state,0) ).real();
-          out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<dens<<endl;
-        }// for ny
-        out<<endl;
-      }// for nx
+          else if (rep == 1) {
+            for (nx = 0; nx < Nx; nx++) {
+              for (ny = 0; ny < Ny; ny++) {
+                ipt[0] = nx;
+                ipt[1] = ny;
+                indx = imap(ipt);
+                double dens =
+                    (std::conj(reciPSI_adi[indx].get(state, 0)) * reciPSI_adi[indx].get(state, 0))
+                        .real();
+                out << 2.0 * M_PI * kgrid[0]->get(nx) << "  " << 2.0 * M_PI * kgrid[1]->get(ny)
+                    << "  " << dens << endl;
+              }  // for ny
+              out << endl;
+            }  // for nx
 
-    }// rep ==1
+          }  // rep ==1
 
-    out.close();
-  }
+          out.close();
+        }
 
+      }  // print_reci_wfc_2D
 
-}// print_reci_wfc_2D
-
-
-
-
-
-}// namespace libwfcgrid2
-}// namespace libdyn
-}// liblibra
-
+    }  // namespace libwfcgrid2
+  }  // namespace libdyn
+}  // namespace liblibra

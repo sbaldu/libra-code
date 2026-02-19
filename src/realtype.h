@@ -13,7 +13,6 @@
 *
 *********************************************************************************/
 
-
 /* Ergo, version 3.3, a program for linear scaling electronic structure
  * calculations.
  * Copyright (C) 2013 Elias Rudberg, Emanuel H. Rubensson, and Pawel Salek.
@@ -46,46 +45,43 @@
 
 /// We incorporate all the definitions into the liblibra namespace
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// Also, to keep everything organized, lets also create a libergoescf namespace
-/// to keep all the original developments in there
-/// libergoescf namespace 
-namespace libergoscf{
+  /// Also, to keep everything organized, lets also create a libergoescf namespace
+  /// to keep all the original developments in there
+  /// libergoescf namespace
+  namespace libergoscf {
 
-
-/// AVA: We don't want that for now. Mostly, because
-/// I have no idea on how to use it (seems that all the
-/// definitions can be done in the CMakeLists.txt file)
-//#include "config.h"
+    /// AVA: We don't want that for now. Mostly, because
+    /// I have no idea on how to use it (seems that all the
+    /// definitions can be done in the CMakeLists.txt file)
+    //#include "config.h"
 
 #ifdef PRECISION_SINGLE
-typedef float ergo_real;
-typedef double ergo_long_real;
+    typedef float ergo_real;
+    typedef double ergo_long_real;
 #define REALTYPE_DEFINED_OK
 #endif
 
 #ifdef PRECISION_DOUBLE
-typedef double ergo_real;
-typedef double ergo_long_real;
+    typedef double ergo_real;
+    typedef double ergo_long_real;
 #define REALTYPE_DEFINED_OK
 #endif
 
 #ifdef PRECISION_LONG_DOUBLE
-typedef long double ergo_real;
-typedef long double ergo_long_real;
+    typedef long double ergo_real;
+    typedef long double ergo_long_real;
 #define REALTYPE_DEFINED_OK
 #endif
 
 /* if precision not specified, use double as default */
 #ifndef REALTYPE_DEFINED_OK
-typedef double ergo_real;
-typedef double ergo_long_real;
+    typedef double ergo_real;
+    typedef double ergo_long_real;
 #endif
 
-
-}// libergoescf
-}// liblibra
-
+  }  // namespace libergoscf
+}  // namespace liblibra
 
 #endif

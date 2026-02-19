@@ -14,24 +14,24 @@
   \brief The file describes the functions and data types for dealing with permutations
 */
 
-
 #include "permutations.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// liblinalg namespace
-namespace liblinalg{
+  /// liblinalg namespace
+  namespace liblinalg {
 
+    vector<int> id_permutation(int sz) {
+      vector<int> res(sz, 0);
+      for (int i = 0; i < sz; i++) {
+        res[i] = i;
+      }
+      return res;
+    }
 
-vector<int> id_permutation(int sz){
-  vector<int> res(sz,0);
-  for(int i=0;i<sz;i++){ res[i] = i; }
-  return res;
-}
-
-vector<int> inverse_permutation(vector<int>& perm){
-/**
+    vector<int> inverse_permutation(vector<int>& perm) {
+      /**
   Compute the inverse of the permutation <perm>
 
   Forward permutation:  i -> perm[i]
@@ -39,16 +39,18 @@ vector<int> inverse_permutation(vector<int>& perm){
   this  inv_perm[ perm[i] ] = i
 */
 
-  int sz = perm.size();
-  vector<int> res(sz,0);
+      int sz = perm.size();
+      vector<int> res(sz, 0);
 
-  for(int i=0;i<sz;i++){    res[ perm[i] ] = i;   }
+      for (int i = 0; i < sz; i++) {
+        res[perm[i]] = i;
+      }
 
-  return res;
-}
+      return res;
+    }
 
-vector<int> composite_permutation(vector<int>& perm_t, vector<int>& perm_cum){
-    /**
+    vector<int> composite_permutation(vector<int>& perm_t, vector<int>& perm_cum) {
+      /**
     \param[in] perm_cum - Cumulative permutation
     \param[in] perm_t - permutation at a given point
 
@@ -63,18 +65,18 @@ vector<int> composite_permutation(vector<int>& perm_t, vector<int>& perm_cum){
     (perm_t * perm_cum)(1) = perm_t( perm_cum(1) ) = perm_t(0) = 0
     */
 
-    int n = perm_cum.size();
-    vector<int> tmp(n, 0);
+      int n = perm_cum.size();
+      vector<int> tmp(n, 0);
 
-    for(int i=0;i<n;i++){  tmp[i] = perm_t[ perm_cum[i] ];    }
+      for (int i = 0; i < n; i++) {
+        tmp[i] = perm_t[perm_cum[i]];
+      }
 
-    return tmp;
+      return tmp;
+    }
 
-}
-
-void update_permutation(vector<int>& perm_t, vector<int>* perm_cum){
-
-    /**
+    void update_permutation(vector<int>& perm_t, vector<int>* perm_cum) {
+      /**
     \param[in, out] perm_cum - Cumulative permutation
     \param[in] perm_t - permutation at a given point
 
@@ -89,62 +91,64 @@ void update_permutation(vector<int>& perm_t, vector<int>* perm_cum){
     (perm_t * perm_cum)(1) = perm_t( perm_cum(1) ) = perm_t(0) = 0
     */
 
-    int i;
-    int n = perm_cum[0].size();
-    vector<int> tmp(n, 0);
+      int i;
+      int n = perm_cum[0].size();
+      vector<int> tmp(n, 0);
 
-    for(i=0;i<n;i++){  tmp[i] = perm_t[ perm_cum[0][i] ];    }
- 
-    // Copy the temporary vector into the input one:
-    for(i=0;i<n;i++){  perm_cum[0][i] = tmp[i];   }
+      for (i = 0; i < n; i++) {
+        tmp[i] = perm_t[perm_cum[0][i]];
+      }
 
-
-}
-
-void update_permutation(vector<int>& perm_t, vector<int>& perm_cum){
-
-  update_permutation(perm_t, &perm_cum);
-
-}
-
-void check_permutation(vector<int>& perm, int n){
-
-    int sz = perm.size();
-
-    if(sz!=n){
-      cout<<"ERROR in void check_permutation(vector<int>& perm, int n)\n";
-      cout<<"The number of items in the input permutation ("<<sz<<") is not equal to the expected size of the permutation ("<<n<<")\n";
-      cout<<"Exiting...\n";
-      exit(0);
+      // Copy the temporary vector into the input one:
+      for (i = 0; i < n; i++) {
+        perm_cum[0][i] = tmp[i];
+      }
     }
 
-    int min_indx = perm[0];
-    int max_indx = perm[0];
-    for(int i=0;i<sz; i++){ 
-      if(perm[i] < min_indx){  min_indx = perm[i]; }
-      if(perm[i] > max_indx){  max_indx = perm[i]; }
+    void update_permutation(vector<int>& perm_t, vector<int>& perm_cum) {
+      update_permutation(perm_t, &perm_cum);
     }
 
-    if(min_indx < 0){
-      cout<<"ERROR in void check_permutation(vector<int>& perm, int n)\n";
-      cout<<"The minimal mapping index of the permutation ("<<min_indx<<") is smaller than 0\n";
-      cout<<"Exiting...\n";
-      exit(0);
+    void check_permutation(vector<int>& perm, int n) {
+      int sz = perm.size();
+
+      if (sz != n) {
+        cout << "ERROR in void check_permutation(vector<int>& perm, int n)\n";
+        cout << "The number of items in the input permutation (" << sz
+             << ") is not equal to the expected size of the permutation (" << n << ")\n";
+        cout << "Exiting...\n";
+        exit(0);
+      }
+
+      int min_indx = perm[0];
+      int max_indx = perm[0];
+      for (int i = 0; i < sz; i++) {
+        if (perm[i] < min_indx) {
+          min_indx = perm[i];
+        }
+        if (perm[i] > max_indx) {
+          max_indx = perm[i];
+        }
+      }
+
+      if (min_indx < 0) {
+        cout << "ERROR in void check_permutation(vector<int>& perm, int n)\n";
+        cout << "The minimal mapping index of the permutation (" << min_indx
+             << ") is smaller than 0\n";
+        cout << "Exiting...\n";
+        exit(0);
+      }
+
+      if (max_indx > n - 1) {
+        cout << "ERROR in void check_permutation(vector<int>& perm, int n)\n";
+        cout << "The maximal mapping index of the permutation (" << max_indx
+             << ") is larger than the \
+             maximal allowed index of permutation ("
+             << n - 1 << ")\n";
+        cout << "Exiting...\n";
+        exit(0);
+      }
     }
 
-    if(max_indx > n-1){
-      cout<<"ERROR in void check_permutation(vector<int>& perm, int n)\n";
-      cout<<"The maximal mapping index of the permutation ("<<max_indx<<") is larger than the \
-             maximal allowed index of permutation ("<<n-1<<")\n";
-      cout<<"Exiting...\n";
-      exit(0);
-    }
-
-}
-
-
-
-
-
-}//namespace liblinalg
-}// liblibra
+  }  //namespace liblinalg
+}  // namespace liblibra

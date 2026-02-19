@@ -17,27 +17,22 @@
 #ifndef LIB_CHEMSYS_H
 #define LIB_CHEMSYS_H
 
-
 #include "System.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libchemobjects namespace
+  namespace libchemobjects {
 
-/// libchemobjects namespace
-namespace libchemobjects{
+    /// libchemsys namespace
+    namespace libchemsys {
 
-/// libchemsys namespace
-namespace libchemsys{
+      void export_Chemsys_objects();
 
+    }  // namespace libchemsys
+  }  // namespace libchemobjects
 
-void export_Chemsys_objects();
+}  // namespace liblibra
 
-
-}// namespace libchemsys
-}// namespace libchemobjects
-
-}// liblibra
-
-
-#endif// LIB_CHEMSYS_H
+#endif  // LIB_CHEMSYS_H

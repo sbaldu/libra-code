@@ -17,60 +17,53 @@
 #if defined(USING_PCH)
 #include "../pch.h"
 #else
-#include <memory> // for std::auto_ptr<>
+#include <memory>  // for std::auto_ptr<>
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "libhamiltonian.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
+  using namespace boost::python;
 
-/// libhamiltonian namespace
-namespace libhamiltonian{
+  /// libhamiltonian namespace
+  namespace libhamiltonian {
 
-using namespace libhamiltonian_generic;
-//using namespace libhamiltonian_model;
-//using namespace libhamiltonian_atomistic;
-//using namespace libhamiltonian_extern;
+    using namespace libhamiltonian_generic;
+    //using namespace libhamiltonian_model;
+    //using namespace libhamiltonian_atomistic;
+    //using namespace libhamiltonian_extern;
 
-void export_Hamiltonian_objects(){
-/** 
+    void export_Hamiltonian_objects() {
+      /** 
   \brief Exporter of the libhamiltonian classes and functions
 
 */
 
+      //  export_hamiltonian_generic_objects();
+      //  export_hamiltonian_model_objects();
+      //  export_hamiltonian_atomistic_objects();
+      //  export_hamiltonian_extern_objects();
 
-//  export_hamiltonian_generic_objects();
-//  export_hamiltonian_model_objects();
-//  export_hamiltonian_atomistic_objects();
-//  export_hamiltonian_extern_objects();
-
-  export_nhamiltonian_generic_objects();
-
-}
-
+      export_nhamiltonian_generic_objects();
+    }
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cyghamiltonian){
+    BOOST_PYTHON_MODULE(cyghamiltonian) {
 #else
-BOOST_PYTHON_MODULE(libhamiltonian){
+    BOOST_PYTHON_MODULE(libhamiltonian) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-//  export_Mathematics_objects();
-  export_Hamiltonian_objects();
+      //  export_Mathematics_objects();
+      export_Hamiltonian_objects();
+    }
 
-}
-
-
-}// namespace libhamiltonian
-}// liblibra
-
+  }  // namespace libhamiltonian
+}  // namespace liblibra

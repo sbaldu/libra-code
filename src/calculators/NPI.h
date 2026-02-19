@@ -17,21 +17,19 @@
 #ifndef NPI_H
 #define NPI_H
 
-
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-/// libcalculators namespace
-namespace libcalculators{
+  /// libcalculators namespace
+  namespace libcalculators {
 
-MATRIX nac_npi(MATRIX& St, double dt);
+    MATRIX nac_npi(MATRIX& St, double dt);
 
+  }  // namespace libcalculators
+}  // namespace liblibra
 
-}// namespace libcalculators
-}// liblibra
-
-#endif // NPI_H
+#endif  // NPI_H

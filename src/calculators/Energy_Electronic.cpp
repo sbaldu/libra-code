@@ -17,16 +17,15 @@
 #include "Energy_Electronic.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libcalculators namespace
+  namespace libcalculators {
 
-/// libcalculators namespace
-namespace libcalculators{
-
-double energy_elec(MATRIX* Pao,MATRIX* Hao,MATRIX* Fao){
-/**
+    double energy_elec(MATRIX* Pao, MATRIX* Hao, MATRIX* Fao) {
+      /**
   \brief Electronic energy
 
   Compute electronic energy (true for HF-derived methods: HF, CNDO, CNDO/2, INDO)
@@ -37,29 +36,26 @@ double energy_elec(MATRIX* Pao,MATRIX* Hao,MATRIX* Fao){
   \param[in] Fao Pointer to the Fock matrix
 */
 
+      int Norb = Pao->n_cols;
 
-  int Norb = Pao->n_cols;
-  
-  int i,ii,j;
-  double Eelec = 0.0;
+      int i, ii, j;
+      double Eelec = 0.0;
 
-  for(i=0;i<Norb;i++){
-    for(j=0;j<Norb;j++){
+      for (i = 0; i < Norb; i++) {
+        for (j = 0; j < Norb; j++) {
+          Eelec += Pao->M[i * Norb + j] * (Hao->M[i * Norb + j] + Fao->M[i * Norb + j]);
 
-      Eelec += Pao->M[i*Norb+j]*(Hao->M[i*Norb+j] + Fao->M[i*Norb+j]);
+        }  // for i
+      }  // for j
 
-    }// for i
-  }// for j
+      Eelec *= 0.5;
 
-  Eelec *= 0.5;
+      return Eelec;
 
-  return Eelec;
+    }  // double energy_elec(...)
 
-}// double energy_elec(...)
-
-
-double energy_elec(MATRIX Pao,MATRIX Hao,MATRIX Fao){
-/**
+    double energy_elec(MATRIX Pao, MATRIX Hao, MATRIX Fao) {
+      /**
   \brief Electronic energy (Python-friendly)
 
   Compute electronic energy (true for HF-derived methods: HF, CNDO, CNDO/2, INDO)
@@ -70,19 +66,21 @@ double energy_elec(MATRIX Pao,MATRIX Hao,MATRIX Fao){
   \param[in] Fao The Fock matrix
 */
 
+      return energy_elec(&Pao, &Hao, &Fao);
+    }
 
-  return energy_elec(&Pao,&Hao,&Fao);
-}
-
-
-double energy_elec(MATRIX* P_alp, MATRIX* P_bet, 
-                   MATRIX* Hao_alp, MATRIX* Hao_bet,
-                   MATRIX* Fao_alp, MATRIX* Fao_bet,
-                   MATRIX* dFao_alp_dP_alp, MATRIX* dFao_alp_dP_bet,
-                   MATRIX* dFao_bet_dP_alp, MATRIX* dFao_bet_dP_bet,
-                   MATRIX* temp
-                  ){
-/**
+    double energy_elec(MATRIX* P_alp,
+                       MATRIX* P_bet,
+                       MATRIX* Hao_alp,
+                       MATRIX* Hao_bet,
+                       MATRIX* Fao_alp,
+                       MATRIX* Fao_bet,
+                       MATRIX* dFao_alp_dP_alp,
+                       MATRIX* dFao_alp_dP_bet,
+                       MATRIX* dFao_bet_dP_alp,
+                       MATRIX* dFao_bet_dP_bet,
+                       MATRIX* temp) {
+      /**
   \brief Electronic energy for the charge-dependent Fock matrices (e.g. in SC-EHT)
 
   Note: this energy definition correct for the only case when the Fock matrix is corrected only by the 
@@ -107,57 +105,68 @@ double energy_elec(MATRIX* P_alp, MATRIX* P_bet,
 
 */
 
+      int Norb = P_alp->n_cols;
 
+      int i, ii, j;
+      double Eelec_alp = 0.0;
+      double Eelec_bet = 0.0;
+      double Eelec_tot = 0.0;
 
-  int Norb = P_alp->n_cols;
-  
-  int i,ii,j;
-  double Eelec_alp = 0.0;
-  double Eelec_bet = 0.0;
-  double Eelec_tot = 0.0;
+      //-------------------- Handle alpha part ---------------------------------------
+      *temp = 0.0;
+      if (dFao_alp_dP_alp->max_elt() > 1e-10) {
+        *temp += *P_alp * *dFao_alp_dP_alp;
+      }
+      if (dFao_alp_dP_bet->max_elt() > 1e-10) {
+        *temp += *P_bet * *dFao_alp_dP_bet;
+      }
 
-  //-------------------- Handle alpha part ---------------------------------------
-  *temp = 0.0; 
-  if(dFao_alp_dP_alp->max_elt()>1e-10){   *temp += *P_alp * *dFao_alp_dP_alp;    }
-  if(dFao_alp_dP_bet->max_elt()>1e-10){   *temp += *P_bet * *dFao_alp_dP_bet;    }
-   
-  for(i=0;i<Norb;i++){
-    for(j=0;j<Norb;j++){
-      Eelec_alp += P_alp->M[i*Norb+j]*(Hao_alp->M[i*Norb+j] +( Fao_alp->M[i*Norb+j] + temp->M[i*Norb+j]));
-    }// for i
-  }// for j
-  Eelec_alp *= 0.5;
+      for (i = 0; i < Norb; i++) {
+        for (j = 0; j < Norb; j++) {
+          Eelec_alp +=
+              P_alp->M[i * Norb + j] *
+              (Hao_alp->M[i * Norb + j] + (Fao_alp->M[i * Norb + j] + temp->M[i * Norb + j]));
+        }  // for i
+      }  // for j
+      Eelec_alp *= 0.5;
 
+      //-------------------- Handle beta part ---------------------------------------
+      *temp = 0.0;
+      if (dFao_bet_dP_alp->max_elt() > 1e-10) {
+        *temp += *P_alp * *dFao_bet_dP_alp;
+      }
+      if (dFao_bet_dP_bet->max_elt() > 1e-10) {
+        *temp += *P_bet * *dFao_bet_dP_bet;
+      }
 
-  //-------------------- Handle beta part ---------------------------------------
-  *temp = 0.0; 
-  if(dFao_bet_dP_alp->max_elt()>1e-10){   *temp += *P_alp * *dFao_bet_dP_alp;    }
-  if(dFao_bet_dP_bet->max_elt()>1e-10){   *temp += *P_bet * *dFao_bet_dP_bet;    }
-   
-  for(i=0;i<Norb;i++){
-    for(j=0;j<Norb;j++){
-      Eelec_bet += P_bet->M[i*Norb+j]*(Hao_bet->M[i*Norb+j] +( Fao_bet->M[i*Norb+j] + temp->M[i*Norb+j]));
-    }// for i
-  }// for j
-  Eelec_bet *= 0.5;
+      for (i = 0; i < Norb; i++) {
+        for (j = 0; j < Norb; j++) {
+          Eelec_bet +=
+              P_bet->M[i * Norb + j] *
+              (Hao_bet->M[i * Norb + j] + (Fao_bet->M[i * Norb + j] + temp->M[i * Norb + j]));
+        }  // for i
+      }  // for j
+      Eelec_bet *= 0.5;
 
+      //------------------------- Total ----------------------------------------------
+      Eelec_tot = Eelec_alp + Eelec_bet;
 
-  //------------------------- Total ----------------------------------------------
-  Eelec_tot = Eelec_alp + Eelec_bet;
+      return Eelec_tot;
 
+    }  // double energy_elec(...)
 
-  return Eelec_tot;
-
-}// double energy_elec(...)
-
-double energy_elec(MATRIX P_alp, MATRIX P_bet, 
-                   MATRIX Hao_alp, MATRIX Hao_bet,
-                   MATRIX Fao_alp, MATRIX Fao_bet,
-                   MATRIX dFao_alp_dP_alp, MATRIX dFao_alp_dP_bet,
-                   MATRIX dFao_bet_dP_alp, MATRIX dFao_bet_dP_bet,
-                   MATRIX temp
-                  ){
-/**
+    double energy_elec(MATRIX P_alp,
+                       MATRIX P_bet,
+                       MATRIX Hao_alp,
+                       MATRIX Hao_bet,
+                       MATRIX Fao_alp,
+                       MATRIX Fao_bet,
+                       MATRIX dFao_alp_dP_alp,
+                       MATRIX dFao_alp_dP_bet,
+                       MATRIX dFao_bet_dP_alp,
+                       MATRIX dFao_bet_dP_bet,
+                       MATRIX temp) {
+      /**
   \brief Electronic energy for the charge-dependent Fock matrices (e.g. in SC-EHT) - Python-friendly
 
   Note: this energy definition correct for the only case when the Fock matrix is corrected only by the 
@@ -182,15 +191,19 @@ double energy_elec(MATRIX P_alp, MATRIX P_bet,
 
 */
 
+      return energy_elec(&P_alp,
+                         &P_bet,
+                         &Hao_alp,
+                         &Hao_bet,
+                         &Fao_alp,
+                         &Fao_bet,
+                         &dFao_alp_dP_alp,
+                         &dFao_alp_dP_bet,
+                         &dFao_bet_dP_alp,
+                         &dFao_bet_dP_bet,
+                         &temp);
+    }
 
-  return energy_elec(&P_alp,&P_bet,&Hao_alp,&Hao_bet,&Fao_alp,&Fao_bet,
-                     &dFao_alp_dP_alp, &dFao_alp_dP_bet, &dFao_bet_dP_alp, &dFao_bet_dP_bet, &temp);
-}
+  }  // namespace libcalculators
 
-
-}// namespace libcalculators
-
-}// liblibra
-
-
-
+}  // namespace liblibra

@@ -20,22 +20,24 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
-/// libmodels namespace
-namespace libmodels{
+  /// libmodels namespace
+  namespace libmodels {
 
+    void model_DAC(CMATRIX& Hdia,
+                   CMATRIX& Sdia,
+                   vector<CMATRIX>& d1ham_dia,
+                   vector<CMATRIX>& dc1_dia,
+                   vector<double>& q,
+                   vector<double>& params);
 
-void model_DAC(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia, vector<CMATRIX>& dc1_dia,
-               vector<double> &q, vector<double>& params);
+    void DAC_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
+    boost::python::list DAC_Ham(double x, boost::python::list params_);
 
-void DAC_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
-boost::python::list DAC_Ham(double x, boost::python::list params_);
+  }  // namespace libmodels
+}  // namespace liblibra
 
-
-}// namespace libmodels
-}// liblibra
-
-#endif // MODEL_DAC_H
+#endif  // MODEL_DAC_H

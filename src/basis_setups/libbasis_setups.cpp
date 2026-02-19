@@ -16,54 +16,51 @@
 #else
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "libbasis_setups.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
-using namespace liblibra;
+  using namespace boost::python;
+  using namespace liblibra;
 
-namespace libbasis_setups{
+  namespace libbasis_setups {
 
+    void export_basis_setups_objects() {
+      // Basis_STO_3G_DZ.cpp
 
-void export_basis_setups_objects(){
+      void (*expt_set_basis_STO_3G_DZ_v1)(vector<std::string>& at_type,
+                                          vector<VECTOR>& R,
+                                          Model_Parameters& modpar,
+                                          int verb,
+                                          vector<AO>& basis_ao,
+                                          int& Nelec,
+                                          int& Norb,
+                                          vector<vector<int> >& atom_to_ao_map,
+                                          vector<int>& ao_to_atom_map) = &set_basis_STO_3G_DZ;
 
+      boost::python::list (*expt_set_basis_STO_3G_DZ_v2)(
+          vector<std::string>& at_type, vector<VECTOR>& R, Model_Parameters& modpar, int verb) =
+          &set_basis_STO_3G_DZ;
 
-  // Basis_STO_3G_DZ.cpp
-
-  void (*expt_set_basis_STO_3G_DZ_v1)(vector<std::string>& at_type, vector<VECTOR>& R,  Model_Parameters& modpar, int verb,
-  vector<AO>& basis_ao, int& Nelec, int& Norb, 
-  vector<vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map) = &set_basis_STO_3G_DZ;
-
-  boost::python::list (*expt_set_basis_STO_3G_DZ_v2)
-  (vector<std::string>& at_type, vector<VECTOR>& R,  Model_Parameters& modpar, int verb) = &set_basis_STO_3G_DZ;
-
-//  def("set_basis_STO_3G_DZ", expt_set_basis_STO_3G_DZ_v1);
-  def("set_basis_STO_3G_DZ", expt_set_basis_STO_3G_DZ_v2);
-
-
-}
-
+      //  def("set_basis_STO_3G_DZ", expt_set_basis_STO_3G_DZ_v1);
+      def("set_basis_STO_3G_DZ", expt_set_basis_STO_3G_DZ_v2);
+    }
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cygbasis_setups){
+    BOOST_PYTHON_MODULE(cygbasis_setups) {
 #else
-BOOST_PYTHON_MODULE(libbasis_setups){
+    BOOST_PYTHON_MODULE(libbasis_setups) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-  export_basis_setups_objects();
+      export_basis_setups_objects();
+    }
 
-}
-
-
-}// namespace libbasis_setups
-}// namespace liblibra
-
+  }  // namespace libbasis_setups
+}  // namespace liblibra

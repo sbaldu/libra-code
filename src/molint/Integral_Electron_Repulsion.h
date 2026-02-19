@@ -15,68 +15,139 @@
 #include "../math_specialfunctions/libspecialfunctions.h"
 #include "../math_linalg/liblinalg.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libspecialfunctions;
-using namespace liblinalg;
+  using namespace libspecialfunctions;
+  using namespace liblinalg;
 
-namespace libmolint{
+  namespace libmolint {
 
-double electron_repulsion_integral
-(
-   int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-   int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-   int nxc,int nyc, int nzc, double alp_c, VECTOR& Rc,
-   int nxd,int nyd, int nzd, double alp_d, VECTOR& Rd,
-   int is_normalize, 
-   int is_derivs,  VECTOR& DA,VECTOR& DB,VECTOR& DC,VECTOR& DD,
-    vector<double*>& aux,int n_aux,vector<VECTOR*>& auxv,int n_auxv
-);
+    double electron_repulsion_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       int nxc,
+                                       int nyc,
+                                       int nzc,
+                                       double alp_c,
+                                       VECTOR& Rc,
+                                       int nxd,
+                                       int nyd,
+                                       int nzd,
+                                       double alp_d,
+                                       VECTOR& Rd,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC,
+                                       VECTOR& DD,
+                                       vector<double*>& aux,
+                                       int n_aux,
+                                       vector<VECTOR*>& auxv,
+                                       int n_auxv);
 
-double electron_repulsion_integral
-(
-   int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-   int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-   int nxc,int nyc, int nzc, double alp_c, VECTOR& Rc,
-   int nxd,int nyd, int nzd, double alp_d, VECTOR& Rd,
-   int is_normalize, 
-   int is_derivs,  VECTOR& DA,VECTOR& DB,VECTOR& DC,VECTOR& DD
-);
+    double electron_repulsion_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       int nxc,
+                                       int nyc,
+                                       int nzc,
+                                       double alp_c,
+                                       VECTOR& Rc,
+                                       int nxd,
+                                       int nyd,
+                                       int nzd,
+                                       double alp_d,
+                                       VECTOR& Rd,
+                                       int is_normalize,
+                                       int is_derivs,
+                                       VECTOR& DA,
+                                       VECTOR& DB,
+                                       VECTOR& DC,
+                                       VECTOR& DD);
 
-boost::python::list electron_repulsion_integral
-(
-   int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-   int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-   int nxc,int nyc, int nzc, double alp_c, VECTOR& Rc,
-   int nxd,int nyd, int nzd, double alp_d, VECTOR& Rd,
-   int is_normalize, int is_derivs
-);
+    boost::python::list electron_repulsion_integral(int nxa,
+                                                    int nya,
+                                                    int nza,
+                                                    double alp_a,
+                                                    VECTOR& Ra,
+                                                    int nxb,
+                                                    int nyb,
+                                                    int nzb,
+                                                    double alp_b,
+                                                    VECTOR& Rb,
+                                                    int nxc,
+                                                    int nyc,
+                                                    int nzc,
+                                                    double alp_c,
+                                                    VECTOR& Rc,
+                                                    int nxd,
+                                                    int nyd,
+                                                    int nzd,
+                                                    double alp_d,
+                                                    VECTOR& Rd,
+                                                    int is_normalize,
+                                                    int is_derivs);
 
-double electron_repulsion_integral
-(
-   int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-   int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-   int nxc,int nyc, int nzc, double alp_c, VECTOR& Rc,
-   int nxd,int nyd, int nzd, double alp_d, VECTOR& Rd,
-   int is_normalize
-);
+    double electron_repulsion_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       int nxc,
+                                       int nyc,
+                                       int nzc,
+                                       double alp_c,
+                                       VECTOR& Rc,
+                                       int nxd,
+                                       int nyd,
+                                       int nzd,
+                                       double alp_d,
+                                       VECTOR& Rd,
+                                       int is_normalize);
 
-double electron_repulsion_integral
-(
-   int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
-   int nxb,int nyb, int nzb, double alp_b, VECTOR& Rb,
-   int nxc,int nyc, int nzc, double alp_c, VECTOR& Rc,
-   int nxd,int nyd, int nzd, double alp_d, VECTOR& Rd
-);
+    double electron_repulsion_integral(int nxa,
+                                       int nya,
+                                       int nza,
+                                       double alp_a,
+                                       VECTOR& Ra,
+                                       int nxb,
+                                       int nyb,
+                                       int nzb,
+                                       double alp_b,
+                                       VECTOR& Rb,
+                                       int nxc,
+                                       int nyc,
+                                       int nzc,
+                                       double alp_c,
+                                       VECTOR& Rc,
+                                       int nxd,
+                                       int nyd,
+                                       int nzd,
+                                       double alp_d,
+                                       VECTOR& Rd);
 
+  }  // namespace libmolint
+}  // namespace liblibra
 
-
-
-
-
-}// namespace libmolint
-}// namespace liblinalg
-
-#endif //ERI_H
+#endif  //ERI_H

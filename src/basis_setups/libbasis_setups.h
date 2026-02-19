@@ -15,18 +15,13 @@
 #include "Basis_Setups.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  namespace libbasis_setups {
 
-namespace libbasis_setups{
+    void export_basis_setups_objects();
 
+  }  // namespace libbasis_setups
+}  // namespace liblibra
 
-void export_basis_setups_objects();
-
-
-}// namespace libbasis_setups
-}// namespace liblibra
-
-
-
-#endif// LIB_BASIS_SETUPS_H
+#endif  // LIB_BASIS_SETUPS_H

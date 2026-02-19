@@ -20,17 +20,14 @@
 #include "montecarlo.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libmontecarlo namespace
-namespace libmontecarlo{
+  /// libmontecarlo namespace
+  namespace libmontecarlo {
 
+    void export_montecarlo_objects();
 
-void export_montecarlo_objects();
+  }  // namespace libmontecarlo
+}  // namespace liblibra
 
-
-}// namespace libmontecarlo
-}// liblibra
-
-#endif // LIBMONTECARLO_H
-
+#endif  // LIBMONTECARLO_H

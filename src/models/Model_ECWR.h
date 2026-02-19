@@ -15,23 +15,23 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  namespace libmodels {
 
-namespace libmodels{
+    void model_ECWR(CMATRIX& Hdia,
+                    CMATRIX& Sdia,
+                    vector<CMATRIX>& d1ham_dia,
+                    vector<CMATRIX>& dc1_dia,
+                    vector<double>& q,
+                    vector<double>& params);
 
+    void ECWR_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
+    boost::python::list ECWR_Ham(double x, boost::python::list params_);
 
-void model_ECWR(CMATRIX& Hdia, CMATRIX& Sdia, vector<CMATRIX>& d1ham_dia, vector<CMATRIX>& dc1_dia,
-                vector<double>& q, vector<double>& params);
+  }  // namespace libmodels
+}  // namespace liblibra
 
-void ECWR_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
-boost::python::list ECWR_Ham(double x, boost::python::list params_);
-
-
-}// namespace libmodels
-}// liblibra
-
-
-#endif // MODEL_ECWR
+#endif  // MODEL_ECWR

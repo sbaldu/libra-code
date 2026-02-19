@@ -16,24 +16,26 @@
 
 #include "montecarlo.h"
 
-
-
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libio;
-using namespace librandom;
+  using namespace liblinalg;
+  using namespace libio;
+  using namespace librandom;
 
-/// libmontecarlo namespace 
-namespace libmontecarlo{
+  /// libmontecarlo namespace
+  namespace libmontecarlo {
 
-namespace bp = boost::python;
+    namespace bp = boost::python;
 
-vector<MATRIX> metropolis_gau(Random& rnd, bp::object target_distribution, MATRIX& dof, bp::object distribution_params, 
-                              int sample_size, int start_sampling, double gau_var){
-/**
+    vector<MATRIX> metropolis_gau(Random& rnd,
+                                  bp::object target_distribution,
+                                  MATRIX& dof,
+                                  bp::object distribution_params,
+                                  int sample_size,
+                                  int start_sampling,
+                                  double gau_var) {
+      /**
   The Python function should correspond to the following C++ signature:
 
   double target_distribution(MATRIX& dof, bp::object params);
@@ -47,68 +49,57 @@ vector<MATRIX> metropolis_gau(Random& rnd, bp::object target_distribution, MATRI
   \param[in] ksi - Gaussian variance - which is used to sample hop events
 */
 
+      int ncols = dof.n_cols;
+      int nrows = dof.n_rows;
+      int ndof = ncols * nrows;
 
-  int ncols = dof.n_cols; 
-  int nrows = dof.n_rows; 
-  int ndof = ncols * nrows;
+      vector<MATRIX> res;
+      MATRIX s_old(nrows, ncols);  // the resuls
+      MATRIX s_new(nrows, ncols);  // the resuls
 
-  vector<MATRIX> res;
-  MATRIX s_old(nrows, ncols);  // the resuls
-  MATRIX s_new(nrows, ncols);  // the resuls
+      int act_sample = 0;  // actual number of sampled points
+      int acc_count = 0;   // number of accepted counts
 
-  int act_sample = 0;  // actual number of sampled points
-  int acc_count = 0;   // number of accepted counts
+      // Initialization
+      s_old = dof;
+      double p_old = bp::extract<double>(target_distribution(s_old, distribution_params));
 
-  // Initialization
-  s_old = dof;
-  double p_old = bp::extract<double>( target_distribution(s_old, distribution_params) );
-  
-
-  while(act_sample<sample_size){
-
-      // Attempted move
-      for(int i=0;i<ndof;i++){
+      while (act_sample < sample_size) {
+        // Attempted move
+        for (int i = 0; i < ndof; i++) {
           double si = s_old.get(i) + gau_var * rnd.normal();
           s_new.set(i, si);
-      }
-      
-      // New probability
-      double p_new = bp::extract<double>( target_distribution(s_new, distribution_params) );
+        }
 
-      // Compute the acceptance probability
-      double acc_prob = p_new /  p_old;
-      if(acc_prob>1.0){  acc_prob = 1.0; }
+        // New probability
+        double p_new = bp::extract<double>(target_distribution(s_new, distribution_params));
 
-      // Attempt the move
-      double ksi = rnd.uniform(0.0, 1.0);
-      if(ksi<acc_prob){
+        // Compute the acceptance probability
+        double acc_prob = p_new / p_old;
+        if (acc_prob > 1.0) {
+          acc_prob = 1.0;
+        }
 
+        // Attempt the move
+        double ksi = rnd.uniform(0.0, 1.0);
+        if (ksi < acc_prob) {
           acc_count++;
 
           // Successful move:
-          if(acc_count>start_sampling){
+          if (acc_count > start_sampling) {
+            act_sample++;
+            res.push_back(s_new);
+            p_old = p_new;
+            s_old = s_new;
 
-              act_sample++;
-              res.push_back(s_new);
-              p_old = p_new;
-              s_old = s_new;
+          }  // if
 
-          }// if 
+        }  // if
 
-      }// if 
+      }  // while
 
+      return res;
+    }
 
-  }// while 
-
-  return res;
-
-}
-
-
-
-
-
-}// namespace libmontecarlo
-}// liblibra
-
-
+  }  // namespace libmontecarlo
+}  // namespace liblibra

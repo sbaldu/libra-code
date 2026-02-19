@@ -13,18 +13,16 @@
 #include "../math_meigen/mEigen.h"
 #include "../math_random/librandom.h"
 
-
 //================== Functions ==========================
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libspecialfunctions namespace
-namespace libspecialfunctions{
+  /// libspecialfunctions namespace
+  namespace libspecialfunctions {
 
-
-MATRIX mean(MATRIX& X){
-/** 
+    MATRIX mean(MATRIX& X) {
+      /** 
   Compute the mean of the data in each row of X:
 
   mean_i = <X_i> = (1/nsampl) sum_k { X_ik }
@@ -35,23 +33,23 @@ MATRIX mean(MATRIX& X){
 
 */
 
-  int ndof = X.n_rows;
-  int sz = X.n_cols;
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
 
-  MATRIX res(ndof, 1);
-  
-  for(int i=0;i<ndof;i++){
-    for(int t=0;t<sz;t++){
-      res.M[i] += X.get(i,t);
+      MATRIX res(ndof, 1);
+
+      for (int i = 0; i < ndof; i++) {
+        for (int t = 0; t < sz; t++) {
+          res.M[i] += X.get(i, t);
+        }
+        res.M[i] /= double(sz);
+      }
+
+      return res;
     }
-    res.M[i] /= double(sz);
-  }
 
-  return res;
-}
-
-CMATRIX mean(CMATRIX& X){
-/** 
+    CMATRIX mean(CMATRIX& X) {
+      /** 
   Compute the mean of the data in each row of X:
 
   mean_i = <X_i> = (1/nsampl) sum_k { X_ik }
@@ -62,146 +60,149 @@ CMATRIX mean(CMATRIX& X){
 
 */
 
-  int ndof = X.n_rows;
-  int sz = X.n_cols;
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
 
-  CMATRIX res(ndof, 1);
-  
-  for(int i=0;i<ndof;i++){
-    for(int t=0;t<sz;t++){
-      res.M[i] += X.get(i,t);
+      CMATRIX res(ndof, 1);
+
+      for (int i = 0; i < ndof; i++) {
+        for (int t = 0; t < sz; t++) {
+          res.M[i] += X.get(i, t);
+        }
+        res.M[i] /= double(sz);
+      }
+
+      return res;
     }
-    res.M[i] /= double(sz);
-  }
 
-  return res;
-}
-
-
-MATRIX deviation(MATRIX& X){
-/**
+    MATRIX deviation(MATRIX& X) {
+      /**
   Returns the deviation of each component from its mean value
 */
 
-  int ndof = X.n_rows;  
-  int sz = X.n_cols;
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
 
-  MATRIX res(ndof, sz);
-  MATRIX E(ndof, sz); // Expectation value
+      MATRIX res(ndof, sz);
+      MATRIX E(ndof, sz);  // Expectation value
 
-  E = mean(X);
-  
-  for(int i=0;i<ndof;i++){
-    for(int t=0;t<sz;t++){
-      res.set(i,t,  X.get(i,t) - E.get(i));
+      E = mean(X);
+
+      for (int i = 0; i < ndof; i++) {
+        for (int t = 0; t < sz; t++) {
+          res.set(i, t, X.get(i, t) - E.get(i));
+        }
+      }
+
+      return res;
     }
-  }
 
-  return res;
-}
-
-CMATRIX deviation(CMATRIX& X){
-/**
+    CMATRIX deviation(CMATRIX& X) {
+      /**
   Returns the deviation of each component from its mean value
 */
 
-  int ndof = X.n_rows;  
-  int sz = X.n_cols;
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
 
-  CMATRIX res(ndof, sz);
-  CMATRIX E(ndof, sz); // Expectation value
+      CMATRIX res(ndof, sz);
+      CMATRIX E(ndof, sz);  // Expectation value
 
-  E = mean(X);
-  
-  for(int i=0;i<ndof;i++){
-    for(int t=0;t<sz;t++){
-      res.set(i,t,  X.get(i,t) - E.get(i));
+      E = mean(X);
+
+      for (int i = 0; i < ndof; i++) {
+        for (int t = 0; t < sz; t++) {
+          res.set(i, t, X.get(i, t) - E.get(i));
+        }
+      }
+
+      return res;
     }
-  }
 
-  return res;
-}
-
-MATRIX variance(MATRIX& X, int opt){
-/** 
+    MATRIX variance(MATRIX& X, int opt) {
+      /** 
   opt: 0 - population; 1 - sample;
 */
 
-  int ndof = X.n_rows;
-  int sz = X.n_cols;
-  double denom = 1;
-  if(opt==0){ denom = sz; }
-  else if(opt==1){ denom = sz-1; }  
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
+      double denom = 1;
+      if (opt == 0) {
+        denom = sz;
+      } else if (opt == 1) {
+        denom = sz - 1;
+      }
 
-  MATRIX dx(ndof, sz);
-  dx = deviation(X);
+      MATRIX dx(ndof, sz);
+      dx = deviation(X);
 
-  MATRIX res(ndof, 1);
-  for(int i=0; i<ndof; i++){
-    double tmp = 0.0;
+      MATRIX res(ndof, 1);
+      for (int i = 0; i < ndof; i++) {
+        double tmp = 0.0;
 
-    for(int t=0; t<sz; t++){
-      tmp += dx.get(i, t) * dx.get(i, t); 
+        for (int t = 0; t < sz; t++) {
+          tmp += dx.get(i, t) * dx.get(i, t);
+        }
+        res.set(i, 0, tmp / denom);
+      }  // for i
+
+      return res;
     }
-    res.set(i, 0,  tmp/denom );
-  }// for i
 
-  return res;
-
-}
-
-MATRIX variance(CMATRIX& X, int opt){
-/**
+    MATRIX variance(CMATRIX& X, int opt) {
+      /**
   opt: 0 - population; 1 - sample;
 */
 
-  int ndof = X.n_rows;
-  int sz = X.n_cols;
-  double denom = 1;
-  if(opt==0){ denom = sz; }
-  else if(opt==1){ denom = sz-1; }
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
+      double denom = 1;
+      if (opt == 0) {
+        denom = sz;
+      } else if (opt == 1) {
+        denom = sz - 1;
+      }
 
-  CMATRIX dx(ndof, sz);
-  dx = deviation(X);
+      CMATRIX dx(ndof, sz);
+      dx = deviation(X);
 
-  MATRIX res(ndof, 1);
-  for(int i=0; i<ndof; i++){
-    double tmp = 0.0;
+      MATRIX res(ndof, 1);
+      for (int i = 0; i < ndof; i++) {
+        double tmp = 0.0;
 
-    for(int t=0; t<sz; t++){
-      tmp += (std::conj(dx.get(i, t)) * dx.get(i, t)).real();
+        for (int t = 0; t < sz; t++) {
+          tmp += (std::conj(dx.get(i, t)) * dx.get(i, t)).real();
+        }
+        res.set(i, 0, tmp / denom);
+      }  // for i
+
+      return res;
     }
-    res.set(i, 0,  tmp/denom );
-  }// for i
 
-  return res;
+    MATRIX std_dev(MATRIX& X, int opt) {
+      int ndof = X.n_rows;
+      MATRIX var(ndof, 1);
+      var = variance(X, opt);
 
-}
+      for (int i = 0; i < ndof; i++) {
+        var.set(i, 0, sqrt(var.get(i, 0)));
+      }
+      return var;
+    }
 
-MATRIX std_dev(MATRIX& X, int opt){
+    MATRIX std_dev(CMATRIX& X, int opt) {
+      int ndof = X.n_rows;
+      MATRIX var(ndof, 1);
+      var = variance(X, opt);
 
-  int ndof = X.n_rows;
-  MATRIX var(ndof, 1);  
-  var = variance(X, opt);
+      for (int i = 0; i < ndof; i++) {
+        var.set(i, 0, sqrt(var.get(i, 0)));
+      }
+      return var;
+    }
 
-  for(int i=0; i<ndof; i++){  var.set(i, 0,  sqrt(var.get(i, 0)) ); }
-  return var;
-
-}
-
-MATRIX std_dev(CMATRIX& X, int opt){
-
-  int ndof = X.n_rows;
-  MATRIX var(ndof, 1);
-  var = variance(X, opt);
-
-  for(int i=0; i<ndof; i++){  var.set(i, 0,  sqrt(var.get(i, 0)) ); }
-  return var;
-
-}
-
-MATRIX covariance(MATRIX& X){
-/** 
+    MATRIX covariance(MATRIX& X) {
+      /** 
   Compute a covariance of the data in X:
 
   cov_ij = <X_i * X_j> = (1/nsampl) sum_k { X_ik * X_jk }
@@ -212,29 +213,27 @@ MATRIX covariance(MATRIX& X){
 
 */
 
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
 
-  int ndof = X.n_rows;
-  int sz = X.n_cols;
+      MATRIX res(ndof, ndof);
 
-  MATRIX res(ndof, ndof);
+      for (int i = 0; i < ndof; i++) {
+        for (int j = 0; j < ndof; j++) {
+          double tmp = 0.0;
+          for (int t = 0; t < sz; t++) {
+            tmp += X.get(i, t) * X.get(j, t);
+          }
 
-  for(int i=0;i<ndof;i++){
-    for(int j=0;j<ndof;j++){
+          res.set(i, j, tmp / double(sz));
+        }
+      }
 
-      double tmp = 0.0;
-      for(int t=0;t<sz;t++){  tmp += X.get(i,t) * X.get(j,t);  }
-
-      res.set(i,j, tmp/double(sz) );
-
+      return res;
     }
-  }
 
-  return res;
-}
-
-
-MATRIX covariance(MATRIX& X, MATRIX& Y){
-/** 
+    MATRIX covariance(MATRIX& X, MATRIX& Y) {
+      /** 
   Compute a covariance of the data in X and Y:
 
   cov_ij = <X_i * Y_j> = (1/nsampl) sum_k { X_ik * Y_jk }
@@ -245,37 +244,38 @@ MATRIX covariance(MATRIX& X, MATRIX& Y){
 
 */
 
-  int nx = X.n_rows;
-  int ny = Y.n_rows;
-  int sz = X.n_cols;
+      int nx = X.n_rows;
+      int ny = Y.n_rows;
+      int sz = X.n_cols;
 
-  if(Y.n_cols!=sz){
-    cout<<"Error in covariance(MATRIX&, MATRIX&): the sizes of the matrices are incompatible\n";
-    cout<<"X is a "<<nx<<" x "<<sz<<" matrix\n";
-    cout<<"Y is a "<<ny<<" x "<<Y.n_cols<<" matrix\n";
-    cout<<"Exiting...\n";
-    exit(0);
-  }
+      if (Y.n_cols != sz) {
+        cout << "Error in covariance(MATRIX&, MATRIX&): the sizes of the matrices are "
+                "incompatible\n";
+        cout << "X is a " << nx << " x " << sz << " matrix\n";
+        cout << "Y is a " << ny << " x " << Y.n_cols << " matrix\n";
+        cout << "Exiting...\n";
+        exit(0);
+      }
 
-  MATRIX res(nx, ny);
+      MATRIX res(nx, ny);
 
-  for(int i=0;i<nx;i++){
-    for(int j=0;j<ny;j++){
+      for (int i = 0; i < nx; i++) {
+        for (int j = 0; j < ny; j++) {
+          double tmp = 0.0;
+          for (int t = 0; t < sz; t++) {
+            tmp += X.get(i, t) * Y.get(j, t);
+          }
 
-      double tmp = 0.0;
-      for(int t=0;t<sz;t++){  tmp += X.get(i,t) * Y.get(j,t);  }
+          res.set(i, j, tmp / double(sz));
 
-      res.set(i,j, tmp/double(sz) );
+        }  // for j
+      }  // for i
 
-    }// for j
-  }// for i
+      return res;
+    }
 
-  return res;
-}
-
-
-CMATRIX covariance(CMATRIX& X){
-/** 
+    CMATRIX covariance(CMATRIX& X) {
+      /** 
   Compute a covariance of the data in X:
 
   cov_ij = <X_i * X_j> = (1/nsampl) sum_k { X_ik * conj(X_jk) }
@@ -288,30 +288,27 @@ CMATRIX covariance(CMATRIX& X){
 
 */
 
+      int ndof = X.n_rows;
+      int sz = X.n_cols;
 
-  int ndof = X.n_rows;
-  int sz = X.n_cols;
+      CMATRIX res(ndof, ndof);
 
-  CMATRIX res(ndof, ndof);
+      for (int i = 0; i < ndof; i++) {
+        for (int j = 0; j < ndof; j++) {
+          complex<double> tmp(0.0, 0.0);
+          for (int t = 0; t < sz; t++) {
+            tmp += X.get(i, t) * std::conj(X.get(j, t));
+          }
 
+          res.set(i, j, tmp / double(sz));
+        }
+      }
 
-  for(int i=0;i<ndof;i++){
-    for(int j=0;j<ndof;j++){
-
-      complex<double> tmp(0.0, 0.0);
-      for(int t=0;t<sz;t++){  tmp += X.get(i,t) * std::conj(X.get(j,t));  }
-
-      res.set(i,j, tmp/double(sz) );
-
+      return res;
     }
-  }
 
-  return res;
-}
-
-
-CMATRIX covariance(CMATRIX& X, CMATRIX& Y){
-/** 
+    CMATRIX covariance(CMATRIX& X, CMATRIX& Y) {
+      /** 
   Compute a covariance of the data in X and Y:
 
   cov_ij = <X_i * Y_j> = (1/nsampl) sum_k { X_ik * conj(Y_jk) }
@@ -322,39 +319,38 @@ CMATRIX covariance(CMATRIX& X, CMATRIX& Y){
 
 */
 
-  int nx = X.n_rows;
-  int ny = Y.n_rows;
-  int sz = X.n_cols;
+      int nx = X.n_rows;
+      int ny = Y.n_rows;
+      int sz = X.n_cols;
 
-  if(Y.n_cols!=sz){
-    cout<<"Error in covariance(CMATRIX&, CMATRIX&): the sizes of the matrices are incompatible\n";
-    cout<<"X is a "<<nx<<" x "<<sz<<" matrix\n";
-    cout<<"Y is a "<<ny<<" x "<<Y.n_cols<<" matrix\n";
-    cout<<"Exiting...\n";
-    exit(0);
-  }
+      if (Y.n_cols != sz) {
+        cout << "Error in covariance(CMATRIX&, CMATRIX&): the sizes of the matrices are "
+                "incompatible\n";
+        cout << "X is a " << nx << " x " << sz << " matrix\n";
+        cout << "Y is a " << ny << " x " << Y.n_cols << " matrix\n";
+        cout << "Exiting...\n";
+        exit(0);
+      }
 
-  CMATRIX res(nx, ny);
+      CMATRIX res(nx, ny);
 
-  for(int i=0;i<nx;i++){
-    for(int j=0;j<ny;j++){
+      for (int i = 0; i < nx; i++) {
+        for (int j = 0; j < ny; j++) {
+          complex<double> tmp(0.0, 0.0);
+          for (int t = 0; t < sz; t++) {
+            tmp += X.get(i, t) * std::conj(Y.get(j, t));
+          }
 
-      complex<double> tmp(0.0,0.0);
-      for(int t=0;t<sz;t++){  tmp += X.get(i,t) * std::conj(Y.get(j,t));  }
+          res.set(i, j, tmp / double(sz));
 
-      res.set(i,j, tmp/double(sz) );
+        }  // for j
+      }  // for i
 
-    }// for j
-  }// for i
+      return res;
+    }
 
-  return res;
-}
-
-
-
-
-void sample(MATRIX& x, MATRIX& mean_x, MATRIX& sigma_x, Random& rnd){
-/**
+    void sample(MATRIX& x, MATRIX& mean_x, MATRIX& sigma_x, Random& rnd) {
+      /**
     """
     This function generates ntraj ndof-dimensional vectors sampled from a 
     normal distribution with a given mean and variance
@@ -372,20 +368,18 @@ void sample(MATRIX& x, MATRIX& mean_x, MATRIX& sigma_x, Random& rnd){
 
     """
 */
-  int nr = x.n_rows;
-  int nc = x.n_cols;
+      int nr = x.n_rows;
+      int nc = x.n_cols;
 
-  for(int i=0;i<nr;i++){
-    for(int j=0; j<nc; j++){
-      x.set(i,j, mean_x.get(i,0) + sigma_x.get(i,0) * rnd.normal() );
+      for (int i = 0; i < nr; i++) {
+        for (int j = 0; j < nc; j++) {
+          x.set(i, j, mean_x.get(i, 0) + sigma_x.get(i, 0) * rnd.normal());
+        }
       }
-  }
+    }
 
-}
-
-
-void sample(MATRIX* x, MATRIX& mean_x, MATRIX& sigma_x, Random& rnd){
-/**
+    void sample(MATRIX* x, MATRIX& mean_x, MATRIX& sigma_x, Random& rnd) {
+      /**
     """
     This function generates ntraj ndof-dimensional vectors sampled from a 
     normal distribution with a given mean and variance
@@ -403,21 +397,18 @@ void sample(MATRIX* x, MATRIX& mean_x, MATRIX& sigma_x, Random& rnd){
 
     """
 */
-  int nr = x->n_rows;
-  int nc = x->n_cols;
+      int nr = x->n_rows;
+      int nc = x->n_cols;
 
-  for(int i=0;i<nr;i++){
-    for(int j=0; j<nc; j++){
-      x->set(i,j, mean_x.get(i,0) + sigma_x.get(i,0) * rnd.normal() );
+      for (int i = 0; i < nr; i++) {
+        for (int j = 0; j < nc; j++) {
+          x->set(i, j, mean_x.get(i, 0) + sigma_x.get(i, 0) * rnd.normal());
+        }
       }
-  }
+    }
 
-}
-
-
-
-int set_random_state(vector<double>& prob, double ksi){
-/**
+    int set_random_state(vector<double>& prob, double ksi) {
+      /**
     """
     This function implements a simple random state selection procedure. 
     Each state is selected with a given probability
@@ -433,34 +424,28 @@ int set_random_state(vector<double>& prob, double ksi){
     """
 */
 
-  int nstates = prob.size();
-  int finstate = 0;
+      int nstates = prob.size();
+      int finstate = 0;
 
-  double left = 0.0;
-  double right = 0.0;
+      double left = 0.0;
+      double right = 0.0;
 
-  for(int i=0; i<nstates; i++){
-    if(i==0){
-      left = 0.0;
-      right = prob[i];
+      for (int i = 0; i < nstates; i++) {
+        if (i == 0) {
+          left = 0.0;
+          right = prob[i];
+        } else {
+          left = right;
+          right = right + prob[i];
+        }
+
+        if ((left < ksi) && (ksi <= right)) {
+          finstate = i;
+        }
+      }
+
+      return finstate;
     }
-    else{
-      left = right;
-      right = right + prob[i];
-    }
- 
-    if( (left<ksi) && (ksi<=right) ){  finstate = i; }
 
-  }
-
-  return finstate;
-
-}
-
-
-
-}// namespace libspecialfunctions
-}// namespace liblibra
-
-
-
+  }  // namespace libspecialfunctions
+}  // namespace liblibra

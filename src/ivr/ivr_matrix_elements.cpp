@@ -33,15 +33,14 @@
 
 #include "ivr.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  namespace libivr {
 
-namespace libivr{
-
-complex<double> CS_overlap(MATRIX& q, MATRIX& p, MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& invWidth0){
-/**
+    complex<double> CS_overlap(
+        MATRIX& q, MATRIX& p, MATRIX& qIn, MATRIX& pIn, MATRIX& Width0, MATRIX& invWidth0) {
+      /**
   \brief Multi-dimensional  Coherent State (CS) overlap:  <p0,q0|pIn,qIn>
 
   \param[in] q - coordinates (Ndof x 1 matrix)
@@ -55,39 +54,35 @@ complex<double> CS_overlap(MATRIX& q, MATRIX& p, MATRIX& qIn, MATRIX& pIn, MATRI
 
 */
 
-  if(qIn.n_rows!=pIn.n_rows){
-    cout<<"Error in CS_overlap: the input matrices qIn and pIn have different # of rows\n";
-    exit(0);
-  }
+      if (qIn.n_rows != pIn.n_rows) {
+        cout << "Error in CS_overlap: the input matrices qIn and pIn have different # of rows\n";
+        exit(0);
+      }
 
-  if(q.n_rows!=p.n_rows){
-    cout<<"Error in CS_overlap: the input matrices q and p have different # of rows\n";
-    exit(0);
-  }
+      if (q.n_rows != p.n_rows) {
+        cout << "Error in CS_overlap: the input matrices q and p have different # of rows\n";
+        exit(0);
+      }
 
-  
-  int Ndof = qIn.n_rows;
+      int Ndof = qIn.n_rows;
 
+      // To avoid the full-scale vector-matrix multiplication:
+      MATRIX Wq(Ndof, 1), iWp(Ndof, 1);
 
-  // To avoid the full-scale vector-matrix multiplication:
-  MATRIX Wq(Ndof, 1), iWp(Ndof, 1);
+      for (int i = 0; i < Ndof; i++) {
+        Wq.M[i] = Width0.get(i, i) * (q.get(i) - qIn.get(i));
+        iWp.M[i] = invWidth0.get(i, i) * (p.get(i) - pIn.get(i));
+      }
 
-  for(int i=0;i<Ndof;i++){
-    Wq.M[i] = Width0.get(i,i) * (q.get(i) - qIn.get(i));
-    iWp.M[i] = invWidth0.get(i,i) * (p.get(i) - pIn.get(i));
-  }
+      double pr1 = ((q - qIn).T() * Wq).M[0];
+      double pr2 = ((p - pIn).T() * iWp).M[0];
+      double ar = 0.5 * ((p + pIn).T() * (q - qIn)).M[0];
 
-  double pr1 = ((q - qIn).T() * Wq).M[0];
-  double pr2 = ((p - pIn).T() * iWp).M[0];
-  double ar = 0.5 * ((p + pIn).T() * (q - qIn)).M[0];
+      return exp(-0.25 * (pr1 + pr2)) * complex<double>(cos(ar), sin(ar));
+    }
 
-  return exp(-0.25*(pr1+pr2)) * complex<double>(cos(ar), sin(ar)); 
-
-}
-
-
-complex<double> mat_elt_FB_B(MATRIX& q, MATRIX& p, int opt, int lab){
-/**
+    complex<double> mat_elt_FB_B(MATRIX& q, MATRIX& p, int opt, int lab) {
+      /**
   \brief Operator B matrix element:  B = B(q,p) Forward-Backward
 
   \param[in] q - coordinates (Ndof x 1 matrix)
@@ -104,18 +99,25 @@ complex<double> mat_elt_FB_B(MATRIX& q, MATRIX& p, int opt, int lab){
 
 
 */
-  double res = 0.0;
-  if(opt==0){  res = q.get(lab); }
-  else if(opt==1){  res = p.get(lab); }
+      double res = 0.0;
+      if (opt == 0) {
+        res = q.get(lab);
+      } else if (opt == 1) {
+        res = p.get(lab);
+      }
 
-  return complex<double>(res,0.0); 
+      return complex<double>(res, 0.0);
+    }
 
-}
-
-
-
-complex<double> mat_elt_FF_B(MATRIX& q, MATRIX& p, MATRIX& qp, MATRIX& pp, MATRIX& WidthT, MATRIX& invWidthT, int opt, int lab){
-/**
+    complex<double> mat_elt_FF_B(MATRIX& q,
+                                 MATRIX& p,
+                                 MATRIX& qp,
+                                 MATRIX& pp,
+                                 MATRIX& WidthT,
+                                 MATRIX& invWidthT,
+                                 int opt,
+                                 int lab) {
+      /**
   \brief Operator B matrix element:  B = B(q,p) Forward-Forward
 
   \param[in] q - coordinates (Ndof x 1 matrix)
@@ -132,48 +134,45 @@ complex<double> mat_elt_FF_B(MATRIX& q, MATRIX& p, MATRIX& qp, MATRIX& pp, MATRI
 
 */
 
-  if(q.n_rows!=p.n_rows){
-    cout<<"Error in mat_elt_FF_B: the input matrices q and p have different # of rows\n";
-    exit(0);
-  }
+      if (q.n_rows != p.n_rows) {
+        cout << "Error in mat_elt_FF_B: the input matrices q and p have different # of rows\n";
+        exit(0);
+      }
 
-  if(qp.n_rows!=pp.n_rows){
-    cout<<"Error in mat_elt_FF_B: the input matrices qp and pp have different # of rows\n";
-    exit(0);
-  }
+      if (qp.n_rows != pp.n_rows) {
+        cout << "Error in mat_elt_FF_B: the input matrices qp and pp have different # of rows\n";
+        exit(0);
+      }
 
-  
-  int Ndof = q.n_rows;
+      int Ndof = q.n_rows;
 
+      // To avoid the full-scale vector-matrix multiplication:
+      MATRIX Wq(Ndof, 1), iWp(Ndof, 1);
 
-  // To avoid the full-scale vector-matrix multiplication:
-  MATRIX Wq(Ndof, 1), iWp(Ndof, 1);
+      for (int i = 0; i < Ndof; i++) {
+        Wq.M[i] = WidthT.get(i, i) * (q.get(i) - qp.get(i));
+        iWp.M[i] = invWidthT.get(i, i) * (p.get(i) - pp.get(i));
+      }
 
-  for(int i=0;i<Ndof;i++){
-    Wq.M[i] = WidthT.get(i,i) * (q.get(i) - qp.get(i));
-    iWp.M[i] = invWidthT.get(i,i) * (p.get(i) - pp.get(i));
-  }
+      double pr1 = ((q - qp).T() * Wq).M[0];
+      double pr2 = ((p - pp).T() * iWp).M[0];
+      double ar = 0.5 * ((p + pp).T() * (q - qp)).M[0];
+      complex<double> ovlp = exp(-0.25 * (pr1 + pr2)) * complex<double>(cos(ar), sin(ar));
+      complex<double> pr3;
 
-  double pr1 = ((q - qp).T() * Wq).M[0];
-  double pr2 = ((p - pp).T() * iWp).M[0];
-  double ar = 0.5 * ((p + pp).T() * (q - qp)).M[0];
-  complex<double> ovlp = exp(-0.25*(pr1+pr2)) * complex<double>(cos(ar), sin(ar)); 
-  complex<double> pr3;
+      if (opt == 0) {  // B = B(q) = q
+        pr3 = complex<double>(0.5 * (q.get(lab) + qp.get(lab)),
+                              invWidthT.get(lab, lab) * (p.get(lab) - pp.get(lab)));
+      } else if (opt == 1) {  // B = B(p) = p
+        pr3 = complex<double>(0.5 * (p.get(lab) + pp.get(lab)),
+                              -invWidthT.get(lab, lab) * (q.get(lab) - qp.get(lab)));
+      }
 
-  if(opt==0){  // B = B(q) = q
-    pr3 = complex<double>(0.5 * (q.get(lab) + qp.get(lab)) , invWidthT.get(lab,lab)*(p.get(lab)-pp.get(lab)) );
-  }
-  else if(opt==1){  // B = B(p) = p
-    pr3 = complex<double>(0.5 * (p.get(lab) + pp.get(lab)) , -invWidthT.get(lab,lab)*(q.get(lab)-qp.get(lab)) );
-  }
+      return pr3 * ovlp;
+    }
 
-  return pr3 * ovlp;
-
-}
-
-
-complex<double> mat_elt_HUS_B(MATRIX& q, MATRIX& p, int opt, int lab){
-/**
+    complex<double> mat_elt_HUS_B(MATRIX& q, MATRIX& p, int opt, int lab) {
+      /**
   \brief Operator B matrix element:  B = B(q,p) Husimi - same as Forward-Backward
 
   \param[in] q - coordinates (Ndof x 1 matrix)
@@ -189,16 +188,18 @@ complex<double> mat_elt_HUS_B(MATRIX& q, MATRIX& p, int opt, int lab){
 
 */
 
-  double res = 0.0;
-  if(opt==0){  res = q.get(lab); }
-  else if(opt==1){  res = p.get(lab); }
+      double res = 0.0;
+      if (opt == 0) {
+        res = q.get(lab);
+      } else if (opt == 1) {
+        res = p.get(lab);
+      }
 
-  return complex<double>(res,0.0); 
+      return complex<double>(res, 0.0);
+    }
 
-}
-
-complex<double> mat_elt_LSC_B(MATRIX& q, MATRIX& p, int opt, int lab){
-/**
+    complex<double> mat_elt_LSC_B(MATRIX& q, MATRIX& p, int opt, int lab) {
+      /**
   \brief Operator B matrix element:  B = B(q,p) LSC - same as Forward-Backward
 
   \param[in] q - coordinates (Ndof x 1 matrix)
@@ -214,20 +215,16 @@ complex<double> mat_elt_LSC_B(MATRIX& q, MATRIX& p, int opt, int lab){
 
 */
 
-  double res = 0.0;
-  if(opt==0){  res = q.get(lab); }
-  else if(opt==1){  res = p.get(lab); }
+      double res = 0.0;
+      if (opt == 0) {
+        res = q.get(lab);
+      } else if (opt == 1) {
+        res = p.get(lab);
+      }
 
-  return complex<double>(res,0.0); 
+      return complex<double>(res, 0.0);
+    }
 
-}
+  }  // namespace libivr
 
-
-
-
-}/// namespace libivr
-
-}/// namespace liblibra
-
-
-
+}  // namespace liblibra

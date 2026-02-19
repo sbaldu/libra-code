@@ -21,32 +21,26 @@
 #else
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#endif 
+#endif
 
 #include "libint2_wrappers.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
-using namespace liblinalg;
-using namespace libspecialfunctions;
+  using namespace boost::python;
+  using namespace liblinalg;
+  using namespace libspecialfunctions;
 
+  /// libqobjects namespace
+  namespace liblibint2_wrappers {
 
-
-/// libqobjects namespace
-namespace liblibint2_wrappers{
-
-
-
-
-void export_libint2_wrappers_objects(){
-/** 
+    void export_libint2_wrappers_objects() {
+      /** 
   \brief Exporter of liblibint2_wrappers classes and functions
 
 */
-/*
+      /*
   double (*expt_electron_repulsion_integral_AO_v2)
   ( AO& AOa, AO& AOb, AO& AOc, AO& AOd, int is_normalize ) = &electron_repulsion_integral;
   boost::python::list (*expt_electron_repulsion_integral_AO_v3)
@@ -63,81 +57,82 @@ void export_libint2_wrappers_objects(){
 
 */
 
-  size_t (*expt_nbasis_v1)(const std::vector<libint2::Shell>& shells) = &nbasis;
-  def("nbasis", expt_nbasis_v1);
+      size_t (*expt_nbasis_v1)(const std::vector<libint2::Shell>& shells) = &nbasis;
+      def("nbasis", expt_nbasis_v1);
 
-  libint2::Shell (*expt_unit_shell_v1)() = &unit_shell;
-  def("unit_shell", expt_unit_shell_v1); 
+      libint2::Shell (*expt_unit_shell_v1)() = &unit_shell;
+      def("unit_shell", expt_unit_shell_v1);
 
-  std::vector<libint2::Shell> (*expt_initialize_shell_v1)(
-  int l_val, bool is_spherical , const std::vector<double>& exponents, 
-  const std::vector<double>& coeff, VECTOR& coords) = &initialize_shell;
+      std::vector<libint2::Shell> (*expt_initialize_shell_v1)(int l_val,
+                                                              bool is_spherical,
+                                                              const std::vector<double>& exponents,
+                                                              const std::vector<double>& coeff,
+                                                              VECTOR& coords) = &initialize_shell;
 
-  def("initialize_shell", expt_initialize_shell_v1);
+      def("initialize_shell", expt_initialize_shell_v1);
 
+      void (*expt_add_to_shell_v1)(std::vector<libint2::Shell>& shells,
+                                   int l_val,
+                                   bool is_spherical,
+                                   const std::vector<double>& exponents,
+                                   const std::vector<double>& coeff,
+                                   VECTOR& coords) = &add_to_shell;
 
-  void (*expt_add_to_shell_v1)(std::vector<libint2::Shell>& shells, 
-  int l_val, bool is_spherical , const std::vector<double>& exponents, 
-  const std::vector<double>& coeff, VECTOR& coords) = &add_to_shell;
+      def("add_to_shell", expt_add_to_shell_v1);
 
-  def("add_to_shell", expt_add_to_shell_v1);
+      void (*expt_print_shells_v1)(std::vector<libint2::Shell>& shells) = &print_shells;
+      def("print_shell", expt_print_shells_v1);
 
+      void (*expt_print_shells_2_v1)(std::vector<libint2::Shell>& shells) = &print_shells_2;
+      def("print_shell_2", expt_print_shells_2_v1);
 
-  void (*expt_print_shells_v1)(std::vector<libint2::Shell>& shells) = &print_shells;  
-  def("print_shell", expt_print_shells_v1);
+      class_<libint2::Shell>("libint2_Shell", init<>())
+          .def(init<const libint2::Shell&>())
+          .def("__copy__", &generic__copy__<libint2::Shell>)
+          .def("__deepcopy__", &generic__deepcopy__<libint2::Shell>)
+          .def_readwrite("alpha", &libint2::Shell::alpha)
+          .def_readwrite("contr", &libint2::Shell::contr)
+          .def_readwrite("O", &libint2::Shell::O)
+          .def_readwrite("max_ln_coeff", &libint2::Shell::max_ln_coeff)
+          //.def_readwrite("unit",&libint2::Shell::unit)
+          //.def("init",&PrimitiveG::init)
+          ;
 
-  void (*expt_print_shells_2_v1)(std::vector<libint2::Shell>& shells) = &print_shells_2;  
-  def("print_shell_2", expt_print_shells_2_v1);
+      class_<libint2_ShellList>("libint2_ShellList").def(vector_indexing_suite<libint2_ShellList>());
 
-  class_<libint2::Shell>("libint2_Shell",init<>())
-      .def(init<const libint2::Shell&>())
-      .def("__copy__", &generic__copy__<libint2::Shell>) 
-      .def("__deepcopy__", &generic__deepcopy__<libint2::Shell>)
-      .def_readwrite("alpha",&libint2::Shell::alpha)
-      .def_readwrite("contr",&libint2::Shell::contr)
-      .def_readwrite("O",&libint2::Shell::O)
-      .def_readwrite("max_ln_coeff",&libint2::Shell::max_ln_coeff)
-      //.def_readwrite("unit",&libint2::Shell::unit)
-      //.def("init",&PrimitiveG::init)
-  ;
+      class_<Matrix>("Matrix", init<>())
+          .def("__copy__", &generic__copy__<Matrix>)
+          .def("__deepcopy__", &generic__deepcopy__<Matrix>);
 
-  class_< libint2_ShellList >("libint2_ShellList")
-      .def(vector_indexing_suite< libint2_ShellList >())
-  ;
+      MATRIX(*expt_compute_overlaps_v1)
+      (const std::vector<libint2::Shell>& shells_1,
+       const std::vector<libint2::Shell>& shells_2,
+       int number_of_threads) = &compute_overlaps;
 
-  class_<Matrix>("Matrix",init<>())
-      .def("__copy__", &generic__copy__<Matrix>) 
-      .def("__deepcopy__", &generic__deepcopy__<Matrix>)
-  ;
+      def("compute_overlaps", expt_compute_overlaps_v1);
 
-  MATRIX (*expt_compute_overlaps_v1)
-  (const std::vector<libint2::Shell>& shells_1, 
-   const std::vector<libint2::Shell>& shells_2, int number_of_threads) = &compute_overlaps; 
- 
-  def("compute_overlaps", expt_compute_overlaps_v1);
+      double (*expt_compute_4center_eri_v1)(const std::vector<libint2::Shell>& shells_1,
+                                            const std::vector<libint2::Shell>& shells_2,
+                                            const std::vector<libint2::Shell>& shells_3,
+                                            const std::vector<libint2::Shell>& shells_4,
+                                            int deriv_order) = &compute_4center_eri;
 
-  double (*expt_compute_4center_eri_v1)
-                          (const std::vector<libint2::Shell>& shells_1, const std::vector<libint2::Shell>& shells_2,
-                           const std::vector<libint2::Shell>& shells_3, const std::vector<libint2::Shell>& shells_4,
-                           int deriv_order) = &compute_4center_eri;
+      def("compute_4center_eri", expt_compute_4center_eri_v1);
 
-  def("compute_4center_eri", expt_compute_4center_eri_v1);
+      std::vector<MATRIX> (*expt_compute_emultipole3_v1)(
+          const std::vector<libint2::Shell>& shells_1,
+          const std::vector<libint2::Shell>& shells_2,
+          int number_of_threads) = &compute_emultipole3;
 
+      def("compute_emultipole3", expt_compute_emultipole3_v1);
 
-  std::vector<MATRIX> (*expt_compute_emultipole3_v1)
-  (const std::vector<libint2::Shell>& shells_1,
-   const std::vector<libint2::Shell>& shells_2, int number_of_threads) = &compute_emultipole3;
-
-  def("compute_emultipole3", expt_compute_emultipole3_v1);
-
-/*
+      /*
   MATRIX (*expt_compute_overlaps_serial_v1)
   (const std::vector<libint2::Shell>& shells_1, const std::vector<libint2::Shell>& shells_2) = &compute_overlaps_serial;
   def("compute_overlaps_serial", expt_compute_overlaps_serial_v1);
 */
 
-
-/**
+      /**
   class_<libint2::Operator>("libint2_Operator",init<>())
       .def(init<const libint2::Operator&>())
       .def("__copy__", &generic__copy__<libint2::Operator>) 
@@ -147,7 +142,7 @@ void export_libint2_wrappers_objects(){
   ;
 
 */
-/*
+      /*
     py::class_<libint2::Operator>(m, "Operator");
     m.def("nbasis", &nbasis, "A function for number of basis sets", py::return_value_policy::reference_internal);
     m.def("compute_1body_ints_parallel", &compute_1body_ints_parallel, "A function for computing AO overlaps parallel", py::return_value_policy::reference_internal);
@@ -159,25 +154,20 @@ void export_libint2_wrappers_objects(){
     m.def("compute_overlaps", &compute_overlaps, "A function that computes overlaps between pairs of shells", py::return_value_policy::reference_internal);
 
 */
-
-}
-
+    }
 
 #ifdef CYGWIN
-BOOST_PYTHON_MODULE(cyglibint2_wrappers){
+    BOOST_PYTHON_MODULE(cyglibint2_wrappers) {
 #else
-BOOST_PYTHON_MODULE(liblibint2_wrappers){
+    BOOST_PYTHON_MODULE(liblibint2_wrappers) {
 #endif
 
-  // Register converters:
-  // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
-  //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
+      // Register converters:
+      // See here: https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+      //to_python_converter<std::vector<DATA>, VecToList<DATA> >();
 
-  export_libint2_wrappers_objects();
+      export_libint2_wrappers_objects();
+    }
 
-}
-
-
-}// namespace libqobject
-}// namespace liblibra
-
+  }  // namespace liblibint2_wrappers
+}  // namespace liblibra

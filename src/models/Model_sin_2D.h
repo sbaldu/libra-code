@@ -15,20 +15,23 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  namespace libmodels {
 
-namespace libmodels{
+    void sin_2D_Ham(double x,
+                    double y,
+                    MATRIX* H,
+                    MATRIX* dH1,
+                    MATRIX* dH2,
+                    MATRIX* d2H1,
+                    MATRIX* d2H2,
+                    vector<double>& params);
+    boost::python::list sin_2D_Ham(double x, double y, boost::python::list params_);
 
-void sin_2D_Ham(double x, double y, MATRIX* H, 
-                MATRIX* dH1,  MATRIX* dH2, 
-                MATRIX* d2H1, MATRIX* d2H2, vector<double>& params);
-boost::python::list sin_2D_Ham(double x, double y, boost::python::list params_);
+  }  // namespace libmodels
+}  // namespace liblibra
 
-
-}// namespace libhamiltonian
-}// liblibra
-
-#endif // MODEL_SIN_2D_H
+#endif  // MODEL_SIN_2D_H

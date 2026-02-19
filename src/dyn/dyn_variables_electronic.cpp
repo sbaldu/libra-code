@@ -18,24 +18,20 @@
 #include "dyn_variables.h"
 #include "dyn_ham.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libutil;
-using namespace libconverters;
+  using namespace liblinalg;
+  using namespace libutil;
+  using namespace libconverters;
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    namespace bp = boost::python;
 
-namespace bp = boost::python;
-
-
-
-CMATRIX transform_amplitudes(int rep_in, int rep_out, CMATRIX& C, nHamiltonian& ham){
-/**
+    CMATRIX transform_amplitudes(int rep_in, int rep_out, CMATRIX& C, nHamiltonian& ham) {
+      /**
   This function converts the amplitudes from one representation to another
 
   The reason: we may be solving TD-SE (computing forces) in one representation
@@ -46,59 +42,67 @@ CMATRIX transform_amplitudes(int rep_in, int rep_out, CMATRIX& C, nHamiltonian& 
 
 */
 
-  int nst = C.n_rows;    
-  int ntraj = C.n_cols;
+      int nst = C.n_rows;
+      int ntraj = C.n_cols;
 
-  CMATRIX Coeff(nst,ntraj); 
+      CMATRIX Coeff(nst, ntraj);
 
-  /// Depending on the basis, select which   
-  /// C - the basis in which the electron-nuclear propagation is done
-  /// Coeff - the basis in which SH is done
+      /// Depending on the basis, select which
+      /// C - the basis in which the electron-nuclear propagation is done
+      /// Coeff - the basis in which SH is done
 
-  // Input in the diabatic basis
-  if(rep_in==0){                   
-    // Output in the diabatic basis too
-    if(rep_out==0){    Coeff = C;   }
+      // Input in the diabatic basis
+      if (rep_in == 0) {
+        // Output in the diabatic basis too
+        if (rep_out == 0) {
+          Coeff = C;
+        }
 
-    // Output in the adiabatic basis
-    else if(rep_out==1){  ham.ampl_dia2adi(C, Coeff, 0, 1);  }
-  }
+        // Output in the adiabatic basis
+        else if (rep_out == 1) {
+          ham.ampl_dia2adi(C, Coeff, 0, 1);
+        }
+      }
 
-  // Input in the adiabatic basis 
-  else if(rep_in==1){   
-    // Output in the diabatic basis 
-    if(rep_out==0){  ham.ampl_adi2dia(Coeff, C, 0, 1);   } 
+      // Input in the adiabatic basis
+      else if (rep_in == 1) {
+        // Output in the diabatic basis
+        if (rep_out == 0) {
+          ham.ampl_adi2dia(Coeff, C, 0, 1);
+        }
 
-    // Output in the diabatic basis too
-    else if(rep_out==1){     Coeff = C;    } 
-  }
+        // Output in the diabatic basis too
+        else if (rep_out == 1) {
+          Coeff = C;
+        }
+      }
 
-  return Coeff;
-}
+      return Coeff;
+    }
 
+    void dyn_variables::update_amplitudes(dyn_control_params& dyn_params, nHamiltonian& ham) {
+      // The diabatic rep is the major, so we update the adiabatic amplitudes
+      if (dyn_params.rep_tdse == 0) {
+        ham.ampl_dia2adi(ampl_dia, ampl_adi, 0, 1);
+      }
 
-void dyn_variables::update_amplitudes(dyn_control_params& dyn_params, nHamiltonian& ham){
+      // The adiabatic rep is the major, so we update the diabatic amplitudes
+      else if (dyn_params.rep_tdse == 1) {
+        ham.ampl_adi2dia(ampl_dia, ampl_adi, 0, 1);
+      }
+    }
 
-  // The diabatic rep is the major, so we update the adiabatic amplitudes
-  if(dyn_params.rep_tdse==0){   ham.ampl_dia2adi(ampl_dia, ampl_adi, 0, 1);  }
+    void dyn_variables::update_amplitudes(bp::dict dyn_params, nHamiltonian& ham) {
+      dyn_control_params _prms;
+      _prms.set_parameters(dyn_params);
 
-  // The adiabatic rep is the major, so we update the diabatic amplitudes
-  else if(dyn_params.rep_tdse==1){   ham.ampl_adi2dia(ampl_dia, ampl_adi, 0, 1);  }
+      update_amplitudes(_prms, ham);
+    }
 
-}
-
-void dyn_variables::update_amplitudes(bp::dict dyn_params, nHamiltonian& ham){
-
-  dyn_control_params _prms;
-  _prms.set_parameters(dyn_params);
-
-  update_amplitudes(_prms, ham);
-
-}
-
-
-void dyn_variables::update_amplitudes(dyn_control_params& dyn_params, bp::object compute_model, bp::dict model_params){
-/**
+    void dyn_variables::update_amplitudes(dyn_control_params& dyn_params,
+                                          bp::object compute_model,
+                                          bp::dict model_params) {
+      /**
     """
     Args:
         dyn_params ( Python dictionary ): control of the dynamics
@@ -113,48 +117,48 @@ void dyn_variables::update_amplitudes(dyn_control_params& dyn_params, bp::object
     """
 */
 
-    //# Prepare the Hamiltonian's hierarchy
-    nHamiltonian ham(ndia, nadi, ndof);
-    ham.add_new_children(ndia, nadi, ndof, ntraj);
-    ham.init_all(2,1);
+      //# Prepare the Hamiltonian's hierarchy
+      nHamiltonian ham(ndia, nadi, ndof);
+      ham.add_new_children(ndia, nadi, ndof, ntraj);
+      ham.init_all(2, 1);
 
-    //# Compute the Hamiltonian transformation
-    //update_Hamiltonian_q(dyn_params, *q, ham, compute_model, model_params);
-    update_Hamiltonian_variables(dyn_params, *this, ham, ham, compute_model, model_params, 0);
+      //# Compute the Hamiltonian transformation
+      //update_Hamiltonian_q(dyn_params, *q, ham, compute_model, model_params);
+      update_Hamiltonian_variables(dyn_params, *this, ham, ham, compute_model, model_params, 0);
 
+      // The diabatic rep is the major, so we update the adiabatic amplitudes
+      if (dyn_params.rep_tdse == 0) {
+        ham.ampl_dia2adi(ampl_dia, ampl_adi, 0, 1);
+      }
 
-    // The diabatic rep is the major, so we update the adiabatic amplitudes
-    if(dyn_params.rep_tdse==0){   ham.ampl_dia2adi(ampl_dia, ampl_adi, 0, 1);  }
+      // The adiabatic rep is the major, so we update the diabatic amplitudes
+      else if (dyn_params.rep_tdse == 1) {
+        ham.ampl_adi2dia(ampl_dia, ampl_adi, 0, 1);
+      }
+    }
 
-    // The adiabatic rep is the major, so we update the diabatic amplitudes
-    else if(dyn_params.rep_tdse==1){   ham.ampl_adi2dia(ampl_dia, ampl_adi, 0, 1);  }
+    void dyn_variables::update_amplitudes(bp::dict dyn_params,
+                                          bp::object compute_model,
+                                          bp::dict model_params) {
+      dyn_control_params _prms;
+      _prms.set_parameters(dyn_params);
 
-}
+      update_amplitudes(_prms, compute_model, model_params);
+    }
 
-
-void dyn_variables::update_amplitudes(bp::dict dyn_params, bp::object compute_model, bp::dict model_params){
-
-  dyn_control_params _prms;
-  _prms.set_parameters(dyn_params);
-
-  update_amplitudes(_prms, compute_model, model_params);
-
-}
-
-void dyn_variables::update_basis_transform(nHamiltonian& Ham){
-/**
+    void dyn_variables::update_basis_transform(nHamiltonian& Ham) {
+      /**
 
 */
-  for(int itraj=0; itraj<ntraj; itraj++){ 
-    nHamiltonian* ham = Ham.children[itraj];
-    *basis_transform[itraj] = *(ham->basis_transform);
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        nHamiltonian* ham = Ham.children[itraj];
+        *basis_transform[itraj] = *(ham->basis_transform);
 
-  }// for itraj
-}
+      }  // for itraj
+    }
 
-
-void dyn_variables::update_amplitudes(dyn_control_params& dyn_params){
-/**
+    void dyn_variables::update_amplitudes(dyn_control_params& dyn_params) {
+      /**
            |\psi_adi > = | \psi_dia > U
 
    |\Psi> = |\psi_adi > C_adi = |\psi_dia> U C_adi = |\psi_dia> C_dia, so:
@@ -163,34 +167,35 @@ void dyn_variables::update_amplitudes(dyn_control_params& dyn_params){
 
    C_adi = U.H() C_dia
 */
-  int i,j;
-  CMATRIX cd(ndia, 1);
-  CMATRIX ca(nadi, 1);
+      int i, j;
+      CMATRIX cd(ndia, 1);
+      CMATRIX ca(nadi, 1);
 
-  for(int traj=0; traj<ntraj; traj++){
+      for (int traj = 0; traj < ntraj; traj++) {
+        CMATRIX& U = (*basis_transform[traj]);
 
-    CMATRIX& U = (*basis_transform[traj]);
+        /// Diabatic wfc representation
+        if (dyn_params.rep_tdse == 0) {
+          cd = ampl_dia->col(traj);
+          ca = U.H() * cd;
+          for (i = 0; i < nadi; i++) {
+            ampl_adi->set(i, traj, ca.get(i, 0));
+          }
+        }
+        /// Adiabatic wfc representation
+        else if (dyn_params.rep_tdse == 1) {
+          ca = ampl_adi->col(traj);
+          cd = U * ca;
+          for (i = 0; i < ndia; i++) {
+            ampl_dia->set(i, traj, cd.get(i, 0));
+          }
+        }
 
-    /// Diabatic wfc representation
-    if(dyn_params.rep_tdse==0){
-      cd = ampl_dia->col(traj);
-      ca = U.H() * cd;
-      for(i=0;i<nadi;i++){ ampl_adi->set(i, traj, ca.get(i,0) ); }
+      }  // for traj
     }
-    /// Adiabatic wfc representation
-    else if(dyn_params.rep_tdse==1){
-      ca = ampl_adi->col(traj);
-      cd = U * ca; 
-      for(i=0;i<ndia;i++){ ampl_dia->set(i, traj, cd.get(i,0) ); }
-    }
 
-  }// for traj
-
-}
-
-
-void dyn_variables::update_density_matrix(dyn_control_params& dyn_params){
-/**
+    void dyn_variables::update_density_matrix(dyn_control_params& dyn_params) {
+      /**
     """
 
     Update the density matrices in diabatic and adiabatic representations
@@ -219,43 +224,43 @@ void dyn_variables::update_density_matrix(dyn_control_params& dyn_params){
     """
 */
 
-  CMATRIX cd(ndia, 1);
-  CMATRIX ca(nadi, 1);
+      CMATRIX cd(ndia, 1);
+      CMATRIX ca(nadi, 1);
 
-  // Assuming that in the diabatic representation, the overlap 
-  // matrix is identity S = I
-  for(int traj=0; traj<ntraj; traj++){
+      // Assuming that in the diabatic representation, the overlap
+      // matrix is identity S = I
+      for (int traj = 0; traj < ntraj; traj++) {
+        CMATRIX& U =
+            (*basis_transform[traj]);  // * (*proj_adi[indx]); // U_eff - let's wait with this
 
-    CMATRIX& U = (*basis_transform[traj]); // * (*proj_adi[indx]); // U_eff - let's wait with this
+        /// Diabatic wfc representation
+        if (dyn_params.rep_tdse == 0) {
+          cd = ampl_dia->col(traj);
+          *dm_dia[traj] = (cd * cd.H());
+          *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
+        }
+        /// Adiabatic wfc representation
+        else if (dyn_params.rep_tdse == 1) {
+          ca = ampl_adi->col(traj);
+          *dm_adi[traj] = ca * ca.H();
+          *dm_dia[traj] = U * (*dm_adi[traj]) * U.H();
+        }
+        /// Diabatic DM representation
+        else if (dyn_params.rep_tdse == 2) {
+          *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
+        }
+        /// Adiabatic DM representation
+        else if (dyn_params.rep_tdse == 3) {
+          *dm_dia[traj] = U * (*dm_adi[traj]) * U.H();
+        }
 
-    /// Diabatic wfc representation
-    if(dyn_params.rep_tdse==0){
-      cd = ampl_dia->col(traj);
-      *dm_dia[traj] = (cd * cd.H());
-      *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
+      }  // for traj
     }
-    /// Adiabatic wfc representation
-    else if(dyn_params.rep_tdse==1){
-      ca = ampl_adi->col(traj);
-      *dm_adi[traj] = ca * ca.H();
-      *dm_dia[traj] =  U * (*dm_adi[traj]) * U.H();
-    }
-    /// Diabatic DM representation
-    else if(dyn_params.rep_tdse==2){
-      *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
-    }
-    /// Adiabatic DM representation
-    else if(dyn_params.rep_tdse==3){
-      *dm_dia[traj] =  U * (*dm_adi[traj]) * U.H();
-    }
 
-  }// for traj
-
-}
-
-
-void dyn_variables::update_density_matrix(dyn_control_params& dyn_params, nHamiltonian& ham, int lvl){
-/**
+    void dyn_variables::update_density_matrix(dyn_control_params& dyn_params,
+                                              nHamiltonian& ham,
+                                              int lvl) {
+      /**
     """
 
     Compute the trajectory-averaged density matrices in diabatic
@@ -296,101 +301,98 @@ void dyn_variables::update_density_matrix(dyn_control_params& dyn_params, nHamil
     """
 */
 
-  CMATRIX su(ndia, nadi);
-  CMATRIX S(ndia, ndia);
-  CMATRIX U(ndia, nadi);
-  CMATRIX cd(ndia, 1);
-  CMATRIX ca(nadi, 1);
+      CMATRIX su(ndia, nadi);
+      CMATRIX S(ndia, ndia);
+      CMATRIX U(ndia, nadi);
+      CMATRIX cd(ndia, 1);
+      CMATRIX ca(nadi, 1);
 
-  //cout<<"In update density matrix\n";
-  vector<int> indx;    
-  if(lvl==0){ indx = vector<int>(1, 0); }
-  else if(lvl==1) { indx = vector<int>(2, 0); } 
+      //cout<<"In update density matrix\n";
+      vector<int> indx;
+      if (lvl == 0) {
+        indx = vector<int>(1, 0);
+      } else if (lvl == 1) {
+        indx = vector<int>(2, 0);
+      }
 
-  for(int traj=0; traj<ntraj; traj++){
+      for (int traj = 0; traj < ntraj; traj++) {
+        if (lvl == 1) {
+          indx[1] = traj;
+        }
 
-    if(lvl==1){  indx[1] = traj; }
-  
-    S = ham.get_ovlp_dia(indx);
-    U = ham.get_basis_transform(indx);
+        S = ham.get_ovlp_dia(indx);
+        U = ham.get_basis_transform(indx);
 
-    /// Diabatic wfc representation
-    if(dyn_params.rep_tdse==0){
-      cd = ampl_dia->col(traj);
-      *dm_dia[traj] = S * (cd * cd.H()) * S; 
-      *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
-    }  
-    /// Adiabatic wfc representation
-    else if(dyn_params.rep_tdse==1){  
-      ca = ampl_adi->col(traj);
-      *dm_adi[traj] = ca * ca.H();            
-      su = S * U; 
-      *dm_dia[traj] =  su * (*dm_adi[traj]) * su.H();       
+        /// Diabatic wfc representation
+        if (dyn_params.rep_tdse == 0) {
+          cd = ampl_dia->col(traj);
+          *dm_dia[traj] = S * (cd * cd.H()) * S;
+          *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
+        }
+        /// Adiabatic wfc representation
+        else if (dyn_params.rep_tdse == 1) {
+          ca = ampl_adi->col(traj);
+          *dm_adi[traj] = ca * ca.H();
+          su = S * U;
+          *dm_dia[traj] = su * (*dm_adi[traj]) * su.H();
+        }
+        /// Diabatic DM representation
+        else if (dyn_params.rep_tdse == 2) {
+          *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
+        }
+        /// Adiabatic DM representation
+        else if (dyn_params.rep_tdse == 3) {
+          su = S * U;
+          *dm_dia[traj] = su * (*dm_adi[traj]) * su.H();
+        }
+
+      }  // for traj
     }
-    /// Diabatic DM representation
-    else if(dyn_params.rep_tdse==2){
-      *dm_adi[traj] = U.H() * (*dm_dia[traj]) * U;
-    }
-    /// Adiabatic DM representation
-    else if(dyn_params.rep_tdse==3){
-      su = S * U;
-      *dm_dia[traj] =  su * (*dm_adi[traj]) * su.H();
+
+    void dyn_variables::update_density_matrix(bp::dict dyn_params, nHamiltonian& ham, int lvl) {
+      dyn_control_params _prms;
+      _prms.set_parameters(dyn_params);
+
+      update_density_matrix(_prms, ham, lvl);
     }
 
-  }// for traj
+    void dyn_variables::update_density_matrix(dyn_control_params& dyn_params,
+                                              bp::object compute_model,
+                                              bp::dict model_params,
+                                              int lvl) {
+      //# Prepare the Hamiltonian's hierarchy
+      nHamiltonian ham(ndia, nadi, ndof);
+      ham.add_new_children(ndia, nadi, ndof, ntraj);
+      ham.init_all(2, 1);
 
-  
-}
+      //# Compute the Hamiltonian transformation
+      update_Hamiltonian_variables(dyn_params, *this, ham, ham, compute_model, model_params, 0);
+      //update_Hamiltonian_q(dyn_params, *q, ham, compute_model, model_params);
+      update_density_matrix(dyn_params, ham, lvl);
+    }
 
-void dyn_variables::update_density_matrix(bp::dict dyn_params, nHamiltonian& ham, int lvl){
+    void dyn_variables::update_density_matrix(bp::dict dyn_params,
+                                              bp::object compute_model,
+                                              bp::dict model_params,
+                                              int lvl) {
+      dyn_control_params _prms;
+      _prms.set_parameters(dyn_params);
 
-  dyn_control_params _prms;
-  _prms.set_parameters(dyn_params);
+      //# Prepare the Hamiltonian's hierarchy
+      nHamiltonian ham(ndia, nadi, ndof);
+      ham.add_new_children(ndia, nadi, ndof, ntraj);
+      ham.init_all(2, 1);
 
-  update_density_matrix(_prms, ham, lvl);
+      //# Compute the Hamiltonian transformation
+      //update_Hamiltonian_q(_prms, *q, ham, compute_model, model_params);
+      update_Hamiltonian_variables(_prms, *this, ham, ham, compute_model, model_params, 0);
 
-}
+      update_density_matrix(_prms, ham, lvl);
+    }
 
-
-
-void dyn_variables::update_density_matrix(dyn_control_params& dyn_params, bp::object compute_model, bp::dict model_params, int lvl){
-
-  //# Prepare the Hamiltonian's hierarchy
-  nHamiltonian ham(ndia, nadi, ndof);
-  ham.add_new_children(ndia, nadi, ndof, ntraj);
-  ham.init_all(2,1);
-
-  //# Compute the Hamiltonian transformation
-  update_Hamiltonian_variables(dyn_params, *this, ham, ham, compute_model, model_params, 0);
-  //update_Hamiltonian_q(dyn_params, *q, ham, compute_model, model_params);
-  update_density_matrix(dyn_params, ham, lvl);
-
-}
-
-
-void dyn_variables::update_density_matrix(bp::dict dyn_params, bp::object compute_model, bp::dict model_params, int lvl){
-
-  dyn_control_params _prms;
-  _prms.set_parameters(dyn_params);
-
-
-  //# Prepare the Hamiltonian's hierarchy
-  nHamiltonian ham(ndia, nadi, ndof);
-  ham.add_new_children(ndia, nadi, ndof, ntraj);
-  ham.init_all(2,1);
-
-  //# Compute the Hamiltonian transformation
-  //update_Hamiltonian_q(_prms, *q, ham, compute_model, model_params);
-  update_Hamiltonian_variables(_prms, *this, ham, ham, compute_model, model_params, 0);
-
-  update_density_matrix(_prms, ham, lvl);
-
-}
-
-
-//bp::dict dyn_variables::init_electronic_dyn_var(bp::dict& _params, Random& rnd){
-void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
-/**
+    //bp::dict dyn_variables::init_electronic_dyn_var(bp::dict& _params, Random& rnd){
+    void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd) {
+      /**
     """
     Args:
 
@@ -458,543 +460,591 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
     """
 */
 
-  //# Read the parameters
-  bp::list critical_params; 
-  bp::dict default_params;
-  bp::dict params(_params);
+      //# Read the parameters
+      bp::list critical_params;
+      bp::dict default_params;
+      bp::dict params(_params);
 
-  default_params["init_type"] = 0;
-  default_params["istate"] = 0;
-  bp::list lst; lst.append(1.0);
-  default_params["istates"] = lst;
-  default_params["rep"] = 1;
-  default_params["is_nbra"] = 0;
-  default_params["verbosity"] = 0;
+      default_params["init_type"] = 0;
+      default_params["istate"] = 0;
+      bp::list lst;
+      lst.append(1.0);
+      default_params["istates"] = lst;
+      default_params["rep"] = 1;
+      default_params["is_nbra"] = 0;
+      default_params["verbosity"] = 0;
 
-  check_input(params, default_params, critical_params);
+      check_input(params, default_params, critical_params);
 
+      int i, traj;
+      double ksi;
+      int init_type = -1;
+      int istate = -1;
+      vector<double> istates;
+      int rep = -1;
+      //int is_nbra = -1;
+      int verbosity = 0;
 
-  int i, traj;
-  double ksi;
-  int init_type = -1;
-  int istate = -1;
-  vector<double> istates;
-  int rep = -1;
-  //int is_nbra = -1; 
-  int verbosity = 0;
+      std::string key;
+      for (int i = 0; i < len(params.values()); i++) {
+        key = bp::extract<std::string>(params.keys()[i]);
 
-  std::string key;
-  for(int i=0;i<len(params.values());i++){
-    key = bp::extract<std::string>(params.keys()[i]);
-
-    ///================= Computing Hamiltonian-related properties ====================
-    if(key=="init_type") {  init_type = bp::extract<int>(params.values()[i]); }
-    else if(key=="istate") {  istate = bp::extract<int>(params.values()[i]); }
-    else if(key=="istates") {  istates = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="rep") {  rep = bp::extract<int>(params.values()[i]); }
-    //else if(key=="is_nbra") {  is_nbra = bp::extract<int>(params.values()[i]); }
-    else if(key=="verbosity") {  verbosity = bp::extract<int>(params.values()[i]); }
-
-  }
-
-
-  ///# Sanity check
-  if(! ((rep==0) || (rep==1)) ){
-    cout<<"WARNINIG in init_amplitudes:\
-           the rep = "<<rep<<" is not known. Allowed values are: [0, 1]\n";
-  }
-
-  if(! (init_type==0 || init_type==1 || init_type==2 || init_type==3 || init_type==4)){
-    cout<<"WARNINIG in init_amplitudes:\
-           the init_type = "<<init_type<<" is not known. Allowed values are: [0, 1, 2, 3, 4]\n";
-  }
-  
-  if(init_type==0 || init_type==1){
-    if(istate>=ndia && rep==0){
-      cout<<"ERROR in init_amplitudes: the istate is= "<<istate<<", but should be less than "<<ndia<<"\n";
-      exit(0);
-    }
-    if(istate>=nadi && rep==1){
-      cout<<"ERROR in init_amplitudes: the istate is= "<<istate<<", but should be less than "<<nadi<<"\n";
-      exit(0);
-    }
-  }
-
-  if(init_type==2 || init_type==3){
-    if(istates.size()!=ndia && rep==0){
-      cout<<"ERROR in init_amplitudes: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
-      exit(0);
-    }
-    if(istates.size()!=nadi && rep==1){
-      cout<<"ERROR in init_amplitudes: the istates array is of length = "<<istates.size()<<", but should be of length "<<nadi<<"\n";
-      exit(0);
-    }
-
-    double summ = 0.0;
-    for(i=0; i<istates.size(); i++){  summ += istates[i]; }
-    if( fabs(summ - 1.0) > 1e-5 ){
-      cout<<"ERROR in init_amplitudes: the sum of the entries in the istates array is "<<summ<<", but should be 1.0\n";
-      exit(0);
-    }
-  }
-
-  //# Dynamical variables
-  for(traj=0; traj<ntraj; traj++){
-
-    //========================== First, let's set up the amplitudes =======================================
-    if(init_type==0){
-      if(verbosity > 0){
-        cout<<"======= Initialization type is "<<init_type<<" ========\n";
-        cout<<"setting representation "<<rep<<" coefficient C_"<<istate<<" to 1.0\n";
+        ///================= Computing Hamiltonian-related properties ====================
+        if (key == "init_type") {
+          init_type = bp::extract<int>(params.values()[i]);
+        } else if (key == "istate") {
+          istate = bp::extract<int>(params.values()[i]);
+        } else if (key == "istates") {
+          istates =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "rep") {
+          rep = bp::extract<int>(params.values()[i]);
+        }
+        //else if(key=="is_nbra") {  is_nbra = bp::extract<int>(params.values()[i]); }
+        else if (key == "verbosity") {
+          verbosity = bp::extract<int>(params.values()[i]);
+        }
       }
 
-      if(rep==0){ ampl_dia->set(istate, traj, complex<double>(1.0, 0.0) ); }  
-      else if(rep==1){ ampl_adi->set(istate, traj, complex<double>(1.0, 0.0) );  }
-
-    }// init_type==0
-
-    else if(init_type==1){
-      if(verbosity > 0){
-        cout<<"======= Initialization type is "<<init_type<<" ========\n";
-        cout<<"setting representation "<<rep<<" coefficient to complex C_"<<istate<<" such that |C_"<<istate<<"}|^2 = 1.0\n";
+      ///# Sanity check
+      if (!((rep == 0) || (rep == 1))) {
+        cout << "WARNINIG in init_amplitudes:\
+           the rep = "
+             << rep << " is not known. Allowed values are: [0, 1]\n";
       }
 
-      ksi = rnd.uniform(0.0, 1.0);
-      complex<double> ampl(cos(2.0*M_PI*ksi), sin(2.0*M_PI*ksi) );
-
-      if(rep==0){ ampl_dia->set(istate, traj, ampl );   }
-      else if(rep==1){ ampl_adi->set(istate, traj, ampl );  }
-
-    }// init_type==1
-
-    else if(init_type==2){
-      if(verbosity > 0){
-        cout<<"======= Initialization type is "<<init_type<<" ========\n";
-        cout<<"setting representation "<<rep<<" coefficients C_i for all i to sqrt( target populations) \n";
-
+      if (!(init_type == 0 || init_type == 1 || init_type == 2 || init_type == 3 ||
+            init_type == 4)) {
+        cout << "WARNINIG in init_amplitudes:\
+           the init_type = "
+             << init_type << " is not known. Allowed values are: [0, 1, 2, 3, 4]\n";
       }
 
-      for(i=0; i<istates.size(); i++){
-          double ampl = sqrt( istates[i] );
-
-          if(rep==0){ ampl_dia->set(i, traj, complex<double>(ampl, 0.0) );  }
-          else if(rep==1){ ampl_adi->set(i, traj, complex<double>(ampl, 0.0) );  }
+      if (init_type == 0 || init_type == 1) {
+        if (istate >= ndia && rep == 0) {
+          cout << "ERROR in init_amplitudes: the istate is= " << istate
+               << ", but should be less than " << ndia << "\n";
+          exit(0);
+        }
+        if (istate >= nadi && rep == 1) {
+          cout << "ERROR in init_amplitudes: the istate is= " << istate
+               << ", but should be less than " << nadi << "\n";
+          exit(0);
+        }
       }
 
-    }// init_type==2
+      if (init_type == 2 || init_type == 3) {
+        if (istates.size() != ndia && rep == 0) {
+          cout << "ERROR in init_amplitudes: the istates array is of length = " << istates.size()
+               << ", but should be of length " << ndia << "\n";
+          exit(0);
+        }
+        if (istates.size() != nadi && rep == 1) {
+          cout << "ERROR in init_amplitudes: the istates array is of length = " << istates.size()
+               << ", but should be of length " << nadi << "\n";
+          exit(0);
+        }
 
-    else if(init_type==3){
-      if(verbosity > 0){
-        cout<<"======= Initialization type is "<<init_type<<" ========\n";
-        cout<<"setting representation "<<rep<<" coefficients C_i for all i to complex numbers such that |C_i|^2  = target populations \n";
-
+        double summ = 0.0;
+        for (i = 0; i < istates.size(); i++) {
+          summ += istates[i];
+        }
+        if (fabs(summ - 1.0) > 1e-5) {
+          cout << "ERROR in init_amplitudes: the sum of the entries in the istates array is "
+               << summ << ", but should be 1.0\n";
+          exit(0);
+        }
       }
 
-      for(i=0; i<istates.size(); i++){
+      //# Dynamical variables
+      for (traj = 0; traj < ntraj; traj++) {
+        //========================== First, let's set up the amplitudes =======================================
+        if (init_type == 0) {
+          if (verbosity > 0) {
+            cout << "======= Initialization type is " << init_type << " ========\n";
+            cout << "setting representation " << rep << " coefficient C_" << istate << " to 1.0\n";
+          }
+
+          if (rep == 0) {
+            ampl_dia->set(istate, traj, complex<double>(1.0, 0.0));
+          } else if (rep == 1) {
+            ampl_adi->set(istate, traj, complex<double>(1.0, 0.0));
+          }
+
+        }  // init_type==0
+
+        else if (init_type == 1) {
+          if (verbosity > 0) {
+            cout << "======= Initialization type is " << init_type << " ========\n";
+            cout << "setting representation " << rep << " coefficient to complex C_" << istate
+                 << " such that |C_" << istate << "}|^2 = 1.0\n";
+          }
+
           ksi = rnd.uniform(0.0, 1.0);
-          complex<double> ampl(cos(2.0*M_PI*ksi), sin(2.0*M_PI*ksi) );
-          ampl = ampl * sqrt( istates[i] );
+          complex<double> ampl(cos(2.0 * M_PI * ksi), sin(2.0 * M_PI * ksi));
 
-          if(rep==0){ ampl_dia->set(i, traj, ampl );  }
-          else if(rep==1){ ampl_adi->set(i, traj, ampl);  }
+          if (rep == 0) {
+            ampl_dia->set(istate, traj, ampl);
+          } else if (rep == 1) {
+            ampl_adi->set(istate, traj, ampl);
+          }
+
+        }  // init_type==1
+
+        else if (init_type == 2) {
+          if (verbosity > 0) {
+            cout << "======= Initialization type is " << init_type << " ========\n";
+            cout << "setting representation " << rep
+                 << " coefficients C_i for all i to sqrt( target populations) \n";
+          }
+
+          for (i = 0; i < istates.size(); i++) {
+            double ampl = sqrt(istates[i]);
+
+            if (rep == 0) {
+              ampl_dia->set(i, traj, complex<double>(ampl, 0.0));
+            } else if (rep == 1) {
+              ampl_adi->set(i, traj, complex<double>(ampl, 0.0));
+            }
+          }
+
+        }  // init_type==2
+
+        else if (init_type == 3) {
+          if (verbosity > 0) {
+            cout << "======= Initialization type is " << init_type << " ========\n";
+            cout << "setting representation " << rep
+                 << " coefficients C_i for all i to complex numbers such that |C_i|^2  = target "
+                    "populations \n";
+          }
+
+          for (i = 0; i < istates.size(); i++) {
+            ksi = rnd.uniform(0.0, 1.0);
+            complex<double> ampl(cos(2.0 * M_PI * ksi), sin(2.0 * M_PI * ksi));
+            ampl = ampl * sqrt(istates[i]);
+
+            if (rep == 0) {
+              ampl_dia->set(i, traj, ampl);
+            } else if (rep == 1) {
+              ampl_adi->set(i, traj, ampl);
+            }
+          }
+
+        }  // init_type==3
+
+        else if (init_type == 4) {
+          if (verbosity > 0) {
+            cout << "======= Initialization type is " << init_type << " ========\n";
+            cout << "setting representation " << rep
+                 << " coefficients C_i for all i to complex numbers such that populations are "
+                    "sampled evenly \n";
+          }
+
+          istates = rnd.voron(istates.size(), istate);
+          for (i = 0; i < istates.size(); i++) {
+            cout << "Voron_mag[" << i << "]= " << istates[i] << endl;
+            ksi = rnd.uniform(0.0, 1.0);
+            complex<double> ampl(cos(2.0 * M_PI * ksi), sin(2.0 * M_PI * ksi));
+            ampl = ampl * sqrt(istates[i]);
+            cout << "Voron_amp[" << i << "]= " << ampl << endl;
+
+            if (rep == 0) {
+              ampl_dia->set(i, traj, ampl);
+            } else if (rep == 1) {
+              ampl_adi->set(i, traj, ampl);
+            }
+          }
+        }
+
+      }  // for traj
+
+      if (verbosity > 1) {
+        cout << "========== ampl_dia ===============\n";
+        ampl_dia->show_matrix();
+        cout << "========== ampl_adi ===============\n";
+        ampl_adi->show_matrix();
+        cout << "========== states ===============\n";
       }
 
-    }// init_type==3
+      //return params;
+    }
 
-    else if(init_type==4){
-      if(verbosity > 0){
-        cout<<"======= Initialization type is "<<init_type<<" ========\n";
-        cout<<"setting representation "<<rep<<" coefficients C_i for all i to complex numbers such that populations are sampled evenly \n";
+    void dyn_variables::init_density_matrix(bp::dict _params) {
+      //# Read the parameters
+      bp::list critical_params;
+      bp::dict default_params;
+      bp::dict params(_params);
+
+      default_params["init_dm_type"] = 0;  /// 0 - based on amplitudes; 1 - using direct input
+      default_params["verbosity"] = 0;
+      default_params["extern_dm"] =
+          CMATRIX(nadi, nadi);  /// 0 - based on amplitudes; 1 - using direct input
+
+      check_input(params, default_params, critical_params);
+
+      int i, traj;
+      double ksi;
+      int init_dm_type = -1;
+      int rep = -1;
+      int verbosity = 0;
+      //CMATRIX extern_dm_dia();
+
+      std::string key;
+      for (int i = 0; i < len(params.values()); i++) {
+        key = bp::extract<std::string>(params.keys()[i]);
+
+        ///================= Computing Hamiltonian-related properties ====================
+        if (key == "init_dm_type") {
+          init_dm_type = bp::extract<int>(params.values()[i]);
+        } else if (key == "rep") {
+          rep = bp::extract<int>(params.values()[i]);
+        } else if (key == "verbosity") {
+          verbosity = bp::extract<int>(params.values()[i]);
+        }
       }
 
-      istates = rnd.voron(istates.size(), istate);
-      for(i=0; i<istates.size(); i++){
-        cout<<"Voron_mag["<<i<<"]= "<<istates[i]<<endl;
-        ksi = rnd.uniform(0.0, 1.0);
-        complex<double> ampl(cos(2.0*M_PI*ksi), sin(2.0*M_PI*ksi) );
-        ampl = ampl * sqrt( istates[i] );
-        cout<<"Voron_amp["<<i<<"]= "<<ampl<<endl;
-
-        if(rep==0){ ampl_dia->set(i, traj, ampl );  }
-        else if(rep==1){ ampl_adi->set(i, traj, ampl);  }
-      }
-    }
-
-  }// for traj
-
-  if(verbosity > 1){
-      cout<<"========== ampl_dia ===============\n";
-      ampl_dia->show_matrix();
-      cout<<"========== ampl_adi ===============\n";
-      ampl_adi->show_matrix();
-      cout<<"========== states ===============\n";
-  }
-
-
-
-  //return params;
-
-}
-
-
-
-void dyn_variables::init_density_matrix(bp::dict _params){
-
-  //# Read the parameters
-  bp::list critical_params; 
-  bp::dict default_params;
-  bp::dict params(_params);
-
-  default_params["init_dm_type"] = 0; /// 0 - based on amplitudes; 1 - using direct input
-  default_params["verbosity"] = 0;
-  default_params["extern_dm"] = CMATRIX(nadi, nadi); /// 0 - based on amplitudes; 1 - using direct input
-
-
-  check_input(params, default_params, critical_params);
-
-
-  int i, traj;
-  double ksi;
-  int init_dm_type = -1;
-  int rep = -1;
-  int verbosity = 0;
-  //CMATRIX extern_dm_dia();
-
-  std::string key;
-  for(int i=0;i<len(params.values());i++){
-    key = bp::extract<std::string>(params.keys()[i]);
-
-    ///================= Computing Hamiltonian-related properties ====================
-    if(key=="init_dm_type") {  init_dm_type = bp::extract<int>(params.values()[i]); }
-    else if(key=="rep") {  rep = bp::extract<int>(params.values()[i]); }
-    else if(key=="verbosity") {  verbosity = bp::extract<int>(params.values()[i]); }
-
-  }
-
-
-  ///================= Sanity check ================================
-  if(! ((rep==0) || (rep==1)) ){
-    cout<<"WARNINIG in init_density_matrix:\
-           the rep = "<<rep<<" is not known. Allowed values are: [0, 1]\n";
-  }
-
-  if(! (init_dm_type==0 || init_dm_type==1 )){
-    cout<<"WARNINIG in init_density_matrix:\
-           the init_dm_type = "<<init_dm_type<<" is not known. Allowed values are: [0, 1]\n";
-  }
-
-
-
-
-  ///================= Actual calculations  ================================
-
-  //# Dynamical variables
-  for(traj=0; traj<ntraj; traj++){
-
-    // From the amplitudes
-    if(init_dm_type==0){
-      if(verbosity > 0){
-        cout<<"======= Initialization type is "<<init_dm_type<<" ========\n";
-        cout<<"setting DM in representation "<<rep<<" using wfc amplitudes \n";
+      ///================= Sanity check ================================
+      if (!((rep == 0) || (rep == 1))) {
+        cout << "WARNINIG in init_density_matrix:\
+           the rep = "
+             << rep << " is not known. Allowed values are: [0, 1]\n";
       }
 
-      if(rep==0){ 
-        CMATRIX C(ndia, 1); 
-        C = ampl_dia->col(traj);
-        *dm_dia[traj] = C * C.H(); 
-      }  
-      else if(rep==1){ 
-        CMATRIX C(nadi, 1); 
-        C = ampl_adi->col(traj);
-        *dm_adi[traj] = C * C.H(); 
+      if (!(init_dm_type == 0 || init_dm_type == 1)) {
+        cout << "WARNINIG in init_density_matrix:\
+           the init_dm_type = "
+             << init_dm_type << " is not known. Allowed values are: [0, 1]\n";
       }
 
-    }// init_dm_type==0
+      ///================= Actual calculations  ================================
 
+      //# Dynamical variables
+      for (traj = 0; traj < ntraj; traj++) {
+        // From the amplitudes
+        if (init_dm_type == 0) {
+          if (verbosity > 0) {
+            cout << "======= Initialization type is " << init_dm_type << " ========\n";
+            cout << "setting DM in representation " << rep << " using wfc amplitudes \n";
+          }
 
-    if(init_dm_type==1){
-      if(verbosity > 0){
-        cout<<"======= Initialization type is "<<init_dm_type<<" ========\n";
-        cout<<"setting DM in representation "<<rep<<" using provided input \n";
+          if (rep == 0) {
+            CMATRIX C(ndia, 1);
+            C = ampl_dia->col(traj);
+            *dm_dia[traj] = C * C.H();
+          } else if (rep == 1) {
+            CMATRIX C(nadi, 1);
+            C = ampl_adi->col(traj);
+            *dm_adi[traj] = C * C.H();
+          }
+
+        }  // init_dm_type==0
+
+        if (init_dm_type == 1) {
+          if (verbosity > 0) {
+            cout << "======= Initialization type is " << init_dm_type << " ========\n";
+            cout << "setting DM in representation " << rep << " using provided input \n";
+          }
+
+          if (rep == 0) {
+            for (int i = 0; i < len(params.values()); i++) {
+              key = bp::extract<std::string>(params.keys()[i]);
+              if (key == "extern_dm") {
+                *dm_dia[traj] = bp::extract<CMATRIX>(params.values()[i]);
+              }
+            }  // for i
+          }  // rep == 0
+          else if (rep == 1) {
+            for (int i = 0; i < len(params.values()); i++) {
+              key = bp::extract<std::string>(params.keys()[i]);
+              if (key == "extern_dm") {
+                *dm_adi[traj] = bp::extract<CMATRIX>(params.values()[i]);
+              }
+            }  // for i
+          }  // rep == 1
+
+        }  // init_dm_type == 1
+
+      }  // for traj
+
+      //return params;
+    }
+
+    void dyn_variables::init_active_states(bp::dict _params, Random& rnd) {
+      //# Read the parameters
+      bp::list critical_params;
+      bp::dict default_params;
+      bp::dict params(_params);
+
+      default_params["init_type"] = 0;
+      default_params["istate"] = 0;
+      bp::list lst;
+      lst.append(1.0);
+      default_params["istates"] = lst;
+      default_params["rep"] = 1;
+      default_params["verbosity"] = 0;
+
+      check_input(params, default_params, critical_params);
+
+      int i, traj;
+      double ksi;
+      int init_type = -1;
+      int istate = -1;
+      vector<double> istates;
+      int rep = -1;
+      int verbosity = 0;
+
+      std::string key;
+      for (int i = 0; i < len(params.values()); i++) {
+        key = bp::extract<std::string>(params.keys()[i]);
+
+        ///================= Computing Hamiltonian-related properties ====================
+        if (key == "init_type") {
+          init_type = bp::extract<int>(params.values()[i]);
+        } else if (key == "istate") {
+          istate = bp::extract<int>(params.values()[i]);
+        } else if (key == "istates") {
+          istates =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "rep") {
+          rep = bp::extract<int>(params.values()[i]);
+        } else if (key == "verbosity") {
+          verbosity = bp::extract<int>(params.values()[i]);
+        }
       }
 
-      if(rep==0){ 
-        for(int i=0;i<len(params.values());i++){
-          key = bp::extract<std::string>(params.keys()[i]);
-          if(key=="extern_dm") {  *dm_dia[traj] = bp::extract<CMATRIX>(params.values()[i]); }
-        }// for i
-      }// rep == 0 
-      else if(rep==1){ 
-        for(int i=0;i<len(params.values());i++){
-          key = bp::extract<std::string>(params.keys()[i]);
-          if(key=="extern_dm") {  *dm_adi[traj] = bp::extract<CMATRIX>(params.values()[i]); }
-        }// for i
-      }// rep == 1 
+      ///================= Sanity check ================================
+      if (!((rep == 0) || (rep == 1))) {
+        cout << "WARNINIG in init_active_states:\
+           the rep = "
+             << rep << " is not known. Allowed values are: [0, 1]\n";
+      }
 
-    }// init_dm_type == 1
- 
-  }// for traj
-  
+      if (!(init_type == 0 || init_type == 1 || init_type == 2 || init_type == 3 ||
+            init_type == 4)) {
+        cout << "WARNINIG in init_active_states:\
+           the init_type = "
+             << init_type << " is not known. Allowed values are: [0, 1, 2, 3, 4]\n";
+      }
 
-  //return params;
-}
+      if (init_type == 0 || init_type == 1 || init_type == 4) {
+        if (istate >= ndia && rep == 0) {
+          cout << "ERROR in init_active_states: the istate is= " << istate
+               << ", but should be less than " << ndia << "\n";
+          exit(0);
+        }
+        if (istate >= nadi && rep == 1) {
+          cout << "ERROR in init_active_states: the istate is= " << istate
+               << ", but should be less than " << nadi << "\n";
+          exit(0);
+        }
+      }
 
+      if (init_type == 2 || init_type == 3) {
+        if (istates.size() != ndia && rep == 0) {
+          cout << "ERROR in init_active_states: the istates array is of length = " << istates.size()
+               << ", but should be of length " << ndia << "\n";
+          exit(0);
+        }
+        if (istates.size() != nadi && rep == 1) {
+          cout << "ERROR in init_active_states: the istates array is of length = " << istates.size()
+               << ", but should be of length " << nadi << "\n";
+          exit(0);
+        }
 
-void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
+        double summ = 0.0;
+        for (i = 0; i < istates.size(); i++) {
+          summ += istates[i];
+        }
+        if (fabs(summ - 1.0) > 1e-5) {
+          cout << "ERROR in init_active_states: the sum of the entries in the istates array is "
+               << summ << ", but should be 1.0\n";
+          exit(0);
+        }
+      }
 
-  //# Read the parameters
-  bp::list critical_params; 
-  bp::dict default_params;
-  bp::dict params(_params);
+      ///================= Actual calculations  ================================
 
+      act_states.clear();
 
-  default_params["init_type"] = 0;
-  default_params["istate"] = 0;
-  bp::list lst; lst.append(1.0);
-  default_params["istates"] = lst;
-  default_params["rep"] = 1;
-  default_params["verbosity"] = 0;
+      //================ For adiabatic - set up them directly =================
+      for (traj = 0; traj < ntraj; traj++) {
+        if (init_type == 0 || init_type == 1 || init_type == 4) {
+          act_states.push_back(istate);
+        } else if (init_type == 2 || init_type == 3) {
+          ksi = rnd.uniform(0.0, 1.0);
+          act_states.push_back(liblibra::libspecialfunctions::set_random_state(istates, ksi));
+        }
+      }  // for traj
 
-  check_input(params, default_params, critical_params);
+      //============= For adiabatic: more complicated =========================
+      if (rep == 0) {
+        vector<int> dia_act_states_temp(act_states);
 
-  int i, traj;
-  double ksi;
-  int init_type = -1;
-  int istate = -1;
-  vector<double> istates;
-  int rep = -1;
-  int verbosity = 0;
+        CMATRIX pop_adi(nadi, nadi);
+        CMATRIX pop_dia(ndia, ndia);
 
+        for (traj = 0; traj < ntraj; traj++) {
+          i = dia_act_states_temp[traj];  // active diabatic state
+          pop_dia *= 0.0;
+          pop_dia.set(i, i, complex<double>(1.0, 0.0));
 
-  std::string key;
-  for(int i=0;i<len(params.values());i++){
-    key = bp::extract<std::string>(params.keys()[i]);
+          // The following transformation is correct only for S_dia = 1
+          pop_adi = (*basis_transform[traj]).H() * pop_dia * (*basis_transform[traj]);
 
-    ///================= Computing Hamiltonian-related properties ====================
-    if(key=="init_type") {  init_type = bp::extract<int>(params.values()[i]); }
-    else if(key=="istate") {  istate = bp::extract<int>(params.values()[i]); }
-    else if(key=="istates") {  istates = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="rep") {  rep = bp::extract<int>(params.values()[i]); }
-    else if(key=="verbosity") {  verbosity = bp::extract<int>(params.values()[i]); }
+          vector<double> res(nadi, 0.0);
+          for (i = 0; i < nadi; i++) {
+            res[i] = pop_adi.get(i, i).real();
+          }
 
-  }
+          // Now select an adiabatic state according to the probabilities in the res
+          ksi = rnd.uniform(0.0, 1.0);
+          act_states[traj] = hop(res, ksi);  // this is the adiabatic state that corresponds to
+                                             // the distribution of the diabatic populations
 
+        }  // for traj
 
-  ///================= Sanity check ================================
-  if(! ((rep==0) || (rep==1)) ){
-    cout<<"WARNINIG in init_active_states:\
-           the rep = "<<rep<<" is not known. Allowed values are: [0, 1]\n";
-  }
-
-  if(! (init_type==0 || init_type==1 || init_type==2 || init_type==3 || init_type==4) ){
-    cout<<"WARNINIG in init_active_states:\
-           the init_type = "<<init_type<<" is not known. Allowed values are: [0, 1, 2, 3, 4]\n";
-  }
-  
-  if(init_type==0 || init_type==1 || init_type==4){
-    if(istate>=ndia && rep==0){
-      cout<<"ERROR in init_active_states: the istate is= "<<istate<<", but should be less than "<<ndia<<"\n";
-      exit(0);
-    }
-    if(istate>=nadi && rep==1){
-      cout<<"ERROR in init_active_states: the istate is= "<<istate<<", but should be less than "<<nadi<<"\n";
-      exit(0);
-    }
-  }
-
-  if(init_type==2 || init_type==3){
-    if(istates.size()!=ndia && rep==0){
-      cout<<"ERROR in init_active_states: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
-      exit(0);
-    }
-    if(istates.size()!=nadi && rep==1){
-      cout<<"ERROR in init_active_states: the istates array is of length = "<<istates.size()<<", but should be of length "<<nadi<<"\n";
-      exit(0);
-    }
-
-    double summ = 0.0;
-    for(i=0; i<istates.size(); i++){  summ += istates[i]; }
-    if( fabs(summ - 1.0) > 1e-5 ){
-      cout<<"ERROR in init_active_states: the sum of the entries in the istates array is "<<summ<<", but should be 1.0\n";
-      exit(0);
-    }
-  }
-
-
-
-  ///================= Actual calculations  ================================
-
-  act_states.clear();  
-
-  //================ For adiabatic - set up them directly =================
-  for(traj=0; traj<ntraj; traj++){
-    if(init_type==0 || init_type==1 || init_type==4){ 
-      act_states.push_back(istate);
-    }
-    else if(init_type==2 || init_type==3){
-      ksi = rnd.uniform(0.0, 1.0);
-      act_states.push_back( liblibra::libspecialfunctions::set_random_state(istates, ksi) );
-    }
-  }// for traj
-
-  //============= For adiabatic: more complicated =========================
-  if(rep==0){
-    vector<int> dia_act_states_temp(act_states);
-
-    CMATRIX pop_adi(nadi, nadi);
-    CMATRIX pop_dia(ndia, ndia);
-
-    for(traj=0; traj<ntraj; traj++){
-      i = dia_act_states_temp[traj]; // active diabatic state
-      pop_dia *= 0.0; pop_dia.set(i, i, complex<double>(1.0, 0.0) );
-
-      // The following transformation is correct only for S_dia = 1
-      pop_adi = (*basis_transform[traj]).H() * pop_dia * (*basis_transform[traj]);
-
-      vector<double> res(nadi, 0.0);
-      for(i=0; i<nadi;i++){ res[i] = pop_adi.get(i,i).real(); }
-
-      // Now select an adiabatic state according to the probabilities in the res
-      ksi = rnd.uniform(0.0, 1.0);
-      act_states[traj] = hop(res, ksi);  // this is the adiabatic state that corresponds to
-                                         // the distribution of the diabatic populations
-
-
-    }// for traj
-
-  }// rep == 0
-
-}
-
-
-void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
-
-  //# Read the parameters
-  bp::list critical_params; 
-  bp::dict default_params;
-  bp::dict params(_params);
-
-
-  default_params["init_type"] = 0;
-  default_params["istate"] = 0;
-  bp::list lst; lst.append(1.0);
-  default_params["istates"] = lst;
-  default_params["rep"] = 0;
-  default_params["verbosity"] = 0;
-
-  check_input(params, default_params, critical_params);
-
-  int i, traj;
-  double ksi;
-  int init_type = -1;
-  int istate = -1;
-  vector<double> istates;
-  int rep = -1;
-  int verbosity = 0;
-
-
-  std::string key;
-  for(int i=0;i<len(params.values());i++){
-    key = bp::extract<std::string>(params.keys()[i]);
-
-    ///================= Computing Hamiltonian-related properties ====================
-    if(key=="init_type") {  init_type = bp::extract<int>(params.values()[i]); }
-    else if(key=="istate") {  istate = bp::extract<int>(params.values()[i]); }
-    else if(key=="istates") {  istates = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="rep") {  rep = bp::extract<int>(params.values()[i]); }
-    else if(key=="verbosity") {  verbosity = bp::extract<int>(params.values()[i]); }
-
-  }
-
-
-  ///================= Sanity check ================================
-  if(! ((rep==0) || (rep==1)) ){
-    cout<<"WARNINIG in init_active_states_dia:\
-           the rep = "<<rep<<" is not known. Allowed values are: [0, 1]\n";
-  }
-
-  if(! (init_type==0 || init_type==1 || init_type==2 || init_type==3 || init_type==4) ){
-    cout<<"WARNINIG in init_active_states_dia:\
-           the init_type = "<<init_type<<" is not known. Allowed values are: [0, 1, 2, 3, 4]\n";
-  }
-  
-  if(init_type==0 || init_type==1 || init_type==4){
-    if(istate>=ndia && rep==0){
-      cout<<"ERROR in init_active_states_dia: the istate is= "<<istate<<", but should be less than "<<ndia<<"\n";
-      exit(0);
-    }
-    if(istate>=ndia && rep==1){
-      cout<<"ERROR in init_active_states_dia: the istate is= "<<istate<<", but should be less than "<<ndia<<"\n";
-      exit(0);
-    }
-  }
-
-  if(init_type==2 || init_type==3){
-    if(istates.size()!=ndia && rep==0){
-      cout<<"ERROR in init_active_states_dia: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
-      exit(0);
-    }
-    if(istates.size()!=ndia && rep==1){
-      cout<<"ERROR in init_active_states_dia: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
-      exit(0);
+      }  // rep == 0
     }
 
-    double summ = 0.0;
-    for(i=0; i<istates.size(); i++){  summ += istates[i]; }
-    if( fabs(summ - 1.0) > 1e-5 ){
-      cout<<"ERROR in init_active_states_dia: the sum of the entries in the istates array is "<<summ<<", but should be 1.0\n";
-      exit(0);
+    void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd) {
+      //# Read the parameters
+      bp::list critical_params;
+      bp::dict default_params;
+      bp::dict params(_params);
+
+      default_params["init_type"] = 0;
+      default_params["istate"] = 0;
+      bp::list lst;
+      lst.append(1.0);
+      default_params["istates"] = lst;
+      default_params["rep"] = 0;
+      default_params["verbosity"] = 0;
+
+      check_input(params, default_params, critical_params);
+
+      int i, traj;
+      double ksi;
+      int init_type = -1;
+      int istate = -1;
+      vector<double> istates;
+      int rep = -1;
+      int verbosity = 0;
+
+      std::string key;
+      for (int i = 0; i < len(params.values()); i++) {
+        key = bp::extract<std::string>(params.keys()[i]);
+
+        ///================= Computing Hamiltonian-related properties ====================
+        if (key == "init_type") {
+          init_type = bp::extract<int>(params.values()[i]);
+        } else if (key == "istate") {
+          istate = bp::extract<int>(params.values()[i]);
+        } else if (key == "istates") {
+          istates =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "rep") {
+          rep = bp::extract<int>(params.values()[i]);
+        } else if (key == "verbosity") {
+          verbosity = bp::extract<int>(params.values()[i]);
+        }
+      }
+
+      ///================= Sanity check ================================
+      if (!((rep == 0) || (rep == 1))) {
+        cout << "WARNINIG in init_active_states_dia:\
+           the rep = "
+             << rep << " is not known. Allowed values are: [0, 1]\n";
+      }
+
+      if (!(init_type == 0 || init_type == 1 || init_type == 2 || init_type == 3 ||
+            init_type == 4)) {
+        cout << "WARNINIG in init_active_states_dia:\
+           the init_type = "
+             << init_type << " is not known. Allowed values are: [0, 1, 2, 3, 4]\n";
+      }
+
+      if (init_type == 0 || init_type == 1 || init_type == 4) {
+        if (istate >= ndia && rep == 0) {
+          cout << "ERROR in init_active_states_dia: the istate is= " << istate
+               << ", but should be less than " << ndia << "\n";
+          exit(0);
+        }
+        if (istate >= ndia && rep == 1) {
+          cout << "ERROR in init_active_states_dia: the istate is= " << istate
+               << ", but should be less than " << ndia << "\n";
+          exit(0);
+        }
+      }
+
+      if (init_type == 2 || init_type == 3) {
+        if (istates.size() != ndia && rep == 0) {
+          cout << "ERROR in init_active_states_dia: the istates array is of length = "
+               << istates.size() << ", but should be of length " << ndia << "\n";
+          exit(0);
+        }
+        if (istates.size() != ndia && rep == 1) {
+          cout << "ERROR in init_active_states_dia: the istates array is of length = "
+               << istates.size() << ", but should be of length " << ndia << "\n";
+          exit(0);
+        }
+
+        double summ = 0.0;
+        for (i = 0; i < istates.size(); i++) {
+          summ += istates[i];
+        }
+        if (fabs(summ - 1.0) > 1e-5) {
+          cout << "ERROR in init_active_states_dia: the sum of the entries in the istates array is "
+               << summ << ", but should be 1.0\n";
+          exit(0);
+        }
+      }
+
+      ///================= Actual calculations  ================================
+
+      act_states_dia.clear();
+
+      //================ For diabatic - set up them directly =================
+      for (traj = 0; traj < ntraj; traj++) {
+        if (init_type == 0 || init_type == 1 || init_type == 4) {
+          act_states_dia.push_back(istate);
+        } else if (init_type == 2 || init_type == 3) {
+          ksi = rnd.uniform(0.0, 1.0);
+          act_states_dia.push_back(liblibra::libspecialfunctions::set_random_state(istates, ksi));
+        }
+      }  // for traj
+
+      //============= For diabatic: more complicated =========================
+      if (rep == 1) {
+        vector<int> act_states_temp(act_states_dia);
+
+        CMATRIX pop_adi(nadi, nadi);
+        CMATRIX pop_dia(ndia, ndia);
+
+        for (traj = 0; traj < ntraj; traj++) {
+          i = act_states_temp[traj];  // active diabatic state
+          pop_adi *= 0.0;
+          pop_adi.set(i, i, complex<double>(1.0, 0.0));
+
+          // The following transformation is correct only for S_dia = 1
+          pop_dia = (*basis_transform[traj]) * pop_adi * (*basis_transform[traj]).H();
+
+          vector<double> res(ndia, 0.0);
+          for (i = 0; i < ndia; i++) {
+            res[i] = pop_dia.get(i, i).real();
+          }
+
+          // Now select an adiabatic state according to the probabilities in the res
+          ksi = rnd.uniform(0.0, 1.0);
+          act_states_dia[traj] = hop(res, ksi);  // this is the adiabatic state that corresponds to
+                                                 // the distribution of the diabatic populations
+
+        }  // for traj
+
+      }  // rep == 1
     }
-  }
 
-
-
-  ///================= Actual calculations  ================================
-
-  act_states_dia.clear();  
-
-  //================ For diabatic - set up them directly =================
-  for(traj=0; traj<ntraj; traj++){
-    if(init_type==0 || init_type==1 || init_type==4){ 
-      act_states_dia.push_back(istate);
-    }
-    else if(init_type==2 || init_type==3){
-      ksi = rnd.uniform(0.0, 1.0);
-      act_states_dia.push_back( liblibra::libspecialfunctions::set_random_state(istates, ksi) );
-    }
-  }// for traj
-
-  //============= For diabatic: more complicated =========================
-  if(rep==1){
-    vector<int> act_states_temp(act_states_dia);
-
-    CMATRIX pop_adi(nadi, nadi);
-    CMATRIX pop_dia(ndia, ndia);
-
-    for(traj=0; traj<ntraj; traj++){
-      i = act_states_temp[traj]; // active diabatic state
-      pop_adi *= 0.0; pop_adi.set(i, i, complex<double>(1.0, 0.0) );
-
-      // The following transformation is correct only for S_dia = 1
-      pop_dia = (*basis_transform[traj]) * pop_adi * (*basis_transform[traj]).H();
-
-      vector<double> res(ndia, 0.0);
-      for(i=0; i<ndia;i++){ res[i] = pop_dia.get(i,i).real(); }
-
-      // Now select an adiabatic state according to the probabilities in the res
-      ksi = rnd.uniform(0.0, 1.0);
-      act_states_dia[traj] = hop(res, ksi);  // this is the adiabatic state that corresponds to
-                                         // the distribution of the diabatic populations
-
-
-    }// for traj
-
-  }// rep == 1
-
-}
-
-void dyn_variables::init_auxiliary_variables(bp::dict _params, Random& rnd){
-/**
+    void dyn_variables::init_auxiliary_variables(bp::dict _params, Random& rnd) {
+      /**
     """
     Args:
         y_aux_var ( list of doubles ): the mean values of coordinates for all DOFs [ units: a.u.]
@@ -1020,77 +1070,78 @@ void dyn_variables::init_auxiliary_variables(bp::dict _params, Random& rnd){
     """
 */
 
-  //# Read the parameters
-  bp::list critical_params; 
-  bp::dict default_params;
-  bp::dict params(_params);
+      //# Read the parameters
+      bp::list critical_params;
+      bp::dict default_params;
+      bp::dict params(_params);
 
-  default_params["init_type"] = 0;
-  //default_params["y_aux_var"] = vector<double>(1, 0.0);
-  //default_params["p_aux_var"] = vector<double>(1, 0.0);
-  //default_params["m_aux_var"] = vector<double>(1, 1.0);
-  bp::list default_list1;
-  default_list1.append(1.0);
-  default_params["y_aux_var"] = default_list1;
-  bp::list default_list2;
-  default_list2.append(0.0);
-  default_params["p_aux_var"] = default_list2;
-  bp::list default_list3;
-  default_list3.append(1.0);
-  default_params["m_aux_var"] = default_list3;
+      default_params["init_type"] = 0;
+      //default_params["y_aux_var"] = vector<double>(1, 0.0);
+      //default_params["p_aux_var"] = vector<double>(1, 0.0);
+      //default_params["m_aux_var"] = vector<double>(1, 1.0);
+      bp::list default_list1;
+      default_list1.append(1.0);
+      default_params["y_aux_var"] = default_list1;
+      bp::list default_list2;
+      default_list2.append(0.0);
+      default_params["p_aux_var"] = default_list2;
+      bp::list default_list3;
+      default_list3.append(1.0);
+      default_params["m_aux_var"] = default_list3;
 
+      check_input(params, default_params, critical_params);
 
-  check_input(params, default_params, critical_params);
+      int init_type;
+      vector<double> _Y_aux_var;
+      vector<double> _P_aux_var;
+      vector<double> _M_aux_var;
 
+      int idof;
 
-  int init_type;
-  vector<double> _Y_aux_var;
-  vector<double> _P_aux_var;
-  vector<double> _M_aux_var;
+      std::string key;
+      for (int i = 0; i < len(params.values()); i++) {
+        key = bp::extract<std::string>(params.keys()[i]);
 
-  int idof;
+        ///================= Computing Hamiltonian-related properties ====================
+        if (key == "init_type") {
+          init_type = bp::extract<int>(params.values()[i]);
+        } else if (key == "y_aux_var") {
+          _Y_aux_var =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "p_aux_var") {
+          _P_aux_var =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        } else if (key == "m_aux_var") {
+          _M_aux_var =
+              liblibra::libconverters::Py2Cpp<double>(bp::extract<bp::list>(params.values()[i]));
+        }
+      }
 
-  std::string key;
-  for(int i=0;i<len(params.values());i++){
-    key = bp::extract<std::string>(params.keys()[i]);
+      ///================= Sanity check ================================
+      if (!(init_type == 0)) {
+        cout << "WARNINIG in init_auxiliary_variables:\
+           the init_type = "
+             << init_type << " is not known. Allowed values are: [0]\n";
+      }
 
-    ///================= Computing Hamiltonian-related properties ====================
-    if(key=="init_type") {  init_type = bp::extract<int>(params.values()[i]); }
-    else if(key=="y_aux_var") {  _Y_aux_var = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="p_aux_var") {  _P_aux_var = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-    else if(key=="m_aux_var") {  _M_aux_var = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
-  }
+      ///================= Actual calculations  ================================
 
+      if (init_type == 0) {
+        y_aux_var.push_back(_Y_aux_var[0]);
+        p_aux_var.push_back(_P_aux_var[0]);
+        m_aux_var.push_back(_M_aux_var[0]);
+      }  // init_type == 0
+    }
 
-  ///================= Sanity check ================================
-  if(! (init_type==0) ){
-    cout<<"WARNINIG in init_auxiliary_variables:\
-           the init_type = "<<init_type<<" is not known. Allowed values are: [0]\n";
-  }
-  
+    void dyn_variables::init_electronic_dyn_var(bp::dict _params, Random& rnd) {
+      //  bp::dict res;
 
-  ///================= Actual calculations  ================================
+      //  return res;
+    }
 
-  if(init_type==0){
-    y_aux_var.push_back(_Y_aux_var[0]);
-    p_aux_var.push_back(_P_aux_var[0]);
-    m_aux_var.push_back(_M_aux_var[0]);
-  }// init_type == 0
-
-}
-
-void dyn_variables::init_electronic_dyn_var(bp::dict _params, Random& rnd){
-
-//  bp::dict res;
-
-//  return res;
-
-}
-
-
-//vector<int> update_active_states(vector<int>& act_states, vector<CMATRIX*>& T){
-void dyn_variables:: update_active_states(int direction, int property){
-/*
+    //vector<int> update_active_states(vector<int>& act_states, vector<CMATRIX*>& T){
+    void dyn_variables::update_active_states(int direction, int property) {
+      /*
   |psi_adi_tilde> C_adi_tilde = |psi_adi> C_adi
 
   |psi_adi_tilde> = |psi_adi> T, so:
@@ -1108,59 +1159,67 @@ void dyn_variables:: update_active_states(int direction, int property){
                        in terms of the energy-ordered (instantaneous) eign-states
 */
 
-  int i;
-  int nst = nadi;
-  CMATRIX coeff(nst, 1);
-  MATRIX rho_tmp(nst,nst);
-  complex<double> max_val;
+      int i;
+      int nst = nadi;
+      CMATRIX coeff(nst, 1);
+      MATRIX rho_tmp(nst, nst);
+      complex<double> max_val;
 
-  for(int itraj=0; itraj<ntraj; itraj++){
+      for (int itraj = 0; itraj < ntraj; itraj++) {
+        //================ Active states ===================
+        if (property == 0 || property == 2) {
+          coeff = 0.0;
+          coeff.set(act_states[itraj], 0, complex<double>(1.0, 0.0));
 
-    //================ Active states ===================
-    if(property==0 || property==2){
-      coeff = 0.0;
-      coeff.set(act_states[itraj], 0, complex<double>(1.0, 0.0));
+          if (direction == 1) {
+            coeff = proj_adi[itraj]->H() * coeff;
+          } else if (direction == -1) {
+            coeff = (*proj_adi[itraj]) * coeff;
+          }
 
-      if(direction==1){    coeff = proj_adi[itraj]->H() * coeff; }
-      else if(direction==-1){  coeff = (*proj_adi[itraj]) * coeff; }
+          //coeff.max_col_elt(0, max_val, act_states[itraj]);
+          rho_tmp = (coeff * coeff.H()).real();
+          //double max_val = fabs(rho_tmp.get(0,0));
+          int max_val_indx = act_states[itraj];
+          double max_val = fabs(rho_tmp.get(max_val_indx, max_val_indx));
+          for (int j = 0; j < nst; j++) {
+            // >= is important !!! not just >
+            // on 2/15/2025:  actually, we need ">"
+            if (fabs(rho_tmp.get(j, j)) > max_val) {
+              max_val_indx = j;
+              max_val = fabs(rho_tmp.get(j, j));
+            }
+          }
+          act_states[itraj] = max_val_indx;
+        }
 
-      //coeff.max_col_elt(0, max_val, act_states[itraj]);
-      rho_tmp = (coeff * coeff.H()).real();
-      //double max_val = fabs(rho_tmp.get(0,0)); 
-      int max_val_indx = act_states[itraj];
-      double max_val = fabs(rho_tmp.get(max_val_indx, max_val_indx));
-      for(int j=0;j<nst;j++){ 
-        // >= is important !!! not just >
-        // on 2/15/2025:  actually, we need ">"
-        if( fabs(rho_tmp.get(j,j)) > max_val){  max_val_indx = j; max_val = fabs(rho_tmp.get(j,j)); } 
-      }
-      act_states[itraj] = max_val_indx;
+        //============ Amplitudes of states ===================
+        if (property == 1 || property == 2) {
+          coeff = ampl_adi->col(itraj);
+
+          if (direction == 1) {
+            coeff = proj_adi[itraj]->H() * coeff;
+          } else if (direction == -1) {
+            coeff = (*proj_adi[itraj]) * coeff;
+          }
+
+          for (i = 0; i < nst; i++) {
+            ampl_adi->set(i, itraj, coeff.get(i, 0));
+          }
+        }
+
+      }  // for itraj
     }
 
-    //============ Amplitudes of states ===================
-    if(property==1 || property==2){
-      coeff = ampl_adi->col(itraj);
-
-      if(direction==1){    coeff = proj_adi[itraj]->H() * coeff; }
-      else if(direction==-1){  coeff = (*proj_adi[itraj]) * coeff; }
-
-      for(i=0; i<nst; i++){ ampl_adi->set(i, itraj,  coeff.get(i, 0) ); }
-    }
-
-  }// for itraj
-}
-
-void dyn_variables::update_active_states(){
-/**
+    void dyn_variables::update_active_states() {
+      /**
   for backward-compatability
 */
-   update_active_states(1, 0);
-}
+      update_active_states(1, 0);
+    }
 
-
-
-void dyn_variables:: set_active_states_diff_rep(int rep_sh, Random& rnd){
-/*
+    void dyn_variables::set_active_states_diff_rep(int rep_sh, Random& rnd) {
+      /*
   Set the active state in the other representation through the transformation matrix
 
   rep_sh = 1 - Use the adiabatic active states to set the diabatic ones
@@ -1171,67 +1230,74 @@ void dyn_variables:: set_active_states_diff_rep(int rep_sh, Random& rnd){
   Tempelaar, R.; Reichman, D. R. Generalization of Fewest-Switches Surface Hopping for Coherences. 
   The Journal of Chemical Physics 2018, 148 (10), 102309. https://doi.org/10.1063/1.5000843
 */
-  int sz, i, j, traj;
-  double ksi; 
-  if(rep_sh==0){ sz = ndia; }
-  else if(rep_sh==1){ sz = nadi; }
-  else{ 
-    cout<<"Wrong representation = "<<rep_sh<<"\nExiting...\n";
-    exit(0);
-  }
-  
-  // Transform the active states between representations based on the transformation matrix.
-  CMATRIX pop_adi(nadi, nadi);
-  CMATRIX pop_dia(ndia, ndia);
-  CMATRIX U(ndia, nadi);
-  
-  // Obtain the diabatic active states from the adiabatic ones
-  if(rep_sh==1){
+      int sz, i, j, traj;
+      double ksi;
+      if (rep_sh == 0) {
+        sz = ndia;
+      } else if (rep_sh == 1) {
+        sz = nadi;
+      } else {
+        cout << "Wrong representation = " << rep_sh << "\nExiting...\n";
+        exit(0);
+      }
 
-    for(traj=0; traj<ntraj; traj++){
-      i = act_states[traj]; // active adiabatic state
-      pop_adi = *dm_adi[traj];
-      for(j=0;j<nadi; j++){ pop_adi.set(j,j, complex<double>(0.0, 0.0) ); }
-      pop_adi.set(i, i, complex<double>(1.0, 0.0) );
+      // Transform the active states between representations based on the transformation matrix.
+      CMATRIX pop_adi(nadi, nadi);
+      CMATRIX pop_dia(ndia, ndia);
+      CMATRIX U(ndia, nadi);
 
-      // The following transformation is correct only for S_dia = 1
-      U = (*basis_transform[traj]);// * (*proj_adi[traj]);
-      
-      pop_dia = U * pop_adi * U.H(); 
-      
-      vector<double> diag_els(ndia, 0.0);
-      for(i=0;i<ndia; i++){ diag_els[i] = pop_dia.get(i,i).real(); }
+      // Obtain the diabatic active states from the adiabatic ones
+      if (rep_sh == 1) {
+        for (traj = 0; traj < ntraj; traj++) {
+          i = act_states[traj];  // active adiabatic state
+          pop_adi = *dm_adi[traj];
+          for (j = 0; j < nadi; j++) {
+            pop_adi.set(j, j, complex<double>(0.0, 0.0));
+          }
+          pop_adi.set(i, i, complex<double>(1.0, 0.0));
 
-      ksi = rnd.uniform(0.0, 1.0);
-      act_states_dia[traj] = hop(diag_els, ksi); 
+          // The following transformation is correct only for S_dia = 1
+          U = (*basis_transform[traj]);  // * (*proj_adi[traj]);
+
+          pop_dia = U * pop_adi * U.H();
+
+          vector<double> diag_els(ndia, 0.0);
+          for (i = 0; i < ndia; i++) {
+            diag_els[i] = pop_dia.get(i, i).real();
+          }
+
+          ksi = rnd.uniform(0.0, 1.0);
+          act_states_dia[traj] = hop(diag_els, ksi);
+        }
+      }
+
+      // Obtain the adiabatic active states from the diabatic ones
+      else {
+        for (traj = 0; traj < ntraj; traj++) {
+          i = act_states_dia[traj];  // active diabatic state
+          pop_dia = *dm_dia[traj];
+          for (j = 0; j < nadi; j++) {
+            pop_dia.set(j, j, complex<double>(0.0, 0.0));
+          }
+          pop_dia.set(i, i, complex<double>(1.0, 0.0));
+
+          // The following transformation is correct only for S_dia = 1
+          U = (*basis_transform[traj]);  // * (*proj_adi[traj]);
+
+          pop_adi = U.H() * pop_dia * U;
+
+          vector<double> diag_els(nadi, 0.0);
+          for (i = 0; i < nadi; i++) {
+            diag_els[i] = pop_adi.get(i, i).real();
+          }
+
+          ksi = rnd.uniform(0.0, 1.0);
+          act_states[traj] = hop(diag_els, ksi);
+        }
+      }
     }
-  }
 
-  // Obtain the adiabatic active states from the diabatic ones
-  else{
-    for(traj=0; traj<ntraj; traj++){
-      i = act_states_dia[traj]; // active diabatic state
-      pop_dia = *dm_dia[traj];
-      for(j=0;j<nadi; j++){ pop_dia.set(j,j, complex<double>(0.0, 0.0) ); }
-      pop_dia.set(i, i, complex<double>(1.0, 0.0) );
-
-      // The following transformation is correct only for S_dia = 1
-      U = (*basis_transform[traj]);// * (*proj_adi[traj]);
-      
-      pop_adi = U.H() * pop_dia * U; 
-      
-      vector<double> diag_els(nadi, 0.0);
-      for(i=0;i<nadi; i++){ diag_els[i] = pop_adi.get(i,i).real(); }
-
-      ksi = rnd.uniform(0.0, 1.0);
-      act_states[traj] = hop(diag_els, ksi); 
-    }
-  }
-
-}
-
-
-/*
+    /*
 void dyn_variables::update_ampl_reproject(int option){
 
  changes all the adiabatic properties of the Hamiltonian by the matrix T
@@ -1249,12 +1315,8 @@ void dyn_variables::update_ampl_reproject(int option){
 
 */
 
-
-
-
-
-CMATRIX orthogonalized_T(CMATRIX& T){
-/**
+    CMATRIX orthogonalized_T(CMATRIX& T) {
+      /**
    Return a unitary equivalent of the matrix T
 
   |psi_adi_tilde(t+dt)> = |psi_adi(t+dt)> T(t+dt)
@@ -1284,245 +1346,290 @@ CMATRIX orthogonalized_T(CMATRIX& T){
 
 */
 
-  int nst = T.n_cols;
+      int nst = T.n_cols;
 
-  CMATRIX t2(nst,nst);
-  CMATRIX t2_half(nst, nst);
-  CMATRIX t2_i_half(nst, nst);
-    
-  t2 = T.H() * T;
-  sqrt_matrix(t2, t2_half, t2_i_half);
+      CMATRIX t2(nst, nst);
+      CMATRIX t2_half(nst, nst);
+      CMATRIX t2_i_half(nst, nst);
 
-  CMATRIX id(nst,nst); id.identity();
-  if( std::abs( (t2_half * t2_i_half - id).max_elt()) > 1e-5 ){
-    cout<<"Error in orthogonlized_T: S^{1/2} * S^{-1/2} is not an identity matrix\nExiting...\n";
-    exit(0);
-  }
-  t2 = T * t2_i_half;
+      t2 = T.H() * T;
+      sqrt_matrix(t2, t2_half, t2_i_half);
 
-  return t2;
+      CMATRIX id(nst, nst);
+      id.identity();
+      if (std::abs((t2_half * t2_i_half - id).max_elt()) > 1e-5) {
+        cout << "Error in orthogonlized_T: S^{1/2} * S^{-1/2} is not an identity "
+                "matrix\nExiting...\n";
+        exit(0);
+      }
+      t2 = T * t2_i_half;
 
-}
+      return t2;
+    }
 
-CMATRIX dyn_variables::compute_average_dm(int rep){
+    CMATRIX dyn_variables::compute_average_dm(int rep) {
+      int sz;
+      if (rep == 0 || rep == 2) {
+        sz = ndia;
+      } else if (rep == 1 || rep == 3 || rep == 4) {
+        sz = nadi;
+      } else {
+        cout << "Error in dyn_variables::compute_average_dm: rep is not allowed. Exiting...\n";
+        exit(0);
+      }
 
-  int sz;
-  if(rep==0 || rep==2){ sz = ndia; }
-  else if(rep==1 || rep==3 || rep == 4){ sz = nadi; }
-  else{ cout<<"Error in dyn_variables::compute_average_dm: rep is not allowed. Exiting...\n"; exit(0); }
+      CMATRIX res(sz, sz);
 
-  CMATRIX res(sz, sz);
+      for (int traj = 0; traj < ntraj; traj++) {
+        if (rep == 0 || rep == 2) {
+          res += *dm_dia[traj];
+        } else if (rep == 1 || rep == 3) {
+          res += *dm_adi[traj];
+        }
+      }
 
-  for(int traj=0; traj<ntraj; traj++){
-    if(rep==0 || rep==2){   res += *dm_dia[traj]; }
-    else if(rep==1 || rep==3){ res += *dm_adi[traj]; }
-  }
+      res = res / (float)ntraj;
 
-  res = res / (float)ntraj;
+      return res;
+    }
 
-  return res;
-}
+    vector<double> dyn_variables::compute_average_se_pop(int rep) {
+      int sz;
+      if (rep == 0 || rep == 2) {
+        sz = ndia;
+      } else if (rep == 1 || rep == 3 || rep == 4) {
+        sz = nadi;
+      } else {
+        cout << "Error in dyn_variables::compute_average_se_pop: rep is not allowed. Exiting...\n";
+        exit(0);
+      }
 
-  
-vector<double> dyn_variables::compute_average_se_pop(int rep){
+      MATRIX ave(sz, sz);
+      ave = compute_average_dm(rep).real();
 
-  int sz; 
-  if(rep==0 || rep==2){ sz = ndia; }
-  else if(rep==1 || rep==3 || rep==4){ sz = nadi; }
-  else{ cout<<"Error in dyn_variables::compute_average_se_pop: rep is not allowed. Exiting...\n"; exit(0); }
+      vector<double> res(sz, 0.0);
 
-  MATRIX ave(sz, sz);
-  ave = compute_average_dm(rep).real();  
+      for (int i = 0; i < sz; i++) {
+        res[i] = ave.get(i, i);
+      }
 
-  vector<double> res(sz, 0.0);
+      return res;
+    }
 
-  for(int i=0; i<sz; i++){ res[i] = ave.get(i,i); }
-
-  return res;
-
-}
-
-
-vector<double> dyn_variables::compute_average_mash_pop(int rep){
-/**
+    vector<double> dyn_variables::compute_average_mash_pop(int rep) {
+      /**
   Computing the MASH population estimators based on:
 
   (1) E. Runeson, J.; P. Fay, T.; E. Manolopoulos, D. Exciton Dynamics from the Mapping Approach to Surface Hopping: Comparison with Förster and Redfield Theories. Physical Chemistry Chemical Physics 2024, 26 (6), 4929–4938. https://doi.org/10.1039/D3CP05926J.
 
 */
 
-  //======= First, compute the SE populations ========
-  int sz,i;
+      //======= First, compute the SE populations ========
+      int sz, i;
 
-  if(rep==0 || rep==2){ sz = ndia; }
-  else if(rep==1 || rep==3 || rep == 4){ sz = nadi; }
-  else{ cout<<"Error in dyn_variables::compute_average_mash_pop: rep is not allowed. Exiting...\n"; exit(0); }
+      if (rep == 0 || rep == 2) {
+        sz = ndia;
+      } else if (rep == 1 || rep == 3 || rep == 4) {
+        sz = nadi;
+      } else {
+        cout
+            << "Error in dyn_variables::compute_average_mash_pop: rep is not allowed. Exiting...\n";
+        exit(0);
+      }
 
-  MATRIX ave(sz, sz);
-  ave = compute_average_dm(rep).real();
+      MATRIX ave(sz, sz);
+      ave = compute_average_dm(rep).real();
 
-  vector<double> res(sz, 0.0);
+      vector<double> res(sz, 0.0);
 
-  for(i=0; i<sz; i++){ res[i] = ave.get(i,i); }
+      for (i = 0; i < sz; i++) {
+        res[i] = ave.get(i, i);
+      }
 
-  //====== Now transform them according to MASH estimators formula =====
+      //====== Now transform them according to MASH estimators formula =====
 
-  double sum = 0.0;
-  for(i=1; i<=sz; i++){  sum += 1.0/i; }  sum -= 1.0;
-  double alpha_N = (sz - 1.0)/sum;
-  double beta_N = (1.0 - alpha_N)/sz;
+      double sum = 0.0;
+      for (i = 1; i <= sz; i++) {
+        sum += 1.0 / i;
+      }
+      sum -= 1.0;
+      double alpha_N = (sz - 1.0) / sum;
+      double beta_N = (1.0 - alpha_N) / sz;
 
-  for(i=0; i<sz; i++){  res[i] = alpha_N * res[i] + beta_N; }
+      for (i = 0; i < sz; i++) {
+        res[i] = alpha_N * res[i] + beta_N;
+      }
 
-  return res;
+      return res;
+    }
 
-}
-
-
-
-vector<double> dyn_variables::compute_average_sh_pop(int rep){
-/**
+    vector<double> dyn_variables::compute_average_sh_pop(int rep) {
+      /**
   Computing the SH population with the active state of the input rep.
   If rep is different from rep_sh, the resultant SH population is computed indirectly through the sampling based on diagonal elments of the density matrix
 */
 
-  int sz, i, j, traj; 
-  if(rep==0){ sz = ndia; }
-  else if(rep==1){ sz = nadi; }
-  else{ 
-    cout<<"Can not compute SH population for representation = "<<rep<<"\nExiting...\n";
-    exit(0);
-  }
+      int sz, i, j, traj;
+      if (rep == 0) {
+        sz = ndia;
+      } else if (rep == 1) {
+        sz = nadi;
+      } else {
+        cout << "Can not compute SH population for representation = " << rep << "\nExiting...\n";
+        exit(0);
+      }
 
-  vector<double> res(sz, 0.0);
+      vector<double> res(sz, 0.0);
 
-  if(rep==0){
-    vector<int> effective_states( act_states_dia );
-    for(traj=0; traj<ntraj; traj++){ i = effective_states[traj]; res[i] += 1.0;  }
-  }// rep == 0
+      if (rep == 0) {
+        vector<int> effective_states(act_states_dia);
+        for (traj = 0; traj < ntraj; traj++) {
+          i = effective_states[traj];
+          res[i] += 1.0;
+        }
+      }  // rep == 0
 
-  else if(rep==1){
-    vector<int> effective_states( act_states );
-    for(traj=0; traj<ntraj; traj++){ i = effective_states[traj]; res[i] += 1.0;  }
-  }// rep == 1
+      else if (rep == 1) {
+        vector<int> effective_states(act_states);
+        for (traj = 0; traj < ntraj; traj++) {
+          i = effective_states[traj];
+          res[i] += 1.0;
+        }
+      }  // rep == 1
 
-  for(j=0; j<sz; j++){   res[j] = res[j] / (float)ntraj;   }
+      for (j = 0; j < sz; j++) {
+        res[j] = res[j] / (float)ntraj;
+      }
 
-  return res;
-}
+      return res;
+    }
 
-
-
-vector<double> dyn_variables::compute_average_sh_pop_TR(int rep){
-/**
+    vector<double> dyn_variables::compute_average_sh_pop_TR(int rep) {
+      /**
   Computing the SH population based on the following work:
   Tempelaar, R.; Reichman, D. R. Generalization of Fewest-Switches Surface Hopping for Coherences. 
   The Journal of Chemical Physics 2018, 148 (10), 102309. https://doi.org/10.1063/1.5000843
 */
-  int sz, i, j, traj; 
-  if(rep==0){ sz = ndia; }
-  else if(rep==1){ sz = nadi; }
-  else{ 
-    cout<<"Can not compute SH population for representation = "<<rep<<"\nExiting...\n";
-    exit(0);
-  }
+      int sz, i, j, traj;
+      if (rep == 0) {
+        sz = ndia;
+      } else if (rep == 1) {
+        sz = nadi;
+      } else {
+        cout << "Can not compute SH population for representation = " << rep << "\nExiting...\n";
+        exit(0);
+      }
 
-  vector<double> res(sz, 0.0);
+      vector<double> res(sz, 0.0);
 
-  if(rep==0){
-    vector<int> effective_states( act_states );
+      if (rep == 0) {
+        vector<int> effective_states(act_states);
 
-    CMATRIX pop_adi(nadi, nadi);
-    CMATRIX pop_dia(ndia, ndia);
-    CMATRIX U(ndia, nadi);
+        CMATRIX pop_adi(nadi, nadi);
+        CMATRIX pop_dia(ndia, ndia);
+        CMATRIX U(ndia, nadi);
 
-    for(traj=0; traj<ntraj; traj++){
-      i = effective_states[traj]; // active adiabatic state
-      pop_adi = *dm_adi[traj];
-      for(j=0;j<nadi; j++){ pop_adi.set(j,j, complex<double>(0.0, 0.0) ); }
-      pop_adi.set(i, i, complex<double>(1.0, 0.0) );
+        for (traj = 0; traj < ntraj; traj++) {
+          i = effective_states[traj];  // active adiabatic state
+          pop_adi = *dm_adi[traj];
+          for (j = 0; j < nadi; j++) {
+            pop_adi.set(j, j, complex<double>(0.0, 0.0));
+          }
+          pop_adi.set(i, i, complex<double>(1.0, 0.0));
 
-      // The following transformation is correct only for S_dia = 1
-      U = (*basis_transform[traj]);// * (*proj_adi[traj]);
-      
-      pop_dia = U * pop_adi * U.H(); 
-      for(j=0; j<ndia; j++){ res[j] += pop_dia.get(j,j).real(); }
+          // The following transformation is correct only for S_dia = 1
+          U = (*basis_transform[traj]);  // * (*proj_adi[traj]);
+
+          pop_dia = U * pop_adi * U.H();
+          for (j = 0; j < ndia; j++) {
+            res[j] += pop_dia.get(j, j).real();
+          }
+        }
+      }  // rep == 0
+
+      else if (rep == 1) {
+        vector<int> effective_states(act_states_dia);
+
+        CMATRIX pop_adi(nadi, nadi);
+        CMATRIX pop_dia(ndia, ndia);
+        CMATRIX U(ndia, nadi);
+
+        for (traj = 0; traj < ntraj; traj++) {
+          i = effective_states[traj];  // active diabatic state
+          pop_dia = *dm_dia[traj];
+          for (j = 0; j < ndia; j++) {
+            pop_dia.set(j, j, complex<double>(0.0, 0.0));
+          }
+          pop_dia.set(i, i, complex<double>(1.0, 0.0));
+
+          // The following transformation is correct only for S_dia = 1
+          U = (*basis_transform[traj]);  // * (*proj_adi[traj]);
+
+          pop_adi = U.H() * pop_dia * U;
+          for (j = 0; j < nadi; j++) {
+            res[j] += pop_adi.get(j, j).real();
+          }
+        }
+      }  // rep == 1
+
+      for (j = 0; j < sz; j++) {
+        res[j] = res[j] / (float)ntraj;
+      }
+
+      return res;
     }
-  }// rep == 0
 
-  else if(rep==1){
-    vector<int> effective_states( act_states_dia );
+    MATRIX dyn_variables::compute_coherence_indicator(int rep) {
+      int sz;
+      if (rep == 0 || rep == 2) {
+        sz = ndia;
+      } else if (rep == 1 || rep == 3 || rep == 4) {
+        sz = nadi;
+      } else {
+        cout << "Error in dyn_variables::compute_coherence_indicator: rep is not allowed. "
+                "Exiting...\n";
+        exit(0);
+      }
 
-    CMATRIX pop_adi(nadi, nadi);
-    CMATRIX pop_dia(ndia, ndia);
-    CMATRIX U(ndia, nadi);
+      MATRIX res(sz, sz);
 
-    for(traj=0; traj<ntraj; traj++){
-      i = effective_states[traj]; // active diabatic state
-      pop_dia = *dm_dia[traj];
-      for(j=0;j<ndia; j++){ pop_dia.set(j,j, complex<double>(0.0, 0.0) ); }
-      pop_dia.set(i, i, complex<double>(1.0, 0.0) );
+      CMATRIX dm(sz, sz);
+      MATRIX temp(sz, ntraj);
 
-      // The following transformation is correct only for S_dia = 1
-      U = (*basis_transform[traj]);// * (*proj_adi[traj]);
-      
-      pop_adi = U.H() * pop_dia * U; 
-      for(j=0; j<nadi; j++){ res[j] += pop_adi.get(j,j).real(); }
+      // Making a temporary matrix collecting trajectory-wise population elements
+      for (int traj = 0; traj < ntraj; traj++) {
+        if (rep == 0 || rep == 2) {
+          dm = *dm_dia[traj];
+        } else if (rep == 1 || rep == 3) {
+          dm = *dm_adi[traj];
+        }
+
+        for (int i = 0; i < sz; i++) {
+          temp.set(i, traj, dm.get(i, i).real());
+        }
+      }
+
+      res = temp * temp.T() / (float)ntraj;
+
+      return res;
     }
-  }// rep == 1
 
-  for(j=0; j<sz; j++){   res[j] = res[j] / (float)ntraj;   }
-
-  return res;
-}
-
-
-MATRIX dyn_variables::compute_coherence_indicator(int rep){
-
-  int sz;
-  if(rep==0 || rep==2){ sz = ndia; }
-  else if(rep==1 || rep==3 || rep==4 ){ sz = nadi; }
-  else{ cout<<"Error in dyn_variables::compute_coherence_indicator: rep is not allowed. Exiting...\n"; exit(0); }
-
-  MATRIX res(sz, sz);
-  
-  CMATRIX dm(sz, sz); MATRIX temp(sz, ntraj);
-
-  // Making a temporary matrix collecting trajectory-wise population elements
-  for(int traj=0; traj<ntraj; traj++){
-    if(rep==0 || rep==2){   dm = *dm_dia[traj]; }
-    else if(rep==1 || rep==3){ dm = *dm_adi[traj]; }
-  
-    for(int i=0; i<sz; i++){temp.set(i, traj, dm.get(i,i).real() );}
-  }
-
-  res = temp * temp.T() / (float)ntraj;
-
-  return res;
-}
-
-
-void dyn_variables::save_curr_dm_into_prev(){
-
-  if(fssh2_vars_status==1){
-    for(int i=0; i<ntraj; i++){
-      *dm_dia_prev[i] = *dm_dia[i];
-      *dm_adi_prev[i] = *dm_adi[i];
+    void dyn_variables::save_curr_dm_into_prev() {
+      if (fssh2_vars_status == 1) {
+        for (int i = 0; i < ntraj; i++) {
+          *dm_dia_prev[i] = *dm_dia[i];
+          *dm_adi_prev[i] = *dm_adi[i];
+        }
+      }
     }
-  }
 
-}
+    double dyn_variables::compute_kcrpmd_ekin() {
+      double res = 0.0;
 
+      res += pow(p_aux_var[0], 2) / m_aux_var[0];
 
-double dyn_variables::compute_kcrpmd_ekin(){
-  double res = 0.0;
+      return 0.5 * res;
+    }
 
-  res += pow(p_aux_var[0], 2) / m_aux_var[0];
-
-  return 0.5*res;
-}
-
-
-}// namespace libdyn
-}// liblibra
-
+  }  // namespace libdyn
+}  // namespace liblibra

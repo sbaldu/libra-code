@@ -24,15 +24,13 @@
 //#include "Hamiltonian_Extern/libhamiltonian_extern.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  namespace libnhamiltonian {
 
-namespace libnhamiltonian{
+    void export_Hamiltonian_objects();
 
-void export_Hamiltonian_objects();
+  }  // namespace libnhamiltonian
+}  // namespace liblibra
 
-
-}// namespace libnhamiltonian
-}// liblibra
-
-#endif// LIB_HAMILTONIAN_H
+#endif  // LIB_HAMILTONIAN_H

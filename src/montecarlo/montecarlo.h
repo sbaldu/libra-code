@@ -17,32 +17,32 @@
 #ifndef MONTECARLO_H
 #define MONTECARLO_H
 
-
 // External dependencies
 #include "../math_linalg/liblinalg.h"
 #include "../math_random/librandom.h"
 #include "../io/libio.h"
 
-
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace librandom;
-using namespace libio;
+  using namespace liblinalg;
+  using namespace librandom;
+  using namespace libio;
 
-/// libmontecarlo namespace 
-namespace libmontecarlo{
+  /// libmontecarlo namespace
+  namespace libmontecarlo {
 
-namespace bp = boost::python;
+    namespace bp = boost::python;
 
-vector<MATRIX> metropolis_gau(Random& rnd, bp::object target_distribution, MATRIX& dof, bp::object distribution_params, 
-                              int sample_size, int start_sampling, double gau_var);
+    vector<MATRIX> metropolis_gau(Random& rnd,
+                                  bp::object target_distribution,
+                                  MATRIX& dof,
+                                  bp::object distribution_params,
+                                  int sample_size,
+                                  int start_sampling,
+                                  double gau_var);
 
+  }  // namespace libmontecarlo
+}  // namespace liblibra
 
-
-}// namespace libmontecarlo
-}// liblibra
-
-#endif // MONTECARLO_H
+#endif  // MONTECARLO_H

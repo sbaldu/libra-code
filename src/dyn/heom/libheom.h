@@ -17,23 +17,16 @@
 #ifndef LIB_HEOM_H
 #define LIB_HEOM_H
 
-
 #include "heom.h"
 
-namespace liblibra{
-namespace libdyn{
-namespace libheom{
+namespace liblibra {
+  namespace libdyn {
+    namespace libheom {
 
+      void export_heom_objects();
 
+    }  // namespace libheom
+  }  // namespace libdyn
+}  // namespace liblibra
 
-
-void export_heom_objects();
-
-
-}// namespace libheom
-}// namespace libdyn
-}// liblibra
-
-
-
-#endif// LIB_HEOM_H
+#endif  // LIB_HEOM_H

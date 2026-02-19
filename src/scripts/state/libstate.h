@@ -15,18 +15,15 @@
 #include "State.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-namespace libscripts{
-namespace libstate{
+  namespace libscripts {
+    namespace libstate {
 
+      void export_state_objects();
 
-void export_state_objects();
+    }  // namespace libstate
+  }  // namespace libscripts
+}  // namespace liblibra
 
-
-}// namespace libstate
-}// namespace libscripts
-}// liblibra
-
-
-#endif// LIB_STATE_H
+#endif  // LIB_STATE_H

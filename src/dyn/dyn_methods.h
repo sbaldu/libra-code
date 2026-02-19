@@ -23,38 +23,42 @@
 #include "dyn_variables.h"
 #include "../nhamiltonian/libnhamiltonian.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libio;
-using namespace libnhamiltonian;
-namespace bp = boost::python;
+  using namespace libio;
+  using namespace libnhamiltonian;
+  namespace bp = boost::python;
 
-/// libdyn namespace
-namespace libdyn{
+  /// libdyn namespace
+  namespace libdyn {
 
+    ///================  In dyn_methods_dish.cpp  ===================================
 
+    vector<int> decoherence_event(MATRIX& coherence_time,
+                                  MATRIX& coherence_interval,
+                                  int decoherence_event_option,
+                                  Random& rnd);
+    vector<int> decoherence_event(MATRIX& coherence_time, MATRIX& coherence_interval, Random& rnd);
 
-///================  In dyn_methods_dish.cpp  ===================================
+    vector<int> dish_hop_proposal(vector<int>& act_states,
+                                  CMATRIX& Coeff,
+                                  MATRIX& coherence_time,
+                                  vector<MATRIX>& decoherence_rates,
+                                  Random& rnd);
 
-vector<int> decoherence_event(MATRIX& coherence_time, MATRIX& coherence_interval, int decoherence_event_option, Random& rnd);
-vector<int> decoherence_event(MATRIX& coherence_time, MATRIX& coherence_interval, Random& rnd);
+    void dish_project_out_collapse(vector<int>& old_states,
+                                   vector<int>& proposed_states,
+                                   vector<int>& new_states,
+                                   CMATRIX& Coeff,
+                                   MATRIX& coherence_time,
+                                   int collapse_option);
 
-vector<int> dish_hop_proposal(vector<int>& act_states, CMATRIX& Coeff, 
-  MATRIX& coherence_time, vector<MATRIX>& decoherence_rates, Random& rnd);
+    //================= In dyn_methods_qtsh.cpp =======================================
 
-void dish_project_out_collapse(vector<int>& old_states, vector<int>& proposed_states, vector<int>& new_states, 
-  CMATRIX& Coeff, MATRIX& coherence_time, int collapse_option);
+    MATRIX compute_dkinemat(dyn_variables& dyn_var, nHamiltonian& ham);
 
+  }  // namespace libdyn
+}  // namespace liblibra
 
-//================= In dyn_methods_qtsh.cpp =======================================
-
-MATRIX compute_dkinemat(dyn_variables& dyn_var, nHamiltonian& ham);
-
-
-}// namespace libdyn
-}// liblibra
-
-#endif // DYN_METHODS_H
-
+#endif  // DYN_METHODS_H

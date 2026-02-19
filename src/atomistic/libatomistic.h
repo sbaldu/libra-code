@@ -20,18 +20,14 @@
 #include "atomistic.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libatomistic namespace
+  namespace libatomistic {
 
-/// libatomistic namespace
-namespace libatomistic{
+    void export_atomistic_objects();
 
+  }  // namespace libatomistic
+}  // namespace liblibra
 
-  void export_atomistic_objects();
-
-
-}// namespace libatomistic
-}// liblibra
-
-
-#endif// LIB_ATOMISTIC_H
+#endif  // LIB_ATOMISTIC_H

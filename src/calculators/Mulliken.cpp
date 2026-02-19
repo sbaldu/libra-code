@@ -20,16 +20,18 @@
 #include "Mulliken.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libcalculators namespace
+  namespace libcalculators {
 
-/// libcalculators namespace
-namespace libcalculators{
-
-void update_Mull_orb_pop(MATRIX* P, MATRIX* S, vector<double>& Mull_orb_pop_gross,vector<double>& Mull_orb_pop_net){
-/**
+    void update_Mull_orb_pop(MATRIX* P,
+                             MATRIX* S,
+                             vector<double>& Mull_orb_pop_gross,
+                             vector<double>& Mull_orb_pop_net) {
+      /**
   \brief Recompute(update) Mulliken-type orbital-resolved populations
 
   Compute Mulliken orbital-resolved populations from the density matrix
@@ -42,20 +44,21 @@ void update_Mull_orb_pop(MATRIX* P, MATRIX* S, vector<double>& Mull_orb_pop_gros
   \param[in,out] Mull_orb_pop_net The vector which will collect orbital-resolved Mulliken net populations
 */
 
-  int Norb = P->n_cols;
+      int Norb = P->n_cols;
 
-  MATRIX* PS; PS = new MATRIX(Norb,Norb);  // charge density matrix
+      MATRIX* PS;
+      PS = new MATRIX(Norb, Norb);  // charge density matrix
 
-  PS->dot_product(*P, *S);
+      PS->dot_product(*P, *S);
 
-  for(int a=0;a<Norb;a++){
-    Mull_orb_pop_gross[a] = PS->col(a).sum();
-    Mull_orb_pop_net[a]  = PS->col(a).get(a);
-  }
+      for (int a = 0; a < Norb; a++) {
+        Mull_orb_pop_gross[a] = PS->col(a).sum();
+        Mull_orb_pop_net[a] = PS->col(a).get(a);
+      }
 
-  delete PS;
+      delete PS;
 
-/*
+      /*
   int a,b;
   double tmp_a, tmp_ab;
 
@@ -83,29 +86,30 @@ void update_Mull_orb_pop(MATRIX* P, MATRIX* S, vector<double>& Mull_orb_pop_gros
   }// a
 */
 
-}// void update_Mull_orb_pop(MATRIX* P, MATRIX* S, vector<double>& Mull_orb_pop_gross,vector<double>& Mull_orb_pop_net)
+    }  // void update_Mull_orb_pop(MATRIX* P, MATRIX* S, vector<double>& Mull_orb_pop_gross,vector<double>& Mull_orb_pop_net)
 
+    boost::python::list update_Mull_orb_pop(MATRIX P, MATRIX S) {
+      vector<double> Mull_orb_pop_gross(P.n_cols, 0.0);
+      vector<double> Mull_orb_pop_net(P.n_cols, 0.0);
 
-boost::python::list update_Mull_orb_pop(MATRIX P, MATRIX S){
+      update_Mull_orb_pop(&P, &S, Mull_orb_pop_gross, Mull_orb_pop_net);
 
-  vector<double> Mull_orb_pop_gross(P.n_cols, 0.0);
-  vector<double> Mull_orb_pop_net(P.n_cols, 0.0);
+      boost::python::list res;
+      res.append(Mull_orb_pop_gross);
+      res.append(Mull_orb_pop_net);
 
-  update_Mull_orb_pop(&P, &S, Mull_orb_pop_gross, Mull_orb_pop_net);
+      return res;
+    }
 
-  boost::python::list res; 
-  res.append(Mull_orb_pop_gross);
-  res.append(Mull_orb_pop_net);
-
-  return res;  
-
-}
-
-
-void update_Mull_charges(vector<int>& fragment, vector<int>& basis_fo, vector<vector<int> >& at_orbitals,vector<double>& Zeff,
-                         vector<double>& Mull_orb_pop_gross, vector<double>& Mull_orb_pop_net,
-                         vector<double>& Mull_charges_gross, vector<double>& Mull_charges_net){
-/**
+    void update_Mull_charges(vector<int>& fragment,
+                             vector<int>& basis_fo,
+                             vector<vector<int> >& at_orbitals,
+                             vector<double>& Zeff,
+                             vector<double>& Mull_orb_pop_gross,
+                             vector<double>& Mull_orb_pop_net,
+                             vector<double>& Mull_charges_gross,
+                             vector<double>& Mull_charges_net) {
+      /**
   \brief Update Mulliken charges on atoms
 
   This is older (and not very efficient) version
@@ -124,36 +128,35 @@ void update_Mull_charges(vector<int>& fragment, vector<int>& basis_fo, vector<ve
 
 */
 
+      int Nat_frag = fragment.size();
 
+      // Init arrays - only nuclear charges
+      for (int a = 0; a < Nat_frag; a++) {  // O(Nfrag)
+        int n = fragment[a];                // index of a-th nucleus in global array
+        Mull_charges_gross[n] = Zeff[n];
+        Mull_charges_net[n] = Zeff[n];
 
-  int Nat_frag = fragment.size(); 
+        for (int i = 0; i < at_orbitals[n].size(); i++) {  // O(Nnucl)
+          int j = at_orbitals[n][i];
 
-  // Init arrays - only nuclear charges
-  for(int a=0;a<Nat_frag;a++){  // O(Nfrag) 
-    int n = fragment[a]; // index of a-th nucleus in global array
-    Mull_charges_gross[n] = Zeff[n];
-    Mull_charges_net[n] = Zeff[n];
+          for (int k = 0; k < basis_fo.size(); k++) {  // O(Nbas)
+            if (basis_fo[k] == j) {
+              Mull_charges_gross[n] -= Mull_orb_pop_gross[k];
+              Mull_charges_net[n] -= Mull_orb_pop_net[k];
+            }  // if
+          }  // for k
+        }  // for i
+      }  // for n
 
-    for(int i=0;i<at_orbitals[n].size();i++){  // O(Nnucl)
-      int j = at_orbitals[n][i];
+    }  // void update_Mull_charges(vector<double>& Mull_orb_pop_gross, vector<double>& Mull_orb_pop_net, ...
 
-      for(int k=0;k<basis_fo.size();k++){      // O(Nbas)
-        if(basis_fo[k]==j){  
-
-          Mull_charges_gross[n] -= Mull_orb_pop_gross[k];
-          Mull_charges_net[n] -= Mull_orb_pop_net[k];
-        }// if
-      }// for k
-    }// for i
-  }// for n
-
-}// void update_Mull_charges(vector<double>& Mull_orb_pop_gross, vector<double>& Mull_orb_pop_net, ...
-
-
-void update_Mull_charges(vector<int>& ao_to_atom_map, vector<double>& Zeff,
-                         vector<double>& Mull_orb_pop_gross, vector<double>& Mull_orb_pop_net,
-                         vector<double>& Mull_charges_gross, vector<double>& Mull_charges_net){
-/**
+    void update_Mull_charges(vector<int>& ao_to_atom_map,
+                             vector<double>& Zeff,
+                             vector<double>& Mull_orb_pop_gross,
+                             vector<double>& Mull_orb_pop_net,
+                             vector<double>& Mull_charges_gross,
+                             vector<double>& Mull_charges_net) {
+      /**
   \brief Update Mulliken charges on atoms
 
   This is newer (and more efficient) version
@@ -168,64 +171,60 @@ void update_Mull_charges(vector<int>& ao_to_atom_map, vector<double>& Zeff,
 
 */
 
+      int i, a;
+      int Nat = Zeff.size();  // number of atoms
 
+      if (Mull_charges_gross.size() != Nat) {
+        cout << "Error in update_Mull_charges: The size of Mull_charges_gross is inconsistent with "
+                "the size of Zeff\n";
+        exit(0);
+      }
+      if (Mull_charges_net.size() != Nat) {
+        cout << "Error in update_Mull_charges: The size of Mull_charges_gross is inconsistent with "
+                "the size of Zeff\n";
+        exit(0);
+      }
 
-  int i, a;
-  int Nat = Zeff.size();  // number of atoms
+      for (a = 0; a < Nat; a++) {  // all atoms
 
-  if(Mull_charges_gross.size() != Nat ){
-    cout<<"Error in update_Mull_charges: The size of Mull_charges_gross is inconsistent with the size of Zeff\n";
-    exit(0);
-  }
-  if(Mull_charges_net.size() != Nat ){
-    cout<<"Error in update_Mull_charges: The size of Mull_charges_gross is inconsistent with the size of Zeff\n";
-    exit(0);
-  }
+        Mull_charges_gross[a] = Zeff[a];
+        Mull_charges_net[a] = Zeff[a];
 
+      }  // for n
 
-  for(a=0;a<Nat;a++){  // all atoms 
+      for (i = 0; i < ao_to_atom_map.size(); i++) {  // O(AOs)
 
-    Mull_charges_gross[a] = Zeff[a];
-    Mull_charges_net[a] = Zeff[a];
+        a = ao_to_atom_map[i];  // index of atom on which i-th AO is located
 
-  }// for n
+        Mull_charges_gross[a] -= Mull_orb_pop_gross[i];
+        Mull_charges_net[a] -= Mull_orb_pop_net[i];
 
+      }  // for i
 
-  for(i=0;i<ao_to_atom_map.size();i++){  // O(AOs)
+    }  // void update_Mull_charges(vector<double>& Mull_orb_pop_gross, vector<double>& Mull_orb_pop_net, ...
 
-    a = ao_to_atom_map[i]; // index of atom on which i-th AO is located
+    boost::python::list update_Mull_charges(vector<int>& ao_to_atom_map,
+                                            vector<double>& Zeff,
+                                            vector<double>& Mull_orb_pop_gross,
+                                            vector<double>& Mull_orb_pop_net) {
+      int Nat = Zeff.size();
+      vector<double> Mull_charges_gross(Nat, 0.0);
+      vector<double> Mull_charges_net(Nat, 0.0);
 
-    Mull_charges_gross[a] -= Mull_orb_pop_gross[i];
-    Mull_charges_net[a] -= Mull_orb_pop_net[i];
+      update_Mull_charges(ao_to_atom_map,
+                          Zeff,
+                          Mull_orb_pop_gross,
+                          Mull_orb_pop_net,
+                          Mull_charges_gross,
+                          Mull_charges_net);
 
-  }// for i
+      boost::python::list res;
+      res.append(Mull_charges_gross);
+      res.append(Mull_charges_net);
 
+      return res;
+    }
 
-}// void update_Mull_charges(vector<double>& Mull_orb_pop_gross, vector<double>& Mull_orb_pop_net, ...
+  }  // namespace libcalculators
 
-
-boost::python::list update_Mull_charges
-(vector<int>& ao_to_atom_map, vector<double>& Zeff,
- vector<double>& Mull_orb_pop_gross, vector<double>& Mull_orb_pop_net
-){
-
-  int Nat = Zeff.size();
-  vector<double> Mull_charges_gross(Nat, 0.0);
-  vector<double> Mull_charges_net(Nat, 0.0);
-
-  update_Mull_charges(ao_to_atom_map, Zeff, Mull_orb_pop_gross, Mull_orb_pop_net, Mull_charges_gross, Mull_charges_net);
-
-  boost::python::list res; 
-  res.append(Mull_charges_gross);
-  res.append(Mull_charges_net);
-
-  return res;  
-
-
-}
-
-
-}// namespace libcalculators
-
-}// liblibra
-
+}  // namespace liblibra

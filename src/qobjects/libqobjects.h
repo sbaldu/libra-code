@@ -23,19 +23,14 @@
 #include "SD.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libqobjects namespace
+  namespace libqobjects {
 
-/// libqobjects namespace
-namespace libqobjects{
+    void export_qobjects_objects();
 
+  }  // namespace libqobjects
+}  // namespace liblibra
 
-void export_qobjects_objects();
-
-
-}// namespace libqobjects
-}// namespace liblibra
-
-
-
-#endif// LIB_QOBJECTS_H
+#endif  // LIB_QOBJECTS_H

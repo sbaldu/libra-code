@@ -26,78 +26,108 @@
 #include "../math_linalg/liblinalg.h"
 #include "../qobjects/libqobjects.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace std;
-using namespace liblinalg;
-using namespace libqobjects;
+  using namespace std;
+  using namespace liblinalg;
+  using namespace libqobjects;
 
-/// libbasis namespace
-namespace libbasis{
+  /// libbasis namespace
+  namespace libbasis {
 
+    // Basis.cpp
+    void basis_params_s(int, vector<double>&, vector<double>&);
+    void basis_params_p(int, vector<double>&, vector<double>&);
+    void basis_params_d(int, vector<double>&, vector<double>&);
 
+    void add_basis_ao(std::string Atom_name,
+                      VECTOR& R,
+                      std::string Atom_shell,
+                      int Nzeta,
+                      int Nquant,
+                      double IP,
+                      double exp1,
+                      double exp2,
+                      double coeff1,
+                      double coeff2,
+                      vector<AO>& basis_ao);
 
-// Basis.cpp
-void basis_params_s(int, vector<double>&, vector<double>&);
-void basis_params_p(int, vector<double>&, vector<double>&);
-void basis_params_d(int, vector<double>&, vector<double>&);
+    void add_basis_ao(std::string Atom_name,
+                      VECTOR& R,
+                      std::string Atom_shell,
+                      int Nzeta,
+                      int Nquant,
+                      double IP,
+                      double exp1,
+                      double exp2,
+                      double coeff1,
+                      double coeff2,
+                      boost::python::list basis_ao);
 
-void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int Nzeta, int Nquant,
-                  double  IP, double exp1, double exp2, double coeff1, double coeff2,
-                  vector<AO>& basis_ao);
+    int num_valence_elec(int);
 
-void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int Nzeta, int Nquant,
-                  double  IP, double exp1, double exp2, double coeff1, double coeff2,
-                  boost::python::list basis_ao);
+    // Basis_ovlp.cpp
+    void update_overlap_matrix(
+        int, int, int, const VECTOR&, const VECTOR&, const VECTOR&, vector<AO>&, MATRIX&);
 
+    void MO_overlap(MATRIX& Smo,
+                    vector<AO>& ao_i,
+                    vector<AO>& ao_j,
+                    MATRIX& Ci,
+                    MATRIX& Cj,
+                    vector<int>& active_orb_i,
+                    vector<int>& active_orb_j,
+                    double max_d2);
 
+    void MO_overlap(CMATRIX& Smo,
+                    vector<AO>& ao_i,
+                    vector<AO>& ao_j,
+                    CMATRIX& Ci,
+                    CMATRIX& Cj,
+                    vector<int>& active_orb_i,
+                    vector<int>& active_orb_j,
+                    double max_d2);
 
-int num_valence_elec(int);
+    void MO_overlap(MATRIX& Smo,
+                    MATRIX& Ci,
+                    MATRIX& Cj,
+                    vector<int>& active_orb_i,
+                    vector<int>& active_orb_j,
+                    double max_d2);
 
+    void MO_overlap(CMATRIX& Smo,
+                    CMATRIX& Ci,
+                    CMATRIX& Cj,
+                    vector<int>& active_orb_i,
+                    vector<int>& active_orb_j,
+                    double max_d2);
 
-// Basis_ovlp.cpp
-void update_overlap_matrix(int,int,int,const VECTOR&,const VECTOR&,const VECTOR&, vector<AO>&,MATRIX&);
+    complex<double> SD_overlap(SD& sd_i, SD& sd_j);
 
-void MO_overlap(MATRIX& Smo, vector<AO>& ao_i, vector<AO>& ao_j, MATRIX& Ci, MATRIX& Cj,
- vector<int>& active_orb_i, vector<int>& active_orb_j, double max_d2);
+    CMATRIX SD_overlap(vector<SD>& sd_i, vector<SD>& sd_j);
 
-void MO_overlap(CMATRIX& Smo, vector<AO>& ao_i, vector<AO>& ao_j, CMATRIX& Ci, CMATRIX& Cj,
- vector<int>& active_orb_i, vector<int>& active_orb_j, double max_d2);
+    void SD_overlap(CMATRIX& SD_ovlp, vector<SD>& sd_i, vector<SD>& sd_j);
 
-void MO_overlap(MATRIX& Smo, MATRIX& Ci, MATRIX& Cj, 
- vector<int>& active_orb_i, vector<int>& active_orb_j, double max_d2);
+    // Basis_map.cpp
+    void show_mapping(const vector<vector<int> >&);
 
-void MO_overlap(CMATRIX& Smo, CMATRIX& Ci, CMATRIX& Cj,
- vector<int>& active_orb_i, vector<int>& active_orb_j, double max_d2);
+    // Basis_nac.cpp
+    void update_derivative_coupling_matrix(int x_period,
+                                           int y_period,
+                                           int z_period,
+                                           const VECTOR& t1,
+                                           const VECTOR& t2,
+                                           const VECTOR& t3,
+                                           vector<vector<int> >& atom_to_ao_map,
+                                           vector<int>& ao_to_atom_map,
+                                           vector<AO>& basis_ao,
+                                           int c,
+                                           MATRIX& Dao_x,
+                                           MATRIX& Dao_y,
+                                           MATRIX& Dao_z);
 
+  }  //namespace libbasis
+}  //namespace liblibra
 
-complex<double> SD_overlap(SD& sd_i, SD& sd_j);
-
-CMATRIX SD_overlap(vector<SD>& sd_i, vector<SD>& sd_j);
-
-void SD_overlap(CMATRIX& SD_ovlp, vector<SD>& sd_i, vector<SD>& sd_j);
-
-
-
-// Basis_map.cpp
-void show_mapping(const vector<vector<int> >&);
-
-
-// Basis_nac.cpp
-void update_derivative_coupling_matrix
-(int x_period,int y_period,int z_period,const VECTOR& t1, const VECTOR& t2, const VECTOR& t3,
- vector< vector<int> >& atom_to_ao_map, vector<int>& ao_to_atom_map,
- vector<AO>& basis_ao, int c, MATRIX& Dao_x, MATRIX& Dao_y, MATRIX& Dao_z
-);
-
-
-
-
-}//namespace libbasis
-}//namespace liblibra
-
-#endif // BASIS_H
-
-
+#endif  // BASIS_H

@@ -31,33 +31,29 @@
 
 #include "ivr.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libivr namespace
-namespace libivr{
+  /// libivr namespace
+  namespace libivr {
 
+    MATRIX divm(MATRIX& M, MATRIX& mass) {
+      int n = M.n_rows;
 
+      MATRIX res(n, n);
 
-MATRIX divm(MATRIX& M, MATRIX& mass){
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          res.set(i, j, M.get(i, j) / mass.get(i, i));
+        }
+      }
 
-  int n = M.n_rows;
-
-  MATRIX res(n,n);
-
-  for(int i=0;i<n;i++){
-    for(int j=0;j<n;j++){
-      res.set(i,j,  M.get(i,j)/mass.get(i,i) );
+      return res;
     }
-  }
 
-  return res;
-}
-
-
-void Integrator(MATRIX& q, MATRIX& p, vector<MATRIX>& M, double& action, MATRIX& mass, double dt){
-/**
+    void Integrator(
+        MATRIX& q, MATRIX& p, vector<MATRIX>& M, double& action, MATRIX& mass, double dt) {
+      /**
   \brief Symplectic integrator
 
   \param[in/out] q - coordinates in the phase space (Ndof x 1 matrix)
@@ -70,54 +66,51 @@ void Integrator(MATRIX& q, MATRIX& p, vector<MATRIX>& M, double& action, MATRIX&
 
 
 */
-  int Ndof = q.n_rows;
+      int Ndof = q.n_rows;
 
-  action = 0.0;
-  double v = 0.0;        // potential
-  MATRIX dv(Ndof,1);     // derivatives
-  MATRIX d2v(Ndof,Ndof); // 2-nd order derivatives
+      action = 0.0;
+      double v = 0.0;          // potential
+      MATRIX dv(Ndof, 1);      // derivatives
+      MATRIX d2v(Ndof, Ndof);  // 2-nd order derivatives
 
-  const double const1 = 1.0/sqrt(3.0);
-  vector<double> a(4,0.0), b(4,0.0);
-  a[0]  = 0.5 * (1.0 - const1) * dt;
-  a[1]  = const1 * dt;
-  a[2]  =-const1 * dt;
-  a[3]  = 0.5 * (1.0 + const1) * dt;
+      const double const1 = 1.0 / sqrt(3.0);
+      vector<double> a(4, 0.0), b(4, 0.0);
+      a[0] = 0.5 * (1.0 - const1) * dt;
+      a[1] = const1 * dt;
+      a[2] = -const1 * dt;
+      a[3] = 0.5 * (1.0 + const1) * dt;
 
-  b[0]  = 0.0;
-  b[1]  = 0.5 * (0.5 + const1) * dt;
-  b[2]  = 0.5 * dt;
-  b[3]  = 0.5 * (0.5 - const1) * dt;
+      b[0] = 0.0;
+      b[1] = 0.5 * (0.5 + const1) * dt;
+      b[2] = 0.5 * dt;
+      b[3] = 0.5 * (0.5 - const1) * dt;
 
-  // Points
-  for(int j=0;j<4;j++){ 
+      // Points
+      for (int j = 0; j < 4; j++) {
+        if (j > 0) {
+          ///   call vdv(q,v,dv,d2v)  !!! FIXME: Need to connect to the
+          ///                         potential/derivative calculation
 
-   if(j>0){
-      ///   call vdv(q,v,dv,d2v)  !!! FIXME: Need to connect to the 
-      ///                         potential/derivative calculation                                 
+          action = action - b[j] * v;
+          p = p - b[j] * dv;
+          M[3] = M[3] - b[j] * d2v * M[1];
+          M[2] = M[2] - b[j] * d2v * M[0];
 
-      action   = action - b[j] * v;
-      p   = p - b[j] * dv;
-      M[3] = M[3] - b[j] * d2v * M[1];
-      M[2] = M[2] - b[j] * d2v * M[0];
+        }  // if j>0
 
-   }// if j>0
+        double ke = 0.0;  // kinetic energy
 
-   double ke = 0.0; // kinetic energy
+        for (int i = 0; i < Ndof; i++) {
+          ke = ke + 0.5 * p.M[i] * p.M[i] / mass.get(i, i);
+          q.M[i] = q.M[i] + a[j] * p.M[i] / mass.get(i, i);
+        }
+        action = action + a[j] * ke;
 
-   for(int i=0;i<Ndof;i++){
-      ke = ke + 0.5*p.M[i]*p.M[i]/mass.get(i,i);
-      q.M[i] = q.M[i] + a[j] * p.M[i]/mass.get(i,i);
-   }
-   action = action + a[j] * ke;
+        M[1] = M[1] + a[j] * divm(M[3], mass);
+        M[0] = M[0] + a[j] * divm(M[2], mass);
 
-   M[1] = M[1] + a[j] * divm(M[3], mass);
-   M[0] = M[0] + a[j] * divm(M[2], mass);
+      }  // for j
+    }
 
-
-  }// for j
-
-}
-
-}/// namespace libivr
-}/// liblibra
+  }  // namespace libivr
+}  // namespace liblibra

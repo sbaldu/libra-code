@@ -17,34 +17,29 @@
 #include "Basis.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
-using namespace libqobjects;
+  using namespace liblinalg;
+  using namespace libqobjects;
 
+  /// libbasis namespace
+  namespace libbasis {
 
-/// libbasis namespace
-namespace libbasis{
-
-
-void show_mapping(const vector<vector<int> >& at_orbitals){
-/** 
+    void show_mapping(const vector<vector<int> >& at_orbitals) {
+      /** 
   \brief Printing the mapping information
   \param[in] at_orbital The mapping table: at_orbitals[n] is the list of the global indices of the AOs attached to the atom n
 */
 
-  for(int n=0;n<at_orbitals.size();n++){
-  
-    cout<<"List n= "<<n<<" has following entries: ";
-    for(int i=0;i<at_orbitals[n].size();i++){  cout<<at_orbitals[n][i]<<"  ";   }
-    cout<<endl;
+      for (int n = 0; n < at_orbitals.size(); n++) {
+        cout << "List n= " << n << " has following entries: ";
+        for (int i = 0; i < at_orbitals[n].size(); i++) {
+          cout << at_orbitals[n][i] << "  ";
+        }
+        cout << endl;
 
-  }// for n
+      }  // for n
+    }
 
-}
-
-
-}//namespace libbasis
-}//namespace liblibra
-
-
+  }  //namespace libbasis
+}  //namespace liblibra

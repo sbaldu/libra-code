@@ -15,52 +15,104 @@
 #include "../math_specialfunctions/libspecialfunctions.h"
 #include "../math_linalg/liblinalg.h"
 
-
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace libspecialfunctions;
-using namespace liblinalg;
+  using namespace libspecialfunctions;
+  using namespace liblinalg;
 
-namespace libmolint{
+  namespace libmolint {
 
+    double pseudopot02(double C0,
+                       double C2,
+                       double alp,
+                       const VECTOR& R,
+                       int nxa,
+                       int nya,
+                       int nza,
+                       double alp_a,
+                       const VECTOR& Ra,
+                       int nxb,
+                       int nyb,
+                       int nzb,
+                       double alp_b,
+                       const VECTOR& Rb,
+                       int is_normalize,
+                       int is_derivs,
+                       VECTOR& dIdR,
+                       VECTOR& dIdA,
+                       VECTOR& dIdB,
+                       vector<double*>& auxd,
+                       int n_aux);
+    double pseudopot02(double C0,
+                       double C2,
+                       double alp,
+                       const VECTOR& R,
+                       int nxa,
+                       int nya,
+                       int nza,
+                       double alp_a,
+                       const VECTOR& Ra,
+                       int nxb,
+                       int nyb,
+                       int nzb,
+                       double alp_b,
+                       const VECTOR& Rb,
+                       int is_normalize,
+                       int is_derivs,
+                       VECTOR& dIdR,
+                       VECTOR& dIdA,
+                       VECTOR& dIdB);
 
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   int nxa,int nya, int nza, double alp_a, const VECTOR& Ra,
-                   int nxb,int nyb, int nzb, double alp_b, const VECTOR& Rb,
-                   int is_normalize, 
-                   int is_derivs, VECTOR& dIdR, VECTOR& dIdA, VECTOR& dIdB,
-                   vector<double*>& auxd,int n_aux
-                  );
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   int nxa,int nya, int nza, double alp_a, const VECTOR& Ra,
-                   int nxb,int nyb, int nzb, double alp_b, const VECTOR& Rb,
-                   int is_normalize, 
-                   int is_derivs, VECTOR& dIdR, VECTOR& dIdA, VECTOR& dIdB
-                  );
+    boost::python::list pseudopot02(double C0,
+                                    double C2,
+                                    double alp,
+                                    const VECTOR& R,
+                                    int nxa,
+                                    int nya,
+                                    int nza,
+                                    double alp_a,
+                                    const VECTOR& Ra,
+                                    int nxb,
+                                    int nyb,
+                                    int nzb,
+                                    double alp_b,
+                                    const VECTOR& Rb,
+                                    int is_normalize,
+                                    int is_derivs);
 
-boost::python::list pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                                int nxa,int nya, int nza, double alp_a, const VECTOR& Ra,
-                                int nxb,int nyb, int nzb, double alp_b, const VECTOR& Rb,
-                                int is_normalize, int is_derivs
-                               );
+    double pseudopot02(double C0,
+                       double C2,
+                       double alp,
+                       const VECTOR& R,
+                       int nxa,
+                       int nya,
+                       int nza,
+                       double alp_a,
+                       const VECTOR& Ra,
+                       int nxb,
+                       int nyb,
+                       int nzb,
+                       double alp_b,
+                       const VECTOR& Rb,
+                       int is_normalize);
 
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   int nxa,int nya, int nza, double alp_a, const VECTOR& Ra,
-                   int nxb,int nyb, int nzb, double alp_b, const VECTOR& Rb,
-                   int is_normalize
-                  );
+    double pseudopot02(double C0,
+                       double C2,
+                       double alp,
+                       const VECTOR& R,
+                       int nxa,
+                       int nya,
+                       int nza,
+                       double alp_a,
+                       const VECTOR& Ra,
+                       int nxb,
+                       int nyb,
+                       int nzb,
+                       double alp_b,
+                       const VECTOR& Rb);
 
+  }  // namespace libmolint
+}  // namespace liblibra
 
-double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
-                   int nxa,int nya, int nza, double alp_a, const VECTOR& Ra,
-                   int nxb,int nyb, int nzb, double alp_b, const VECTOR& Rb
-                  );
-
-
-
-}// namespace libmolint
-}// namespace liblibra
-
-
-#endif // PSEUDOPOTENTIAL_H
+#endif  // PSEUDOPOTENTIAL_H

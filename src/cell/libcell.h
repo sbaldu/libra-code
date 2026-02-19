@@ -21,14 +21,14 @@
 #include "NList.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libcell namespace
-namespace libcell{
+  /// libcell namespace
+  namespace libcell {
 
-void export_Cell_objects();
+    void export_Cell_objects();
 
-}// namespace libcell
-}// liblibra
+  }  // namespace libcell
+}  // namespace liblibra
 
-#endif //
+#endif  //

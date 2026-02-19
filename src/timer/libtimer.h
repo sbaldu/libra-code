@@ -20,12 +20,10 @@
 #include "Timer.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-void export_timer_objects();
+  void export_timer_objects();
 
+}  // namespace liblibra
 
-}// namespace libtimer
-
-#endif // LIBTIMER_H
-
+#endif  // LIBTIMER_H

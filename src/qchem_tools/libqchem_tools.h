@@ -21,18 +21,14 @@
 #include "DOS.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
+  /// libqchem_tools namespace
+  namespace libqchem_tools {
 
-/// libqchem_tools namespace
-namespace libqchem_tools{
+    void export_qchem_tools_objects();
 
+  }  // namespace libqchem_tools
+}  // namespace liblibra
 
-void export_qchem_tools_objects();
-
-}// namespace libqchem_tools
-}// liblibra
-
-
-#endif // LIBQCHEM_TOOLS_H
-
+#endif  // LIBQCHEM_TOOLS_H

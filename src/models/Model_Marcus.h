@@ -15,18 +15,16 @@
 #include "../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  namespace libmodels {
 
-namespace libmodels{
+    void Marcus_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
+    boost::python::list Marcus_Ham(double x, boost::python::list params_);
 
-void Marcus_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& params_);
-boost::python::list Marcus_Ham(double x, boost::python::list params_);
+  }  // namespace libmodels
+}  // namespace liblibra
 
-
-}// namespace libmodels
-}// liblibra
-
-#endif // MODEL_MARCUS
+#endif  // MODEL_MARCUS

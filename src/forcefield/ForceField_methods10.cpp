@@ -12,21 +12,14 @@
 #include "ForceField.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-//using namespace liblinalg;
-//using namespace libio;
+  //using namespace liblinalg;
+  //using namespace libio;
 
-namespace libforcefield{
+  namespace libforcefield {
 
+    int ForceField::get_cg_parameters(map<string, double>& prms) { return 1; }
 
-
-int ForceField::get_cg_parameters(map<string,double>& prms){
-
-  return 1;
-}
-
-
-}// namespace libforcefield
-}// namespace liblibra
-
+  }  // namespace libforcefield
+}  // namespace liblibra

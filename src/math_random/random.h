@@ -25,62 +25,65 @@
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
-#endif 
+#endif
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace boost::python;
-using namespace std;
+  using namespace boost::python;
+  using namespace std;
 
-/// librandom namespace
-namespace librandom{
+  /// librandom namespace
+  namespace librandom {
 
-class Random{
+    class Random {
+      int fact(int k);
+      double Gamma(double a);
+      void bin(vector<double>& in,
+               double minx,
+               double maxx,
+               double dx,
+               vector<pair<double, double> >& out);
 
-  int fact(int k);
-  double Gamma(double a);
-  void bin(vector<double>& in,double minx,double maxx,double dx,vector< pair<double,double> >& out);
+    public:
+      Random() { srand(time(0)); }
+      ~Random() {
+        ;
+        ;
+      }
 
-  public:
+      // Uniform distribution
+      double uniform(double a, double b);    // the random number of the disctribution below
+      double p_uniform(double a, double b);  // how the distribution should look like
 
-  Random(){   srand(time(0)); }
-  ~Random(){ ;; }
+      // Exponential distribution
+      double exponential(double lambda);
+      double p_exponential(double x, double lambda);
 
+      // Normal (Gaussian) distribution
+      double normal();
+      double p_normal(double x);
 
-  // Uniform distribution
-  double uniform(double a,double b);   // the random number of the disctribution below
-  double p_uniform(double a,double b); // how the distribution should look like
+      // Gamma distribution
+      double gamma(double a);
+      double p_gamma(double a, double x);
 
-  // Exponential distribution
-  double exponential(double lambda);
-  double p_exponential(double x,double lambda);
+      // Beta distribution
+      double beta(double a, double b);
+      double p_beta(double x, double a, double b);
 
-  // Normal (Gaussian) distribution
-  double normal();
-  double p_normal(double x);
+      // Poisson distribution
+      int poiss(double lambda, double t);
+      void poiss(double lambda, double maxT, double dt, vector<pair<double, int> >& out);
+      int poiss1(double lambda);
+      int poiss2(double lambda);
+      double p_poiss(int k, double lambda);  // how the distribution should look like
 
-  // Gamma distribution
-  double gamma(double a);
-  double p_gamma(double a,double x);
+      // Even sampling of n-dimensional Voronoi tessellation-like regions
+      vector<double> voron(int nstates, int active_state);
+    };  // class Random
 
-  // Beta distribution
-  double beta(double a,double b);
-  double p_beta(double x,double a,double b);
+  }  // namespace librandom
+}  // namespace liblibra
 
-  // Poisson distribution
-  int poiss(double lambda,double t);
-  void poiss(double lambda,double maxT,double dt,vector< pair<double,int> >& out);
-  int poiss1(double lambda);
-  int poiss2(double lambda);
-  double p_poiss(int k,double lambda); // how the distribution should look like
-
-  // Even sampling of n-dimensional Voronoi tessellation-like regions
-  vector<double> voron(int nstates, int active_state);
-}; // class Random
-
-
-}// namespace librandom
-}// namespace liblibra
-
-#endif // RANDOM_H
+#endif  // RANDOM_H

@@ -20,19 +20,18 @@
 #include "Hamiltonian_Model.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-/// libhamiltonian namespace
-namespace libhamiltonian{
+  /// libhamiltonian namespace
+  namespace libhamiltonian {
 
-/// libhamiltonian_model namespace
-namespace libhamiltonian_model{
+    /// libhamiltonian_model namespace
+    namespace libhamiltonian_model {
 
-void export_hamiltonian_model_objects();
+      void export_hamiltonian_model_objects();
 
+    }  // namespace libhamiltonian_model
+  }  // namespace libhamiltonian
+}  // namespace liblibra
 
-}// namespace libhamiltonian_model
-}// namespace libhamiltonian
-}// liblibra
-
-#endif// LIB_HAMILTONIAN_MODEL_H
+#endif  // LIB_HAMILTONIAN_MODEL_H

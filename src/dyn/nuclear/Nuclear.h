@@ -20,83 +20,71 @@
 #include "../../math_linalg/liblinalg.h"
 
 /// liblibra namespace
-namespace liblibra{
+namespace liblibra {
 
-using namespace liblinalg;
+  using namespace liblinalg;
 
+  /// libdyn namespace
+  namespace libdyn {
 
-/// libdyn namespace
-namespace libdyn{
+    /// libnuclear namespace
+    namespace libnuclear {
 
-/// libnuclear namespace
-namespace libnuclear{
-
-
-class Nuclear{
-/** 
+      class Nuclear {
+        /** 
   \brief This clas represents a point in a N-dimensional phase space, N = 6*Nnucl
   plus some properties are associated with each projection (coordinate)
 
 */
-  public:
+      public:
+        //------------- Data members ---------------------
+        int nnucl;  ///< the number of nuclear DOFs
 
-  //------------- Data members ---------------------
-  int nnucl;                      ///< the number of nuclear DOFs
+        // Atomic properties
+        vector<double> mass;  ///< (generalized) masses of particles
 
-  // Atomic properties
-  vector<double> mass;            ///< (generalized) masses of particles
+        // Dynamic variables
+        vector<double> q;  ///< nuclear DOFs - these are generalized scalar coordinates
+        vector<double> p;  ///< conjugate momenta
+        vector<double> f;  ///< forces
+        vector<int>
+            ctyp;  ///< coordinate type, for instance one can set 0,1,2 to be x,y,z projections of all atoms, so
+        ///< in this case ctyp will be: [0, 1, 2, 0, 1, 2, 0, 1, 2. ..]
+        ///< or one can set 0 to be the x coordinates of atoms in given fragment, so the ordering may look like:
+        ///< [0, 0, 0, 0, 0, ... 1, 1, 1, 1, 1, ... ]
 
-  // Dynamic variables
-  vector<double> q;               ///< nuclear DOFs - these are generalized scalar coordinates 
-  vector<double> p;               ///< conjugate momenta
-  vector<double> f;               ///< forces
-  vector<int> ctyp;               ///< coordinate type, for instance one can set 0,1,2 to be x,y,z projections of all atoms, so
-                                  ///< in this case ctyp will be: [0, 1, 2, 0, 1, 2, 0, 1, 2. ..]
-                                  ///< or one can set 0 to be the x coordinates of atoms in given fragment, so the ordering may look like:
-                                  ///< [0, 0, 0, 0, 0, ... 1, 1, 1, 1, 1, ... ]
+        //------------- Constructors ----------------------
+        Nuclear();
+        Nuclear(int _nnucl);
+        Nuclear(const Nuclear&);
+        ~Nuclear();
 
+        void propagate_p(int i, double dt);
+        void propagate_p(double dt);
+        void propagate_p(double dt, vector<int>& active);
 
+        void scale_p(int i, double scl);
+        void scale_p(double scl);
+        void scale_p(double scl, vector<int>& active);
 
-  //------------- Constructors ----------------------
-  Nuclear();
-  Nuclear(int _nnucl);
-  Nuclear(const Nuclear&);
- ~Nuclear();
+        void propagate_q(int i, double dt);
+        void propagate_q(double dt);
+        void propagate_q(double dt, vector<int>& active);
 
-  void propagate_p(int i,double dt);
-  void propagate_p(double dt);
-  void propagate_p(double dt,vector<int>& active);
+        void scale_q(int i, double scl);
+        void scale_q(double scl);
+        void scale_q(double scl, vector<int>& active);
 
-  void scale_p(int i,double scl);
-  void scale_p(double scl);
-  void scale_p(double scl,vector<int>& active);
+        friend bool operator==(const Nuclear& n1, const Nuclear& n2) { return &n1 == &n2; }
+        friend bool operator!=(const Nuclear& n1, const Nuclear& n2) {
+          return !(n1 == n2);  // only compare addresses
+        }
+      };
 
-  void propagate_q(int i,double dt);
-  void propagate_q(double dt);
-  void propagate_q(double dt,vector<int>& active);
+      typedef std::vector<Nuclear> NuclearList;  ///< Type containing the vector of Nuclear objects
 
-  void scale_q(int i,double scl);
-  void scale_q(double scl);
-  void scale_q(double scl,vector<int>& active);
+    }  // namespace libnuclear
+  }  // namespace libdyn
+}  // namespace liblibra
 
-  friend bool operator == (const Nuclear& n1, const Nuclear& n2){
-    return &n1 == &n2;
-  }
-  friend bool operator != (const Nuclear& n1, const Nuclear& n2){
-    return !(n1 == n2);  // only compare addresses
-  }
-
-
-
-  
-};
-
-typedef std::vector< Nuclear > NuclearList; ///< Type containing the vector of Nuclear objects
-
-
-
-} // libnuclear
-} // libdyn
-}// liblibra
-
-#endif // NUCLEAR_H
+#endif  // NUCLEAR_H
