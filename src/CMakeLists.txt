@@ -12,8 +12,18 @@ ADD_LIBRARY(pch_stat STATIC ${PCH_SRC})
 target_precompile_headers(pch PUBLIC ${PCH_SRC}) # With PUBLIC they will be used by targets using this target
 target_precompile_headers(pch_stat PUBLIC ${PCH_SRC}) # With PUBLIC they will be used by targets using this target
 
+# CMake adds -Dpch_EXPORTS to SHARED libraries by default. The targets that reuse this
+# PCH (REUSE_FROM pch) define their own <target>_EXPORTS instead, so GCC rejects the PCH
+# ("pch_EXPORTS not defined"). pch.h does not use the symbol, so drop it.
+set_target_properties(pch PROPERTIES DEFINE_SYMBOL "")
 
-#add_compile_definitions(USING_PCH)
+
+# Must be defined before ADD_SUBDIRECTORY: add_compile_definitions only applies to
+# sub-directories added after it. If the targets reusing the PCH do not see the same
+# definition the pch target was built with, GCC rejects the PCH ("USING_PCH not defined").
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16 AND USING_PCH)
+   add_compile_definitions(USING_PCH)
+endif()
 
 TARGET_LINK_LIBRARIES(pch      ${ext_libs} )
 TARGET_LINK_LIBRARIES(pch_stat ${ext_libs} )
@@ -204,7 +214,6 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16 AND USING_PCH)  # Support for PCHs i
    target_precompile_headers(libra_core REUSE_FROM pch) # With PUBLIC they will be used by targets using this target
    target_precompile_headers(libra_core_stat REUSE_FROM pch_stat) # With PUBLIC they will be used by targets using this target
    set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
-   add_compile_definitions(USING_PCH)
 else()
    message(STATUS "No pre-compiled header support")
 endif()
