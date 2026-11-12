@@ -933,7 +933,6 @@ int ForceField::Add_Atom_Record(Atom_Record rec) {
      if the atom record rec is not valid - will not be added.
   *********************************************************************/
   int res = 1;
-  auto sz = static_cast<int>(Atom_Records.size());
 
   int int_types = (rec.is_Atom_ff_int_type);
   int sym_types = (rec.is_Atom_ff_type);
@@ -1341,7 +1340,6 @@ int ForceField::Add_Bond_Record(Bond_Record rec) {
      during check on bond existence
   *********************************************************************/
   int res = 1;
-  int sz = Bond_Records.size();
 
   int int_types = (rec.is_Atom1_ff_int_type && rec.is_Atom2_ff_int_type);
   int sym_types = (rec.is_Atom1_ff_type && rec.is_Atom2_ff_type);
@@ -1383,7 +1381,7 @@ int ForceField::Add_Bond_Record(Bond_Record rec) {
     res = 1;
   } else { // Similar bond record is already defined - try to add new properties
 
-    for (int i = 0; i < bnd_indxs.size(); i++) {
+    for (auto i = 0u; i < bnd_indxs.size(); i++) {
       Bond_Records[bnd_indxs[i]].merge(rec);
     }
     res = 0;
@@ -1627,7 +1625,7 @@ int ForceField::Angle_Record_Index(std::string Atom1_ff_type,
   cout << "In ForceField::Angle_Record_Index\n";
 
   int sz = Angle_Records.size();
-  int cmpr11, cmpr13, cmpr31, cmpr33, cmpr, cmpr2;
+  int cmpr11, cmpr13, cmpr31, cmpr33, cmpr2;
   for (int i = 0; i < sz; i++) {
     cmpr2 = 0;
     if (Angle_Records[i].is_Atom2_ff_type) {
@@ -1671,7 +1669,6 @@ int ForceField::Add_Angle_Record(Angle_Record rec, int order) {
      (that is ijk is not the same as kji) or to treat them similarly
   *********************************************************************/
   int res = 1;
-  int sz = Angle_Records.size();
 
   int int_types = (rec.is_Atom1_ff_int_type && rec.is_Atom2_ff_int_type &&
                    rec.is_Atom3_ff_int_type);
@@ -1714,7 +1711,7 @@ int ForceField::Add_Angle_Record(Angle_Record rec, int order) {
     res = 1;
   } else { // Similar bond record is already defined - try to add new properties
 
-    for (int i = 0; i < ang_indxs.size(); i++) {
+    for (auto i = 0u; i < ang_indxs.size(); i++) {
       Angle_Records[ang_indxs[i]].merge(rec);
     }
     res = 0;
@@ -2134,7 +2131,6 @@ int ForceField::Add_Dihedral_Record(Dihedral_Record rec, int order) {
   treat them similarly
   *********************************************************************/
   int res = 1;
-  int sz = Dihedral_Records.size();
 
   int int_types = (rec.is_Atom1_ff_int_type && rec.is_Atom2_ff_int_type &&
                    rec.is_Atom3_ff_int_type && rec.is_Atom4_ff_int_type);
@@ -2177,7 +2173,7 @@ int ForceField::Add_Dihedral_Record(Dihedral_Record rec, int order) {
     res = 1;
   } else { // Similar bond record is already defined - try to add new properties
 
-    for (int i = 0; i < dih_indxs.size(); i++) {
+    for (auto i = 0u; i < dih_indxs.size(); i++) {
       Dihedral_Records[dih_indxs[i]].merge(rec);
     }
     res = 0;
@@ -2282,18 +2278,14 @@ int ForceField::Add_Improper_Record(Dihedral_Record rec) {
 
   *********************************************************************/
   int res = 1;
-  int sz = Improper_Records.size();
 
   int int_types = (rec.is_Atom1_ff_int_type && rec.is_Atom2_ff_int_type &&
                    rec.is_Atom3_ff_int_type && rec.is_Atom4_ff_int_type);
-  int sym_types = (rec.is_Atom1_ff_type && rec.is_Atom2_ff_type &&
-                   rec.is_Atom3_ff_type && rec.is_Atom4_ff_type);
 
-  int is_dt_indx = rec.is_Dihedral_type_index;
-  int dt_indx = 0;
-  if (is_dt_indx) {
-    dt_indx = rec.Dihedral_type_index;
-  }
+  // int dt_indx = 0;
+  // if (is_dt_indx) {
+  //   dt_indx = rec.Dihedral_type_index;
+  // }
 
   vector<int> dih_indxs;
   int last_indx;
@@ -2329,7 +2321,7 @@ int ForceField::Add_Improper_Record(Dihedral_Record rec) {
   } else { // Similar improper record is already defined - try to add new
            // properties
 
-    for (int i = 0; i < dih_indxs.size(); i++) {
+    for (auto i = 0u; i < dih_indxs.size(); i++) {
       Improper_Records[dih_indxs[i]].merge(rec);
     }
     res = 0;
@@ -2392,7 +2384,6 @@ int ForceField::Add_Fragment_Record(Fragment_Record rec) {
   not valid - will not be added.
   *********************************************************************/
   int res = 1;
-  int sz = Fragment_Records.size();
 
   int int_types = (rec.is_Fragment_ff_int_type);
   int sym_types = (rec.is_Fragment_ff_type);
@@ -2424,7 +2415,7 @@ int ForceField::Add_Fragment_Record(Fragment_Record rec) {
     res = 1;
   } else { // Similar atom record is already defined - try to add new properties
 
-    for (int i = 0; i < at_indxs.size(); i++) {
+    for (auto i = 0u; i < at_indxs.size(); i++) {
       Fragment_Records[at_indxs[i]].merge(rec);
     }
     res = 0;

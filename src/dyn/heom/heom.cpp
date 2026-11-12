@@ -52,7 +52,6 @@ int compute_nn_tot(int d, int max_tier){
 
 */
 
-  int i;
   double tmp = 1.0;
 
   for(int i=1; i<=d; i++){
@@ -186,9 +185,6 @@ void gen_hierarchy(int d, int max_tier, int verbosity,
     }
 
     for(i=0; i<num_nodes; i++){
-        int L = all_coordinates[i][0];
-        int ipos = all_coordinates[i][1];
-
         for(k=0; k<d; k++){
             vector<int> np = all_vectors[i];
             np[k] += 1;
@@ -210,7 +206,7 @@ void gen_hierarchy(int d, int max_tier, int verbosity,
     if(verbosity>0){
         cout<<"Number of nodes = "<<num_nodes<<endl;
         cout<<"Tier nums: \n";
-        for(i=0; i<tier_nums.size(); i++){
+        for(auto i=0u; i<tier_nums.size(); i++){
             cout<<"Tier "<<i<<" nums = "<<tier_nums[i]<<endl;
         }
     }
@@ -298,12 +294,11 @@ CMATRIX compute_deriv_n(int n, vector<CMATRIX>& rho, CMATRIX& Ham, vector<CMATRI
   
 */
 
-  int nn_tot = rho.size();
   int nquant = rho[0].n_cols;
 
   int KK = gamma_matsubara.size() - 1; // KK+1 is the number of Matsubara freqs.
 
-  int m,k,d,nplus,nminus;
+  int m,k,nplus,nminus;
   CMATRIX drho_n_dt(nquant, nquant);
   CMATRIX commut(nquant, nquant);
   CMATRIX term1(nquant, nquant);
@@ -317,8 +312,6 @@ CMATRIX compute_deriv_n(int n, vector<CMATRIX>& rho, CMATRIX& Ham, vector<CMATRI
 
   double scaling_factor = 1.0;
   complex<double> iota(0.0, 1.0);
-  double kB = boltzmann/hartree;
- 
 
   if(nonzero[n]==1){
     //=============== Liouvillian =====================
@@ -443,7 +436,7 @@ CMATRIX compute_heom_derivatives(CMATRIX& RHO, bp::dict prms){
     int do_scale = 1;
 
 
-    int i, n;
+    int i;
     int nquant = RHO.n_cols;
     int nn_tot = int(RHO.n_rows / nquant);
 
@@ -621,7 +614,7 @@ void setup_bath(int KK, double eta, double gamma, double temperature,
   temperature - the bath temperature [K]
 */
 
-  int k, i;
+  int k;
 
   complex<double> one(1.0, 0.0);
   complex<double> iota(0.0, 1.0);
@@ -657,7 +650,7 @@ void unpack_mtx(vector<CMATRIX>& rho_unpacked, CMATRIX& RHO){
     int nquant = RHO.n_cols;
     int num_adm = int(RHO.n_rows / nquant);
 
-    if(rho_unpacked.size() != num_adm ) {   cout<<"ERROR in unpack_rho: \n"; exit(0); }
+    if(rho_unpacked.size() != static_cast<std::size_t>(num_adm)) {   cout<<"ERROR in unpack_rho: \n"; exit(0); }
     
     vector<int> sub_x(nquant, 0);
     vector<int> sub_y(nquant, 0);
@@ -680,7 +673,7 @@ void pack_mtx(vector<CMATRIX>& rho_unpacked, CMATRIX& RHO){
     int nquant = RHO.n_cols;
     int num_adm = int(RHO.n_rows / nquant);
 
-    if(rho_unpacked.size() != num_adm) {   cout<<"ERROR in pack_rho: \n"; exit(0); }
+    if(rho_unpacked.size() != static_cast<std::size_t>(num_adm)) {   cout<<"ERROR in pack_rho: \n"; exit(0); }
     
 
     vector<int> sub_x(nquant, 0);

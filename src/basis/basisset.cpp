@@ -189,9 +189,7 @@ int basisset_struct::read_basisset_file(std::string fileName,int print_raw){
   /*  now create basis set by reading buf2 */
 
 //  memset(result, 0, sizeof(basisset_struct));
-  int noOfAtomTypes = 0;
   state = ATOM_EXPECTED;
-  int lineNo = 0;
   int lineConsumed = 1;
   ergo_real currExponent = 0;
 
@@ -204,7 +202,6 @@ int basisset_struct::read_basisset_file(std::string fileName,int print_raw){
         break;
       }
       lineConsumed = 0;
-      lineNo++;
     }
 
 
@@ -220,7 +217,6 @@ int basisset_struct::read_basisset_file(std::string fileName,int print_raw){
     switch(state) {
     case ATOM_EXPECTED:
       if(line[0] == 'a' || line[0] == 'A') {
-        noOfAtomTypes++;
         atomType = atoi(line+1);
 //        int atomType = atoi(line+1);
 //        if(print_raw) 
@@ -359,7 +355,6 @@ int basisset_struct::read_basisset_file(std::string fileName,int print_raw){
 //	      do_output(LOG_CAT_ERROR, LOG_AREA_INTEGRALS, "reading error when continuing shell data.");
 	      return -1;
 	    }
-	    lineNo++;
 	    idx = 0;
 	    while(line[idx] && isspace(line[idx]))  idx++;
 	  }

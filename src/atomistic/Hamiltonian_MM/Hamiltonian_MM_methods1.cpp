@@ -1031,7 +1031,6 @@ double Hamiltonian_MM::calculate(int call_type,int& update_displ2){
     double SW = 1.0;
     VECTOR dSW; dSW = 0.0;
     double en = 0.0;
-    double d12;
     if(Box==NULL){
 
     if(is_active){  // This also excludes self-pairs!

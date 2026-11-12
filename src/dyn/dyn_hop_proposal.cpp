@@ -61,7 +61,7 @@ MATRIX hopping_probabilities_fssh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
 
 */
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
+  int i,j;
   double sum,g_ij,argg;
 
   double dt = prms.dt;
@@ -169,7 +169,7 @@ vector<double> hopping_probabilities_fssh(dyn_control_params& prms, CMATRIX& den
 
 */
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
+  int i,j;
   double sum,g_ij,argg;
 
   double dt = prms.dt;
@@ -280,8 +280,8 @@ MATRIX hopping_probabilities_gfsh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
 */
 
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
-  double sum,g_ij,argg;
+  int i,j;
+  double g_ij,argg;
 
   double dt = prms.dt;
   double T = prms.Temperature;
@@ -397,8 +397,8 @@ vector<double> hopping_probabilities_gfsh(dyn_control_params& prms, CMATRIX& den
 */
 
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
-  double sum,g_ij,argg;
+  int i,j;
+  double g_ij,argg;
 
   double dt = prms.dt;
   double T = prms.Temperature;
@@ -496,13 +496,7 @@ vector<double> hopping_probabilities_gfsh_orig(dyn_control_params& prms, CMATRIX
 
 */
 
-  const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
-  double sum,g_ij,argg;
-
-  double dt = prms.dt;
-  double T = prms.Temperature;
-  int use_boltz_factor = prms.use_boltz_factor;
+  int i,j;
 
 
   int nstates = denmat.n_rows;
@@ -592,13 +586,8 @@ vector<double> hopping_probabilities_fssh2(dyn_control_params& prms, CMATRIX& de
 
 */
 
-  const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
-  double sum,g_ij,argg;
-
-  double dt = prms.dt;
-  double T = prms.Temperature;
-  int use_boltz_factor = prms.use_boltz_factor;
+  int i,j;
+  double sum,g_ij;
 
   int version = prms.fssh2_revision;
 
@@ -677,10 +666,9 @@ MATRIX hopping_probabilities_mssh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
 */
 
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
-  double sum,g_ij,argg;
+  int i,j;
+  double g_ij,argg;
 
-  double dt = prms.dt;
   double T = prms.Temperature;
   int use_boltz_factor = prms.use_boltz_factor;
 
@@ -735,10 +723,9 @@ vector<double> hopping_probabilities_mssh(dyn_control_params& prms, CMATRIX& den
 */
 
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k;
-  double sum,g_ij,argg;
+  int i;
+  double argg;
 
-  double dt = prms.dt;
   double T = prms.Temperature;
   int use_boltz_factor = prms.use_boltz_factor;
 
@@ -974,7 +961,7 @@ vector<double> hopping_probabilities_zn(nHamiltonian* ham, nHamiltonian* ham_pre
       A nstates-vector of hopping probabilities to all states from the current active state
 
 */
-  int i,j,k;
+  int i,j;
 
   int ndof = ham->nnucl;
   int nstates = ham->ndia; 
@@ -1128,7 +1115,7 @@ vector<MATRIX> hop_proposal_probabilities(dyn_control_params& prms,
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
   int nst = C.n_rows;    
-  int traj, dof, i;
+  int traj, i;
   int isNBRA = prms.isNBRA;
 
 
@@ -1226,7 +1213,7 @@ nHamiltonian& ham, nHamiltonian& ham_prev){
 
   int isNBRA = prms.isNBRA;
 
-  int traj, dof, i;
+  int traj, i;
 
   vector<int> nucl_stenc_x(ndof, 0); for(i=0;i<ndof;i++){  nucl_stenc_x[i] = i; }
   vector<int> nucl_stenc_y(1, 0); 
@@ -1338,12 +1325,10 @@ nHamiltonian& ham, nHamiltonian& ham_prev){
     else if(prms.tsh_method == 8){ // FSSH3
 
       if(prms.rep_sh==1){
-        CMATRIX& dm_prev = *dyn_var.dm_adi_prev[traj];
         if(prms.rep_tdse==2){ dm = *dyn_var.dm_dia_prev[traj]; }
 
         //cout<<"Coordinates\n";    dyn_var.q->show_matrix();
 
-        CMATRIX& U = *dyn_var.proj_adi[traj];
         CMATRIX dm_prev_trans(*dyn_var.dm_adi_prev[traj]);
   
         // |psi'> = |psi> T =>  Hvib' = <psi'|H\hat|psi'> = T_new.H() * Hvib * T_new;
@@ -1356,7 +1341,6 @@ nHamiltonian& ham, nHamiltonian& ham_prev){
         g[traj] = hopping_probabilities_fssh3(prms, dm, dm_prev_trans, dyn_var.act_states[traj], dyn_var.fssh3_errors[traj]);
       }
       else if(prms.rep_sh==0){
-        CMATRIX& dm_prev = *dyn_var.dm_dia_prev[traj];
         CMATRIX dm_prev_trans(*dyn_var.dm_dia_prev[traj]);
         g[traj] = hopping_probabilities_fssh3(prms, dm, dm_prev_trans, dyn_var.act_states_dia[traj], dyn_var.fssh3_errors[traj]);
       }

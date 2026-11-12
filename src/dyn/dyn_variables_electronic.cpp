@@ -163,7 +163,7 @@ void dyn_variables::update_amplitudes(dyn_control_params& dyn_params){
 
    C_adi = U.H() C_dia
 */
-  int i,j;
+  int i;
   CMATRIX cd(ndia, 1);
   CMATRIX ca(nadi, 1);
 
@@ -474,7 +474,7 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
   check_input(params, default_params, critical_params);
 
 
-  int i, traj;
+  int traj;
   double ksi;
   int init_type = -1;
   int istate = -1;
@@ -521,17 +521,17 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
   }
 
   if(init_type==2 || init_type==3){
-    if(istates.size()!=ndia && rep==0){
+    if(istates.size()!=static_cast<std::size_t>(ndia) && rep==0){
       cout<<"ERROR in init_amplitudes: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
       exit(0);
     }
-    if(istates.size()!=nadi && rep==1){
+    if(istates.size()!=static_cast<std::size_t>(nadi) && rep==1){
       cout<<"ERROR in init_amplitudes: the istates array is of length = "<<istates.size()<<", but should be of length "<<nadi<<"\n";
       exit(0);
     }
 
     double summ = 0.0;
-    for(i=0; i<istates.size(); i++){  summ += istates[i]; }
+    for(auto i=0u; i<istates.size(); i++){  summ += istates[i]; }
     if( fabs(summ - 1.0) > 1e-5 ){
       cout<<"ERROR in init_amplitudes: the sum of the entries in the istates array is "<<summ<<", but should be 1.0\n";
       exit(0);
@@ -574,7 +574,7 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
 
       }
 
-      for(i=0; i<istates.size(); i++){
+      for(auto i=0u; i<istates.size(); i++){
           double ampl = sqrt( istates[i] );
 
           if(rep==0){ ampl_dia->set(i, traj, complex<double>(ampl, 0.0) );  }
@@ -590,7 +590,7 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
 
       }
 
-      for(i=0; i<istates.size(); i++){
+      for(auto i=0u; i<istates.size(); i++){
           ksi = rnd.uniform(0.0, 1.0);
           complex<double> ampl(cos(2.0*M_PI*ksi), sin(2.0*M_PI*ksi) );
           ampl = ampl * sqrt( istates[i] );
@@ -608,7 +608,7 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
       }
 
       istates = rnd.voron(istates.size(), istate);
-      for(i=0; i<istates.size(); i++){
+      for(auto i=0u; i<istates.size(); i++){
         cout<<"Voron_mag["<<i<<"]= "<<istates[i]<<endl;
         ksi = rnd.uniform(0.0, 1.0);
         complex<double> ampl(cos(2.0*M_PI*ksi), sin(2.0*M_PI*ksi) );
@@ -653,8 +653,7 @@ void dyn_variables::init_density_matrix(bp::dict _params){
   check_input(params, default_params, critical_params);
 
 
-  int i, traj;
-  double ksi;
+  int traj;
   int init_dm_type = -1;
   int rep = -1;
   int verbosity = 0;
@@ -757,13 +756,12 @@ void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
 
   check_input(params, default_params, critical_params);
 
-  int i, traj;
+  int traj;
   double ksi;
   int init_type = -1;
   int istate = -1;
   vector<double> istates;
   int rep = -1;
-  int verbosity = 0;
 
 
   std::string key;
@@ -775,7 +773,6 @@ void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
     else if(key=="istate") {  istate = bp::extract<int>(params.values()[i]); }
     else if(key=="istates") {  istates = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
     else if(key=="rep") {  rep = bp::extract<int>(params.values()[i]); }
-    else if(key=="verbosity") {  verbosity = bp::extract<int>(params.values()[i]); }
 
   }
 
@@ -803,17 +800,17 @@ void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
   }
 
   if(init_type==2 || init_type==3){
-    if(istates.size()!=ndia && rep==0){
+    if(istates.size()!=static_cast<std::size_t>(ndia) && rep==0){
       cout<<"ERROR in init_active_states: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
       exit(0);
     }
-    if(istates.size()!=nadi && rep==1){
+    if(istates.size()!=static_cast<std::size_t>(nadi) && rep==1){
       cout<<"ERROR in init_active_states: the istates array is of length = "<<istates.size()<<", but should be of length "<<nadi<<"\n";
       exit(0);
     }
 
     double summ = 0.0;
-    for(i=0; i<istates.size(); i++){  summ += istates[i]; }
+    for(auto i=0u; i<istates.size(); i++){  summ += istates[i]; }
     if( fabs(summ - 1.0) > 1e-5 ){
       cout<<"ERROR in init_active_states: the sum of the entries in the istates array is "<<summ<<", but should be 1.0\n";
       exit(0);
@@ -845,7 +842,7 @@ void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
     CMATRIX pop_dia(ndia, ndia);
 
     for(traj=0; traj<ntraj; traj++){
-      i = dia_act_states_temp[traj]; // active diabatic state
+      auto i = dia_act_states_temp[traj]; // active diabatic state
       pop_dia *= 0.0; pop_dia.set(i, i, complex<double>(1.0, 0.0) );
 
       // The following transformation is correct only for S_dia = 1
@@ -884,13 +881,12 @@ void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
 
   check_input(params, default_params, critical_params);
 
-  int i, traj;
+  int traj;
   double ksi;
   int init_type = -1;
   int istate = -1;
   vector<double> istates;
   int rep = -1;
-  int verbosity = 0;
 
 
   std::string key;
@@ -902,7 +898,6 @@ void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
     else if(key=="istate") {  istate = bp::extract<int>(params.values()[i]); }
     else if(key=="istates") {  istates = liblibra::libconverters::Py2Cpp<double>( bp::extract< bp::list >(params.values()[i]) ); }
     else if(key=="rep") {  rep = bp::extract<int>(params.values()[i]); }
-    else if(key=="verbosity") {  verbosity = bp::extract<int>(params.values()[i]); }
 
   }
 
@@ -930,17 +925,17 @@ void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
   }
 
   if(init_type==2 || init_type==3){
-    if(istates.size()!=ndia && rep==0){
+    if(istates.size()!=static_cast<std::size_t>(ndia) && rep==0){
       cout<<"ERROR in init_active_states_dia: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
       exit(0);
     }
-    if(istates.size()!=ndia && rep==1){
+    if(istates.size()!=static_cast<std::size_t>(ndia) && rep==1){
       cout<<"ERROR in init_active_states_dia: the istates array is of length = "<<istates.size()<<", but should be of length "<<ndia<<"\n";
       exit(0);
     }
 
     double summ = 0.0;
-    for(i=0; i<istates.size(); i++){  summ += istates[i]; }
+    for(auto i=0u; i<istates.size(); i++){  summ += istates[i]; }
     if( fabs(summ - 1.0) > 1e-5 ){
       cout<<"ERROR in init_active_states_dia: the sum of the entries in the istates array is "<<summ<<", but should be 1.0\n";
       exit(0);
@@ -972,7 +967,7 @@ void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
     CMATRIX pop_dia(ndia, ndia);
 
     for(traj=0; traj<ntraj; traj++){
-      i = act_states_temp[traj]; // active diabatic state
+      auto i = act_states_temp[traj]; // active diabatic state
       pop_adi *= 0.0; pop_adi.set(i, i, complex<double>(1.0, 0.0) );
 
       // The following transformation is correct only for S_dia = 1
@@ -1047,8 +1042,6 @@ void dyn_variables::init_auxiliary_variables(bp::dict _params, Random& rnd){
   vector<double> _Y_aux_var;
   vector<double> _P_aux_var;
   vector<double> _M_aux_var;
-
-  int idof;
 
   std::string key;
   for(int i=0;i<len(params.values());i++){
@@ -1171,11 +1164,9 @@ void dyn_variables:: set_active_states_diff_rep(int rep_sh, Random& rnd){
   Tempelaar, R.; Reichman, D. R. Generalization of Fewest-Switches Surface Hopping for Coherences. 
   The Journal of Chemical Physics 2018, 148 (10), 102309. https://doi.org/10.1063/1.5000843
 */
-  int sz, i, j, traj;
+  int i, j, traj;
   double ksi; 
-  if(rep_sh==0){ sz = ndia; }
-  else if(rep_sh==1){ sz = nadi; }
-  else{ 
+  if(rep_sh!=0 && rep_sh!=1){ 
     cout<<"Wrong representation = "<<rep_sh<<"\nExiting...\n";
     exit(0);
   }

@@ -169,8 +169,6 @@ int delta(vector<int>& A,vector<int>& B,int& a,int& b){
   int i;
   int res = 1;
   int sz = A.size();
-  int nA = 0; // number of elements in A which do not exist in B
-  int nB = 0; // number of elements in B which do not exist in A
   std::vector<int> aA, aB, aC; // modules of A and B and overlap C
 
   for(i=0;i<sz;i++){ // the size of A and B is assumed to be the same
@@ -383,7 +381,7 @@ int is_included(vector<int>& vec1, vector<vector<int> >& vec){
 ******************************************************************/
 
   int res = 0;
-  for(int i=0; i<vec.size(); i++){
+  for(auto i=0u; i<vec.size(); i++){
     if(is_equal(vec1, vec[i])){ res = 1; break; }
   }
   return res;
@@ -564,11 +562,10 @@ void check_input(boost::python::dict params, boost::python::dict default_params,
 
 ******************************************************************/
 
-  int i,j, is_found;
   std::string key;
 
 
-  for(i=0;i<len(critical_params);i++){
+  for(auto i=0;i<len(critical_params);i++){
       key = boost::python::extract<std::string>(critical_params[i]);
 
       if(!params.has_key(key)){
@@ -578,7 +575,7 @@ void check_input(boost::python::dict params, boost::python::dict default_params,
   }
 
 
-  for(i=0;i<len(default_params.keys());i++){
+  for(auto i=0;i<len(default_params.keys());i++){
       key = boost::python::extract<std::string>(default_params.keys()[i]);
 
       if(!params.has_key(key)){

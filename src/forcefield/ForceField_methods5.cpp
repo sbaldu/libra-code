@@ -73,10 +73,9 @@ int ForceField::get_oop_parameters(string ff_type1, string ff_type2, /*Inputs*/
   0 - otherwise 
 ******************************************************************/
 
-  double Vphi,Vphi1,Vphi2,Vphi3,phi0,K,C0,C1,C2;
-  int n,opt;
-  int is_Vphi,is_Vphi1,is_Vphi2,is_Vphi3,is_phi0,is_n,is_opt, is_K, is_C0, is_C1, is_C2;
-  is_Vphi = is_Vphi1 = is_Vphi2 = is_Vphi3 = is_phi0 = is_n = is_opt = is_K = is_C0 = is_C1 = is_C2 = 0;
+  double K,C0,C1,C2;
+  int is_Vphi1,is_Vphi2,is_Vphi3,is_phi0,is_n,is_opt, is_K, is_C0, is_C1, is_C2;
+  is_Vphi1 = is_Vphi2 = is_Vphi3 = is_phi0 = is_n = is_opt = is_K = is_C0 = is_C1 = is_C2 = 0;
   int status = 0;
   
   //-------------- Start with looking the whole record ---------------------
@@ -87,34 +86,30 @@ int ForceField::get_oop_parameters(string ff_type1, string ff_type2, /*Inputs*/
   //------------- If not found - apply rules  ------------------------------
   if(ff_dihedral_indx>-1){ // if the record has been found
     // Force constant
-    if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_vphi){
-      Vphi = Dihedral_Records[ff_dihedral_indx].Dihedral_vphi; is_Vphi = 1;
-    }
-    // Force constant
     if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_vphi1){
-      Vphi1 = Dihedral_Records[ff_dihedral_indx].Dihedral_vphi1; is_Vphi1 = 1;
+      is_Vphi1 = 1;
     }
     // Force constant
     if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_vphi2){
-      Vphi2 = Dihedral_Records[ff_dihedral_indx].Dihedral_vphi2; is_Vphi2 = 1;
+      is_Vphi2 = 1;
     }
     // Force constant
     if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_vphi3){
-      Vphi3 = Dihedral_Records[ff_dihedral_indx].Dihedral_vphi3; is_Vphi3 = 1;
+      is_Vphi3 = 1;
     }
     // Phase shift - equilibrium dihedral/torsion angle
     if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_phase){
-      phi0 = Dihedral_Records[ff_dihedral_indx].Dihedral_phase; is_phi0 = 1;
+      is_phi0 = 1;
     }
     // Potntial periodicity/multiplicity
     if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_mult){
-      n = Dihedral_Records[ff_dihedral_indx].Dihedral_mult; is_n = 1;
+      is_n = 1;
     }
 
   }
 
   //------------- Apply rules to calculate missing parameters --------------
-  if(1){  
+  if(true){  
     oop_rule(ff_type1, ff_type2, ff_type3, ff_type4, K, is_K, C0, is_C0, C1, is_C1, C2, is_C2); 
   }
 

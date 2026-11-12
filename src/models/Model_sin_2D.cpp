@@ -37,10 +37,6 @@ void sin_2D_Ham(double x, double y, MATRIX* H,
   if(dH2->n_elts!=4){ std::cout<<"Error in sin_2D_Ham: dH2 matrix must be allocated\n"; exit(0);}
   if(d2H2->n_elts!=4){ std::cout<<"Error in sin_2D_Ham: d2H2 matrix must be allocated\n"; exit(0);}
 
-
-  double e;
-
-
   // Default parameters
   double A = -0.010;  double B = 0.010;
   double C = 0.005;   double D = 0.001;

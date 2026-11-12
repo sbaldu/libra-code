@@ -496,8 +496,6 @@ void export_dyn_decoherence_objects(){
   def("schwartz_2", expt_schwartz_2_v1);
 
 
-  vector<MATRIX> (*expt_Gu_Franco_v1)(dyn_control_params& prms, CMATRIX& amplitudes) = &Gu_Franco;
-
 
   ///================== In dyn_methods_dish.cpp  =======================
 /*
@@ -511,10 +509,6 @@ void export_dyn_decoherence_objects(){
   (dyn_variables& dyn_var, nHamiltonian& ham, vector<MATRIX>& decoherence_rates, 
    dyn_control_params& prms,Random& rnd) = &dish;
   def("dish", expt_dish_v1);
-
-  void (*expt_dish_rev2023_v1)(dyn_variables& dyn_var, nHamiltonian& ham,
-                  vector<MATRIX>& decoherence_rates,
-                  dyn_control_params& prms,Random& rnd) = &dish_rev2023;
 
 
   CMATRIX (*expt_afssh_dzdt_v1)
@@ -782,9 +776,6 @@ void export_dyn_projectors_objects(){
   vector<CMATRIX>& Eadi, vector<CMATRIX>& St, Random& rnd) = &update_projectors;
   def("update_projectors", expt_update_projectors_v1);  
 
-
-  vector< vector<int> > (*expt_compute_permutations_v1)
-  (dyn_control_params& prms, vector<CMATRIX>& Eadi, vector<CMATRIX>& St, Random& rnd) = &compute_permutations;
 
 /*
   vector<CMATRIX> (*expt_compute_projectors_v1)

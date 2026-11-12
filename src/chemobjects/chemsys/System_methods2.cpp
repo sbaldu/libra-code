@@ -599,7 +599,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
   It connects them. Other connections also taken into account - thus
   we create not only bonds (pairs of atoms), but also angles, dihedrals, etc.
 */
-  int i,adj,adj1,adj2;
+  int i;
   // Here are some control parameters which then should be made user-definable
   // They control if we want to exclude 1,2, 1,3 and 1,4 - pairs from the pair list
   // This is related to force field specifications
@@ -610,8 +610,6 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
 
   // Check if this bond already exists in the object space
   int is_exist = 0;
-  int is_included;
-  int n_bonds = Number_of_bonds;
   is_exist = (Find_Bond(at1.globAtom_Index,at2.globAtom_Index)>-1);
 
   if(!is_exist){ // Create only if this bond is not yet defined 
@@ -627,7 +625,6 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
      // First - look for biggest, smallest and the last indexes
      int max  = (at1.globMolecule_Index>at2.globMolecule_Index)?at1.globMolecule_Index:at2.globMolecule_Index;
      int min  = (at1.globMolecule_Index<at2.globMolecule_Index)?at1.globMolecule_Index:at2.globMolecule_Index;
-     int last_mol = Number_of_molecules-1;
  
      //###################### Step 1 ############################################
      // Merge max molecule to min one = Copy and Rename (Reindex)    
@@ -754,37 +751,37 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
 
    //----------------- Angles --------------------
    // Angles of type at1.Atom_Index - at2.Atom_Index - atoms adjacent to at2
-   for(adj=0;adj<at2.globAtom_Adjacent_Atoms.size();adj++){
+   for(auto adj=0u;adj<at2.globAtom_Adjacent_Atoms.size();adj++){
      int adj_indx = at2.globAtom_Adjacent_Atoms[adj];
      create_angle(at1.globAtom_Index,at2.globAtom_Index,adj_indx,exclude13);
    }
    // Angles of type at2.Atom_Index - at1.Atom_Index - atoms adjacent to at1
-   for(adj=0;adj<at1.globAtom_Adjacent_Atoms.size();adj++){
+   for(auto adj=0u;adj<at1.globAtom_Adjacent_Atoms.size();adj++){
      int adj_indx = at1.globAtom_Adjacent_Atoms[adj];
      create_angle(adj_indx,at1.globAtom_Index,at2.globAtom_Index,exclude13);
    }
   
    //----------------- Dihedrals -------------------
    // Dihedrals of type adj1 - at1 - at2 - adj2
-   for(adj1=0;adj1<at1.globAtom_Adjacent_Atoms.size();adj1++){
-     for(adj2=0;adj2<at2.globAtom_Adjacent_Atoms.size();adj2++){
+   for(auto adj1=0u;adj1<at1.globAtom_Adjacent_Atoms.size();adj1++){
+     for(auto adj2=0u;adj2<at2.globAtom_Adjacent_Atoms.size();adj2++){
        int adj_indx1 = at1.globAtom_Adjacent_Atoms[adj1];
        int adj_indx2 = at2.globAtom_Adjacent_Atoms[adj2];
        create_dihedral(adj_indx1,at1.globAtom_Index,at2.globAtom_Index,adj_indx2,exclude14);
      }
    }
    // Dihedrals of type at1 - at2 - adj2 - adj22
-   for(adj2=0;adj2<at2.globAtom_Adjacent_Atoms.size();adj2++){
+   for(auto adj2=0u;adj2<at2.globAtom_Adjacent_Atoms.size();adj2++){
      Atom& at22 = Atoms[at2.globAtom_Adjacent_Atoms[adj2]];
-     for(int adj22=0;adj22<at22.globAtom_Adjacent_Atoms.size();adj22++){
+     for(auto adj22=0u;adj22<at22.globAtom_Adjacent_Atoms.size();adj22++){
        int adj_indx2 = at22.globAtom_Adjacent_Atoms[adj22];
        create_dihedral(at1.globAtom_Index,at2.globAtom_Index,at22.globAtom_Index,adj_indx2,exclude14);
      }
    }
    // Dihedrals of type adj11 - adj1 - at1 - at2  (on the contrary - this one - adds two)
-   for(adj1=0;adj1<at1.globAtom_Adjacent_Atoms.size();adj1++){
+   for(auto adj1=0u;adj1<at1.globAtom_Adjacent_Atoms.size();adj1++){
      Atom& at11 = Atoms[at1.globAtom_Adjacent_Atoms[adj1]];
-     for(int adj11=0;adj11<at11.globAtom_Adjacent_Atoms.size();adj11++){
+     for(auto adj11=0u;adj11<at11.globAtom_Adjacent_Atoms.size();adj11++){
        int adj_indx1 = at11.globAtom_Adjacent_Atoms[adj11];
        create_dihedral(adj_indx1,at11.globAtom_Index,at1.globAtom_Index,at2.globAtom_Index,exclude14);
      }
@@ -1267,10 +1264,9 @@ void System::GROUP_ATOMS(boost::python::list atoms_list,int Group_Id){
   The group just created is assigned the Group_Id id.
   This gonna be improved version with more intuitive functioning
 */
-  int i;
   // Get atom indexs
   vector<int> at_indxs;  
-  for(i=0;i<len(atoms_list);i++){
+  for(auto i=0;i<len(atoms_list);i++){
     int Atom_Id = extract<int>(atoms_list[i]);
     int a_indx = get_atom_index_by_atom_id(Atom_Id);
     if(a_indx!=-1){
@@ -1295,7 +1291,7 @@ void System::GROUP_ATOMS(boost::python::list atoms_list,int Group_Id){
   fr.Group_id = Group_Id;  fr.is_Group_id = 1;
   max_fragment_id = (Group_Id>max_fragment_id)?Group_Id:max_fragment_id;
 
-  for(i=0;i<at_indxs.size();i++){
+  for(auto i=0u;i<at_indxs.size();i++){
     Atom& at = Atoms[at_indxs[i]];
 
     // Erase atoms to be grouped from the previous groups
@@ -1328,7 +1324,7 @@ void System::GROUP_ATOMS(boost::python::list atoms_list,int Group_Id){
   // If not - swap it and the starting fragment (it1) of the zero size. After that -
   // delete the last element of array
   // Finally, update relations of the atoms and the fragments
-  i = 0;
+  int i = 0;
   vector<Group>::iterator it1,it2;
   for(it1=Fragments.begin();it1!=Fragments.end();it1++,i++){
     if(it1->Group_Size==0){
@@ -1383,9 +1379,9 @@ void System::CREATE_BONDS(boost::python::list atoms_list,boost::python::dict val
   // Sorted
   vector<int> at_indexes_sorted;
   vector<int> at_valences_sorted;
-  int i,j;
-  int id,indx;
-  int grp,per;
+  int j;
+  int id;
+  int grp;
   int sz;
   std::string blk;
   std::string elt;
@@ -1393,16 +1389,15 @@ void System::CREATE_BONDS(boost::python::list atoms_list,boost::python::dict val
 
 //------- Zero step: Determine the maximal possible valence, determined by user
   max_val = 8;
-  for(i=0;i<len(valence_by_element.values());i++){
+  for(auto i=0;i<len(valence_by_element.values());i++){
     val = extract<int>(valence_by_element.values()[i]);
     if(val>max_val) {max_val = val;}
   }// for i
 
 //-------- First step: Create array of atom indexes --------------
   sz = len(atoms_list);
-  for(i=0;i<sz;i++){
+  for(auto i=0;i<sz;i++){
     id = extract<int>(atoms_list[i]);      
-    int is_found = 0;
     j = get_atom_index_by_atom_id(id);
     if(j!=-1){ at_indexes.push_back(j); }
     else{ cout<<"Error: Can not find atom with id = "<<id<<endl; }
@@ -1410,8 +1405,8 @@ void System::CREATE_BONDS(boost::python::list atoms_list,boost::python::dict val
 
 //--------- Second step: Calculate valence of the atoms -------------
   sz = at_indexes.size();
-  for(i=0;i<sz;i++){
-    indx = at_indexes[i];
+  for(auto i=0;i<sz;i++){
+        // auto indx = at_indexes[i];
        // Get the position of the atom in Periodic Table
 
 //       if(os.ObjectSpace_Atoms[indx].is_Atom_group){ grp = os.ObjectSpace_Atoms[indx].Atom_group; }
@@ -1453,9 +1448,9 @@ void System::CREATE_BONDS(boost::python::list atoms_list,boost::python::dict val
    }// for i
 
 //--------- Third step: Sort valences and reindex at_indexes array ---------
-   for(i=max_val;i>=1;i--){// The maximal valence is 8     
+   for(auto i=max_val;i>=1;i--){// The maximal valence is 8     
   
-      for(j=0;j<at_valences.size();j++){
+      for(auto j=0u;j<at_valences.size();j++){
 
           if(at_valences[j]==i){
              at_valences_sorted.push_back(at_valences[j]); 
@@ -1481,7 +1476,7 @@ void System::CREATE_BONDS(boost::python::list atoms_list,boost::python::dict val
 
    sz = at_indexes_sorted.size();
 
-   for(i=0;i<(sz-1);i++){
+   for(auto i=0;i<(sz-1);i++){
 
       connect pr;
       pr.self = at_indexes_sorted[i];
@@ -1526,20 +1521,19 @@ void System::CREATE_BONDS(boost::python::list atoms_list,boost::python::dict val
 
 //-------Sixth step: Link atoms -----------------
    sz = all_pairs.size();
-   int num_new_bonds = 0;
    std::cout<<"In CREATE_BONDS function: "<<std::endl;
-   for(i=0;i<sz;i++){
+   for(auto i=0;i<sz;i++){
  
      indx1 = all_pairs[i].self;
 
-     for(j=0;j<all_pairs[i].others.size();j++){
+     for(auto j=0u;j<all_pairs[i].others.size();j++){
 
          indx2 = all_pairs[i].others[j];
 
          std::cout<<"LINK atoms with indexes "<<indx1<<" and "<<indx2<<std::endl;
 
 //         LINK_ATOMS(os,os.ObjectSpace_Atoms[indx1],os.ObjectSpace_Atoms[indx2]);
-         num_new_bonds++;
+         // num_new_bonds++;
 
      }// for j
 
@@ -1562,8 +1556,7 @@ void System::CLONE_MOLECULE(int mol_id){
 
   // First - find indexes
   int m; // Index of the molecule with mol_id
-  int is_found = 0;
-  int i,j,sz,indx;
+  int indx;
 
   m = get_molecule_index_by_molecule_id(mol_id);
   if(m==-1){
@@ -1579,7 +1572,7 @@ void System::CLONE_MOLECULE(int mol_id){
   int k=0;
   int k1=0;
   // Create new atoms
-  for(i=0;i<init_size;i++){
+  for(auto i=0;i<init_size;i++){
     if(Atoms[i].globMolecule_Index==m){       
       CREATE_ATOM(Atoms[i]);
       at_map[Atoms[i].globAtom_Index] = Atoms[init_size + k].Atom_id;         
@@ -1592,10 +1585,10 @@ void System::CLONE_MOLECULE(int mol_id){
   // Now connenct the newly created atoms such that it resmbles the
   // connectivity in original molecule
   int at_id1,at_id2;
-  for(i=0;i<init_size;i++){
+  for(auto i=0;i<init_size;i++){
     if(Atoms[i].globMolecule_Index==m){
       at_id1 = at_map[Atoms[i].globAtom_Index];
-      for(j=0;j<Atoms[i].globAtom_Adjacent_Atoms.size();j++){
+      for(auto j=0u;j<Atoms[i].globAtom_Adjacent_Atoms.size();j++){
         indx = Atoms[i].globAtom_Adjacent_Atoms[j];
         at_id2 = at_map[Atoms[indx].globAtom_Index];
         LINK_ATOMS(at_id1,at_id2);
@@ -1605,7 +1598,7 @@ void System::CLONE_MOLECULE(int mol_id){
 
   // Create new groups
   int gr_id;
-  for(i=0;i<init_size;i++){
+  for(auto i=0;i<init_size;i++){
     if(Atoms[i].globMolecule_Index==m){
       at_id1 = at_map[Atoms[i].globAtom_Index];       
       gr_id  = gr_map[Atoms[i].globGroup_Index];

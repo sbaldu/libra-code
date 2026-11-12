@@ -60,10 +60,10 @@ void nHamiltonian::ampl_dia2adi(CMATRIX &ampl_dia, CMATRIX &ampl_adi) {
     exit(0);
   }
 
-  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are\
+  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
-  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are\
+  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
   ampl_adi = (*basis_transform).H() * (*ovlp_dia) * ampl_dia;
@@ -94,10 +94,10 @@ void nHamiltonian::ampl_dia2adi(CMATRIX *ampl_dia, CMATRIX *ampl_adi) {
     exit(0);
   }
 
-  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are\
+  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
-  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are\
+  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
   (*ampl_adi) = (*basis_transform).H() * (*ovlp_dia) * (*ampl_dia);
@@ -281,15 +281,13 @@ void nHamiltonian::ampl_dia2adi(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
     "split" option to do the calculations with the sub-Hamiltonians.
 
   */
-  int i;
-
   if (lvl == level) { // Cases "a" and "b"
     if (split ==
         0) { // Transform all the columns using the present level Hamiltonian
       ampl_dia2adi(ampl_dia, ampl_adi);
     } else if (split == 1) {
       // Check whether we have enough sub-Hamiltonians
-      if (children.size() != ampl_dia->n_cols) {
+      if (children.size() != static_cast<std::size_t>(ampl_dia->n_cols)) {
         cout << "ERROR in void nHamiltonian::ampl_dia2adi(CMATRIX& ampl_dia, "
                 "CMATRIX& ampl_adi, int lvl, int split):\n";
         cout << "The number of columns of the ampl_dia (" << ampl_dia->n_cols
@@ -299,7 +297,7 @@ void nHamiltonian::ampl_dia2adi(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
         cout << "Exiting...\n";
         exit(0);
       }
-      if (children.size() != ampl_adi->n_cols) {
+      if (children.size() != static_cast<std::size_t>(ampl_adi->n_cols)) {
         cout << "ERROR in void nHamiltonian::ampl_dia2adi(CMATRIX& ampl_dia, "
                 "CMATRIX& ampl_adi, int lvl, int split):\n";
         cout << "The number of columns of the ampl_adi (" << ampl_adi->n_cols
@@ -317,14 +315,14 @@ void nHamiltonian::ampl_dia2adi(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
       vector<int> stenc_adi1(ampl_dia->n_rows, 0);
       vector<int> stenc_col(1, 0);
 
-      for (i = 0; i < ampl_dia->n_rows; i++) {
+      for (auto i = 0; i < ampl_dia->n_rows; i++) {
         stenc_dia1[i] = i;
       }
-      for (i = 0; i < ampl_adi->n_rows; i++) {
+      for (auto i = 0; i < ampl_adi->n_rows; i++) {
         stenc_adi1[i] = i;
       }
 
-      for (i = 0; i < children.size(); i++) {
+      for (auto i = 0u; i < children.size(); i++) {
         stenc_col[0] = i;
 
         pop_submatrix(ampl_dia, &dia_tmp, stenc_dia1, stenc_col);
@@ -347,7 +345,7 @@ void nHamiltonian::ampl_dia2adi(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
 
   else if (lvl > level) { // Cases "c" and "d"
 
-    for (int i = 0; i < children.size(); i++) {
+    for (auto i = 0u; i < children.size(); i++) {
       children[i]->ampl_dia2adi(ampl_dia, ampl_adi, lvl, split);
     }
 
@@ -378,10 +376,10 @@ void nHamiltonian::ampl_adi2dia(CMATRIX &ampl_dia, CMATRIX &ampl_adi) {
     exit(0);
   }
 
-  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are\
+  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
-  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are\
+  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
   ampl_dia = (*basis_transform) * ampl_adi;
@@ -404,10 +402,10 @@ void nHamiltonian::ampl_adi2dia(CMATRIX *ampl_dia, CMATRIX *ampl_adi) {
     exit(0);
   }
 
-  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are\
+  //  if(ampl_dia_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the diabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
-  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are\
+  //  if(ampl_adi_mem_status==0){ cout<<"Error in ampl_dia2adi(): the amplitudes of the adiabatic states are
 //  not allocated, but they are needed for the calculations\n"; exit(0); }
 
   (*ampl_dia) = (*basis_transform) * (*ampl_adi);
@@ -483,15 +481,13 @@ void nHamiltonian::ampl_adi2dia(CMATRIX &ampl_dia, CMATRIX &ampl_adi, int lvl,
     "split" option to do the calculations with the sub-Hamiltonians.
 
   */
-  int i;
-
   if (lvl == level) { // Cases "a" and "b"
     if (split ==
         0) { // Transform all the columns using the present level Hamiltonian
       ampl_adi2dia(ampl_dia, ampl_adi);
     } else if (split == 1) {
       // Check whether we have enough sub-Hamiltonians
-      if (children.size() != ampl_dia.n_cols) {
+      if (children.size() != static_cast<std::size_t>(ampl_dia.n_cols)) {
         cout << "ERROR in void nHamiltonian::ampl_adi2dia(CMATRIX& ampl_dia, "
                 "CMATRIX& ampl_adi, int lvl, int split):\n";
         cout << "The number of columns of the ampl_dia (" << ampl_dia.n_cols
@@ -501,7 +497,7 @@ void nHamiltonian::ampl_adi2dia(CMATRIX &ampl_dia, CMATRIX &ampl_adi, int lvl,
         cout << "Exiting...\n";
         exit(0);
       }
-      if (children.size() != ampl_adi.n_cols) {
+      if (children.size() != static_cast<std::size_t>(ampl_adi.n_cols)) {
         cout << "ERROR in void nHamiltonian::ampl_adi2dia(CMATRIX& ampl_dia, "
                 "CMATRIX& ampl_adi, int lvl, int split):\n";
         cout << "The number of columns of the ampl_adi (" << ampl_adi.n_cols
@@ -519,14 +515,14 @@ void nHamiltonian::ampl_adi2dia(CMATRIX &ampl_dia, CMATRIX &ampl_adi, int lvl,
       vector<int> stenc_adi1(ampl_dia.n_rows, 0);
       vector<int> stenc_col(1, 0);
 
-      for (i = 0; i < ampl_dia.n_rows; i++) {
+      for (auto i = 0; i < ampl_dia.n_rows; i++) {
         stenc_dia1[i] = i;
       }
-      for (i = 0; i < ampl_adi.n_rows; i++) {
+      for (auto i = 0; i < ampl_adi.n_rows; i++) {
         stenc_adi1[i] = i;
       }
 
-      for (i = 0; i < children.size(); i++) {
+      for (auto i = 0u; i < children.size(); i++) {
         stenc_col[0] = i;
 
         pop_submatrix(ampl_adi, adi_tmp, stenc_adi1, stenc_col);
@@ -549,7 +545,7 @@ void nHamiltonian::ampl_adi2dia(CMATRIX &ampl_dia, CMATRIX &ampl_adi, int lvl,
 
   else if (lvl > level) { // Cases "c" and "d"
 
-    for (int i = 0; i < children.size(); i++) {
+    for (auto i = 0u; i < children.size(); i++) {
       children[i]->ampl_adi2dia(ampl_dia, ampl_adi, lvl, split);
     }
 
@@ -593,15 +589,13 @@ void nHamiltonian::ampl_adi2dia(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
     "split" option to do the calculations with the sub-Hamiltonians.
 
   */
-  int i;
-
   if (lvl == level) { // Cases "a" and "b"
     if (split ==
         0) { // Transform all the columns using the present level Hamiltonian
       ampl_adi2dia(ampl_dia, ampl_adi);
     } else if (split == 1) {
       // Check whether we have enough sub-Hamiltonians
-      if (children.size() != ampl_dia->n_cols) {
+      if (children.size() != static_cast<std::size_t>(ampl_dia->n_cols)) {
         cout << "ERROR in void nHamiltonian::ampl_adi2dia(CMATRIX& ampl_dia, "
                 "CMATRIX& ampl_adi, int lvl, int split):\n";
         cout << "The number of columns of the ampl_dia (" << ampl_dia->n_cols
@@ -611,7 +605,7 @@ void nHamiltonian::ampl_adi2dia(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
         cout << "Exiting...\n";
         exit(0);
       }
-      if (children.size() != ampl_adi->n_cols) {
+      if (children.size() != static_cast<std::size_t>(ampl_adi->n_cols)) {
         cout << "ERROR in void nHamiltonian::ampl_adi2dia(CMATRIX& ampl_dia, "
                 "CMATRIX& ampl_adi, int lvl, int split):\n";
         cout << "The number of columns of the ampl_adi (" << ampl_adi->n_cols
@@ -629,14 +623,14 @@ void nHamiltonian::ampl_adi2dia(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
       vector<int> stenc_adi1(ampl_dia->n_rows, 0);
       vector<int> stenc_col(1, 0);
 
-      for (i = 0; i < ampl_dia->n_rows; i++) {
+      for (auto i = 0; i < ampl_dia->n_rows; i++) {
         stenc_dia1[i] = i;
       }
-      for (i = 0; i < ampl_adi->n_rows; i++) {
+      for (auto i = 0; i < ampl_adi->n_rows; i++) {
         stenc_adi1[i] = i;
       }
 
-      for (i = 0; i < children.size(); i++) {
+      for (auto i = 0u; i < children.size(); i++) {
         stenc_col[0] = i;
 
         pop_submatrix(ampl_adi, &adi_tmp, stenc_adi1, stenc_col);
@@ -659,7 +653,7 @@ void nHamiltonian::ampl_adi2dia(CMATRIX *ampl_dia, CMATRIX *ampl_adi, int lvl,
 
   else if (lvl > level) { // Cases "c" and "d"
 
-    for (int i = 0; i < children.size(); i++) {
+    for (auto i = 0u; i < children.size(); i++) {
       children[i]->ampl_adi2dia(ampl_dia, ampl_adi, lvl, split);
     }
 

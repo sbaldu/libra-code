@@ -801,7 +801,7 @@ void nHamiltonian::add_ethd3_dia(const MATRIX& q, const MATRIX& invM, double alp
       MATRIX ethd_frcs(q.n_rows, q.n_cols);
       ethd_frcs = ETHD3_forces(q, invM, alp);
 
-      for(int traj=0; traj<children.size(); traj++){
+      for(auto traj=0u; traj<children.size(); traj++){
 
         for(int dof=0; dof<nnucl; dof++){
 
@@ -839,7 +839,7 @@ void nHamiltonian::add_ethd3_adi(const MATRIX& q, const MATRIX& invM, double alp
       MATRIX ethd_frcs(q.n_rows, q.n_cols);
       ethd_frcs = ETHD3_forces(q, invM, alp);
 
-      for(int traj=0; traj<children.size(); traj++){
+      for(auto traj=0u; traj<children.size(); traj++){
 
         for(int dof=0; dof<nnucl; dof++){
 
@@ -878,7 +878,7 @@ void nHamiltonian::add_ethd3_adi(const MATRIX& q, const MATRIX& p, const MATRIX&
       MATRIX ethd_frcs(q.n_rows, q.n_cols);
       ethd_frcs = ETHD3_forces(q, p, invM, alp, bet);
 
-      for(int traj=0; traj<children.size(); traj++){
+      for(auto traj=0u; traj<children.size(); traj++){
 
         for(int dof=0; dof<nnucl; dof++){
 

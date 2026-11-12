@@ -142,7 +142,7 @@ double reorganization_energy(vector<double>& omega_nm, vector<double>& req_nm){
   \param[in] req_nm    - normal-mode displacements upon charge transfer [a.u.]
 
 */
-  int sz = omega_nm.size();
+  auto sz = omega_nm.size();
 
   if(req_nm.size()!=sz){
     cout<<"ERROR in reorganization_energy: the dimensions of the input arguments do not match\n";
@@ -153,7 +153,7 @@ double reorganization_energy(vector<double>& omega_nm, vector<double>& req_nm){
   }
 
   double Er = 0.0;
-  for(int i=0;i<sz;i++){ 
+  for(auto i=0u;i<sz;i++){ 
     double d = omega_nm[i]*req_nm[i];
     Er += d*d;
   }

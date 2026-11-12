@@ -1061,16 +1061,13 @@ void xf_destroy_AT(dyn_variables &dyn_var, double threshold) {
   auxiliary trajectories
 
   */
-  int traj;
   int ntraj = dyn_var.ntraj;
   int nadi = dyn_var.nadi;
 
   double upper_lim = 1.0 - threshold;
-  double lower_lim = threshold;
 
   for (int traj = 0; traj < ntraj; traj++) {
     vector<int> &is_mixed = dyn_var.is_mixed[traj];
-    vector<int> &is_first = dyn_var.is_first[traj];
     CMATRIX &dm = *dyn_var.dm_adi[traj];
 
     int is_recovered = 0;
@@ -1098,16 +1095,13 @@ void xf_destroy_AT(dyn_variables &dyn_var, nHamiltonian &ham,
   \brief When the electronic state recovers to an adiabatic state, destroy
   auxiliary trajectories Here, momentum rescaling is also performed.
   */
-  int traj;
   int ntraj = dyn_var.ntraj;
   int nadi = dyn_var.nadi;
 
   double upper_lim = 1.0 - threshold;
-  double lower_lim = threshold;
 
   for (int traj = 0; traj < ntraj; traj++) {
     vector<int> &is_mixed = dyn_var.is_mixed[traj];
-    vector<int> &is_first = dyn_var.is_first[traj];
     CMATRIX &dm = *dyn_var.dm_adi[traj];
 
     int is_recovered = 0;
@@ -1168,7 +1162,6 @@ void xf_create_AT(dyn_variables &dyn_var, double threshold) {
   states, create auxiliary trajectories
 
   */
-  int traj;
   int ntraj = dyn_var.ntraj;
   int nadi = dyn_var.nadi;
 
@@ -1647,7 +1640,6 @@ void mqcxf(dyn_variables &dyn_var, nHamiltonian &ham, nHamiltonian &ham_prev,
   // used
   for (int traj = 0; traj < ntraj; traj++) {
     vector<int> &is_mixed = dyn_var.is_mixed[traj];
-    vector<int> &is_first = dyn_var.is_first[traj];
     MATRIX &nab_phase = *dyn_var.nab_phase[traj];
 
     CMATRIX E(nadi, nadi);
@@ -1806,11 +1798,8 @@ void update_forces_xf(dyn_variables &dyn_var, nHamiltonian &ham,
     CMATRIX E(nst, nst);
     E = ham.children[traj]->get_ham_adi();
 
-    double Epot = (C.H() * E * C).get(0, 0).real();
-
     MATRIX p_real(ndof, 1);
     p_real = dyn_var.p->col(traj);
-    double Ekin = compute_kinetic_energy(p_real, invM);
 
     // Compute phi for each dof
     vector<int> &is_mixed = dyn_var.is_mixed[traj];
@@ -1851,17 +1840,12 @@ void update_forces_xf(dyn_variables &dyn_var, nHamiltonian &ham,
 
 void propagate_half_xf(dyn_variables &dyn_var, nHamiltonian &Ham,
                        dyn_control_params &prms) {
-  int itraj, i, j;
-
   int num_el = prms.num_electronic_substeps;
   double dt = prms.dt / num_el;
-  int method = prms.electronic_integrator;
 
   //======= Parameters of the dyn variables ==========
   int ntraj = dyn_var.ntraj;
   int nadi = dyn_var.nadi;
-  int ndia = dyn_var.ndia;
-  MATRIX &invM = *dyn_var.iM;
 
   int nst = nadi;
 
@@ -1873,16 +1857,9 @@ void propagate_half_xf(dyn_variables &dyn_var, nHamiltonian &Ham,
   CMATRIX Hxf(nadi, nadi);
   CMATRIX D(nadi, nadi); // this is \exp[ -idt/2\hbar * Hxf( C(t) ) ]
 
-  for (itraj = 0; itraj < ntraj; itraj++) {
+  for (auto itraj = 0; itraj < ntraj; itraj++) {
 
     C = Coeff.col(itraj);
-
-    int traj1 = itraj;
-    if (method >= 100 && method < 200) {
-      traj1 = 0;
-    }
-
-    nHamiltonian *ham = Ham.children[traj1];
 
     // Generate the half-time exponential operator
     Hxf = *dyn_var.ham_xf[itraj];

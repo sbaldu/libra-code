@@ -197,9 +197,8 @@ NeuralNetwork& NeuralNetwork::operator=(const NeuralNetwork& ann){
 
 
 int NeuralNetwork::show(){
-  int L;
-  for(L=1;L<W.size();L++){ std::cout<<"W["<<L<<"] = "<<endl<<W[L]; }
-  for(L=1;L<B.size();L++){ std::cout<<"B["<<L<<"] = "<<endl<<B[L]; }
+  for(auto L=1u;L<W.size();L++){ std::cout<<"W["<<L<<"] = "<<endl<<W[L]; }
+  for(auto L=1u;L<B.size();L++){ std::cout<<"B["<<L<<"] = "<<endl<<B[L]; }
 
   return 0;
 }

@@ -52,13 +52,13 @@ void charge_density( Electronic_Structure& el, System& syst, vector<AO>& basis_a
 */
 
   cout<<"Printing parameters...\n";
-  cout<<"Orbitals to handle: "; for(int i=0;i<prms.orbs.size();i++){ cout<<prms.orbs[i]<<" "; } cout<<endl;
+  cout<<"Orbitals to handle: "; for(auto i=0u;i<prms.orbs.size();i++){ cout<<prms.orbs[i]<<" "; } cout<<endl;
   cout<<"prms.nx_grid = "<<prms.nx_grid<<endl;
   cout<<"prms.ny_grid = "<<prms.ny_grid<<endl;
   cout<<"prms.nz_grid = "<<prms.nz_grid<<endl;
   cout<<"prms.charge_density_prefix = "<<prms.charge_density_prefix<<endl;
 
-  for(int i=0;i<prms.orbs.size();i++){
+  for(auto i=0u;i<prms.orbs.size();i++){
 
     int orb = prms.orbs[i];
 
@@ -184,10 +184,9 @@ void charge_density(MATRIX& C, vector<listHamiltonian_QM>& ham, System& syst, ve
 
 //vector<AO>& basis_ao, 
 //Electronic_Structure& el
-  int i;
 
   cout<<"Printing parameters...\n";
-  cout<<"Orbitals to handle: "; for(int i=0;i<prms.orbs.size();i++){ cout<<prms.orbs[i]<<" "; } cout<<endl;
+  cout<<"Orbitals to handle: "; for(auto i=0u;i<prms.orbs.size();i++){ cout<<prms.orbs[i]<<" "; } cout<<endl;
   cout<<"prms.nx_grid = "<<prms.nx_grid<<endl;
   cout<<"prms.ny_grid = "<<prms.ny_grid<<endl;
   cout<<"prms.nz_grid = "<<prms.nz_grid<<endl;
@@ -198,7 +197,7 @@ void charge_density(MATRIX& C, vector<listHamiltonian_QM>& ham, System& syst, ve
   int nfmo = C.n_rows;        // total number of FMOs
 
   int summ = 0;
-  for(i=0;i<nfrags;i++){
+  for(auto i=0;i<nfrags;i++){
     summ += active_orb[i].size();  // how many FMOs does the fragment i contribute to the total pool of the orbitals
   }
   if(summ!=nfmo){
@@ -210,7 +209,7 @@ void charge_density(MATRIX& C, vector<listHamiltonian_QM>& ham, System& syst, ve
   }
 
 
-  for(i=0;i<prms.orbs.size();i++){ // Note that these "orbs" will now have a meaning of the superpositions of fragment states
+  for(auto i=0u;i<prms.orbs.size();i++){ // Note that these "orbs" will now have a meaning of the superpositions of fragment states
 
     int orb = prms.orbs[i];
 
@@ -307,7 +306,7 @@ void charge_density(MATRIX& C, vector<listHamiltonian_QM>& ham, System& syst, ve
            int f = 0;
 
            for(int fr=0;fr<nfrags;fr++){ 
-           for(int fr_i=0;fr_i<active_orb[fr].size();fr_i++){ 
+           for(auto fr_i=0u;fr_i<active_orb[fr].size();fr_i++){ 
            
 
              // 

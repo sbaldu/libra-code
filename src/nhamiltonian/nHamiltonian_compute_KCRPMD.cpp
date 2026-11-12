@@ -62,7 +62,7 @@ vector<MATRIX> nHamiltonian::generate_m_matrices(double beta){
   }
   else{
     res = vector<MATRIX>(children.size(), MATRIX(2,2));
-    for(int traj=0; traj<children.size(); traj++){
+    for(auto traj=0u; traj<children.size(); traj++){
       double V0 = (children[traj]->ham_dia->get(0,0)).real(); 
       double V1 = (children[traj]->ham_dia->get(1,1)).real(); 
       double K = abs(children[traj]->ham_dia->get(0,1));
@@ -95,7 +95,6 @@ double nHamiltonian::kcrpmd_effective_potential(vector<double>& y_aux_var, const
 
   if(ndia!=2){ cout<<"Error in kcrpmd_effective_potential(): implementation only for ndia=2\n"; exit(0); }
 
-  int ndof = q.n_rows;
   int ntraj = q.n_cols;
 
   double V0;
@@ -157,7 +156,7 @@ double nHamiltonian::kcrpmd_effective_potential(vector<double>& y_aux_var, const
       VKP += (b * (2 * abs(y_aux_var[0]) - 1) - log(1 / (1 + exp(-b * (2 * abs(y_aux_var[0]) - 1))))) / beta;
     }
   }
-  else if(children.size()==ntraj){
+  else if(children.size()==static_cast<std::size_t>(ntraj)){
     cout<<"Error in kcrpmd_effective_potential() not implemented for quantum nuclei\n"; exit(0);
   }
   else{
@@ -295,7 +294,7 @@ MATRIX nHamiltonian::kcrpmd_effective_force(vector<double>& y_aux_var, const MAT
       VKP += (b * (2 * abs(y_aux_var[0]) - 1) - log(1 / (1 + exp(-b * (2 * abs(y_aux_var[0]) - 1))))) / beta;
     }
   }
-  else if(children.size()==ntraj){
+  else if(children.size()==static_cast<std::size_t>(ntraj)){
     cout<<"Error in kcrpmd_effective_potential() not implemented for quantum nuclei\n"; exit(0);
   }
   else{

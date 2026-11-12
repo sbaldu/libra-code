@@ -109,9 +109,8 @@ int is_included(Path& p,Path& P){
 // Check if set p is included in set P (or equal to it)
 
    int res = 1;
-   int sz1,sz2;
+   int sz1;
    sz1 = p.size();
-   sz2 = P.size();  
    
    for(int i=0;i<sz1;i++){
        vector<int>::iterator it;

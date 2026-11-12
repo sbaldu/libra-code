@@ -28,10 +28,6 @@ void sin_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& param
   if(dH->n_elts!=4){ std::cout<<"Error in sin_Ham: dH matrix must be allocated\n"; exit(0);}
   if(d2H->n_elts!=4){ std::cout<<"Error in sin_Ham: d2H matrix must be allocated\n"; exit(0);}
 
-
-  double e;
-
-
   // Default parameters
   double A = -0.010;  double B = 0.010;
   double C = 0.005;   double D = 0.001;

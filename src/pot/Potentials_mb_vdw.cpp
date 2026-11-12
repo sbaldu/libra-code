@@ -474,12 +474,11 @@ double Vdw_LJ(VECTOR* r,                                               /* Inputs
   VECTOR dSW,fmod;
   int na,nb,nc;
   int xshift,yshift,zshift;
-  double r2,energy;
+  double energy;
   VECTOR dij,rij,gij,mij,f1,f2,f12;
   VECTOR tv1,tv2,tv3,g1,g2,g3,tv;
   MATRIX3x3 tp;
   MATRIX3x3 I;  I.identity();
-  double fscl = 1.0;
   double tscale = 1.0;
 
   // Reciprocal vectors
@@ -494,11 +493,9 @@ double Vdw_LJ(VECTOR* r,                                               /* Inputs
   ml_stress = 0.0;
 
   double R_skin = 2.0;
-  double R_skin2 = 4.0;
   Cell cl(tv1,tv2,tv3,R_off+R_skin);
   triple central_translation_ij;
   vector<triple> images_ij;
-  int update_displ2 = 0;
 
   int is_new = 0;
   if(images.size()==0){ is_new = 1; }
@@ -556,14 +553,12 @@ double Vdw_LJ(VECTOR* r,                                               /* Inputs
         cl.calculate(rij,images_ij,central_translation_ij);
         images.push_back(images_ij);
         central_translation.push_back(central_translation_ij);
-        update_displ2 = 1;
       }
       else if(is_update && !is_new){
         rij = r[i] - r[j]; 
         cl.calculate(rij,images_ij,central_translation_ij);
         images[count] = images_ij;
         central_translation[count]  = central_translation_ij;
-        update_displ2 = 1;
       }
       else{
         // Use existing list
@@ -600,7 +595,6 @@ double Vdw_LJ(VECTOR* r,                                               /* Inputs
           rij = r[i] - r[j] - tv;
           gij = g[i] - g[j] - tv;
           mij = m[i] - m[j] - tv;
-          r2 = rij.length2();
 
           SW = 1.0; dSW = 0.0;
           VECTOR rj = r[j]+tv;
@@ -648,19 +642,16 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 
 //  This version is based on lists for each atom
 
-  int count = 0; // for triples and central translations
   int excl = 0;  // for exclusions
   int i,j,k;
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
   int na,nb,nc;
-  int xshift,yshift,zshift;
-  double r2,energy;
+  double energy;
   VECTOR dij,rij,gij,mij,f1,f2,f12;
   VECTOR tv1,tv2,tv3,g1,g2,g3,tv;
   MATRIX3x3 tp;
   MATRIX3x3 I;  I.identity();
-  double fscl = 1.0;
   double tscale = 1.0;
 
   // Reciprocal vectors
@@ -675,7 +666,6 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
   ml_stress = 0.0;
 
   double R_skin = 2.0;
-  double R_skin2 = 4.0;
 // Cell version
 //  Cell cl(tv1,tv2,tv3,R_off+R_skin);
 //  cl.update_vlist(sz,r,at_neib,central_translation);
@@ -706,8 +696,6 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 
 //  exit(0);
 
-  int update_displ2 = 0;
-
   double scl_const = 1.0; // use 1 if full i,j loops are used: (i in [1,sz]) and (j in [1,sz])
                           // use 2 if half i,j loops are used: (i in [1,sz]) and (j in [i,sz])
   double scl;
@@ -720,7 +708,6 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
     int sz1 = at_neib[i].size();
 //    cout<<" i = "<<i<<" sz1 = "<<sz1<<endl;
     j = -1;
-    int cnt = 0;
     for(k=0;k<sz1;k++){
 
 //       xshift = central_translation[count].n1;
@@ -732,7 +719,6 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 //       }
        is_next_j = (at_neib[i][k].j!=j);
        j = at_neib[i][k].j;
-       cnt++;
 
 //     cout<<"i = "<<i<<" k = "<<k<<" j = "<<j<<endl;      
        if(is_next_j){
@@ -748,7 +734,6 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 
 //       cout<<"i = "<<i<<" k = "<<k<<" j = "<<j<<" scl = "<<scl<<" excl_ij = "<<excl_ij<<" cnt="<<cnt<<endl;
         
-       cnt  = 0;
        }// is_next_j
        else{  // The j is the same - only different translation => keep scaling the same
        }
@@ -768,8 +753,6 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 
 */
 // Even more efficient version
-        int is_update = 1;
-
         na = at_neib[i][k].n1;
         nb = at_neib[i][k].n2;
         nc = at_neib[i][k].n3;
@@ -790,7 +773,6 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
           rij = r[i] - r[j] - tv;
           gij = g[i] - g[j] - tv;
           mij = m[i] - m[j] - tv;
-          r2 = rij.length2();
 
           SW = 1.0; dSW = 0.0;
           VECTOR rj = r[j]+tv;
@@ -848,16 +830,14 @@ double Vdw_LJ2_no_excl(VECTOR* r,                                               
 */
 
 //  int count = 0; // for triples and central translations
-  int excl = 0;  // for exclusions
-  int i,j,a,b,c,k;
+  int i,a,b,c;
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
-  double r2,energy;
+  double energy;
   VECTOR dij,rij,gij,mij,f1,f2,f12;
   VECTOR t1,t2,t3,g1,g2,g3,tv;
   MATRIX3x3 tp;
   MATRIX3x3 I;  I.identity();
-  double fscl = 1.0;
   double tscale = 1.0;
 
   // Reciprocal vectors
@@ -961,14 +941,10 @@ double Vdw_LJ2_no_excl(VECTOR* r,                                               
   fr_stress = 0.0;
   ml_stress = 0.0;
 
-  int update_displ2 = 0;
   double scl_const = 1.0; // use 1 if full i,j loops are used: (i in [1,sz]) and (j in [1,sz])
                           // use 2 if half i,j loops are used: (i in [1,sz]) and (j in [i,sz])
   double scl;
   double scl1;
-  int is_next_j;
-  int excl_ij;
-
 
   //>..................... From make_nlist_auto part 2 ...................<
 
@@ -1022,12 +998,11 @@ double Vdw_LJ2_no_excl(VECTOR* r,                                               
               if(n1==0 && n2==0 && n3==0) { is_central = 1; }
 
               //============ Calculate scaling ========================  
-              int is_scaled = 0; 
               scl = scl_const;
               if(excl_indx>-1){ 
-                for(excl=0;excl<excl_scales[excl_indx].size();excl++){
+                for(auto excl=0u;excl<excl_scales[excl_indx].size();excl++){
                   if(excl_scales[excl_indx][excl].at_indx2==at_indx2){
-                    is_scaled = 1; scl = scl_const * excl_scales[excl_indx][excl].scale; break;
+                    scl = scl_const * excl_scales[excl_indx][excl].scale; break;
                   }
                 }
               }
@@ -1113,7 +1088,7 @@ double Vdw_LJ2_excl(VECTOR* r,                                               /* 
 
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
-  double r2,energy;
+  double energy;
   VECTOR dij,rij,gij,mij,f1,f2,f12;
   MATRIX3x3 tp;
   double tscale = 1.0;
@@ -1129,8 +1104,8 @@ double Vdw_LJ2_excl(VECTOR* r,                                               /* 
 
 
 
-  for(int excli=0;excli<excl_scales.size();excli++){
-     for(int exclij=0;exclij<excl_scales[excli].size();exclij++){
+  for(auto excli=0u;excli<excl_scales.size();excli++){
+     for(auto exclij=0u;exclij<excl_scales[excli].size();exclij++){
 
       int at_indx1 = excl_scales[excli][exclij].at_indx1;
       int at_indx2 = excl_scales[excli][exclij].at_indx2;
@@ -1206,13 +1181,11 @@ double LJ_Coulomb(VECTOR* r, VECTOR* g, VECTOR* m, VECTOR* f,
   int i,j;
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
-  int na,nb,nc;
-  double r2,energy;
+  double energy;
   VECTOR dij,rij,gij,mij,f1,f2,f12;
   VECTOR tv1,tv2,tv3,g1,g2,g3,tv;
   MATRIX3x3 tp;
   MATRIX3x3 I;  I.identity();
-  double fscl = 1.0;
   double tscale = 1.0;
 
 
@@ -1245,7 +1218,6 @@ double LJ_Coulomb(VECTOR* r, VECTOR* g, VECTOR* m, VECTOR* f,
          rij = r[i] - r[j];
          gij = g[i] - g[j];
          mij = m[i] - m[j];
-         r2 = rij.length2();
 
          // Vdw part
          SW = 1.0; dSW = 0.0;

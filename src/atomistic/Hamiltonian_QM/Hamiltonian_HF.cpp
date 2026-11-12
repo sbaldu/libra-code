@@ -44,7 +44,7 @@ void Hamiltonian_core_hf
   Compute the core HF (Hartree-Fock) Hamiltonian
 */
 
-  int i,j,n, I,J;
+  int i,j,n;
   VECTOR da,db,dc;
   
   int Norb = basis_ao.size(); // how many AOs
@@ -112,7 +112,7 @@ void Hamiltonian_Fock_hf(Electronic_Structure* el, System& syst, vector<AO>& bas
   Compute the Fock matrix of the HF (Hartree-Fock) Hamiltonian
 */
 
-  int a,b,c,d,A,B,C,D;
+  int a,b,c,d;
 
   int Norb = basis_ao.size(); // how many AOs 
   if(Norb!=el->Hao->n_cols){  

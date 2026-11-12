@@ -420,7 +420,7 @@ void Wfcgrid::propagate_exact_1D(int Nmts){
   \param[in] Nmts The number of sub-integration loops in the nonadiabatic term interations (not presently used)
 */
 
-  int nst,nst1,kx,nx;
+  int nst,nst1,nx;
 
   // Auxiliary object
   CMATRIX psi(Nx,1);   psi  = 0.0; // is a matrix placeholder
@@ -493,7 +493,7 @@ void Wfcgrid::propagate_exact_2D(int Nmts){
 */
 
 
-  int nst,nst1,kx,ky, nx, ny;
+  int nst,nst1, nx, ny;
 
   // Auxiliary object
   CMATRIX psi(Nx,Ny);   psi  = 0.0; // is a matrix placeholder

@@ -99,10 +99,7 @@ vector<int> dish(dyn_variables& dyn_var, nHamiltonian& ham,
                  vector<MATRIX>& decoherence_rates,  dyn_control_params& prms,Random& rnd){
 
 
-    MATRIX& q = *dyn_var.q;
-    MATRIX& p = *dyn_var.p;
     CMATRIX& Coeff = *dyn_var.ampl_adi;
-    MATRIX& invM = *dyn_var.iM;
     vector<int> act_states = dyn_var.act_states;
     MATRIX& coherence_time = *dyn_var.coherence_time;
 
@@ -111,7 +108,7 @@ vector<int> dish(dyn_variables& dyn_var, nHamiltonian& ham,
 
     int collapse_option = 0;
 
-    int i,j, traj;
+    int traj;
     int nst = Coeff.n_rows; 
     int ntraj = Coeff.n_cols;
 
@@ -301,7 +298,7 @@ void dish_rev2023(dyn_variables& dyn_var, nHamiltonian& ham,
 
   int collapse_option = 0;
 
-  int i,j, traj;
+  int traj;
   int nst = Coeff.n_rows;
   int ntraj = Coeff.n_cols;
 
@@ -361,7 +358,7 @@ void dish_rev2023(dyn_variables& dyn_var, nHamiltonian& ham,
 vector<int> dish_hop_proposal(vector<int>& act_states, CMATRIX& Coeff, 
   MATRIX& coherence_time, vector<MATRIX>& decoherence_rates, Random& rnd){
 
-    int i,traj;
+    int traj;
     int nst = Coeff.n_rows; 
     int ntraj = Coeff.n_cols;
 

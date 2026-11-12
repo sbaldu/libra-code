@@ -51,8 +51,6 @@ void cubic_Ham(double x, MATRIX* H, MATRIX* dH, MATRIX* d2H, vector<double>& par
   if(dH->n_elts!=1){ std::cout<<"Error in cubic_Ham: dH matrix must be allocated\n"; exit(0);}
   if(d2H->n_elts!=1){ std::cout<<"Error in cubic_Ham: d2H matrix must be allocated\n"; exit(0);}
 
-  double e;
-
   // Default parameters: this corresponds to the barrier height: V_Eq = 0.015   at   q_eq = 0.6709
   double m = 2000.0;  ///< mass m
   double w = 0.010;   ///< omega 

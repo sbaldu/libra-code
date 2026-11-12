@@ -225,7 +225,7 @@ int ForceField::get_dihedral_parameters(string ff_type1, string ff_type2, /*Inpu
   0 - otherwise 
 ******************************************************************/
   double Vphi,Vphi1,Vphi2,Vphi3,phi0;
-  int n,opt;
+  int n;
   int is_Vphi,is_Vphi1,is_Vphi2,is_Vphi3,is_phi0,is_n,is_opt;
   is_Vphi = is_Vphi1 = is_Vphi2 = is_Vphi3 = is_phi0 = is_n = is_opt = 0;
   int status = 0;

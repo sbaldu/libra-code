@@ -236,13 +236,8 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
 
 */
 
-  int basis_size = 0;
-
-
-  double a1, a2, a3;
   PrimitiveG s;
   AO ao;  
-  int Norb = 0;
 //  boost::python::list res;
 
   stringstream ss(stringstream::in | stringstream::out);
@@ -272,7 +267,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 0;                         ao.is_x_exp = 1;
       ao.y_exp = 0;                         ao.is_y_exp = 1;
       ao.z_exp = 0;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
     }// Atom_shell=="s"
     else if(Atom_shell=="p"){
@@ -287,7 +282,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 1;                         ao.is_x_exp = 1;
       ao.y_exp = 0;                         ao.is_y_exp = 1;
       ao.z_exp = 0;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(0,1,0, p_alp[0]*exp1*exp1, R);  ao.add_primitive( p_coeff[0]*coeff1, s);
@@ -301,7 +296,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 0;                         ao.is_x_exp = 1;
       ao.y_exp = 1;                         ao.is_y_exp = 1;
       ao.z_exp = 0;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(0,0,1, p_alp[0]*exp1*exp1, R);  ao.add_primitive( p_coeff[0]*coeff1, s);
@@ -315,7 +310,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 0;                         ao.is_x_exp = 1;
       ao.y_exp = 0;                         ao.is_y_exp = 1;
       ao.z_exp = 1;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
     }// Atom_shell=="p"
 
@@ -336,7 +331,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
 
@@ -359,7 +354,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(1,1,0, d_alp[0]*exp1*exp1, R);  ao.add_primitive( d_coeff[0]*coeff1, s);
@@ -371,7 +366,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(1,0,1, d_alp[0]*exp1*exp1, R);  ao.add_primitive( d_coeff[0]*coeff1, s);
@@ -383,7 +378,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(0,1,1, d_alp[0]*exp1*exp1, R);  ao.add_primitive( d_coeff[0]*coeff1, s);
@@ -395,7 +390,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
     }// Atom_shell=="d"
@@ -421,7 +416,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 0;                         ao.is_x_exp = 1;
       ao.y_exp = 0;                         ao.is_y_exp = 1;
       ao.z_exp = 0;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
     }// Atom_shell=="s"
     else if(Atom_shell=="p"){
@@ -439,7 +434,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 1;                         ao.is_x_exp = 1;
       ao.y_exp = 0;                         ao.is_y_exp = 1;
       ao.z_exp = 0;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(0,1,0, p_alp[0]*exp1*exp1, R);  ao.add_primitive( p_coeff[0]*coeff1, s);
@@ -456,7 +451,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 0;                         ao.is_x_exp = 1;
       ao.y_exp = 1;                         ao.is_y_exp = 1;
       ao.z_exp = 0;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(0,0,1, p_alp[0]*exp1*exp1, R);  ao.add_primitive( p_coeff[0]*coeff1, s);
@@ -473,7 +468,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.x_exp = 0;                         ao.is_x_exp = 1;
       ao.y_exp = 0;                         ao.is_y_exp = 1;
       ao.z_exp = 1;                         ao.is_z_exp = 1;
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
     }// Atom_shell=="p"
     else if(Atom_shell=="d"){
@@ -510,7 +505,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
 
@@ -547,7 +542,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(1,1,0, d_alp[0]*exp1*exp1, R);  ao.add_primitive( d_coeff[0]*coeff1, s);
@@ -563,7 +558,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(1,0,1, d_alp[0]*exp1*exp1, R);  ao.add_primitive( d_coeff[0]*coeff1, s);
@@ -579,7 +574,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
       s.init(0,1,1, d_alp[0]*exp1*exp1, R);  ao.add_primitive( d_coeff[0]*coeff1, s);
@@ -595,7 +590,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
       ao.ao_shell = out+Atom_shell;         ao.is_ao_shell = 1;      // 3s, 3p, etc.
       ao.ao_shell_type = Atom_shell;        ao.is_ao_shell_type = 1; // s, p, d, etc.
 
-      ao.normalize(); basis_ao.push_back(ao); ao.clear(); basis_size++; Norb++;
+      ao.normalize(); basis_ao.push_back(ao); ao.clear();
 
 
     }// Atom_shell=="d"
@@ -641,7 +636,7 @@ void add_basis_ao(std::string Atom_name, VECTOR& R, std::string Atom_shell, int 
   vector<AO> tmp;
   add_basis_ao(Atom_name,R,Atom_shell, Nzeta, Nquant, IP, exp1, exp2, coeff1, coeff2, tmp);
 
-  for(int i=0;i<tmp.size();i++){
+  for(auto i=0u;i<tmp.size();i++){
     basis_ao.append(tmp[i]);
   }
 

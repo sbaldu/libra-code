@@ -53,10 +53,8 @@ void Hamiltonian_core_eht
 */
 
            
-  int i,j,n, a, b, I,J;
+  int i,j, a, b;
   double delt, delt2, delt4;
-
-  int sz = syst.Number_of_atoms; // number of atoms in this fragment  
 
   int Norb = basis_ao.size(); // how many AOs are included in this fragment
   if(Norb!=Hao->n_cols){  
@@ -249,7 +247,7 @@ void Hamiltonian_core_deriv_eht
 
   //================ Basically, here we compute derivatives of the core Hamiltonian ========================
 
-  int i,j,k,a,b,I,J,A,B;
+  int i,j,a,b;
   double delt, delt2, delt4;
   VECTOR dIdA,dIdB;
 
@@ -274,8 +272,6 @@ void Hamiltonian_core_deriv_eht
     cout<<"In Hamiltonian_core_deriv_eht: Dimension of input/output matrix is not compatible whith the number of the fragment-localized orbitals\n";
     exit(0);
   }
-
-  int sz = syst.Number_of_atoms; // number of atoms in this fragment
 
 
 
@@ -316,7 +312,7 @@ void Hamiltonian_core_deriv_eht
 
 
           VECTOR dSda, dSdb, dSdc;
-          double sao_ij = gaussian_overlap(&basis_ao[i],&basis_ao[j], 1, 1, dSda, dSdb);
+          gaussian_overlap(&basis_ao[i],&basis_ao[j], 1, 1, dSda, dSdb);
           // i - on atom a
           // j - on atom b
 
@@ -553,7 +549,7 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
 */
 
 
-  int i,j,k,n,I,J,K,a,b,A,B;
+  int i,j,a,b;
   double delt, delt2, delt4;
 
   int Norb = basis_ao.size(); // how many AOs are included in this fragment
@@ -777,7 +773,6 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
     // Contribution from dQ_a/dP_ij
 
     for(a=0;a<syst.Number_of_atoms;a++){  // over all atoms - effects of electronegativities    
-      double Qa = syst.Atoms[a].Atom_mull_charge_gross;
       int orb_a = atom_to_ao_map[a][0];  // first orbital of the atom a - assume that coefficients do not depend on orbital, only
                                          // on atom type
 
@@ -821,7 +816,6 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
     // Contribution from dQ_b/dP_ij
 
     for(b=0;b<syst.Number_of_atoms;b++){  // over all atoms - effects of electronegativities    
-      double Qb = syst.Atoms[b].Atom_mull_charge_gross;
       int orb_b = atom_to_ao_map[b][0];  // first orbital of the atom b - assume that coefficients do not depend on orbital, only
                                          // on atom type
 

@@ -423,7 +423,7 @@ boost::python::list form_neibc(int c, int Nx, int Ny, int Nz, double cellx,
   form_neibc(c, neibc, Nx, Ny, Nz, cellx, celly, cellz, Roff);
   boost::python::list res;
 
-  for (int i = 0; i < neibc.size(); i++) {
+  for (auto i = 0u; i < neibc.size(); i++) {
     res.append(neibc[i]);
   }
 
@@ -578,7 +578,6 @@ void make_nlist(int Nat, VECTOR *r, MATRIX3x3 &H, int maxa, int maxb, int maxc,
     \param[in,out] nlist Indices of the neighboring sub-cells for all sub-cells
 
   */
-  int a, b, c, i;
   VECTOR t1, t2, t3, g1, g2, g3;
   VECTOR t; //,maxT;
 
@@ -609,10 +608,10 @@ void make_nlist(int Nat, VECTOR *r, MATRIX3x3 &H, int maxa, int maxb, int maxc,
   vector<quartet> globqt;
   VECTOR minr, maxr;
   minr = maxr = r[0];
-  for (a = -maxa; a <= maxa; a++) {
-    for (b = -maxb; b <= maxb; b++) {
-      for (c = -maxc; c <= maxc; c++) {
-        for (i = 0; i < Nat; i++) {
+  for (auto a = -maxa; a <= maxa; a++) {
+    for (auto b = -maxb; b <= maxb; b++) {
+      for (auto c = -maxc; c <= maxc; c++) {
+        for (auto i = 0; i < Nat; i++) {
 
           t = tmp[i] + a * t1 + b * t2 + c * t3;
           R.push_back(t);
@@ -672,7 +671,7 @@ void make_nlist(int Nat, VECTOR *r, MATRIX3x3 &H, int maxa, int maxb, int maxc,
   // we use serial indexes of both central cell and its neighbors
   vector<vector<int>>
       neibc; // indexes of neighboring cells for given cell index
-  for (c = 0; c < Ncells; c++) {
+  for (auto c = 0; c < Ncells; c++) {
     vector<int> neibc_c;
     form_neibc(c, neibc_c, Nx, Ny, Nz, cellx, celly, cellz, Roff);
     neibc.push_back(neibc_c);
@@ -685,13 +684,13 @@ void make_nlist(int Nat, VECTOR *r, MATRIX3x3 &H, int maxa, int maxb, int maxc,
   }
 
   // Calculate mappings between atom indexes and cell (sub-cell) indexes
-  for (i = 0; i < sz; i++) {
+  for (auto i = 0; i < sz; i++) {
     VECTOR diff = R[i] - minr; // position of
     triple trp;
     trp.n1 = floor(diff.x / cellx);
     trp.n2 = floor(diff.y / celly);
     trp.n3 = floor(diff.z / cellz);
-    c = Nz * Ny * trp.n1 + Nz * trp.n2 + trp.n3;
+    auto c = Nz * Ny * trp.n1 + Nz * trp.n2 + trp.n3;
 
     at2cell_indx[i] = c;
     cell2at[c].push_back(i);
@@ -704,10 +703,10 @@ void make_nlist(int Nat, VECTOR *r, MATRIX3x3 &H, int maxa, int maxb, int maxc,
     int i1 = Nat * cc + at_indx1; // complex index of real atom at_indx1
     int ci1 = at2cell_indx[i1]; // complex index of cell to which atom i belongs
 
-    for (c = 0; c < neibc[ci1].size(); c++) {
+    for (auto c = 0u; c < neibc[ci1].size(); c++) {
       int ci2 = neibc[ci1][c]; // one of the neighboring cell of cell l
 
-      for (a = 0; a < cell2at[ci2].size();
+      for (auto a = 0u; a < cell2at[ci2].size();
            a++) { // iterations over atoms in cell ci2
         int i2 = cell2at[ci2][a];
         int at_indx2 = i2 % Nat;

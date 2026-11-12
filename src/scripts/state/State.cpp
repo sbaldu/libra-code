@@ -191,7 +191,6 @@ void save(boost::property_tree::ptree& pt,std::string path,vector<MD>& vt){
 }
 
 void MD::load(boost::property_tree::ptree& pt,std::string path,int& status){
-  int st;
   status = 0;
 
   libio::load(pt,path+".ensemble",ensemble,is_ensemble); if(is_ensemble==1) { status=1;}

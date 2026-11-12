@@ -60,7 +60,8 @@ double Elec_Ewald3D(vector<VECTOR *> &r, vector<double> &q,
   double etha_13;
   double SW;
   VECTOR dSW, f_mod;
-  double E1, E2, E3, energy;
+  double E2, E3, energy;
+  // double E1; // FIXME: see the note before the real-space loop below
   VECTOR f_mod1, f_mod2, dij, rij;
   VECTOR h, h1, h2, h3, t, tv1, tv2, tv3, av, tv, g1, g2, g3;
   MATRIX3x3 tp;
@@ -94,7 +95,13 @@ double Elec_Ewald3D(vector<VECTOR *> &r, vector<double> &q,
 
   // =============== S1 (exclude i==j pairs for central cell)=========
   // This is original version
-  E1 = 0.0;
+  // FIXME: E1 (real-space Ewald term) and E1_excl (exclusion correction) are
+  // accumulated but never added to `energy`, while the corresponding forces
+  // and stress ARE applied, so the returned energy is inconsistent with the
+  // forces. The other Ewald variants in this file do add it
+  // (e.g. `energy += const3 * E1;`). Kept commented out (to avoid unused-variable
+  // warnings) until the energy expression is verified and fixed.
+  // E1 = 0.0;
   for (int na = -pbc_deg; na <= pbc_deg; na++) {
     for (int nb = -pbc_deg; nb <= pbc_deg; nb++) {
       for (int nc = -pbc_deg; nc <= pbc_deg; nc++) {
@@ -124,7 +131,7 @@ double Elec_Ewald3D(vector<VECTOR *> &r, vector<double> &q,
                 a = sqrt(r2) / etha;
                 Qij = q[i] * q[j] * electric;
                 erfc1 = ERFC(a) / a;
-                E1 += SW * erfc1 * Qij;
+                // E1 += SW * erfc1 * Qij; // FIXME: see note above, never added to energy
 
                 s1mod = etha_13 * SW * (Qij / (a * a)) *
                         (erfc1 + const2 * exp(-a * a));
@@ -147,7 +154,7 @@ double Elec_Ewald3D(vector<VECTOR *> &r, vector<double> &q,
 
   //======== intra (excluded pairs are included in reciprocal part - exclude it)
   //======
-  double E1_excl = 0.0;
+  // double E1_excl = 0.0; // FIXME: see note above, never added to energy
 
   int nexcl = exclusions.size();
 
@@ -171,7 +178,7 @@ double Elec_Ewald3D(vector<VECTOR *> &r, vector<double> &q,
       // interaction in the reciprocal space, so we are going to exclude the
       // entire one.. The scaling returns part of it. E.g. if scaling is 0.2 we
       // are going to add overall -0.8
-      E1_excl += (scl - 1.0) * en;
+      // E1_excl += (scl - 1.0) * en; // FIXME: see note above
       *f[i] += (scl - 1.0) * fi;
       *f[j] -= (scl - 1.0) * fi;
 

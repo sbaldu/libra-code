@@ -35,14 +35,11 @@ double energy_nucl(vector<VECTOR>& R, vector<double>& Zeff){
   \param[in] Zeff effective charges of all atoms in the system
 */
 
-
-
-  int I,J;
-  int sz = R.size();
+  auto sz = R.size();
   double en = 0.0;
 
-  for(int i=0;i<sz;i++){
-    for(int j=i+1;j<sz;j++){
+  for(auto i=0u;i<sz;i++){
+    for(auto j=i+1;j<sz;j++){
 
       en += Zeff[i] * Zeff[j] / (R[i] - R[j]).length();
       
@@ -65,17 +62,15 @@ double energy_nucl(vector<VECTOR>& R, vector<double>& Zeff, vector<VECTOR>& G){
   \param[out] G  Will contain gradients w.r.t. to each nuclear coordinates
 */
 
-
-  int I,J;
-  int sz = R.size();
+  auto sz = R.size();
   double en = 0.0;
   //if(G.size()!=sz){  G = vector<VECTOR>(sz,VECTOR(0.0,0.0,0.0)); }
   //else{ for(int i=0;i<sz;i++){  G[i] = 0.0; }  }
   if(G.size()>0) { G.clear(); }
-  for(int i=0;i<sz;i++){  G.push_back(VECTOR(0.0, 0.0, 0.0)); } 
+  for(auto i=0u;i<sz;i++){  G.push_back(VECTOR(0.0, 0.0, 0.0)); } 
 
-  for(int i=0;i<sz;i++){
-    for(int j=i+1;j<sz;j++){
+  for(auto i=0u;i<sz;i++){
+    for(auto j=i+1;j<sz;j++){
 
       double rij = (R[i] - R[j]).length();
       double tmp = Zeff[i] * Zeff[j] / rij;

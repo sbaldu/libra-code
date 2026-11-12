@@ -209,7 +209,7 @@ double OOP_Wilson(VECTOR& r1,VECTOR& r2,VECTOR& r3,VECTOR& r4,   /*Inputs*/
 // Forces are derived in
 //  http://scidok.sulb.uni-saarland.de/volltexte/2007/1325/pdf/Dissertation_1544_Moll_Andr_2007.pdf
  
-  double modt,modu,cos_phi,sin_phi,cos_teta_ijk,sin_teta_ijk,tan_teta_ijk,phi,K1,K2,energy,dij,dkj,dlj;
+  double cos_phi,sin_phi,cos_teta_ijk,sin_teta_ijk,tan_teta_ijk,phi,K1,K2,energy,dij,dkj,dlj;
   VECTOR ri,rj,rk,rl,fi,fj,fk,fl;
   energy = 0.0;
   f1 = f2 = f3 = f4 = 0.0;

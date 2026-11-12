@@ -245,7 +245,6 @@ void save(boost::property_tree::ptree& pt,std::string path,vector<Bond_Record>& 
 }
 
 void Bond_Record::load(boost::property_tree::ptree& pt,std::string path,int& status){
-  int st;
   status = 0;
 
   libio::load(pt,path+".Atom1_ff_type",Atom1_ff_type,is_Atom1_ff_type); if(is_Atom1_ff_type==1) { status=1;}

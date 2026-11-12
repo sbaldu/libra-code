@@ -139,11 +139,9 @@ vector<vector<int>> hungarian_algorithm(vector<vector<double>>& cost_matrix) {
 
     // Create the assignment matrix
     vector<vector<int>> assignment_matrix(n, vector<int>(n, 0));
-    double total_cost = 0;
     for (int i = 0; i < n; ++i) {
         int job = match_l[i];
         assignment_matrix[i][job] = 1; // Mark the assignment
-        total_cost += cost_matrix[i][job];
     }
 
     return assignment_matrix;
@@ -567,7 +565,6 @@ vector<int> permute_states(vector<vector<int> >& perms, vector<int>& act_states)
 */
 
   int ntraj = perms.size();
-  int nstates = perms[0].size();
   vector<int> res(ntraj, 0);
 
   for(int itraj=0; itraj<ntraj; itraj++){
@@ -628,7 +625,6 @@ vector<int> get_stochastic_reordering3
     // extract the indices where <phi_i(t)|phi_i(t+dt)> is not close to 1. 
     CMATRIX S(time_overlap);  // just a temporary working object
     int size = time_overlap.n_rows;
-    int i,j;
     vector<int> chosen_perm(size, 0);  
     MATRIX g(1, size);   // switching probabilities
 
@@ -643,11 +639,11 @@ vector<int> get_stochastic_reordering3
       if(verbosity_level>0){   std::cout<<"Attempt # "<<number_of_attempts<<endl;   }
       //======= propose hop ========
     
-      for(i=0;i<size;i++){ // all starting states (at time t)
+      for(auto i=0;i<size;i++){ // all starting states (at time t)
 
         double tot_p = 0.0;
 
-        for(j=0; j<size; j++){ // all target states            
+        for(auto j=0; j<size; j++){ // all target states            
 
             double p_ij = (S.get(i, j) * std::conj(S.get(i, j))).real();
             if(p_ij > filter_tol){
@@ -670,7 +666,7 @@ vector<int> get_stochastic_reordering3
            std::cout<<"Source state: "<<i<<endl;
 
           std::cout<<"Probabilities to go from this state: ";   
-          for(j=0;j<size;j++){  std::cout<<g.get(0,j)<<" ";   }
+          for(auto j=0;j<size;j++){  std::cout<<g.get(0,j)<<" ";   }
           std::cout<<endl;
 
           std::cout<<" Ksi: "<<ksi<<" selects the target state = "<<target<<endl;   }
@@ -680,8 +676,8 @@ vector<int> get_stochastic_reordering3
 
       //======= check if hop is accepted =========
       is_accepted = 1; 
-      for(i = 0; i < chosen_perm.size() && is_accepted; i++){
-          for(j = 0; j < chosen_perm.size() && is_accepted; j++){
+      for(auto i = 0u; i < chosen_perm.size() && is_accepted; i++){
+          for(auto j = 0u; j < chosen_perm.size() && is_accepted; j++){
               if(i!=j){
                   if(chosen_perm[i] == chosen_perm[j]){
                       is_accepted = 0;
@@ -699,7 +695,7 @@ vector<int> get_stochastic_reordering3
 
     // If we haven't found a suitable transition, make it an identity permutation or exit
     if(!is_accepted && !convergence){  
-      for(i = 0; i < size; i++){  chosen_perm[i] = i;}
+      for(auto i = 0; i < size; i++){  chosen_perm[i] = i;}
       std::cout << "Stochastic reordering did not converge in " << max_number_of_attempts << " attempts\nChoosing identity...\n"; 
     }
     if(!is_accepted && convergence){
@@ -1022,7 +1018,7 @@ CMATRIX raw_to_dynconsyst(CMATRIX& amplitudes, vector<CMATRIX>& projectors){
   vector<int> x_stenc(1, 0);
   vector<int> y_stenc(nst,0); for(int i=0; i<nst; i++){ y_stenc[i] = i; }
 
-  if(projectors.size() != ntraj){  
+  if(projectors.size() != static_cast<std::size_t>(ntraj)){  
     cout<<"ERROR in raw_to_dynconsyst: the dimensions do not agree\n";
     exit(0);
   }
@@ -1068,7 +1064,7 @@ CMATRIX dynconsyst_to_raw(CMATRIX& amplitudes, vector<CMATRIX>& projectors){
   vector<int> x_stenc(1, 0);
   vector<int> y_stenc(nst,0); for(int i=0; i<nst; i++){ y_stenc[i] = i; }
 
-  if(projectors.size() != ntraj){  
+  if(projectors.size() != static_cast<std::size_t>(ntraj)){  
     cout<<"ERROR in raw_to_dynconsyst: the dimensions do not agree\n";
     exit(0);
   }
@@ -1189,9 +1185,7 @@ vector<MATRIX> compute_F_cost_matrix_dof_resolved(CMATRIX& F_curr,  CMATRIX& F_p
 
       for(j=0;j<nst; j++){
 
-        double fj_curr = F_curr.get(j,idof).real();
         double fj_prev = F_prev.get(j,idof).real();
-        double aj = fj_curr * iM.get(idof,0);
         double dq_j = vel * dt + 0.5 * ai * dt * dt;
         double dE_j = -fj_prev * dq_j;
 
@@ -1240,10 +1234,8 @@ CMATRIX compute_F_cost_matrix2(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr
       fj_curr = F_curr.row(j).real();
       fj_prev = F_prev.row(j).real();
 
-      double ni_curr = (fi_curr.T() * fi_curr).get(0, 0);
       double nj_curr = (fj_curr.T() * fj_curr).get(0, 0);
       double ni_prev = (fi_prev.T() * fi_prev).get(0, 0);
-      double nj_prev = (fj_prev.T() * fj_prev).get(0, 0);
       double nij = (fi_prev.T() * fj_curr).get(0,0);
 
       if(ni_prev >= 1e-12 && nj_curr>= 1e-12 ){ 

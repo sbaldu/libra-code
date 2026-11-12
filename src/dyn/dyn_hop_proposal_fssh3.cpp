@@ -97,11 +97,10 @@ MATRIX find_best_matrix(MATRIX& c_new, MATRIX& c_old, MATRIX& J){
 //  j.show_matrix();
 
 //  cout<<"Errors: "<<err1<<" "<<err2<<" "<<err3<<" "<<err4<<endl;
-  int choice = 1;
   double err = err1; j = j1; 
-  if(err2<err) { j = j2; err = err2; choice = 2; }
-  if(err3<err) { j = j3; err = err3; choice = 3; }
-  if(err4<err) { j = j4; err = err4; choice = 4; }
+  if(err2<err) { j = j2; err = err2; }
+  if(err3<err) { j = j3; err = err3; }
+  if(err4<err) { j = j4; err = err4; }
 //  cout<<"Choice: "<<choice<<endl;
   
 
@@ -140,8 +139,8 @@ vector<double> hopping_probabilities_fssh3(dyn_control_params& prms, CMATRIX& de
   Returns: A nstates-vector of hopping probabilities to all states from the current active state
 */
 
-  int i,j,k, cnt;
-  double sum,g_ij,argg, nrm;
+  int i,j;
+  double nrm;
 
   double dt = prms.dt;
 
@@ -151,7 +150,6 @@ vector<double> hopping_probabilities_fssh3(dyn_control_params& prms, CMATRIX& de
 
   //====== Testing options =========
 
-  int size_option = 0; // not used here, = prms.fssh3_size_option; // 0 - N elements, only populations; 1 - N^2 elements - also coherences
   int approach_option = prms.fssh3_approach_option; 
   // 0 - master equation (J contains hopping probabilities); 
   // 1 - kinetic approach (J contains fluxes), initialize J to be all zeroes
@@ -240,13 +238,10 @@ vector<double> hopping_probabilities_fssh3_dev(dyn_control_params& prms, CMATRIX
   Returns: A nstates-vector of hopping probabilities to all states from the current active state
 */
 
-  const double kb = 3.166811429e-6; // Hartree/K
-  int i,j,k, cnt;
-  double sum,g_ij,argg, nrm;
+  int i,j, cnt;
+  double nrm;
 
   double dt = prms.dt;
-  double T = prms.Temperature;
-  int use_boltz_factor = prms.use_boltz_factor;
 
   int nstates = denmat.n_rows;
   vector<double> g(nstates, 0.0);
