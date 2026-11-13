@@ -30,16 +30,15 @@ int step1(MATRIX& X){
     element in its row. Go to Step 2. 
     */
 
-    int i,j;
     int n = X.n_cols;
 
-    for(i=0; i<n;i++){
+    for(int i=0; i<n;i++){
         //complex<double> res;
         double val;
         int min_elt_indx;
         X.min_row_elt(i, val, min_elt_indx); 
 
-        for(j=0;j<n;j++){
+        for(int j=0;j<n;j++){
             X.add(i, j, -val);  
         }
     }
@@ -52,11 +51,10 @@ int step2(MATRIX& X, vector< vector<int> >& M, vector<int>& Rcov, vector<int>& C
     Find a zero (Z) in the resulting matrix. If there is no starred zero in its row or column, 
     star Z. Repeat for each element in the matrix. Go to Step 3. 
     */
-    int i,j;
     int n = X.n_cols;
 
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
             if(fabs(X.get(i,j))<1e-10 && Rcov[i]==0 && Ccov[j]==0){
                 M[i][j] = 1;
                 Rcov[i] = 1;
@@ -70,7 +68,7 @@ int step2(MATRIX& X, vector< vector<int> >& M, vector<int>& Rcov, vector<int>& C
     cover vectors to help us count the number of starred zeros
     */
 
-    for(i=0; i<n; i++){
+    for(int i=0; i<n; i++){
         Rcov[i] = 0;
         Ccov[i] = 0;
     }
@@ -86,17 +84,16 @@ int step3(vector< vector<int> >& M, vector<int>& Ccov){
     In this case, Go to DONE, otherwise, Go to Step 4.
     */
 
-    int i,j;
     int n = M.size();
 
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
             if(M[i][j]==1){  Ccov[j] = 1; }
         }// for j
     }// for i
 
     int colcount = 0;
-    for(i=0;i<n;i++){
+    for(int i=0;i<n;i++){
         colcount += Ccov[i];
     }
 
@@ -323,12 +320,11 @@ int step5(vector< vector<int> >& M, int path_row_0, int path_col_0, vector<int>&
 
 double find_smallest(MATRIX& X, vector<int>& Rcov, vector<int>& Ccov){
 
-    int i,j;
     int n = X.n_cols;
     double minval = 1.0e+25;
   
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
             if(Rcov[i]==0 && Ccov[j]==0){
                 if(minval>X.get(i,j)){
                     minval = X.get(i,j);
@@ -352,11 +348,10 @@ int step6(MATRIX& X, vector<int>& Rcov, vector<int>& Ccov){
 
     double minval = find_smallest(X, Rcov, Ccov);
 
-    int i,j;
     int n = X.n_cols;
 
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
     
             if(Rcov[i]==1){
                 X.add(i,j, minval);
@@ -375,11 +370,10 @@ int step6(MATRIX& X, vector<int>& Rcov, vector<int>& Ccov){
 vector<vector<int> > compute_assignment(vector<vector<int> >& M){
 
     vector< vector<int> > res;
-    int i,j;
     int n = M.size();
 
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
 
             if(M[i][j] == 1){
                 vector<int> p(2, 0);
@@ -396,11 +390,10 @@ vector<vector<int> > compute_assignment(vector<vector<int> >& M){
 
 void show_M(vector<vector<int> >& M){
 
-    int i,j;
     int n = M.size();
 
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
             cout<<M[i][j]<<"  ";
         }
         cout<<"\n";
@@ -526,20 +519,19 @@ vector<int> Munkres_Kuhn_maximize(MATRIX& _X, int verbosity){
 
     MATRIX X(_X);
 
-    int i,j;
     int n = X.n_cols;
     double maxval = 0.0;
 
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
             if(X.get(i,j)>maxval){
                 maxval = X.get(i,j);
             }
         }
     }
 
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
             X.scale(i,j, -1.0);
             X.add(i,j, maxval + 1e-5);
         }

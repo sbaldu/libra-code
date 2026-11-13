@@ -46,13 +46,12 @@ double ETHD_energy(const MATRIX &q, const MATRIX &invM) {
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
 
-  int dof, traj;
 
   //============ Compute the averages =========
   MATRIX q_ave(ndof, 1);
 
-  for (dof = 0; dof < ndof; dof++) {
-    for (traj = 0; traj < ntraj; traj++) {
+  for (int dof = 0; dof < ndof; dof++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       q_ave.add(dof, 0, q.get(dof, traj));
     }
   } // for dof
@@ -61,8 +60,8 @@ double ETHD_energy(const MATRIX &q, const MATRIX &invM) {
   //============ Compute the variances =========
   MATRIX s2(ndof, 1);
 
-  for (dof = 0; dof < ndof; dof++) {
-    for (traj = 0; traj < ntraj; traj++) {
+  for (int dof = 0; dof < ndof; dof++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       double s = q.get(dof, traj) - q_ave.get(dof, 0);
       s2.add(dof, 0, s * s);
     }
@@ -72,7 +71,7 @@ double ETHD_energy(const MATRIX &q, const MATRIX &invM) {
   //============ Compute the energy =========
   double en = 0.0;
 
-  for (dof = 0; dof < ndof; dof++) {
+  for (int dof = 0; dof < ndof; dof++) {
 
     en += 0.125 * ntraj * invM.get(dof, 0) / s2.get(dof, 0);
   }
@@ -98,15 +97,14 @@ MATRIX ETHD_forces(const MATRIX &q, const MATRIX &invM) {
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
 
-  int dof, traj;
 
   MATRIX f(ndof, ntraj);
 
   //============ Compute the averages =========
   MATRIX q_ave(ndof, 1);
 
-  for (dof = 0; dof < ndof; dof++) {
-    for (traj = 0; traj < ntraj; traj++) {
+  for (int dof = 0; dof < ndof; dof++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       q_ave.add(dof, 0, q.get(dof, traj));
     }
   } // for dof
@@ -115,8 +113,8 @@ MATRIX ETHD_forces(const MATRIX &q, const MATRIX &invM) {
   //============ Compute the variances =========
   MATRIX s2(ndof, 1);
 
-  for (dof = 0; dof < ndof; dof++) {
-    for (traj = 0; traj < ntraj; traj++) {
+  for (int dof = 0; dof < ndof; dof++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       double s = q.get(dof, traj) - q_ave.get(dof, 0);
       s2.add(dof, 0, s * s);
     }
@@ -129,13 +127,13 @@ MATRIX ETHD_forces(const MATRIX &q, const MATRIX &invM) {
 
   //  cout<<"ndof = "<<ndof<<" ntraj = "<<ntraj<<endl;
 
-  for (dof = 0; dof < ndof; dof++) {
+  for (int dof = 0; dof < ndof; dof++) {
 
     double s4 = s2.get(dof, 0);
     s4 = s4 * s4;
     double pref = 0.25 * invM.get(dof, 0) / s4;
 
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
 
       //      cout<<"dof = "<<dof<<" traj = "<<traj<<pref * (q.get(dof, traj) -
       //      q_ave.get(dof, 0) )<<endl;

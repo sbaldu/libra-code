@@ -192,7 +192,6 @@ MATRIX nHamiltonian::kcrpmd_effective_force(vector<double>& y_aux_var, const MAT
 
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
-  int dof;
 
   double V0;
   double V1;
@@ -225,7 +224,7 @@ MATRIX nHamiltonian::kcrpmd_effective_force(vector<double>& y_aux_var, const MAT
     MATRIX FK(ndof, ntraj);
     MATRIX Fg(ndof, ntraj);
     MATRIX Fe(ndof, ntraj);
-    for(dof=0; dof<ndof; dof++){   
+    for(int dof=0; dof<ndof; dof++){   
       F0.set(dof, 0, -(children[0]->d1ham_dia[dof]->get(0,0)).real());
       F1.set(dof, 0, -(children[0]->d1ham_dia[dof]->get(1,1)).real());
       // Reminder to account for complex coupling

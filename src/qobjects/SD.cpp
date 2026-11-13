@@ -120,8 +120,7 @@ void SD::set(CMATRIX& _mo_pool_alp, CMATRIX& _mo_pool_bet, vector<int>& _orb_ind
   mo = new CMATRIX(N_bas, N);
   spin = vector<int>(N);
 
-  int i,j;
-  for(i=0;i<N_alp;i++){  
+  for(int i=0;i<N_alp;i++){  
     if(orb_indx_alp[i]>=_mo_pool_alp.n_cols){
       std::cout<<"Index of an alpha orbital is beyond the range of MO orbital indices available in the pool provided\n";
       std::cout<<"Index of an alpha orbital = "<<orb_indx_alp[i]<<endl;
@@ -129,10 +128,10 @@ void SD::set(CMATRIX& _mo_pool_alp, CMATRIX& _mo_pool_bet, vector<int>& _orb_ind
       exit(0);
     }
 
-    for(j=0;j<N_bas;j++){  mo->set(j,i, _mo_pool_alp.get(j,orb_indx_alp[i]));    }
+    for(int j=0;j<N_bas;j++){  mo->set(j,i, _mo_pool_alp.get(j,orb_indx_alp[i]));    }
     spin[i] = 1; 
   }
-  for(i=0;i<N_bet;i++){  
+  for(int i=0;i<N_bet;i++){  
     if(orb_indx_bet[i]>=_mo_pool_bet.n_cols){
       std::cout<<"Index of a beta orbital is beyond the range of MO orbital indices available in the pool provided\n";
       std::cout<<"Index of a beta orbital = "<<orb_indx_bet[i]<<endl;
@@ -140,7 +139,7 @@ void SD::set(CMATRIX& _mo_pool_alp, CMATRIX& _mo_pool_bet, vector<int>& _orb_ind
       exit(0);
     }
 
-    for(j=0;j<N_bas;j++){  mo->set(j,N_alp+i, _mo_pool_bet.get(j,orb_indx_bet[i]));    }
+    for(int j=0;j<N_bas;j++){  mo->set(j,N_alp+i, _mo_pool_bet.get(j,orb_indx_bet[i]));    }
     spin[N_alp + i] = -1; 
   }
 

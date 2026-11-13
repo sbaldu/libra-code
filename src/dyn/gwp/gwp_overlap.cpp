@@ -116,7 +116,6 @@ CMATRIX gwp_overlap_matrix(MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
   CMATRIX(ntraj1, ntraj2) - the overlap matrix of basis functions defined by two sets 
 
 */
-  int i,j;
   int ndof = q1.n_rows;
   int ntraj1 = q1.n_cols;
   int ntraj2 = q2.n_cols;
@@ -133,10 +132,10 @@ CMATRIX gwp_overlap_matrix(MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
   MATRIX a2_j(ndof, ntraj1);
 
 
-  for(i=0; i<ntraj1; i++){
+  for(int i=0; i<ntraj1; i++){
     q1_i = q1.col(i); p1_i = p1.col(i); g1_i = gamma1.col(i); a1_i = alp1.col(i);
 
-    for(j=0; j<ntraj2; j++){
+    for(int j=0; j<ntraj2; j++){
       q2_j = q2.col(j); p2_j = p2.col(j); g2_j = gamma2.col(j); a2_j = alp2.col(j);
 
       complex<double> sij = gwp_overlap(q1_i, p1_i, g1_i, a1_i,  q2_j, p2_j, g2_j, a2_j);
@@ -164,7 +163,6 @@ CMATRIX gwp_overlap_matrix(MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
   CMATRIX(ntraj1, ntraj2) - the overlap matrix of basis functions defined by two sets 
 
 */
-  int i,j;
   int ndof = q1.n_rows;
   int ntraj1 = q1.n_cols;
   int ntraj2 = q2.n_cols;
@@ -181,10 +179,10 @@ CMATRIX gwp_overlap_matrix(MATRIX& q1, MATRIX& p1, MATRIX& gamma1, MATRIX& alp1,
   MATRIX a2_j(ndof, ntraj1);
 
 
-  for(i=0; i<ntraj1; i++){
+  for(int i=0; i<ntraj1; i++){
     q1_i = q1.col(i); p1_i = p1.col(i); g1_i = gamma1.col(i); a1_i = alp1.col(i);
 
-    for(j=0; j<ntraj2; j++){
+    for(int j=0; j<ntraj2; j++){
       q2_j = q2.col(j); p2_j = p2.col(j); g2_j = gamma2.col(j); a2_j = alp2.col(j);
 
       

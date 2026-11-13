@@ -64,7 +64,7 @@ double compute_potential_energy(Nuclear* mol, Electronic* el, Hamiltonian* ham, 
   nonadiabatic couplings or off-diagonal Hamiltonian terms) - this is for opt = 0
 */
 
-  int i,j;
+  int i;
   double Heff = 0.0;
   double Epot = 0.0;
 
@@ -80,7 +80,7 @@ double compute_potential_energy(Nuclear* mol, Electronic* el, Hamiltonian* ham, 
     // Potential energy - electronic Hamiltonian
     // working in a.u., so hbar = 1
     for(i=0;i<el->nstates;i++){
-      for(j=0;j<el->nstates;j++){
+      for(int j=0;j<el->nstates;j++){
         Heff += 0.5*ham->Hvib(i,j).real() * (el->q[i] * el->q[j] + el->p[i] * el->p[j]);
         Heff += ham->Hvib(i,j).imag() * el->p[i] * el->q[j]; 
       }// for j
@@ -137,7 +137,7 @@ double compute_forces(Nuclear* mol, Electronic* el, Hamiltonian* ham, int opt){
 */
 
 
-  int i,j,k;
+  int i,k;
   double Heff = 0.0;
   double Epot = 0.0;
 
@@ -156,7 +156,7 @@ double compute_forces(Nuclear* mol, Electronic* el, Hamiltonian* ham, int opt){
     // Potential energy - electronic Hamiltonian
     // working in a.u., so hbar = 1
     for(i=0;i<el->nstates;i++){
-      for(j=0;j<el->nstates;j++){
+      for(int j=0;j<el->nstates;j++){
 
         double cij_re = (el->q[i] * el->q[j] + el->p[i] * el->p[j]);
         double cij_im = el->p[i] * el->q[j];

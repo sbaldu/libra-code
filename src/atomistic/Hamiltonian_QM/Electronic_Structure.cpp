@@ -258,13 +258,12 @@ int init_numbers(Electronic_Structure& el, System& syst, vector<AO>& basis_ao, M
   Then it sets the occupations numbers of alpha and beta orbitals to 0 or 1, according to aufbau principle
 */
 
-  int i;
 
   // Compute total number of valence electrons in the given fragment
   el.Nelec = 0;
 
 
-  for(i=0;i<syst.Number_of_atoms;i++){
+  for(int i=0;i<syst.Number_of_atoms;i++){
 
     el.Nelec += modprms.PT[syst.Atoms[i].Atom_element].Nval;  // number of valence electrons for given atom
 
@@ -287,7 +286,7 @@ int init_numbers(Electronic_Structure& el, System& syst, vector<AO>& basis_ao, M
 
 
   // Setup occupation numbers for unrestricted shell:
-  for(i=0;i<el.Norb;i++){
+  for(int i=0;i<el.Norb;i++){
     if(i<el.Nocc_alp){ el.occ_alp.push_back(pair<int,double>(i,1.0)); }
     else{              el.occ_alp.push_back(pair<int,double>(i,0.0)); }
 

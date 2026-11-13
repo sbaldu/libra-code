@@ -66,7 +66,6 @@ CMATRIX Gaussian(vector<double>& x, vector<double>& x0, vector<double>& px0, vec
 */
 
 
-  int idof, st;
   int ndof = x.size();
 
   // Constants
@@ -74,18 +73,18 @@ CMATRIX Gaussian(vector<double>& x, vector<double>& x0, vector<double>& px0, vec
   const complex<double> one(0.0, 1.0);
   double nrm = 1.0;
 
-  for(idof=0; idof<ndof; idof++){
+  for(int idof=0; idof<ndof; idof++){
       nrm *= pow((1.0/(2.0*M_PI*dx[idof]*dx[idof])),0.25);
   }
 
-  for(st=0; st<nstates; st++){
+  for(int st=0; st<nstates; st++){
 
       if(st==init_state){
 
           double c1, c2;
           c1 = 0.0; c2 = 0.0;
 
-          for(idof=0; idof<ndof; idof++){
+          for(int idof=0; idof<ndof; idof++){
 
               double deltx = 0.5*(x[idof] - x0[idof])/dx[idof];
 
@@ -137,7 +136,6 @@ CMATRIX HO(vector<double>& x, vector<double>& x0, vector<double>& px0,
 
 */
 
-  int idof, st;
   int ndof = x.size();
 
   // Constants
@@ -145,14 +143,14 @@ CMATRIX HO(vector<double>& x, vector<double>& x0, vector<double>& px0,
   const complex<double> one(0.0, 1.0);
   double nrm = 1.0;
 
-  for(idof=0; idof<ndof; idof++){
+  for(int idof=0; idof<ndof; idof++){
       nrm *= (1.0/sqrt(pow(2.0, nu[idof]) * FACTORIAL(nu[idof])) ) * pow((alpha[idof]/M_PI),0.25);
   }
 
 
   double H, dH, ksi,ksi2, c2;
 
-  for(st=0; st<nstates; st++){
+  for(int st=0; st<nstates; st++){
 
       if(st==init_state){
 
@@ -160,7 +158,7 @@ CMATRIX HO(vector<double>& x, vector<double>& x0, vector<double>& px0,
         ksi2 = 0.0;
         wfc.M[st] = complex<double>(1.0, 0.0);
 
-        for(idof=0; idof<ndof; idof++){
+        for(int idof=0; idof<ndof; idof++){
  
           ksi = sqrt(alpha[idof]) * (x[idof] - x0[idof]);
           ksi2 += ksi*ksi;

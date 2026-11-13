@@ -74,16 +74,15 @@ double pseudopot02(double C0, double C2, double alp, const VECTOR& R,
 ******************************************************************************/
 
   // Allocate working memory
-  int i;
   int n_aux = 40;
   vector<double*> auxd(20);
-  for(i=0;i<20;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<20;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = pseudopot02(C0, C2, alp, R, nxa,nya,nza,alp_a,Ra, nxb,nyb,nzb,alp_b,Rb, is_normalize, is_derivs, dIdR, dIdA, dIdB, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<20;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<20;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
 

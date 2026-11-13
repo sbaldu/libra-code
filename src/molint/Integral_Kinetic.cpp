@@ -83,16 +83,15 @@ double kinetic_integral(int nxa,double alp_a, double Xa, int nxb,double alp_b, d
                        ){
 
   // Allocate working memory
-  int i;
   int n_aux = 20; //nxa+nxb+1;
   vector<double*> auxd(5);
-  for(i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = kinetic_integral(nxa,alp_a,Xa, nxb,alp_b,Xb, is_normalize, is_derivs, dI_dXa, dI_dXb, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<5;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
   return res;
@@ -200,16 +199,15 @@ double kinetic_integral(int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
                         VECTOR& dIdA, VECTOR& dIdB
                        ){
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double*> auxd(5);
-  for(i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = kinetic_integral(nxa,nya,nza,alp_a,Ra, nxb,nyb,nzb,alp_b,Rb, is_normalize, is_derivs, dIdA, dIdB, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<5;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
 

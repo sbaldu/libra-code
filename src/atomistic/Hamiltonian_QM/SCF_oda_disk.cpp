@@ -60,7 +60,6 @@ double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao
   Returns the converged total electronic energy 
 */
 
-  int i;
   double lamb_min;
 
   std::string eigen_method="generalized";
@@ -533,9 +532,9 @@ double scf_oda_disk(Electronic_Structure* el, System& syst, vector<AO>& basis_ao
         
       cout<<"Total electronic energy = "<<Eelec<<endl;
       cout<<"Mulliken scf orbital populations:\n";
-      for(i=0;i<el_tmp->Norb;i++){   cout<<"i= "<<i<<"  pop(gross)= "<<el_tmp->Mull_orb_pop_gross[i]<<"  pop(net)= "<<el_tmp->Mull_orb_pop_net[i]<<endl;  }
+      for(int i=0;i<el_tmp->Norb;i++){   cout<<"i= "<<i<<"  pop(gross)= "<<el_tmp->Mull_orb_pop_gross[i]<<"  pop(net)= "<<el_tmp->Mull_orb_pop_net[i]<<endl;  }
       cout<<"Mulliken scf charges:\n";
-        for(i=0;i<syst.Number_of_atoms;i++){   cout<<"i= "<<i<<"  q(gross)= "<<syst.Atoms[i].Atom_mull_charge_gross<<"  q(net)= "<<syst.Atoms[i].Atom_mull_charge_net<<endl;  }
+        for(int i=0;i<syst.Number_of_atoms;i++){   cout<<"i= "<<i<<"  q(gross)= "<<syst.Atoms[i].Atom_mull_charge_gross<<"  q(net)= "<<syst.Atoms[i].Atom_mull_charge_net<<endl;  }
     }
 
     f1 << iter<<" Eelec= "<<Eelec<<" dE= "<<dE<<" den_err = "<<den_err<<endl;

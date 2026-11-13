@@ -65,7 +65,6 @@ void NeuralNetwork::allocate(vector<int>& arch){
   
 */
 
-   int L;
 
    Nlayers = arch.size();
    Npe = arch;
@@ -92,7 +91,7 @@ void NeuralNetwork::allocate(vector<int>& arch){
    dWold.push_back(w);
 
    // Init weights and biases (additional edges)
-   for(L=1;L<Nlayers;L++){
+   for(int L=1;L<Nlayers;L++){
 
       MATRIX w(Npe[L],Npe[L-1]);
       MATRIX b(Npe[L],1);
@@ -116,7 +115,7 @@ void NeuralNetwork::allocate(vector<int>& arch){
    std::cout<<"A multi-layer perceptron has been created\n";
    std::cout<<"Number of layers = "<<Nlayers<<std::endl;
    std::cout<<"The architecture of the MLP is: [";
-   for(L=0;L<Nlayers-1;L++){  std::cout<<Npe[L]<<" , "; }
+   for(int L=0;L<Nlayers-1;L++){  std::cout<<Npe[L]<<" , "; }
    std::cout<<Npe[Nlayers-1]<<"]\n";
    //------------------------------------------------------
 

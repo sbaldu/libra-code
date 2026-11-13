@@ -44,7 +44,6 @@ void Hamiltonian_core_hf
   Compute the core HF (Hartree-Fock) Hamiltonian
 */
 
-  int i,j,n;
   VECTOR da,db,dc;
   
   int Norb = basis_ao.size(); // how many AOs
@@ -55,12 +54,12 @@ void Hamiltonian_core_hf
   }
 
 
-  for(i=0;i<Norb;i++){
-    for(j=0;j<Norb;j++){
+  for(int i=0;i<Norb;i++){
+    for(int j=0;j<Norb;j++){
 
       Hao->M[i*Norb+j] = kinetic_integral(basis_ao[i],basis_ao[j]); //,da,db);
 
-      for(n=0;n<syst.Number_of_atoms;n++){
+      for(int n=0;n<syst.Number_of_atoms;n++){
         Hao->M[i*Norb+j] -= modprms.PT[syst.Atoms[n].Atom_element].Zeff 
                           * nuclear_attraction_integral(basis_ao[i],basis_ao[j], syst.Atoms[n].Atom_RB.rb_cm );// ,n,da,db,dc);
       }// for n
@@ -112,7 +111,6 @@ void Hamiltonian_Fock_hf(Electronic_Structure* el, System& syst, vector<AO>& bas
   Compute the Fock matrix of the HF (Hartree-Fock) Hamiltonian
 */
 
-  int a,b,c,d;
 
   int Norb = basis_ao.size(); // how many AOs 
   if(Norb!=el->Hao->n_cols){  
@@ -131,11 +129,11 @@ void Hamiltonian_Fock_hf(Electronic_Structure* el, System& syst, vector<AO>& bas
   vector<double> Mull_charges_gross(syst.Number_of_atoms, 0.0);
   vector<double> Mull_charges_net(syst.Number_of_atoms, 0.0);
 
-  for(a=0;a<syst.Number_of_atoms;a++){ Zeff[a] = modprms.PT[syst.Atoms[a].Atom_element].Zeff; } // e.g. 4 for STO-3G C
+  for(int a=0;a<syst.Number_of_atoms;a++){ Zeff[a] = modprms.PT[syst.Atoms[a].Atom_element].Zeff; } // e.g. 4 for STO-3G C
 
   update_Mull_charges(ao_to_atom_map, Zeff, el->Mull_orb_pop_gross, el->Mull_orb_pop_net, Mull_charges_gross, Mull_charges_net);
 
-  for(a=0;a<syst.Number_of_atoms;a++){ 
+  for(int a=0;a<syst.Number_of_atoms;a++){ 
     syst.Atoms[a].Atom_mull_charge_gross = Mull_charges_gross[a]; 
     syst.Atoms[a].Atom_mull_charge_net = Mull_charges_net[a]; 
   }
@@ -149,10 +147,10 @@ void Hamiltonian_Fock_hf(Electronic_Structure* el, System& syst, vector<AO>& bas
 
 
   // Formation of the Fock matrix: add Coulomb and Exchange parts
-  for(a=0;a<Norb;a++){
-    for(b=0;b<Norb;b++){
-      for(c=0;c<Norb;c++){
-        for(d=0;d<Norb;d++){
+  for(int a=0;a<Norb;a++){
+    for(int b=0;b<Norb;b++){
+      for(int c=0;c<Norb;c++){
+        for(int d=0;d<Norb;d++){
 
           //  (P_cd * (ab|cd) - P_alp_cd*(ad|cb))
           double J_abcd,K_adcb;

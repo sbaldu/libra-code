@@ -48,14 +48,13 @@ CMATRIX qtag_psi(MATRIX& q, MATRIX& q1, MATRIX& p1, MATRIX& alp1, MATRIX& s1, CM
       wfc - CMATRIX(nstates, 1) - complex value of the wavefunction at q for all states
 
 */
-  int itraj, istate;
   int ndof = q1.n_rows;
   int ntraj = q1.n_cols;
   int nstates = Coeff.n_rows;
 
   CMATRIX wfc(nstates, 1);
 
-  for(itraj=0; itraj<ntraj; itraj++){
+  for(int itraj=0; itraj<ntraj; itraj++){
 
     complex<double> prod(1.0, 0.0);  
     double sum1, sum2; sum1 = sum2 = 0.0;
@@ -78,7 +77,7 @@ CMATRIX qtag_psi(MATRIX& q, MATRIX& q1, MATRIX& p1, MATRIX& alp1, MATRIX& s1, CM
     double si = sin(sum2);
     prod *= exp(-0.5 * sum1) * complex<double>(cs, si); 
     
-    for(istate=0; istate<nstates; istate++){
+    for(int istate=0; istate<nstates; istate++){
       wfc.add(istate, 0,   Coeff.get(istate, itraj) * prod);
     }
   }// for itraj
@@ -721,15 +720,15 @@ void qtag_hamiltonian_and_overlap(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, 
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
   int nstates = Coeff.n_rows;
-  int i, itraj, n1, n2, indx;
+  int n1, indx;
 
-  vector<int> dof_dim(ndof); for(i=0;i<ndof;i++){ dof_dim[i] = i; }
+  vector<int> dof_dim(ndof); for(int i=0;i<ndof;i++){ dof_dim[i] = i; }
   vector< vector<int> > traj_on_surf(nstates); // indices of trajectories on each state
 
 
   indx = 0;
   n1 = active_states[0];
-  for(itraj = 0; itraj<ntraj; itraj++){
+  for(int itraj = 0; itraj<ntraj; itraj++){
     if(n1 != active_states[itraj]){
       indx+=1;
       }//if n1 != active_states[itraj]
@@ -762,7 +761,7 @@ void qtag_hamiltonian_and_overlap(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, 
       MATRIX a1_half(a1); a1_half *= 0.5;
 
 
-      for(n2=n1; n2<nstates; n2++){
+      for(int n2=n1; n2<nstates; n2++){
 
         int ntraj_on_surf_n2 = traj_on_surf[n2].size();
 
@@ -831,7 +830,6 @@ CMATRIX qtag_momentum(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coe
 */
 
 
-  int i,j, idof;
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
   complex<double> dzt;
@@ -841,14 +839,14 @@ CMATRIX qtag_momentum(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coe
   CMATRIX dz(ndof,1);
   complex<double> one(0.0, 1.0);
 
-  for(i=0; i<ntraj; i++){
+  for(int i=0; i<ntraj; i++){
     complex<double> z(0.0,0.0);
     dz *= 0.0;
 
-    for(j=0; j<ntraj; j++){
+    for(int j=0; j<ntraj; j++){
       complex<double> nrm(1.0, 0.0);
 
-      for(idof=0; idof<ndof; idof++){
+      for(int idof=0; idof<ndof; idof++){
           dq = q.get(idof, i) - q.get(idof, j);
           double argg = (p.get(idof, j) * dq + s.get(idof, j) );
           complex<double> tmp( cos(argg), sin(argg) );
@@ -858,7 +856,7 @@ CMATRIX qtag_momentum(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coe
 
       z += Coeff.get(j) * nrm;
 
-      for(idof=0; idof<ndof; idof++){
+      for(int idof=0; idof<ndof; idof++){
         dq = q.get(idof, i) - q.get(idof, j);
         dzt = -(alp.get(idof, j) * dq - one * p.get(idof, j)) * Coeff.get(j) * nrm;
         dz.add(idof, 0, dzt);
@@ -866,7 +864,7 @@ CMATRIX qtag_momentum(MATRIX& q, MATRIX& p, MATRIX& alp, MATRIX& s, CMATRIX& Coe
       
     }// for j
 
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       mom.set(i, idof,  dz.get(idof)/z );
     }// for idof
 

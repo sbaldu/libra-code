@@ -74,19 +74,18 @@ vector<int> compute_mapping(int indx, vector<int> &npts) {
     Maps an integer to a vector according to the grid dimensions
   */
 
-  int i;
   int ndof = npts.size();
   vector<int> sizes;
 
   int sz = 1;
-  for (i = 0; i < ndof; i++) {
+  for (int i = 0; i < ndof; i++) {
     sizes.push_back(sz);
     sz = sz * npts[ndof - 1 - i];
   }
 
   vector<int> res;
   int _indx = indx;
-  for (i = 0; i < ndof; i++) {
+  for (int i = 0; i < ndof; i++) {
     int rem = _indx % sizes[ndof - 1 - i];
     int ni = int((_indx - rem) / sizes[ndof - 1 - i]);
     _indx = _indx - ni * sizes[ndof - 1 - i];
@@ -108,19 +107,18 @@ vector<int> compute_hyperplane(vector<int> &npts, int idim_const,
     ipt_const - index of the point on the constrained dimension
   */
 
-  int i;
   int ndof = npts.size();
 
   // Compute the total number of point on the grid
   int tot_npts = 1;
-  for (i = 0; i < ndof; i++) {
+  for (int i = 0; i < ndof; i++) {
     tot_npts = tot_npts * npts[i];
   }
 
   // Now compute the indices of the points belonging to the hyperplane
   vector<int> res;
   vector<int> vec;
-  for (i = 0; i < tot_npts; i++) {
+  for (int i = 0; i < tot_npts; i++) {
     vec = compute_mapping(i, npts);
     if (vec[idim_const] == ipt_const) {
       res.push_back(i);
@@ -151,14 +149,14 @@ vector<vector<int>> compute_mapping(vector<vector<int>> &inp,
 
   */
 
-  int sz, i, ipt;
+  int sz;
   sz = inp.size(); // how many vectors are in
 
   if (sz == 0) { // starting with an empty container
 
     vector<vector<int>> res;
 
-    for (ipt = 0; ipt < npts[0]; ipt++) { // all points along a given dimension
+    for (int ipt = 0; ipt < npts[0]; ipt++) { // all points along a given dimension
 
       vector<int> res_i(1, ipt);
       res.push_back(res_i);
@@ -172,12 +170,12 @@ vector<vector<int>> compute_mapping(vector<vector<int>> &inp,
 
       vector<vector<int>> res;
 
-      for (i = 0; i < sz; i++) { // take each initial input vectors
+      for (int i = 0; i < sz; i++) { // take each initial input vectors
 
         vector<int> res_i = inp[i];
         res_i.push_back(0);
 
-        for (ipt = 0; ipt < npts[lvl];
+        for (int ipt = 0; ipt < npts[lvl];
              ipt++) { // all points along a given dimension
           res_i[lvl] = ipt;
           res.push_back(res_i);

@@ -27,9 +27,9 @@ namespace libmodel_parameters{
 
 // HF_integrals class:
 int HF_integrals::find_data(int a,int b,int c,int d){
-  int i,j,sz; sz = data.size();
+  int j,sz; sz = data.size();
   j = -1;
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     if(data[i].a==a){
       if(data[i].b==b){
         if(data[i].c==c){
@@ -74,10 +74,10 @@ void HF_integrals::get_JK_values(int a,int b, int c, int d, double& J, double& K
 
 // EHT_K class:
 int EHT_K::find_data(std::string elt1,std::string orb_type1,std::string elt2,std::string orb_type2){
-  int i,j,sz; sz = data.size();
+  int j,sz; sz = data.size();
   j = -1;
 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
 /*
     if((data[i].elt1==elt1 && data[i].orb_type1==orb_type1 && data[i].elt2==elt2 && data[i].orb_type2==orb_type2)||
        (data[i].elt2==elt1 && data[i].orb_type2==orb_type1 && data[i].elt1==elt2 && data[i].orb_type1==orb_type2)){ j = i; break; }
@@ -113,9 +113,9 @@ int EHT_K::find_data(std::string elt1,std::string orb_type1,std::string elt2,std
 
 
 int EHT_K::find_data(std::string elt1,std::string orb_type1){
-  int i,j,sz; sz = pp_data.size();
+  int j,sz; sz = pp_data.size();
   j = -1;
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     int status = 0;
 
     if(pp_data[i].elt1==elt1){
@@ -132,9 +132,9 @@ int EHT_K::find_data(std::string elt1,std::string orb_type1){
 }
 
 int EHT_K::find_data(int n1_,int n2_,int n3_,int n4_){
-  int i,j,sz; sz = psps_data.size();
+  int j,sz; sz = psps_data.size();
   j = -1;
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     int status = 0;
 
     if(psps_data[i].n1==n1_){
@@ -325,11 +325,11 @@ void EHT_K::show(){
   Careful: this may be a very long listing
 */
 
-  int i,sz;
+  int sz;
   
   cout<<"Showing data...\n";
   sz = data.size();
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
 
     cout<<"i= "<<i<<" "<<data[i].elt1<<" "<<data[i].orb_type1<<" "<<data[i].elt2<<" "<<data[i].orb_type2<<"\n";   
     cout<<"K_values      C_values\n";
@@ -364,12 +364,11 @@ void mEHT_K::set_mapping(EHT_K& eht_k, const vector<AO>& basis_ao){
   \param[in] basis_ao The list of AOs of the particular system - the parameters for all pairs of these AOs will be precomputed and
                    stored internally in the mEHT_K object
 */
-  int k;
   cout<<"In mEHT_K::set_mapping...\n";
 
   size = basis_ao.size();
 
-  for(k=0;k<5;k++){
+  for(int k=0;k<5;k++){
     eht_K[k].reserve(size*size);   eht_K[k].resize(size*size,  0.0);
     eht_C[k].reserve(size*size);   eht_C[k].resize(size*size,  0.0);
   }
@@ -417,7 +416,7 @@ void mEHT_K::set_mapping(EHT_K& eht_k, const vector<AO>& basis_ao){
       std::string sh2 = it_type2->first.second;
       int i2 = it_type2->second; // index of this AO type
 
-      for(k=0;k<5;k++){
+      for(int k=0;k<5;k++){
         k_vals[k][i1][i2]  = eht_k.get_K_value(k,at1,sh1,at2,sh2);
         c_vals[k][i1][i2]  = eht_k.get_C_value(k,at1,sh1,at2,sh2);
       }
@@ -441,7 +440,7 @@ void mEHT_K::set_mapping(EHT_K& eht_k, const vector<AO>& basis_ao){
 
       //cout<<"I= "<<I<<" i1= "<<i1<<" J= "<<J<<" i2= "<<i2<<" k_vals[i1][i2]= "<<k_vals[0][i1][i2]<<endl;
 
-      for(k=0;k<5;k++){
+      for(int k=0;k<5;k++){
         eht_K[k][I*size+J]  = k_vals[k][i1][i2];
         eht_C[k][I*size+J]  = c_vals[k][i1][i2];
       }

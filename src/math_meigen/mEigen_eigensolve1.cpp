@@ -49,7 +49,6 @@ void solve_eigen(CMATRIX* H, CMATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
 */
 
 
-  int i,j;
 
   if(H->n_rows!=S->n_rows){  // N_bas
     std::cout<<"Error in solve_eigen: The # of rows of the H and S matrices must be equal\n";
@@ -79,8 +78,8 @@ void solve_eigen(CMATRIX* H, CMATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
   MatrixXcd A(N_bas,N_bas), B(N_bas,N_bas);
 
   if(symm==0){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = H->M[i*N_bas+j];     
         B(i,j) = S->M[i*N_bas+j];     
@@ -89,8 +88,8 @@ void solve_eigen(CMATRIX* H, CMATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
   }// no symmetrization
 
   else if(symm==1){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = 0.5*(H->M[i*N_bas+j] + std::conj(H->M[j*N_bas+i]));     
         B(i,j) = 0.5*(S->M[i*N_bas+j] + std::conj(S->M[j*N_bas+i]));     
@@ -105,11 +104,11 @@ void solve_eigen(CMATRIX* H, CMATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
 
 
   // Copy results into output matrices
-  for(i=0;i<N_mo;i++){
+  for(int i=0;i<N_mo;i++){
 
      E->M[i*N_mo+i] = solution.eigenvalues()[i]; 
 
-     for(j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
+     for(int j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
 
   }// for i
 
@@ -171,7 +170,6 @@ void solve_eigen(MATRIX* H, MATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
 */
 
 
-  int i,j;
 
   if(H->n_rows!=S->n_rows){  // N_bas
     std::cout<<"Error in solve_eigen: The # of rows of the H and S matrices must be equal\n";
@@ -204,8 +202,8 @@ void solve_eigen(MATRIX* H, MATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
   MatrixXcd A(N_bas,N_bas), B(N_bas,N_bas);
 
   if(symm==0){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = complex<double>(H->M[i*N_bas+j], 0.0);     
         B(i,j) = complex<double>(S->M[i*N_bas+j], 0.0);     
@@ -214,8 +212,8 @@ void solve_eigen(MATRIX* H, MATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
   }// no symmetrization
 
   else if(symm==1){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = complex<double>( 0.5*(H->M[i*N_bas+j] + H->M[j*N_bas+i]), 0.0);     
         B(i,j) = complex<double>( 0.5*(S->M[i*N_bas+j] + S->M[j*N_bas+i]), 0.0);     
@@ -230,11 +228,11 @@ void solve_eigen(MATRIX* H, MATRIX* S, CMATRIX* E, CMATRIX* C, int symm){
 
 
   // Copy results into output matrices
-  for(i=0;i<N_mo;i++){
+  for(int i=0;i<N_mo;i++){
 
      E->M[i*N_mo+i] = solution.eigenvalues()[i]; 
 
-     for(j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
+     for(int j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
 
   }// for i
 
@@ -300,7 +298,6 @@ void solve_eigen(MATRIX* H, MATRIX* S, MATRIX* E, MATRIX* C, int symm){
 */
 
 
-  int i,j;
 
   if(H->n_rows!=S->n_rows){  // N_bas
     std::cout<<"Error in solve_eigen: The # of rows of the H and S matrices must be equal\n";
@@ -333,8 +330,8 @@ void solve_eigen(MATRIX* H, MATRIX* S, MATRIX* E, MATRIX* C, int symm){
   MatrixXd A(N_bas,N_bas), B(N_bas,N_bas);
 
   if(symm==0){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = H->M[i*N_bas+j];     
         B(i,j) = S->M[i*N_bas+j];     
@@ -343,8 +340,8 @@ void solve_eigen(MATRIX* H, MATRIX* S, MATRIX* E, MATRIX* C, int symm){
   }// no symmetrization
 
   else if(symm==1){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = 0.5*(H->M[i*N_bas+j] + H->M[j*N_bas+i]);     
         B(i,j) = 0.5*(S->M[i*N_bas+j] + S->M[j*N_bas+i]);     
@@ -359,11 +356,11 @@ void solve_eigen(MATRIX* H, MATRIX* S, MATRIX* E, MATRIX* C, int symm){
 
 
   // Copy results into output matrices
-  for(i=0;i<N_mo;i++){
+  for(int i=0;i<N_mo;i++){
 
      E->M[i*N_mo+i] = solution.eigenvalues()[i]; 
 
-     for(j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
+     for(int j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
 
   }// for i
 

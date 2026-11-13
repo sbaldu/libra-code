@@ -40,11 +40,10 @@ double energy_elec(MATRIX* Pao,MATRIX* Hao,MATRIX* Fao){
 
   int Norb = Pao->n_cols;
   
-  int i,j;
   double Eelec = 0.0;
 
-  for(i=0;i<Norb;i++){
-    for(j=0;j<Norb;j++){
+  for(int i=0;i<Norb;i++){
+    for(int j=0;j<Norb;j++){
 
       Eelec += Pao->M[i*Norb+j]*(Hao->M[i*Norb+j] + Fao->M[i*Norb+j]);
 
@@ -111,7 +110,6 @@ double energy_elec(MATRIX* P_alp, MATRIX* P_bet,
 
   int Norb = P_alp->n_cols;
   
-  int i,j;
   double Eelec_alp = 0.0;
   double Eelec_bet = 0.0;
   double Eelec_tot = 0.0;
@@ -121,8 +119,8 @@ double energy_elec(MATRIX* P_alp, MATRIX* P_bet,
   if(dFao_alp_dP_alp->max_elt()>1e-10){   *temp += *P_alp * *dFao_alp_dP_alp;    }
   if(dFao_alp_dP_bet->max_elt()>1e-10){   *temp += *P_bet * *dFao_alp_dP_bet;    }
    
-  for(i=0;i<Norb;i++){
-    for(j=0;j<Norb;j++){
+  for(int i=0;i<Norb;i++){
+    for(int j=0;j<Norb;j++){
       Eelec_alp += P_alp->M[i*Norb+j]*(Hao_alp->M[i*Norb+j] +( Fao_alp->M[i*Norb+j] + temp->M[i*Norb+j]));
     }// for i
   }// for j
@@ -134,8 +132,8 @@ double energy_elec(MATRIX* P_alp, MATRIX* P_bet,
   if(dFao_bet_dP_alp->max_elt()>1e-10){   *temp += *P_alp * *dFao_bet_dP_alp;    }
   if(dFao_bet_dP_bet->max_elt()>1e-10){   *temp += *P_bet * *dFao_bet_dP_bet;    }
    
-  for(i=0;i<Norb;i++){
-    for(j=0;j<Norb;j++){
+  for(int i=0;i<Norb;i++){
+    for(int j=0;j<Norb;j++){
       Eelec_bet += P_bet->M[i*Norb+j]*(Hao_bet->M[i*Norb+j] +( Fao_bet->M[i*Norb+j] + temp->M[i*Norb+j]));
     }// for i
   }// for j

@@ -47,15 +47,14 @@ void update_overlap_matrix(int x_period, int y_period, int z_period,
     This function can also take periodic images of the system into account
   */
 
-  int i, j;
   VECTOR dIdA, dIdB, TV, Rij, Rij0;
 
   int Norb = basis_ao.size();
 
   Sao = 0.0;
 
-  for (i = 0; i < Norb; i++) {
-    for (j = i; j < Norb; j++) {
+  for (int i = 0; i < Norb; i++) {
+    for (int j = i; j < Norb; j++) {
 
       for (int nx = -x_period; nx <= x_period; nx++) {
         for (int ny = -y_period; ny <= y_period; ny++) {
@@ -208,13 +207,12 @@ void MO_overlap(MATRIX &Smo, vector<AO> &ao_i, vector<AO> &ao_j, MATRIX &Ci,
   }
 
   // Allocate working memory
-  int i, j;
   int is_derivs = 0;
   int is_normalize = 0;
   VECTOR dIdA, dIdB;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -229,8 +227,8 @@ void MO_overlap(MATRIX &Smo, vector<AO> &ao_i, vector<AO> &ao_j, MATRIX &Ci,
   pop_cols(Cj, *cj, active_orb_j);
 
   // overlap matrix of S
-  for (i = 0; i < Nbas_i; i++) { // all orbitals
-    for (j = 0; j < Nbas_j; j++) {
+  for (int i = 0; i < Nbas_i; i++) { // all orbitals
+    for (int j = 0; j < Nbas_j; j++) {
 
       double dist2 =
           (ao_i[i].primitives[0].R - ao_j[j].primitives[0].R).length2();
@@ -251,7 +249,7 @@ void MO_overlap(MATRIX &Smo, vector<AO> &ao_i, vector<AO> &ao_j, MATRIX &Ci,
                // Norb_j_act) = Norb_i_act x Norb_j_act
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -302,13 +300,12 @@ void MO_overlap(CMATRIX &Smo, vector<AO> &ao_i, vector<AO> &ao_j, CMATRIX &Ci,
   }
 
   // Allocate working memory
-  int i, j;
   int is_derivs = 0;
   int is_normalize = 0;
   VECTOR dIdA, dIdB;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -323,8 +320,8 @@ void MO_overlap(CMATRIX &Smo, vector<AO> &ao_i, vector<AO> &ao_j, CMATRIX &Ci,
   pop_cols(Cj, *cj, active_orb_j);
 
   // overlap matrix of S
-  for (i = 0; i < Nbas_i; i++) { // all orbitals
-    for (j = 0; j < Nbas_j; j++) {
+  for (int i = 0; i < Nbas_i; i++) { // all orbitals
+    for (int j = 0; j < Nbas_j; j++) {
 
       double dist2 =
           (ao_i[i].primitives[0].R - ao_j[j].primitives[0].R).length2();
@@ -345,7 +342,7 @@ void MO_overlap(CMATRIX &Smo, vector<AO> &ao_i, vector<AO> &ao_j, CMATRIX &Ci,
                // Norb_j_act) = Norb_i_act x Norb_j_act
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();

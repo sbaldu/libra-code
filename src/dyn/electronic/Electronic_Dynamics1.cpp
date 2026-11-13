@@ -52,20 +52,19 @@ void Electronic::project_out(int i, int renorm_flag){
   Warning: "istate" variable is not changed
 */ 
 
-  int j;
 
   // Project out (annihilate the population of) state i
   q[i] = 0.0;  p[i] = 0.0;
 
   // Compute the norm after the state projection
   double nrm = 0.0;
-  for(j=0;j<nstates;j++){ 
+  for(int j=0;j<nstates;j++){ 
     nrm += (q[j]*q[j] + p[j]*p[j]); 
   } nrm = sqrt(nrm);
 
   // Optionally, re-normalize the rest of the wavefunction 
   if(renorm_flag==1){
-    for(j=0;j<nstates;j++){  q[j] /= nrm; p[j] /= nrm; }
+    for(int j=0;j<nstates;j++){  q[j] /= nrm; p[j] /= nrm; }
   }
    
 }
@@ -217,7 +216,6 @@ void propagate_electronic_rot(double dt, CMATRIX& Coeff, CMATRIX& Hvib){
 */
 
 
-  int i,j;
 
   double dt_half = 0.5*dt;
   complex<double> tau(0.0, -0.5*dt);  // this is actually -i*dt/2
@@ -247,15 +245,15 @@ void propagate_electronic_rot(double dt, CMATRIX& Coeff, CMATRIX& Hvib){
 
   //------------- Phase evolution according iL^(1) ----------------
   // exp(iL^(1) * dt/2)
-  for(i=0;i<nstates;i++){
+  for(int i=0;i<nstates;i++){
       Coeff.set(i, 0,  exp(tau*Hvib.get(i,i)) * Coeff.get(i, 0) ); 
   }// for i
 
 
   //------------- Diabatic population transfer, according to iL^(3) ----------------
   // exp(iL^(3) * dt/2), forward e.g. iL_01 * iL_02 * iL_12
-  for(i=0;i<nstates;i++){
-    for(j=0;j<i;j++){
+  for(int i=0;i<nstates;i++){
+    for(int j=0;j<i;j++){
       iL3_action(dt_half, Coeff, Hvib, i, j);
     }// for j
   }// for i
@@ -263,15 +261,15 @@ void propagate_electronic_rot(double dt, CMATRIX& Coeff, CMATRIX& Hvib){
 
   //------------- Non-adiabatic population transfer, according to iL^(2) ----------------
   // exp(iL^(2) * dt/2), forward e.g. iL_01 * iL_02 * iL_12
-  for(i=0;i<nstates;i++){
-    for(j=0;j<i;j++){
+  for(int i=0;i<nstates;i++){
+    for(int j=0;j<i;j++){
       iL2_action(dt_half, Coeff, Hvib, i, j);
     }// for j
   }// for i
 
   // exp(iL^(2) * dt/2), backward e.g. iL_12 * iL_02 * iL_01
-  for(i=nstates-1;i>=0;i--){
-    for(j=i-1;j>=0;j--){
+  for(int i=nstates-1;i>=0;i--){
+    for(int j=i-1;j>=0;j--){
       iL2_action(dt_half, Coeff, Hvib, i, j);
     }// for j
   }// for i
@@ -279,8 +277,8 @@ void propagate_electronic_rot(double dt, CMATRIX& Coeff, CMATRIX& Hvib){
 
   //------------- Diabatic population transfer, according to iL^(3) ----------------
   // exp(iL^(3) * dt/2), backward e.g. iL_01 * iL_02 * iL_12
-  for(i=nstates-1;i>=0;i--){
-    for(j=i-1;j>=0;j--){
+  for(int i=nstates-1;i>=0;i--){
+    for(int j=i-1;j>=0;j--){
       iL3_action(dt_half, Coeff, Hvib, i, j);
     }// for j
   }// for i
@@ -288,7 +286,7 @@ void propagate_electronic_rot(double dt, CMATRIX& Coeff, CMATRIX& Hvib){
 
   //------------- Phase evolution according iL^(1) ----------------
   // exp(iL^(1) * dt/2)
-  for(i=0;i<nstates;i++){
+  for(int i=0;i<nstates;i++){
       Coeff.set(i, 0,  exp(tau*Hvib.get(i,i)) * Coeff.get(i, 0) );
   }// for i
 
@@ -316,7 +314,6 @@ void propagate_electronic_eig(double dt, CMATRIX& Coeff, CMATRIX& Hvib){
   This is the Python-friendly function
 */ 
 
-  int i;
  
   // Let us first diagonalize the overlap matrix S
   int sz = Hvib.n_cols;  
@@ -332,7 +329,7 @@ void propagate_electronic_eig(double dt, CMATRIX& Coeff, CMATRIX& Hvib){
 
   // Diagonal form expH
   complex<double> one(0.0, 1.0);
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     complex<double> val = std::exp(-one*Heig.get(i,i)*dt );
     expH.set(i,i,val);
   }
@@ -375,7 +372,6 @@ void propagate_electronic_nonHermitian(double dt, CMATRIX& Coeff, CMATRIX& Hvib)
 */ 
 
 
-  int i;
  
   // Let us first diagonalize the overlap matrix S
   int sz = Hvib.n_cols;  
@@ -398,7 +394,7 @@ void propagate_electronic_nonHermitian(double dt, CMATRIX& Coeff, CMATRIX& Hvib)
 
   // Diagonal form expH
   complex<double> one(0.0, 1.0);
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     complex<double> val = std::exp(-one*Heig.get(i,i)*dt );
     expH.set(i,i,val);
   }
@@ -436,7 +432,6 @@ void propagate_electronic_eig(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRIX&
 */ 
 
 
-  int i;
  
   // Let us first diagonalize the overlap matrix S
   int sz = S.n_cols;  
@@ -451,7 +446,7 @@ void propagate_electronic_eig(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRIX&
   CMATRIX S_i_half(sz, sz);  // S^{-1/2}
   CMATRIX S_half(sz, sz);    // S^{1/2}
 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     complex<double> val = std::sqrt(Seig.get(i,i));
     S_i_half.set(i,i, 1.0/val);
     S_half.set(i,i, val);
@@ -476,7 +471,7 @@ void propagate_electronic_eig(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRIX&
   // Diagonal form expH
   CMATRIX expH(sz, sz);  // 
   complex<double> one(0.0, 1.0);
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     complex<double> val = std::exp(-one*Seig.get(i,i)*dt );
     expH.set(i,i,val);
   }
@@ -490,7 +485,7 @@ void propagate_electronic_eig(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRIX&
   // Transform the coefficients back to the original representation:
   coeff = S_i_half * coeff;  // convert the effective coefficients back to original representation
 
-  for(i=0;i<Coeff.n_elts;i++){  Coeff.set(i, 0, coeff.get(i, 0)); } // so we don't allocate new memory for Coeff!!!
+  for(int i=0;i<Coeff.n_elts;i++){  Coeff.set(i, 0, coeff.get(i, 0)); } // so we don't allocate new memory for Coeff!!!
  
 }// propagate_electronic_eig
 
@@ -518,7 +513,6 @@ void propagate_electronic_qtag(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRIX
 */ 
 
 
-  int i;
  
   // Let us first diagonalize the overlap matrix Hvib
   int sz = Hvib.n_cols;  
@@ -531,7 +525,7 @@ void propagate_electronic_qtag(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRIX
 
   // Diagonal form expH
   CMATRIX expE(sz, sz); 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     double argg = -E.get(i,i).real()*dt;
     double _cs = cos(argg);
     double _si = sin(argg);
@@ -570,7 +564,6 @@ void propagate_electronic_qtag2(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRI
 */
 
 
-  int i;
 
   // Let us first diagonalize the overlap matrix Hvib
   int sz = Hvib.n_cols;
@@ -585,7 +578,7 @@ void propagate_electronic_qtag2(double dt, CMATRIX& Coeff, CMATRIX& Hvib, CMATRI
 
   // Diagonal form expH
   CMATRIX expE(sz, sz);
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     double argg = - 0.5*(E.get(i,i) + E_old.get(i,i)).real()*dt;
     double _cs = cos(argg);
     double _si = sin(argg);

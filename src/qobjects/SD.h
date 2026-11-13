@@ -81,12 +81,11 @@ public:
 
 
   friend int operator == (const SD& sd1, const SD& sd2){
-    int i;
     int res = ((sd1.N==sd2.N) && (sd1.N_bas==sd2.N_bas) && (sd1.N_alp==sd2.N_alp) && (sd1.N_bet==sd2.N_bet));
     if (res==1){
-      for(i=0;i<sd1.N;i++){    res *= (sd1.spin[i]==sd2.spin[i]);   }
-      for(i=0;i<sd1.N_alp;i++){    res *= (sd1.orb_indx_alp[i]==sd2.orb_indx_alp[i]);   }
-      for(i=0;i<sd1.N_bet;i++){    res *= (sd1.orb_indx_bet[i]==sd2.orb_indx_bet[i]);   }      
+      for(int i=0;i<sd1.N;i++){    res *= (sd1.spin[i]==sd2.spin[i]);   }
+      for(int i=0;i<sd1.N_alp;i++){    res *= (sd1.orb_indx_alp[i]==sd2.orb_indx_alp[i]);   }
+      for(int i=0;i<sd1.N_bet;i++){    res *= (sd1.orb_indx_bet[i]==sd2.orb_indx_bet[i]);   }      
     }
     return res;
   }

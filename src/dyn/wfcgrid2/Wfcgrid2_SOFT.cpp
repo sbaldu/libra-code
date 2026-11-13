@@ -138,7 +138,6 @@ void Wfcgrid2::update_propagator_H_lin(double dt) {
     not point-by-point
   */
 
-  int i, j, a;
 
   int dim = nstates * Npts;
 
@@ -158,8 +157,8 @@ void Wfcgrid2::update_propagator_H_lin(double dt) {
   solve_eigen(*lin_Hdia, S, tmp, U, 0);
 
   int cnt = 0;
-  for (i = 0; i < dim; i++) {
-    for (j = 0; j < dim; j++) {
+  for (int i = 0; i < dim; i++) {
+    for (int j = 0; j < dim; j++) {
       if (std::abs(U.get(i, j)) > 1e-5) {
         cnt += 1;
       }
@@ -174,7 +173,7 @@ void Wfcgrid2::update_propagator_H_lin(double dt) {
 
   vector<complex<double>> expE(dim, complex<double>(0.0, 0.0));
 
-  for (i = 0; i < dim; i++) {
+  for (int i = 0; i < dim; i++) {
 
     cs = std::cos(dt * (lin_Hadi->get(i, i).real()));
     si = std::sin(dt * (lin_Hadi->get(i, i).real()));
@@ -193,11 +192,11 @@ void Wfcgrid2::update_propagator_H_lin(double dt) {
   //  *lin_expH = (*lin_U) * (*lin_expH) * lin_U->H();
 
   // We do this...
-  for (i = 0; i < dim; i++) {
-    for (j = 0; j < dim; j++) {
+  for (int i = 0; i < dim; i++) {
+    for (int j = 0; j < dim; j++) {
       complex<double> sum;
       sum = 0.0;
-      for (a = 0; a < dim; a++) {
+      for (int a = 0; a < dim; a++) {
         sum += U.get(i, a) * expE[a] * Udag.get(a, j);
       }
       lin_expH->set(i, j, sum);
@@ -219,13 +218,13 @@ void Wfcgrid2::update_propagator_K(double dt, vector<double> &mass) {
     working in atomic units: hbar = 1
   */
 
-  int idof, ipt;
+  int ipt;
   double k, kfactor;
 
   for (int npt1 = 0; npt1 < Npts; npt1++) {
 
     kfactor = 0.0;
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
       ipt = gmap[npt1][idof];
 
       k = kgrid[idof]->get(ipt);
@@ -251,12 +250,11 @@ void Wfcgrid2::SOFT_propagate() {
 
   */
 
-  int npt1;
 
   //=================== Wavefunction propagation part ===================
   //--------------------- exp(-0.5*dt*i/hbar*H_loc) ---------------------
   // For all grid points
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_dia[npt1] = expH[npt1] * PSI_dia[npt1];
   }
   /*
@@ -269,7 +267,7 @@ void Wfcgrid2::SOFT_propagate() {
   update_reciprocal(0);
 
   // Propagate in reciprocal space, for all grid points
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     reciPSI_dia[npt1] = expK[npt1] * reciPSI_dia[npt1];
   }
 
@@ -277,7 +275,7 @@ void Wfcgrid2::SOFT_propagate() {
   update_real(0);
 
   //--------------------- exp(-0.5*dt*i/hbar*H_loc) ---------------------
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_dia[npt1] = expH[npt1] * PSI_dia[npt1];
   }
   /*

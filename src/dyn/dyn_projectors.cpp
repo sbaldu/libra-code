@@ -150,13 +150,12 @@ vector<vector<int>> hungarian_algorithm(vector<vector<double>>& cost_matrix) {
 
 vector<int> hungarian_algorithm(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha){ 
 
-  int i,j;
   MATRIX cost_mat = -make_cost_mat(orb_mat_inp, en_mat_inp, alpha);
   int n = cost_mat.n_cols;
 
   vector< vector<double> > cost_matrix(n, vector<double>(n, 0.0) );
-  for(i=0; i<n;i++){
-    for(j=0; j<n; j++){
+  for(int i=0; i<n;i++){
+    for(int j=0; j<n; j++){
       cost_matrix[i][j] = cost_mat.get(i,j);
     }
   }
@@ -166,8 +165,8 @@ vector<int> hungarian_algorithm(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, doubl
   vector< vector<int> > assignment_mtx = hungarian_algorithm(cost_matrix);
 
   vector<int> perm(n, 0);
-  for(i=0;i<n;i++){
-    for(j=0; j<n; j++){  if(assignment_mtx[i][j]==1){  perm[i] = j; }  }
+  for(int i=0;i<n;i++){
+    for(int j=0; j<n; j++){  if(assignment_mtx[i][j]==1){  perm[i] = j; }  }
   }// for i
 
   return perm;
@@ -194,17 +193,16 @@ CMATRIX compute_phase_corrections(CMATRIX& S, double tol){
 
 */
 
-  int i;
   complex<double> f;
   int nc = S.n_cols;
 
   CMATRIX phase_corr(nc, 1);
 
   // Default values
-  for(i=0;i<nc; i++){  phase_corr.set(i, 0, 1.0, 0.0); }
+  for(int i=0;i<nc; i++){  phase_corr.set(i, 0, 1.0, 0.0); }
 
   // Compute phase corrections  
-  for(i=0; i<nc; i++){
+  for(int i=0; i<nc; i++){
 
     f = S.get(i,i);
 
@@ -260,12 +258,11 @@ vector<int> get_reordering(CMATRIX& time_overlap){
     // extract the indices where <phi_i(t)|phi_i(t+dt)> is not close to 1. 
     CMATRIX S(time_overlap);  // just a temporary working object
     int sz = time_overlap.n_rows;
-    int i;
 
     // Original permutation
     vector<int> perm(sz, 0);  
     vector<int> perm_cum(sz, 0);  
-    for(i=0;i<sz;i++){ perm_cum[i] = i; }
+    for(int i=0;i<sz;i++){ perm_cum[i] = i; }
     int maxiter = sz; 
    
 
@@ -281,7 +278,7 @@ vector<int> get_reordering(CMATRIX& time_overlap){
         S.max_col_elt(col, val, indx);
             
         // Apply the permutation (col, indx) to the present "perm" list
-        for(i=0;i<sz;i++){ perm[i] = i; } 
+        for(int i=0;i<sz;i++){ perm[i] = i; } 
 
         int tmp = perm[col];
         perm[col] = perm[indx];
@@ -322,12 +319,11 @@ MATRIX make_cost_mat(CMATRIX& orb_mat_inp, CMATRIX& en_mat_inp, double alpha){
 
     */
 
-    int a,b;
     int nstates = orb_mat_inp.n_cols;
     MATRIX cost_mat(nstates, nstates);
 
-    for(a=0;a<nstates;a++){
-        for(b=0;b<nstates;b++){
+    for(int a=0;a<nstates;a++){
+        for(int b=0;b<nstates;b++){
 
             complex<double> s = orb_mat_inp.get(a,b);
             double s2 = (s*std::conj(s)).real();
@@ -391,23 +387,23 @@ vector<int> get_stochastic_reordering(CMATRIX& time_overlap, Random& rnd){
     // extract the indices where <phi_i(t)|phi_i(t+dt)> is not close to 1. 
     CMATRIX S(time_overlap);  // just a temporary working object
     int sz = time_overlap.n_rows;
-    int i,j, target;
+    int target;
 
     // Original permutation
     vector<int> perm(sz, 0);  
-    for(i=0;i<sz;i++){ perm[i] = i; } 
+    for(int i=0;i<sz;i++){ perm[i] = i; } 
 
 
     vector<int> used;  // already utilized options
     MATRIX g(1, sz);   // switching probabilities
 
     // was sz - 1 - not sure why
-    for(i=0;i<sz;i++){ // all starting states (at time t)
+    for(int i=0;i<sz;i++){ // all starting states (at time t)
 
         // Make a list of the states that can still participate
         // in the reordering
         vector<int> active_states;
-        for(j=0;j<sz;j++){ 
+        for(int j=0;j<sz;j++){ 
             if(is_in_vector(j,used)){  ;;  }
             else{ active_states.push_back(j); }
         }
@@ -418,7 +414,7 @@ vector<int> get_stochastic_reordering(CMATRIX& time_overlap, Random& rnd){
         if(act_st_sz > 1){
  
             MATRIX g(1, act_st_sz);
-            for(j=0; j<act_st_sz; j++){ // all target states
+            for(int j=0; j<act_st_sz; j++){ // all target states
 
                 int indx = active_states[j];
                 g.set(0,j, (S.get(i,indx)*std::conj(S.get(i,indx))).real() );
@@ -444,9 +440,9 @@ vector<int> get_stochastic_reordering(CMATRIX& time_overlap, Random& rnd){
 
     }// for i
 
-    for(i=0;i<sz;i++){ 
+    for(int i=0;i<sz;i++){ 
       if(!is_in_vector(i,perm)){
-        for(j=0;j<sz;j++){ 
+        for(int j=0;j<sz;j++){ 
             cout<<"j= "<<j<<" perms[j] = "<<perm[j]<<endl; 
             exit(0);
         }
@@ -494,14 +490,13 @@ vector<int> get_stochastic_reordering2(CMATRIX& time_overlap, Random& rnd){
     // extract the indices where <phi_i(t)|phi_i(t+dt)> is not close to 1.
     CMATRIX S(time_overlap);  // just a temporary working object
 
-    int i, iperm;
     vector<int> permutation;
     int number_states = time_overlap.n_rows;
 
 
     //====== Construct permutations possible ==============
     vector<int> identity_permutation;
-    for(i = 0; i < number_states; i++){  identity_permutation.push_back(i); }
+    for(int i = 0; i < number_states; i++){  identity_permutation.push_back(i); }
 
     vector< vector<int> > list_permutations = compute_all_permutations(identity_permutation);
     int num_permutations = list_permutations.size();  /// this should be number_states!
@@ -510,12 +505,12 @@ vector<int> get_stochastic_reordering2(CMATRIX& time_overlap, Random& rnd){
     MATRIX g(1, num_permutations);
 
     double norm = 0.0;
-    for(iperm = 0; iperm < num_permutations; iperm++){
+    for(int iperm = 0; iperm < num_permutations; iperm++){
 
         permutation = list_permutations[iperm];
  
         double permutation_probability = 1.0;
-        for(i = 0; i < number_states; i++){
+        for(int i = 0; i < number_states; i++){
             permutation_probability *= real(conj(S.get(i, permutation[i])) * S.get(i, permutation[i]));
         } // for i
 
@@ -1092,7 +1087,6 @@ CMATRIX compute_F_cost_matrix(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr,
      dt - time step
      act_state - the current active state
 */  
-  int i,j;
   int ndof = F_curr.n_cols;
   int nst = F_curr.n_rows; 
   CMATRIX res(nst, nst);
@@ -1113,7 +1107,7 @@ CMATRIX compute_F_cost_matrix(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr,
   MATRIX tmp(ndof, 1);
 
   double val = 0.0;
-  for(i=0; i<nst; i++){
+  for(int i=0; i<nst; i++){
 
     fi_curr = F_curr.row(i).real();
     fi_prev = F_prev.row(i).real();
@@ -1121,7 +1115,7 @@ CMATRIX compute_F_cost_matrix(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr,
     dq_i = (vel * dt + 0.5 * ai * dt * dt);
     double dE_i = -(fi_prev * dq_i).get(0,0);
 
-    for(j=0;j<nst; j++){
+    for(int j=0;j<nst; j++){
 
       fj_curr = F_curr.row(j).real();
       fj_prev = F_prev.row(j).real();
@@ -1150,7 +1144,6 @@ vector<MATRIX> compute_F_cost_matrix_dof_resolved(CMATRIX& F_curr,  CMATRIX& F_p
      dt - time step
      act_state - the current active state
 */
-  int i,j;
   int ndof = F_curr.n_cols;
   int nst = F_curr.n_rows;
   vector<MATRIX> res(ndof, MATRIX(nst, nst) );
@@ -1175,7 +1168,7 @@ vector<MATRIX> compute_F_cost_matrix_dof_resolved(CMATRIX& F_curr,  CMATRIX& F_p
 
     double vel = p.get(idof, 0) * iM.get(idof, 0);
 
-    for(i=0; i<nst; i++){
+    for(int i=0; i<nst; i++){
 
       double fi_curr = F_curr.get(i,idof).real();
       double fi_prev = F_prev.get(i,idof).real();
@@ -1183,7 +1176,7 @@ vector<MATRIX> compute_F_cost_matrix_dof_resolved(CMATRIX& F_curr,  CMATRIX& F_p
       double dq_i = vel * dt + 0.5 * ai * dt * dt;
       double dE_i = -fi_prev * dq_i;
 
-      for(j=0;j<nst; j++){
+      for(int j=0;j<nst; j++){
 
         double fj_prev = F_prev.get(j,idof).real();
         double dq_j = vel * dt + 0.5 * ai * dt * dt;
@@ -1215,7 +1208,6 @@ CMATRIX compute_F_cost_matrix2(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr
    This is an experimental function - merely a placeholder - not used anywhere yet!
 
 */
-  int i,j;
   int ndof = F_curr.n_cols;
   int nst = F_curr.n_rows;
   CMATRIX res(nst, nst);
@@ -1226,8 +1218,8 @@ CMATRIX compute_F_cost_matrix2(CMATRIX& F_curr,  CMATRIX& F_prev, MATRIX& e_curr
 
   double val = 0.0;
   // Compute the norms
-  for(i=0; i<nst; i++){
-    for(j=0;j<nst; j++){
+  for(int i=0; i<nst; i++){
+    for(int j=0;j<nst; j++){
 
       fi_curr = F_curr.row(i).real();
       fi_prev = F_prev.row(i).real();

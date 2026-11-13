@@ -40,11 +40,10 @@ double det(MATRIX& A){
   }
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -66,11 +65,10 @@ double FullPivLU_det(MATRIX& A){
   }
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -96,11 +94,10 @@ complex<double> det(CMATRIX& A){
   }
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -121,11 +118,10 @@ complex<double> FullPivLU_det(CMATRIX& A){
   }
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i

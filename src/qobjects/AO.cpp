@@ -447,10 +447,9 @@ double gaussian_overlap(AO &AOa, AO &AOb, int is_normalize, int is_derivs,
                         VECTOR &dIdA, VECTOR &dIdB) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -459,7 +458,7 @@ double gaussian_overlap(AO &AOa, AO &AOb, int is_normalize, int is_derivs,
                                 auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -537,10 +536,9 @@ double gaussian_overlap(AO *AOa, AO *AOb, int is_normalize, int is_derivs,
                         VECTOR &dIdA, VECTOR &dIdB) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -549,7 +547,7 @@ double gaussian_overlap(AO *AOa, AO *AOb, int is_normalize, int is_derivs,
                                 auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -614,10 +612,9 @@ double gaussian_moment(AO &AOa, PrimitiveG &G, AO &AOb, int is_normalize,
                        VECTOR &dIdB) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -626,7 +623,7 @@ double gaussian_moment(AO &AOa, PrimitiveG &G, AO &AOb, int is_normalize,
                                dIdB, auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -709,10 +706,9 @@ double gaussian_moment(AO *AOa, PrimitiveG &G, AO *AOb, int is_normalize,
                        VECTOR &dIdB) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -721,7 +717,7 @@ double gaussian_moment(AO *AOa, PrimitiveG &G, AO *AOb, int is_normalize,
                                dIdB, auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -787,10 +783,9 @@ double pseudopot02(double C0, double C2, double alp, const VECTOR &R, AO &AOa,
                    VECTOR &dIdA, VECTOR &dIdB) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -799,7 +794,7 @@ double pseudopot02(double C0, double C2, double alp, const VECTOR &R, AO &AOa,
                            dIdR, dIdA, dIdB, auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -886,10 +881,9 @@ double pseudopot02(double C0, double C2, double alp, const VECTOR &R, AO *AOa,
                    AO *AOb, int is_normalize, int is_derivs, VECTOR &dIdR,
                    VECTOR &dIdA, VECTOR &dIdB) {
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -898,7 +892,7 @@ double pseudopot02(double C0, double C2, double alp, const VECTOR &R, AO *AOa,
                            dIdR, dIdA, dIdB, auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -982,10 +976,9 @@ VECTOR transition_dipole_moment(AO &AOa, AO &AOb, int is_normalize,
                                 int is_derivs, MATRIX3x3 &dMdA,
                                 MATRIX3x3 &dMdB) {
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -995,7 +988,7 @@ VECTOR transition_dipole_moment(AO &AOa, AO &AOb, int is_normalize,
                                  auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -1074,10 +1067,9 @@ VECTOR transition_dipole_moment(AO *AOa, AO *AOb, int is_normalize,
                                 int is_derivs, MATRIX3x3 &dMdA,
                                 MATRIX3x3 &dMdB) {
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -1087,7 +1079,7 @@ VECTOR transition_dipole_moment(AO *AOa, AO *AOb, int is_normalize,
                                  auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -1169,10 +1161,9 @@ VECTOR derivative_coupling_integral(AO &AOa, AO &AOb, int is_normalize,
                                     int is_derivs, MATRIX3x3 &dMdA,
                                     MATRIX3x3 &dMdB) {
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -1182,7 +1173,7 @@ VECTOR derivative_coupling_integral(AO &AOa, AO &AOb, int is_normalize,
                                      dMdB, auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -1263,10 +1254,9 @@ VECTOR derivative_coupling_integral(AO *AOa, AO *AOb, int is_normalize,
                                     int is_derivs, MATRIX3x3 &dMdA,
                                     MATRIX3x3 &dMdB) {
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -1276,7 +1266,7 @@ VECTOR derivative_coupling_integral(AO *AOa, AO *AOb, int is_normalize,
                                      dMdB, auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -1357,10 +1347,9 @@ double kinetic_integral(AO &AOa, AO &AOb, int is_normalize, int is_derivs,
                         VECTOR &dIdA, VECTOR &dIdB) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -1369,7 +1358,7 @@ double kinetic_integral(AO &AOa, AO &AOb, int is_normalize, int is_derivs,
                                 auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -1446,10 +1435,9 @@ double kinetic_integral(AO *AOa, AO *AOb, int is_normalize, int is_derivs,
                         VECTOR &dIdA, VECTOR &dIdB) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double *> auxd(10);
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     auxd[i] = new double[n_aux];
   }
 
@@ -1458,7 +1446,7 @@ double kinetic_integral(AO *AOa, AO *AOb, int is_normalize, int is_derivs,
                                 auxd, n_aux);
 
   // Clean working memory
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
@@ -1529,15 +1517,14 @@ double nuclear_attraction_integral(AO &AOa, AO &AOb, VECTOR &Rc,
                                    VECTOR &DB, VECTOR &DC) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   int n_auxv = 10;
   vector<double *> auxd(20);
-  for (i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; i++) {
     auxd[i] = new double[n_aux];
   }
   vector<VECTOR *> auxv(5);
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     auxv[i] = new VECTOR[n_auxv];
   }
 
@@ -1546,11 +1533,11 @@ double nuclear_attraction_integral(AO &AOa, AO &AOb, VECTOR &Rc,
       nuclear_attraction_integral(AOa, AOb, Rc, is_normalize, is_derivs, DA, DB,
                                   DC, auxd, n_aux, auxv, n_auxv);
   // Clean working memory
-  for (i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     delete[] auxv[i];
   }
   auxv.clear();
@@ -1639,15 +1626,14 @@ double nuclear_attraction_integral(AO *AOa, AO *AOb, VECTOR &Rc,
                                    VECTOR &DB, VECTOR &DC) {
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   int n_auxv = 10;
   vector<double *> auxd(20);
-  for (i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; i++) {
     auxd[i] = new double[n_aux];
   }
   vector<VECTOR *> auxv(5);
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     auxv[i] = new VECTOR[n_auxv];
   }
 
@@ -1656,11 +1642,11 @@ double nuclear_attraction_integral(AO *AOa, AO *AOb, VECTOR &Rc,
       nuclear_attraction_integral(AOa, AOb, Rc, is_normalize, is_derivs, DA, DB,
                                   DC, auxd, n_aux, auxv, n_auxv);
   // Clean working memory
-  for (i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     delete[] auxv[i];
   }
   auxv.clear();
@@ -1760,15 +1746,14 @@ double electron_repulsion_integral(AO &AOa, AO &AOb, AO &AOc, AO &AOd,
                                    VECTOR &DB, VECTOR &DC, VECTOR &DD) {
 
   // Allocate working memory
-  int i;
   int n_aux = 40;
   int n_auxv = 40;
   vector<double *> auxd(30);
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     auxd[i] = new double[n_aux];
   }
   vector<VECTOR *> auxv(5);
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     auxv[i] = new VECTOR[n_auxv];
   }
 
@@ -1777,11 +1762,11 @@ double electron_repulsion_integral(AO &AOa, AO &AOb, AO &AOc, AO &AOd,
       electron_repulsion_integral(AOa, AOb, AOc, AOd, is_normalize, is_derivs,
                                   DA, DB, DC, DD, auxd, n_aux, auxv, n_auxv);
   // Clean working memory
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     delete[] auxv[i];
   }
   auxv.clear();
@@ -1883,15 +1868,14 @@ double electron_repulsion_integral(AO *AOa, AO *AOb, AO *AOc, AO *AOd,
                                    VECTOR &DB, VECTOR &DC, VECTOR &DD) {
 
   // Allocate working memory
-  int i;
   int n_aux = 40;
   int n_auxv = 40;
   vector<double *> auxd(30);
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     auxd[i] = new double[n_aux];
   }
   vector<VECTOR *> auxv(5);
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     auxv[i] = new VECTOR[n_auxv];
   }
 
@@ -1900,11 +1884,11 @@ double electron_repulsion_integral(AO *AOa, AO *AOb, AO *AOc, AO *AOd,
       electron_repulsion_integral(AOa, AOb, AOc, AOd, is_normalize, is_derivs,
                                   DA, DB, DC, DD, auxd, n_aux, auxv, n_auxv);
   // Clean working memory
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     delete[] auxv[i];
   }
   auxv.clear();

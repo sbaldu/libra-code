@@ -62,7 +62,6 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<int>& types, int max_type, vector<d
 
   MATRIX3x3 tp;
   MATRIX3x3 I;  I.identity();
-  int i,j;
   int sz = r.size();
 
 
@@ -86,7 +85,7 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<int>& types, int max_type, vector<d
 
   //------------------ Initialize forces and stress -----------------
   double energy = 0.0;
-  for(i=0;i<sz;i++){ f[i] = 0.0; }
+  for(int i=0;i<sz;i++){ f[i] = 0.0; }
   at_stress = 0.0;
 
 
@@ -184,8 +183,8 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<int>& types, int max_type, vector<d
 
           sum1 = 0.0;  
          
-          for(i=0;i<sz;i++){
-            for(j=0;j<sz;j++){
+          for(int i=0;i<sz;i++){
+            for(int j=0;j<sz;j++){
 
               sum1 += Bij[ types[i] * max_type + types[j] ]*cos(h*(r[i]-r[j]));
 
@@ -196,8 +195,8 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<int>& types, int max_type, vector<d
 
 
           //----------- Forces ---------------------
-          for(i=0;i<sz;i++){
-            for(j=0;j<sz;j++){
+          for(int i=0;i<sz;i++){
+            for(int j=0;j<sz;j++){
 
               f_mod = h;
               f_mod *= -const2 * Bij[ types[i] * max_type + types[j] ] * sin(h*(r[i]-r[j])); // -dE2/dr_i 
@@ -224,12 +223,12 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<int>& types, int max_type, vector<d
   //=============== Additive constant to energy (self-interactions) ===========
   // it does not contribute to forces
   double E3 = 0.0;
-  for(i=0;i<sz;i++){  E3 += Bij[ types[i] * max_type + types[i] ];  }
+  for(int i=0;i<sz;i++){  E3 += Bij[ types[i] * max_type + types[i] ];  }
   energy += (const1/6.0)*E3;
 
   E3 = 0.0;
-  for(i=0;i<sz;i++){
-    for(j=0;j<sz;j++){
+  for(int i=0;i<sz;i++){
+    for(int j=0;j<sz;j++){
       E3 += Bij[ types[i] * max_type + types[j] ];;
     }
   }
@@ -276,7 +275,6 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<double>& q, MATRIX3x3& box, /* Inpu
 
   MATRIX3x3 tp;
   MATRIX3x3 I;  I.identity();
-  int i,j;
   int sz = r.size();
 
 
@@ -300,7 +298,7 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<double>& q, MATRIX3x3& box, /* Inpu
 
   //------------------ Initialize forces and stress -----------------
   double energy = 0.0;
-  for(i=0;i<sz;i++){ f[i] = 0.0; }
+  for(int i=0;i<sz;i++){ f[i] = 0.0; }
   at_stress = 0.0;
 
 
@@ -398,7 +396,7 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<double>& q, MATRIX3x3& box, /* Inpu
           fact =  ( (exp(-b*b))*(0.5/(b*b) - 1.0)/b  + sqrt_M_PI*ERFC(b) ) /(hmod*hmod*hmod);
 
           sum1 = 0.0;   sum2 = 0.0; 
-          for(i=0;i<sz;i++){
+          for(int i=0;i<sz;i++){
 
               sum1 += q[i]*cos(h*r[i]);
               sum2 += q[i]*sin(h*r[i]);
@@ -409,7 +407,7 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<double>& q, MATRIX3x3& box, /* Inpu
 
 
           //----------- Forces ---------------------
-          for(i=0;i<sz;i++){
+          for(int i=0;i<sz;i++){
 
               f_mod = h;
               f_mod *= const2 * (2.0)*fact*q[i]*(sin(h* r[i])*sum1 - cos(h* r[i])*sum2); // -dsum3/dr_i 
@@ -432,12 +430,12 @@ double VdW_Ewald3D(vector<VECTOR>& r, vector<double>& q, MATRIX3x3& box, /* Inpu
   //=============== Additive constant to energy (self-interactions) ===========
   // it does not contribute to forces
   double E3 = 0.0;
-  for(i=0;i<sz;i++){  E3 += (q[i]*q[i]);  }
+  for(int i=0;i<sz;i++){  E3 += (q[i]*q[i]);  }
   energy += (const1/6.0)*E3;
 
   E3 = 0.0;
-  for(i=0;i<sz;i++){
-    for(j=0;j<sz;j++){
+  for(int i=0;i<sz;i++){
+    for(int j=0;j<sz;j++){
       E3 += q[i]*q[j];
     }
   }
@@ -469,7 +467,6 @@ double Vdw_LJ(VECTOR* r,                                               /* Inputs
 
   int count = 0; // for triples and central translations
   int excl = 0;  // for exclusions
-  int i,j;
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
   int na,nb,nc;
@@ -487,7 +484,7 @@ double Vdw_LJ(VECTOR* r,                                               /* Inputs
 
   //------------------ Initialize forces and stress -----------------
   energy = 0.0;
-  for(i=0;i<sz;i++){ f[i] = 0.0; }
+  for(int i=0;i<sz;i++){ f[i] = 0.0; }
   at_stress = 0.0;
   fr_stress = 0.0;
   ml_stress = 0.0;
@@ -507,8 +504,8 @@ double Vdw_LJ(VECTOR* r,                                               /* Inputs
 //  cout<<"In MB-VDW\n";
 //  cout<<"sz = "<<sz<<endl;
 
-  for(i=0;i<sz;i++){
-    for(j=i;j<sz;j++){
+  for(int i=0;i<sz;i++){
+    for(int j=i;j<sz;j++){
 
 //     cout<<"i = "<<i<<" j = "<<j;
 
@@ -642,8 +639,7 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 
 //  This version is based on lists for each atom
 
-  int excl = 0;  // for exclusions
-  int i,j,k;
+  int j;
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
   int na,nb,nc;
@@ -660,7 +656,7 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 
   //------------------ Initialize forces and stress -----------------
   energy = 0.0;
-  for(i=0;i<sz;i++){ f[i] = 0.0; }
+  for(int i=0;i<sz;i++){ f[i] = 0.0; }
   at_stress = 0.0;
   fr_stress = 0.0;
   ml_stress = 0.0;
@@ -704,11 +700,11 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
   int excl_ij;
 
 //  j = -1;
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     int sz1 = at_neib[i].size();
 //    cout<<" i = "<<i<<" sz1 = "<<sz1<<endl;
     j = -1;
-    for(k=0;k<sz1;k++){
+    for(int k=0;k<sz1;k++){
 
 //       xshift = central_translation[count].n1;
 //       yshift = central_translation[count].n2;
@@ -723,7 +719,7 @@ double Vdw_LJ1(VECTOR* r,                                               /* Input
 //     cout<<"i = "<<i<<" k = "<<k<<" j = "<<j<<endl;      
        if(is_next_j){
          int is_scaled = 0;
-         for(excl=0;excl<nexcl;excl++){ 
+         for(int excl=0;excl<nexcl;excl++){ 
            if( ((i==excl1[excl]) && (j==excl2[excl]))||
                ((j==excl1[excl]) && (i==excl2[excl]))
              ){ is_scaled = 1; excl_ij = excl; }
@@ -830,7 +826,7 @@ double Vdw_LJ2_no_excl(VECTOR* r,                                               
 */
 
 //  int count = 0; // for triples and central translations
-  int i,a,b,c;
+  int c;
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
   double energy;
@@ -875,10 +871,10 @@ double Vdw_LJ2_no_excl(VECTOR* r,                                               
   int indx = 0;
   vector<quartet> globqt;
   VECTOR minr,maxr; minr = maxr = r[0];
-  for(a=minb.n1;a<=maxb.n1;a++){
-    for(b=minb.n2;b<=maxb.n2;b++){
+  for(int a=minb.n1;a<=maxb.n1;a++){
+    for(int b=minb.n2;b<=maxb.n2;b++){
       for(c=minb.n3;c<=maxb.n3;c++){
-        for(i=0;i<Nat;i++){
+        for(int i=0;i<Nat;i++){
 
           VECTOR t = tmp[i] + a*t1 + b*t2 + c*t3;  R.push_back(t);
           if(t.x<=minr.x){ minr.x = t.x; } if(t.x>=maxr.x){ maxr.x = t.x; }
@@ -916,7 +912,7 @@ double Vdw_LJ2_no_excl(VECTOR* r,                                               
   }
 
   // Calculate mappings between atom indexes and cell (sub-cell) indexes
-  for(i=0;i<indx;i++){
+  for(int i=0;i<indx;i++){
     VECTOR diff = R[i] - minr;  // position of
     triple trp;
     trp.n1 = floor(diff.x/cellx); if(trp.n1<0.0){ trp.n1 = 0; } if(trp.n1>Nx){ trp.n1 = Nx;}
@@ -936,7 +932,7 @@ double Vdw_LJ2_no_excl(VECTOR* r,                                               
 
   //------------------ Initialize forces and stress -----------------
   energy = 0.0;
-  for(i=0;i<sz;i++){ f[i] = 0.0; }
+  for(int i=0;i<sz;i++){ f[i] = 0.0; }
   at_stress = 0.0;
   fr_stress = 0.0;
   ml_stress = 0.0;
@@ -1178,7 +1174,6 @@ double LJ_Coulomb(VECTOR* r, VECTOR* g, VECTOR* m, VECTOR* f,
 */
 
   int excl = 0;  // for exclusions
-  int i,j;
   double SW,sig,eps,en;
   VECTOR dSW,fmod;
   double energy;
@@ -1191,7 +1186,7 @@ double LJ_Coulomb(VECTOR* r, VECTOR* g, VECTOR* m, VECTOR* f,
 
   //------------------ Initialize forces and stress -----------------
   energy = 0.0;
-  for(i=0;i<sz;i++){ f[i] = 0.0; }
+  for(int i=0;i<sz;i++){ f[i] = 0.0; }
   at_stress = 0.0;
   fr_stress = 0.0;
   ml_stress = 0.0;
@@ -1200,8 +1195,8 @@ double LJ_Coulomb(VECTOR* r, VECTOR* g, VECTOR* m, VECTOR* f,
                           // use 2 if half i,j loops are used: (i in [1,sz]) and (j in [i,sz])
   double scl;
 
-  for(i=0;i<sz;i++){
-    for(j=i;j<sz;j++){
+  for(int i=0;i<sz;i++){
+    for(int j=i;j<sz;j++){
      // Get scaling constant
      // Here we use the ordering of the excl1 and excl2 arrays which corresponds to 
      // given way of double loop organization

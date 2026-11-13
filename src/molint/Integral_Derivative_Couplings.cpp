@@ -90,16 +90,15 @@ double derivative_coupling_integral(
 
 
   // Allocate working memory
-  int i;
   int n_aux = 20; 
   vector<double*> auxd(5);
-  for(i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = derivative_coupling_integral(nxa,alp_a,Xa, nxb,alp_b,Xb, is_normalize, is_derivs, dI_dXa, dI_dXb, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<5;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
   return res;
@@ -216,16 +215,15 @@ VECTOR derivative_coupling_integral
 
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double*> auxd(5);
-  for(i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   VECTOR D; D = derivative_coupling_integral(nxa,nya,nza,alp_a,Ra, nxb,nyb,nzb,alp_b,Rb, is_normalize, is_derivs, dDdA, dDdB, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<5;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
 

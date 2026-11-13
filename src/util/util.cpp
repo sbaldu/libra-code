@@ -166,12 +166,11 @@ int delta(vector<int>& A,vector<int>& B,int& a,int& b){
   \param[out] a the integer from A which is not present in B
   \param[out] b the integer from B which is not present in A
 */
-  int i;
   int res = 1;
   int sz = A.size();
   std::vector<int> aA, aB, aC; // modules of A and B and overlap C
 
-  for(i=0;i<sz;i++){ // the size of A and B is assumed to be the same
+  for(int i=0;i<sz;i++){ // the size of A and B is assumed to be the same
     int mA = A[i];
     int mB = B[i];
     aA.push_back(mA);
@@ -183,7 +182,7 @@ int delta(vector<int>& A,vector<int>& B,int& a,int& b){
   sz = aC.size();
 
   int nexc = 0; // Number of excitations between 2 states
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     int n_in_a,n_in_b;
     vector<int> tmpa,tmpb;
     n_in_a = is_in_vector(aC[i],aA,tmpa);

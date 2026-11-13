@@ -163,7 +163,6 @@ void dyn_variables::update_amplitudes(dyn_control_params& dyn_params){
 
    C_adi = U.H() C_dia
 */
-  int i;
   CMATRIX cd(ndia, 1);
   CMATRIX ca(nadi, 1);
 
@@ -175,13 +174,13 @@ void dyn_variables::update_amplitudes(dyn_control_params& dyn_params){
     if(dyn_params.rep_tdse==0){
       cd = ampl_dia->col(traj);
       ca = U.H() * cd;
-      for(i=0;i<nadi;i++){ ampl_adi->set(i, traj, ca.get(i,0) ); }
+      for(int i=0;i<nadi;i++){ ampl_adi->set(i, traj, ca.get(i,0) ); }
     }
     /// Adiabatic wfc representation
     else if(dyn_params.rep_tdse==1){
       ca = ampl_adi->col(traj);
       cd = U * ca; 
-      for(i=0;i<ndia;i++){ ampl_dia->set(i, traj, cd.get(i,0) ); }
+      for(int i=0;i<ndia;i++){ ampl_dia->set(i, traj, cd.get(i,0) ); }
     }
 
   }// for traj
@@ -474,7 +473,6 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
   check_input(params, default_params, critical_params);
 
 
-  int traj;
   double ksi;
   int init_type = -1;
   int istate = -1;
@@ -539,7 +537,7 @@ void dyn_variables::init_amplitudes(bp::dict _params, Random& rnd){
   }
 
   //# Dynamical variables
-  for(traj=0; traj<ntraj; traj++){
+  for(int traj=0; traj<ntraj; traj++){
 
     //========================== First, let's set up the amplitudes =======================================
     if(init_type==0){
@@ -653,7 +651,6 @@ void dyn_variables::init_density_matrix(bp::dict _params){
   check_input(params, default_params, critical_params);
 
 
-  int traj;
   int init_dm_type = -1;
   int rep = -1;
   int verbosity = 0;
@@ -688,7 +685,7 @@ void dyn_variables::init_density_matrix(bp::dict _params){
   ///================= Actual calculations  ================================
 
   //# Dynamical variables
-  for(traj=0; traj<ntraj; traj++){
+  for(int traj=0; traj<ntraj; traj++){
 
     // From the amplitudes
     if(init_dm_type==0){
@@ -756,7 +753,6 @@ void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
 
   check_input(params, default_params, critical_params);
 
-  int traj;
   double ksi;
   int init_type = -1;
   int istate = -1;
@@ -824,7 +820,7 @@ void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
   act_states.clear();  
 
   //================ For adiabatic - set up them directly =================
-  for(traj=0; traj<ntraj; traj++){
+  for(int traj=0; traj<ntraj; traj++){
     if(init_type==0 || init_type==1 || init_type==4){ 
       act_states.push_back(istate);
     }
@@ -841,7 +837,7 @@ void dyn_variables::init_active_states(bp::dict _params, Random& rnd){
     CMATRIX pop_adi(nadi, nadi);
     CMATRIX pop_dia(ndia, ndia);
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
       auto i = dia_act_states_temp[traj]; // active diabatic state
       pop_dia *= 0.0; pop_dia.set(i, i, complex<double>(1.0, 0.0) );
 
@@ -881,7 +877,6 @@ void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
 
   check_input(params, default_params, critical_params);
 
-  int traj;
   double ksi;
   int init_type = -1;
   int istate = -1;
@@ -949,7 +944,7 @@ void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
   act_states_dia.clear();  
 
   //================ For diabatic - set up them directly =================
-  for(traj=0; traj<ntraj; traj++){
+  for(int traj=0; traj<ntraj; traj++){
     if(init_type==0 || init_type==1 || init_type==4){ 
       act_states_dia.push_back(istate);
     }
@@ -966,7 +961,7 @@ void dyn_variables::init_active_states_dia(bp::dict _params, Random& rnd){
     CMATRIX pop_adi(nadi, nadi);
     CMATRIX pop_dia(ndia, ndia);
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
       auto i = act_states_temp[traj]; // active diabatic state
       pop_adi *= 0.0; pop_adi.set(i, i, complex<double>(1.0, 0.0) );
 
@@ -1101,7 +1096,6 @@ void dyn_variables:: update_active_states(int direction, int property){
                        in terms of the energy-ordered (instantaneous) eign-states
 */
 
-  int i;
   int nst = nadi;
   CMATRIX coeff(nst, 1);
   MATRIX rho_tmp(nst,nst);
@@ -1137,7 +1131,7 @@ void dyn_variables:: update_active_states(int direction, int property){
       if(direction==1){    coeff = proj_adi[itraj]->H() * coeff; }
       else if(direction==-1){  coeff = (*proj_adi[itraj]) * coeff; }
 
-      for(i=0; i<nst; i++){ ampl_adi->set(i, itraj,  coeff.get(i, 0) ); }
+      for(int i=0; i<nst; i++){ ampl_adi->set(i, itraj,  coeff.get(i, 0) ); }
     }
 
   }// for itraj
@@ -1164,7 +1158,7 @@ void dyn_variables:: set_active_states_diff_rep(int rep_sh, Random& rnd){
   Tempelaar, R.; Reichman, D. R. Generalization of Fewest-Switches Surface Hopping for Coherences. 
   The Journal of Chemical Physics 2018, 148 (10), 102309. https://doi.org/10.1063/1.5000843
 */
-  int i, j, traj;
+  int i;
   double ksi; 
   if(rep_sh!=0 && rep_sh!=1){ 
     cout<<"Wrong representation = "<<rep_sh<<"\nExiting...\n";
@@ -1179,10 +1173,10 @@ void dyn_variables:: set_active_states_diff_rep(int rep_sh, Random& rnd){
   // Obtain the diabatic active states from the adiabatic ones
   if(rep_sh==1){
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
       i = act_states[traj]; // active adiabatic state
       pop_adi = *dm_adi[traj];
-      for(j=0;j<nadi; j++){ pop_adi.set(j,j, complex<double>(0.0, 0.0) ); }
+      for(int j=0;j<nadi; j++){ pop_adi.set(j,j, complex<double>(0.0, 0.0) ); }
       pop_adi.set(i, i, complex<double>(1.0, 0.0) );
 
       // The following transformation is correct only for S_dia = 1
@@ -1200,10 +1194,10 @@ void dyn_variables:: set_active_states_diff_rep(int rep_sh, Random& rnd){
 
   // Obtain the adiabatic active states from the diabatic ones
   else{
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
       i = act_states_dia[traj]; // active diabatic state
       pop_dia = *dm_dia[traj];
-      for(j=0;j<nadi; j++){ pop_dia.set(j,j, complex<double>(0.0, 0.0) ); }
+      for(int j=0;j<nadi; j++){ pop_dia.set(j,j, complex<double>(0.0, 0.0) ); }
       pop_dia.set(i, i, complex<double>(1.0, 0.0) );
 
       // The following transformation is correct only for S_dia = 1
@@ -1343,7 +1337,7 @@ vector<double> dyn_variables::compute_average_mash_pop(int rep){
 */
 
   //======= First, compute the SE populations ========
-  int sz,i;
+  int sz;
 
   if(rep==0 || rep==2){ sz = ndia; }
   else if(rep==1 || rep==3 || rep == 4){ sz = nadi; }
@@ -1354,16 +1348,16 @@ vector<double> dyn_variables::compute_average_mash_pop(int rep){
 
   vector<double> res(sz, 0.0);
 
-  for(i=0; i<sz; i++){ res[i] = ave.get(i,i); }
+  for(int i=0; i<sz; i++){ res[i] = ave.get(i,i); }
 
   //====== Now transform them according to MASH estimators formula =====
 
   double sum = 0.0;
-  for(i=1; i<=sz; i++){  sum += 1.0/i; }  sum -= 1.0;
+  for(int i=1; i<=sz; i++){  sum += 1.0/i; }  sum -= 1.0;
   double alpha_N = (sz - 1.0)/sum;
   double beta_N = (1.0 - alpha_N)/sz;
 
-  for(i=0; i<sz; i++){  res[i] = alpha_N * res[i] + beta_N; }
+  for(int i=0; i<sz; i++){  res[i] = alpha_N * res[i] + beta_N; }
 
   return res;
 
@@ -1377,7 +1371,7 @@ vector<double> dyn_variables::compute_average_sh_pop(int rep){
   If rep is different from rep_sh, the resultant SH population is computed indirectly through the sampling based on diagonal elments of the density matrix
 */
 
-  int sz, i, j, traj; 
+  int sz, i; 
   if(rep==0){ sz = ndia; }
   else if(rep==1){ sz = nadi; }
   else{ 
@@ -1389,15 +1383,15 @@ vector<double> dyn_variables::compute_average_sh_pop(int rep){
 
   if(rep==0){
     vector<int> effective_states( act_states_dia );
-    for(traj=0; traj<ntraj; traj++){ i = effective_states[traj]; res[i] += 1.0;  }
+    for(int traj=0; traj<ntraj; traj++){ i = effective_states[traj]; res[i] += 1.0;  }
   }// rep == 0
 
   else if(rep==1){
     vector<int> effective_states( act_states );
-    for(traj=0; traj<ntraj; traj++){ i = effective_states[traj]; res[i] += 1.0;  }
+    for(int traj=0; traj<ntraj; traj++){ i = effective_states[traj]; res[i] += 1.0;  }
   }// rep == 1
 
-  for(j=0; j<sz; j++){   res[j] = res[j] / (float)ntraj;   }
+  for(int j=0; j<sz; j++){   res[j] = res[j] / (float)ntraj;   }
 
   return res;
 }
@@ -1410,7 +1404,7 @@ vector<double> dyn_variables::compute_average_sh_pop_TR(int rep){
   Tempelaar, R.; Reichman, D. R. Generalization of Fewest-Switches Surface Hopping for Coherences. 
   The Journal of Chemical Physics 2018, 148 (10), 102309. https://doi.org/10.1063/1.5000843
 */
-  int sz, i, j, traj; 
+  int sz, i; 
   if(rep==0){ sz = ndia; }
   else if(rep==1){ sz = nadi; }
   else{ 
@@ -1427,17 +1421,17 @@ vector<double> dyn_variables::compute_average_sh_pop_TR(int rep){
     CMATRIX pop_dia(ndia, ndia);
     CMATRIX U(ndia, nadi);
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
       i = effective_states[traj]; // active adiabatic state
       pop_adi = *dm_adi[traj];
-      for(j=0;j<nadi; j++){ pop_adi.set(j,j, complex<double>(0.0, 0.0) ); }
+      for(int j=0;j<nadi; j++){ pop_adi.set(j,j, complex<double>(0.0, 0.0) ); }
       pop_adi.set(i, i, complex<double>(1.0, 0.0) );
 
       // The following transformation is correct only for S_dia = 1
       U = (*basis_transform[traj]);// * (*proj_adi[traj]);
       
       pop_dia = U * pop_adi * U.H(); 
-      for(j=0; j<ndia; j++){ res[j] += pop_dia.get(j,j).real(); }
+      for(int j=0; j<ndia; j++){ res[j] += pop_dia.get(j,j).real(); }
     }
   }// rep == 0
 
@@ -1448,21 +1442,21 @@ vector<double> dyn_variables::compute_average_sh_pop_TR(int rep){
     CMATRIX pop_dia(ndia, ndia);
     CMATRIX U(ndia, nadi);
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
       i = effective_states[traj]; // active diabatic state
       pop_dia = *dm_dia[traj];
-      for(j=0;j<ndia; j++){ pop_dia.set(j,j, complex<double>(0.0, 0.0) ); }
+      for(int j=0;j<ndia; j++){ pop_dia.set(j,j, complex<double>(0.0, 0.0) ); }
       pop_dia.set(i, i, complex<double>(1.0, 0.0) );
 
       // The following transformation is correct only for S_dia = 1
       U = (*basis_transform[traj]);// * (*proj_adi[traj]);
       
       pop_adi = U.H() * pop_dia * U; 
-      for(j=0; j<nadi; j++){ res[j] += pop_adi.get(j,j).real(); }
+      for(int j=0; j<nadi; j++){ res[j] += pop_adi.get(j,j).real(); }
     }
   }// rep == 1
 
-  for(j=0; j<sz; j++){   res[j] = res[j] / (float)ntraj;   }
+  for(int j=0; j<sz; j++){   res[j] = res[j] / (float)ntraj;   }
 
   return res;
 }

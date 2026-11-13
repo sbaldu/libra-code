@@ -402,14 +402,14 @@ template <class VERTEX_DATA,class EDGE_DATA> int GRAPH<VERTEX_DATA,EDGE_DATA>::v
 template <class VERTEX_DATA,class EDGE_DATA> int GRAPH<VERTEX_DATA,EDGE_DATA>::is_adjacent_vertices(int v1,int v2){
 
     int res = 0; // Not adjacent to each other
-    int i,st1,st2;
+    int st1,st2;
     st1 = st2 = 0;
 
-    for(i=0;i<V[v1].vertex_degree;i++){
+    for(int i=0;i<V[v1].vertex_degree;i++){
         if(V[v1].adjacent_vertices[i]==v2){ st1 = 1; }
     }
 
-    for(i=0;i<V[v2].vertex_degree;i++){
+    for(int i=0;i<V[v2].vertex_degree;i++){
         if(V[v2].adjacent_vertices[i]==v1){ st2 = 1; }
     }
 

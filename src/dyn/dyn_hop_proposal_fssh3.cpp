@@ -139,7 +139,7 @@ vector<double> hopping_probabilities_fssh3(dyn_control_params& prms, CMATRIX& de
   Returns: A nstates-vector of hopping probabilities to all states from the current active state
 */
 
-  int i,j;
+  int i;
   double nrm;
 
   double dt = prms.dt;
@@ -194,7 +194,7 @@ vector<double> hopping_probabilities_fssh3(dyn_control_params& prms, CMATRIX& de
   }else { P_out = 0.0; } // if the starting population is zero - there is no outflux hopping probability
 
   nrm = 0.0;
-  for(j=0; j<nstates;j++){
+  for(int j=0; j<nstates;j++){
     g[j] = J.get(j,i);
     if(j!=i){
       if(g[j] > 0) { nrm += g[j]; }
@@ -203,7 +203,7 @@ vector<double> hopping_probabilities_fssh3(dyn_control_params& prms, CMATRIX& de
   }// for j - all states
 
   // Normalize  
-  for(j=0; j<nstates;j++){
+  for(int j=0; j<nstates;j++){
     // For the fluxes approach, the staying probability is defined based on the 
     // total outflow probability and the hopping probabilities are proportional to 
     // fluxes  
@@ -238,7 +238,7 @@ vector<double> hopping_probabilities_fssh3_dev(dyn_control_params& prms, CMATRIX
   Returns: A nstates-vector of hopping probabilities to all states from the current active state
 */
 
-  int i,j, cnt;
+  int i, cnt;
   double nrm;
 
   double dt = prms.dt;
@@ -274,7 +274,7 @@ vector<double> hopping_probabilities_fssh3_dev(dyn_control_params& prms, CMATRIX
 
 
   for(i=0;i<nstates;i++){
-    for(j=0;j<nstates;j++){
+    for(int j=0;j<nstates;j++){
       complex<double> rho_ij = denmat.get(i,j);
       double val = (rho_ij * std::conj(rho_ij)).real();
       PP.set(i,j, val);      
@@ -310,7 +310,7 @@ vector<double> hopping_probabilities_fssh3_dev(dyn_control_params& prms, CMATRIX
     int shift = int(nstates * (nstates-1) /2); // how many coherences
     cnt = nstates;
     for(i=0;i<nstates;i++){
-      for(j=i+1;j<nstates;j++){
+      for(int j=i+1;j<nstates;j++){
         rho_old.set(cnt, 0, denmat_old.get(i,j).real());
         rho_old.set(cnt+shift, 0, denmat_old.get(i,j).imag());
         rho.set(cnt, 0, denmat.get(i,j).real());
@@ -368,7 +368,7 @@ vector<double> hopping_probabilities_fssh3_dev(dyn_control_params& prms, CMATRIX
     MATRIX num_coeff(n,n);
     MATRIX denom_coeff(n,n);
 
-    for(j=0;j<n;j++){
+    for(int j=0;j<n;j++){
       double prob = 0.0;
       if(P_old.get(j,0)>0.0){ prob = -dt*dPdt.get(j,0)/P_old.get(j,0); }
       else{ prob = 0.0; }
@@ -601,7 +601,7 @@ vector<double> hopping_probabilities_fssh3_dev(dyn_control_params& prms, CMATRIX
 //  cout<<"P_out = "<<P_out<<endl;
   
   nrm = 0.0;
-  for(j=0; j<nstates;j++){
+  for(int j=0; j<nstates;j++){
     if(approach_option==-1){ //GFSH
       if(j!=i){
         g[j] = drhodt.get(j,0);
@@ -629,7 +629,7 @@ vector<double> hopping_probabilities_fssh3_dev(dyn_control_params& prms, CMATRIX
 //  if(fabs(nrm)<1e-10) { nrm = 1.0; }
 
   // Normalize  
-  for(j=0; j<nstates;j++){
+  for(int j=0; j<nstates;j++){
     if(approach_option==0){  
       // For the populations approach, we already have probabilities
       // but let's normalize still

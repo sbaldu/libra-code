@@ -45,9 +45,7 @@ void Wfcgrid2::print_wfc_1D(std::string prefix, int rep, vector<int>& states, in
   for 1D profile on XY plane
 */
 
-  int nx; 
   int Nx = npts[0];
-  int st;
   int nst = states.size();
 
   std::string filename, reps;
@@ -61,16 +59,16 @@ void Wfcgrid2::print_wfc_1D(std::string prefix, int rep, vector<int>& states, in
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_dia[nx].get(states[st],0).real(); }
+        for(int st=0; st<nst; st++){   out<<"  "<<PSI_dia[nx].get(states[st],0).real(); }
         out<<endl;
       }// for nx
     }// rep ==0
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_adi[nx].get(states[st],0).real(); }
+        for(int st=0; st<nst; st++){   out<<"  "<<PSI_adi[nx].get(states[st],0).real(); }
         out<<endl;
       }// for nx
     }// rep ==1
@@ -84,16 +82,16 @@ void Wfcgrid2::print_wfc_1D(std::string prefix, int rep, vector<int>& states, in
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_dia[nx].get(states[st],0).imag(); }
+        for(int st=0; st<nst; st++){   out<<"  "<<PSI_dia[nx].get(states[st],0).imag(); }
         out<<endl;
       }// for nx
     }// rep ==0
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<PSI_adi[nx].get(states[st],0).imag(); }
+        for(int st=0; st<nst; st++){   out<<"  "<<PSI_adi[nx].get(states[st],0).imag(); }
         out<<endl;
       }// for nx
     }// rep ==1
@@ -107,9 +105,9 @@ void Wfcgrid2::print_wfc_1D(std::string prefix, int rep, vector<int>& states, in
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   
+        for(int st=0; st<nst; st++){   
           double dens = real(std::conj(PSI_dia[nx].get(states[st],0)) * PSI_dia[nx].get(states[st],0));
           out<<"  "<<dens;
         }
@@ -117,9 +115,9 @@ void Wfcgrid2::print_wfc_1D(std::string prefix, int rep, vector<int>& states, in
       }// for nx
     }// rep ==0
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<rgrid[0]->get(nx);
-        for(st=0; st<nst; st++){
+        for(int st=0; st<nst; st++){
           double dens = real(std::conj(PSI_adi[nx].get(states[st],0)) * PSI_adi[nx].get(states[st],0));
           out<<"  "<<dens; 
         }
@@ -149,9 +147,7 @@ void Wfcgrid2::print_reci_wfc_1D(std::string prefix, int rep, vector<int>& state
   for 1D profile on XY plane
 */
 
-  int nx; 
   int Nx = npts[0];
-  int st;
   int nst = states.size();
 
   std::string filename, reps;
@@ -165,16 +161,16 @@ void Wfcgrid2::print_reci_wfc_1D(std::string prefix, int rep, vector<int>& state
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_dia[nx].get(states[st],0).real(); }       
+        for(int st=0; st<nst; st++){   out<<"  "<<reciPSI_dia[nx].get(states[st],0).real(); }       
         out<<endl;
       }// for nx
     }// rep ==0
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_adi[nx].get(states[st],0).real(); }       
+        for(int st=0; st<nst; st++){   out<<"  "<<reciPSI_adi[nx].get(states[st],0).real(); }       
         out<<endl;
       }// for nx
     }// rep ==1
@@ -188,16 +184,16 @@ void Wfcgrid2::print_reci_wfc_1D(std::string prefix, int rep, vector<int>& state
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_dia[nx].get(states[st],0).imag(); }       
+        for(int st=0; st<nst; st++){   out<<"  "<<reciPSI_dia[nx].get(states[st],0).imag(); }       
         out<<endl;
       }// for nx
     }// rep ==0
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   out<<"  "<<reciPSI_adi[nx].get(states[st],0).imag(); }       
+        for(int st=0; st<nst; st++){   out<<"  "<<reciPSI_adi[nx].get(states[st],0).imag(); }       
         out<<endl;
       }// for nx
     }// rep ==1
@@ -211,9 +207,9 @@ void Wfcgrid2::print_reci_wfc_1D(std::string prefix, int rep, vector<int>& state
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<2.0*M_PI*kgrid[0]->get(nx);
-        for(st=0; st<nst; st++){   
+        for(int st=0; st<nst; st++){   
           double dens = real(std::conj(reciPSI_dia[nx].get(states[st],0)) * reciPSI_dia[nx].get(states[st],0));
           out<<"  "<<dens; 
         }       
@@ -221,9 +217,9 @@ void Wfcgrid2::print_reci_wfc_1D(std::string prefix, int rep, vector<int>& state
       }// for nx
     }// rep ==0
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
+      for(int nx=0;nx<Nx;nx++){
         out<<2.0*M_PI*kgrid[0]->get(nx);        
-        for(st=0; st<nst; st++){   
+        for(int st=0; st<nst; st++){   
           double dens = real(std::conj(reciPSI_adi[nx].get(states[st],0)) * reciPSI_adi[nx].get(states[st],0));
           out<<"  "<<dens; 
         }       
@@ -254,7 +250,7 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
   for 2D profile on XY plane
 */
 
-  int nx, ny, indx; 
+  int indx; 
   int Nx = npts[0];
   int Ny = npts[1];
   vector<int> ipt(2, 0);
@@ -270,8 +266,8 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_dia[indx].get(state,0).real()<<endl;
@@ -281,8 +277,8 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
     }// rep ==0
 
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_adi[indx].get(state,0).real()<<endl;
@@ -301,8 +297,8 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_dia[indx].get(state,0).imag()<<endl;
@@ -312,8 +308,8 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
     }// rep ==0
 
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<rgrid[0]->get(nx)<<"  "<<rgrid[1]->get(ny)<<"  "<<PSI_adi[indx].get(state,0).imag()<<endl;
@@ -332,8 +328,8 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           double dens = (std::conj(PSI_dia[indx].get(state,0)) * PSI_dia[indx].get(state,0) ).real();
@@ -344,8 +340,8 @@ void Wfcgrid2::print_wfc_2D(std::string prefix, int rep, int state, int do_real,
     }// rep ==0
 
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           double dens = (std::conj(PSI_adi[indx].get(state,0)) * PSI_adi[indx].get(state,0) ).real();
@@ -378,7 +374,7 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
   for 2D profile on XY plane
 */
 
-  int nx, ny, indx; 
+  int indx; 
   int Nx = npts[0];
   int Ny = npts[1];
   vector<int> ipt(2, 0);
@@ -394,8 +390,8 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_dia[indx].get(state,0).real()<<endl;
@@ -405,8 +401,8 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
     }// rep ==0
 
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_adi[indx].get(state,0).real()<<endl;
@@ -425,8 +421,8 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_dia[indx].get(state,0).imag()<<endl;
@@ -436,8 +432,8 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
     }// rep ==0
 
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           out<<2.0*M_PI*kgrid[0]->get(nx)<<"  "<<2.0*M_PI*kgrid[1]->get(ny)<<"  "<<reciPSI_adi[indx].get(state,0).imag()<<endl;
@@ -456,8 +452,8 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
     ofstream out(filename.c_str(),ios::out);
 
     if(rep==0){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           double dens = (std::conj(reciPSI_dia[indx].get(state,0)) * reciPSI_dia[indx].get(state,0) ).real();
@@ -468,8 +464,8 @@ void Wfcgrid2::print_reci_wfc_2D(std::string prefix, int rep, int state, int do_
     }// rep ==0
 
     else if(rep==1){
-      for(nx=0;nx<Nx;nx++){
-        for(ny=0;ny<Ny;ny++){
+      for(int nx=0;nx<Nx;nx++){
+        for(int ny=0;ny<Ny;ny++){
           ipt[0] = nx; ipt[1] = ny;
           indx = imap(ipt);
           double dens = (std::conj(reciPSI_adi[indx].get(state,0)) * reciPSI_adi[indx].get(state,0) ).real();

@@ -49,11 +49,10 @@ void FullPivLU_decomposition(MATRIX& A, MATRIX& P, MATRIX& L, MATRIX& U, MATRIX&
 */
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -74,8 +73,8 @@ void FullPivLU_decomposition(MATRIX& A, MATRIX& P, MATRIX& L, MATRIX& U, MATRIX&
   q = lu.permutationQ(); 
 
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       P.M[i*N+j] = p(i,j);
 
       L.M[i*N+j] = l(i,j);
@@ -108,11 +107,10 @@ void FullPivLU_decomposition(CMATRIX& A, CMATRIX& P, CMATRIX& L, CMATRIX& U, CMA
 
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -133,8 +131,8 @@ void FullPivLU_decomposition(CMATRIX& A, CMATRIX& P, CMATRIX& L, CMATRIX& U, CMA
   q = lu.permutationQ(); 
 
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       P.M[i*N+j] = p(i,j);
 
       L.M[i*N+j] = l(i,j);
@@ -167,11 +165,10 @@ void JacobiSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
   
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -187,9 +184,9 @@ void JacobiSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
   s = svd.singularValues();
   v = svd.matrixV();
 
-  for(i=0;i<N;i++){
+  for(int i=0;i<N;i++){
 
-    for(j=0;j<N;j++){
+    for(int j=0;j<N;j++){
 
       U.M[i*N+j] = u(i,j);
       V.M[i*N+j] = v(i,j);
@@ -219,11 +216,10 @@ void BDCSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
   
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -239,9 +235,9 @@ void BDCSVD_decomposition(CMATRIX& A, CMATRIX& U, CMATRIX& S, CMATRIX& V){
   s = svd.singularValues();
   v = svd.matrixV();
 
-  for(i=0;i<N;i++){
+  for(int i=0;i<N;i++){
 
-    for(j=0;j<N;j++){
+    for(int j=0;j<N;j++){
 
       U.M[i*N+j] = u(i,j);
       V.M[i*N+j] = v(i,j);
@@ -268,19 +264,18 @@ void LLT_decomposition(MATRIX& A, MATRIX& L){
 */
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
 
   Eigen::MatrixXd l( a.llt().matrixL() );
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       L.M[i*N+j] = l(i,j);
     }// for j
   }// for i

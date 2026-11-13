@@ -202,10 +202,9 @@ CMATRIX sdm(CMATRIX &Coeff, double dt, vector<int> &act_st,
 
   int nadi = Coeff.n_rows;
   int ntraj = Coeff.n_cols;
-  int i, traj;
 
   vector<int> stenc_x(nadi, 0);
-  for (i = 0; i < nadi; i++) {
+  for (int i = 0; i < nadi; i++) {
     stenc_x[i] = i;
   }
   vector<int> stenc_y(1, 0);
@@ -213,7 +212,7 @@ CMATRIX sdm(CMATRIX &Coeff, double dt, vector<int> &act_st,
   CMATRIX coeff(nadi, 1);
   CMATRIX res(nadi, ntraj);
 
-  for (traj = 0; traj < ntraj; traj++) {
+  for (int traj = 0; traj < ntraj; traj++) {
     int indx = traj;
     if (isNBRA == 1) {
       indx = 0;
@@ -367,7 +366,6 @@ void instantaneous_decoherence(CMATRIX &Coeff, vector<int> &accepted_states,
     The mechanism of the collapse event itself is controlled by the
     collapse_option parameter
   */
-  int traj;
   int ntraj = Coeff.n_cols;
 
   if (accepted_states.size() != static_cast<std::size_t>(ntraj)) {
@@ -398,7 +396,7 @@ void instantaneous_decoherence(CMATRIX &Coeff, vector<int> &accepted_states,
   // ID-S
   if (instantaneous_decoherence_variant == 0) {
 
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
 
       if (accepted_states[traj] != initial_states[traj]) {
         collapse(Coeff, traj, accepted_states[traj], collapse_option);
@@ -409,7 +407,7 @@ void instantaneous_decoherence(CMATRIX &Coeff, vector<int> &accepted_states,
 
   // ID-A
   else if (instantaneous_decoherence_variant == 1) {
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       if (proposed_states[traj] != initial_states[traj]) {
         // Only apply ID-A, if the proposed states are different from the
         // original ones
@@ -428,7 +426,7 @@ void instantaneous_decoherence(CMATRIX &Coeff, vector<int> &accepted_states,
   // ID-C
   else if (instantaneous_decoherence_variant == 2) {
 
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       collapse(Coeff, traj, accepted_states[traj], collapse_option);
     } // traj
 
@@ -436,7 +434,7 @@ void instantaneous_decoherence(CMATRIX &Coeff, vector<int> &accepted_states,
 
   // ID-A, new version = IDN
   else if (instantaneous_decoherence_variant == 3) {
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       if (proposed_states[traj] != initial_states[traj]) {
         // Only apply ID-A, if the proposed states are different from the
         // original ones
@@ -454,7 +452,7 @@ void instantaneous_decoherence(CMATRIX &Coeff, vector<int> &accepted_states,
 
   // ID-F, ID on the failed transition, experimental
   else if (instantaneous_decoherence_variant == 4) {
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       if (proposed_states[traj] != initial_states[traj]) {
         // Only apply ID-F, if the proposed states are different from the
         // original ones
@@ -507,7 +505,6 @@ void instantaneous_decoherence_dia(CMATRIX &Coeff, nHamiltonian &ham,
     The mechanism of the collapse event itself is controlled by the
     collapse_option parameter
   */
-  int traj;
   int ntraj = Coeff.n_cols;
 
   if (accepted_states.size() != static_cast<std::size_t>(ntraj)) {
@@ -538,7 +535,7 @@ void instantaneous_decoherence_dia(CMATRIX &Coeff, nHamiltonian &ham,
   // ID-S
   if (instantaneous_decoherence_variant == 0) {
 
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
 
       if (accepted_states[traj] != initial_states[traj]) {
         collapse(Coeff, traj, accepted_states[traj], collapse_option);
@@ -550,7 +547,7 @@ void instantaneous_decoherence_dia(CMATRIX &Coeff, nHamiltonian &ham,
   // ID-A
   else if (instantaneous_decoherence_variant == 1) {
 
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
 
       if (proposed_states[traj] != initial_states[traj]) {
         // Only apply ID-A, if the proposed states are different from the
@@ -571,7 +568,7 @@ void instantaneous_decoherence_dia(CMATRIX &Coeff, nHamiltonian &ham,
   // ID-C
   else if (instantaneous_decoherence_variant == 2) {
 
-    for (traj = 0; traj < ntraj; traj++) {
+    for (int traj = 0; traj < ntraj; traj++) {
       collapse(Coeff, traj, accepted_states[traj], collapse_option);
     } // traj
 
@@ -605,17 +602,16 @@ CMATRIX afssh_dzdt(CMATRIX &dz, CMATRIX &Hvib, CMATRIX &F, CMATRIX &C,
 
   */
 
-  int i;
 
   complex<double> one(0.0, 1.0);
   int nst = dz.n_rows / 2;
 
   vector<int> t1(nst);
-  for (i = 0; i < nst; i++) {
+  for (int i = 0; i < nst; i++) {
     t1[i] = i;
   }
   vector<int> t2(nst);
-  for (i = 0; i < nst; i++) {
+  for (int i = 0; i < nst; i++) {
     t2[i] = nst + i;
   }
 
@@ -671,16 +667,15 @@ void integrate_afssh_moments(CMATRIX &dR, CMATRIX &dP, CMATRIX &Hvib,
 
   */
 
-  int i;
 
   int nst = dR.n_rows;
 
   vector<int> t1(nst);
-  for (i = 0; i < nst; i++) {
+  for (int i = 0; i < nst; i++) {
     t1[i] = i;
   }
   vector<int> t2(nst);
-  for (i = 0; i < nst; i++) {
+  for (int i = 0; i < nst; i++) {
     t2[i] = nst + i;
   }
 
@@ -888,7 +883,6 @@ CMATRIX mfsd(MATRIX &p, CMATRIX &Coeff, MATRIX &invM, double dt,
 
   */
 
-  int idof;
   int nadi = Coeff.n_rows;
   int ntraj = Coeff.n_cols;
   int ndof = ham.nnucl;
@@ -971,7 +965,7 @@ CMATRIX mfsd(MATRIX &p, CMATRIX &Coeff, MATRIX &invM, double dt,
         double P_i = (std::conj(c_i) * c_i).real();
 
         // p_i = p.col(itraj); /// momentum
-        for (idof = 0; idof < ndof; idof++) {
+        for (int idof = 0; idof < ndof; idof++) {
           if (i != decohered_state) {
             nac_eff.add(
                 idof, 0,
@@ -997,7 +991,7 @@ CMATRIX mfsd(MATRIX &p, CMATRIX &Coeff, MATRIX &invM, double dt,
         int do_reverse = 0;
         rescale_along_vector(E_old, E_new, p_i, invM, nac_eff, do_reverse);
 
-        for (idof = 0; idof < ndof; idof++) {
+        for (int idof = 0; idof < ndof; idof++) {
           p.set(idof, itraj, p_i.get(idof, 0));
         }
 
@@ -1195,10 +1189,9 @@ void xf_create_AT(dyn_variables &dyn_var, double threshold) {
 
 void xf_hop_reset(dyn_variables &dyn_var, vector<int> &accepted_states,
                   vector<int> &initial_states) {
-  int traj;
   int ntraj = dyn_var.ntraj;
 
-  for (traj = 0; traj < ntraj; traj++) {
+  for (int traj = 0; traj < ntraj; traj++) {
     // When a hop occurs, destroy auxiliary trajectories
     if (accepted_states[traj] != initial_states[traj]) {
       xf_init_AT(dyn_var, traj, -1);

@@ -334,7 +334,6 @@ void dyn_variables::allocate_simple_decoherence(){
 
 dyn_variables::dyn_variables(const dyn_variables& x){     
   //cout<<"dyn_variables copy constructor\n";
-  int itraj, idof;
 
   ndia = x.ndia;
   nadi = x.nadi;
@@ -351,7 +350,7 @@ dyn_variables::dyn_variables(const dyn_variables& x){
     *q_mm = *x.q_mm;
     *p_mm = *x.p_mm;
     *ave_decoherence_rates = *x.ave_decoherence_rates;
-    for(itraj=0; itraj<ntraj; itraj++){
+    for(int itraj=0; itraj<ntraj; itraj++){
       *proj_adi[itraj] = *x.proj_adi[itraj];
       *dm_dia[itraj] = *x.dm_dia[itraj];
       *dm_adi[itraj] = *x.dm_adi[itraj];
@@ -378,8 +377,8 @@ dyn_variables::dyn_variables(const dyn_variables& x){
     allocate_afssh();
     
     // Copy content
-    for(itraj=0; itraj<ntraj; itraj++){
-      for(idof=0; idof<ndof; idof++){
+    for(int itraj=0; itraj<ntraj; itraj++){
+      for(int idof=0; idof<ndof; idof++){
         *dR[itraj][idof] = *x.dR[itraj][idof];
         *dP[itraj][idof] = *x.dP[itraj][idof];
       }
@@ -410,7 +409,7 @@ dyn_variables::dyn_variables(const dyn_variables& x){
     allocate_fssh2();
  
     // Copy content
-    for(itraj=0; itraj<ntraj; itraj++){
+    for(int itraj=0; itraj<ntraj; itraj++){
       *dm_dia_prev[itraj] = *x.dm_dia_prev[itraj];
       *dm_adi_prev[itraj] = *x.dm_adi_prev[itraj];
     }
@@ -687,12 +686,11 @@ vector< vector<double> > dyn_variables::get_fssh3_errors(){
 }
 
 vector<double> dyn_variables::get_fssh3_average_errors(){
-  int itraj, k;
   vector<double> res(5,0.0);
-  for(itraj=0;itraj<ntraj;itraj++){
-    for(k=0;k<5;k++){  res[k] += fssh3_errors[itraj][k];   }
+  for(int itraj=0;itraj<ntraj;itraj++){
+    for(int k=0;k<5;k++){  res[k] += fssh3_errors[itraj][k];   }
   }
-  for(k=0;k<5;k++){ res[k] /= ntraj; }
+  for(int k=0;k<5;k++){ res[k] /= ntraj; }
 
   return res;
 }

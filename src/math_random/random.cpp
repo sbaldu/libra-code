@@ -30,7 +30,6 @@ double Random::Gamma(double a) { return fact((int)(a - 1.0)); }
 void Random::bin(vector<double> &in, double minx, double maxx, double dx,
                  vector<pair<double, double>> &out) {
 
-  auto i = 0u;
   if (out.size() > 0) {
     out.clear();
   }
@@ -42,14 +41,14 @@ void Random::bin(vector<double> &in, double minx, double maxx, double dx,
   }
 
   auto sz = in.size();
-  for (i = 0u; i < sz; i++) {
+  for (auto i = 0u; i < sz; i++) {
     if (in[i] < minx || in[i] > maxx) {
     } else {
       int n = (in[i] - minx) / dx;
       out[n].second += 1.0;
     }
   }
-  for (i = 0u; i < out.size(); i++) {
+  for (auto i = 0u; i < out.size(); i++) {
     out[i].second /= (sz * dx);
   }
 }

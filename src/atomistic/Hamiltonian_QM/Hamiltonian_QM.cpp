@@ -170,7 +170,6 @@ void derivative_couplings(Electronic_Structure &el, System &syst,
     WARNING: Use this version with caution - need more testing!
   */
 
-  int i, j;
 
   MATRIX *dHao_dx;
   dHao_dx = new MATRIX(Norb, Norb);
@@ -279,7 +278,7 @@ void derivative_couplings(Electronic_Structure &el, System &syst,
   MATRIX *dEb_dz;
   dEb_dz = new MATRIX(Norb, Norb);
 
-  for (i = 0; i < Norb; i++) {
+  for (int i = 0; i < Norb; i++) {
     dEa_dx->set(i, i, A_ax->get(i, i));
     dEa_dy->set(i, i, A_ay->get(i, i));
     dEa_dz->set(i, i, A_az->get(i, i));
@@ -287,7 +286,7 @@ void derivative_couplings(Electronic_Structure &el, System &syst,
     dEb_dy->set(i, i, A_by->get(i, i));
     dEb_dz->set(i, i, A_bz->get(i, i));
 
-    for (j = 0; j < Norb; j++) {
+    for (int j = 0; j < Norb; j++) {
       if (i != j) {
         double dEa = (el.E_alp->get(j, j) - el.E_alp->get(i, i));
         if (fabs(dEa) > 1e-12) {
@@ -422,7 +421,6 @@ void derivative_couplings1(
 
   */
 
-  int i, j;
 
   MATRIX *dHao_dx;
   dHao_dx = new MATRIX(Norb, Norb);
@@ -492,7 +490,7 @@ void derivative_couplings1(
   *A_by = (*el.C_bet).T() * (*dFao_bet_dy) * (*el.C_bet);
   *A_bz = (*el.C_bet).T() * (*dFao_bet_dz) * (*el.C_bet);
 
-  for (i = 0; i < Norb; i++) {
+  for (int i = 0; i < Norb; i++) {
     dEa_dx.set(i, i, A_ax->get(i, i));
     dEa_dy.set(i, i, A_ay->get(i, i));
     dEa_dz.set(i, i, A_az->get(i, i));
@@ -500,7 +498,7 @@ void derivative_couplings1(
     dEb_dy.set(i, i, A_by->get(i, i));
     dEb_dz.set(i, i, A_bz->get(i, i));
 
-    for (j = 0; j < Norb; j++) {
+    for (int j = 0; j < Norb; j++) {
       if (i != j) {
         double dEa = (el.E_alp->get(j, j) - el.E_alp->get(i, i));
         if (fabs(dEa) > 1e-12) {
@@ -828,7 +826,6 @@ VECTOR force_extended(Electronic_Structure &el, System &syst,
 
   */
 
-  int i, j;
 
   MATRIX *dHao_dx;
   dHao_dx = new MATRIX(Norb, Norb);
@@ -981,7 +978,7 @@ VECTOR force_extended(Electronic_Structure &el, System &syst,
   MATRIX *Dmo_b_z;
   Dmo_b_z = new MATRIX(Norb, Norb);
 
-  for (i = 0; i < Norb; i++) {
+  for (int i = 0; i < Norb; i++) {
     dEa_dx->set(i, i, A_ax->get(i, i));
     dEa_dy->set(i, i, A_ay->get(i, i));
     dEa_dz->set(i, i, A_az->get(i, i));
@@ -989,7 +986,7 @@ VECTOR force_extended(Electronic_Structure &el, System &syst,
     dEb_dy->set(i, i, A_by->get(i, i));
     dEb_dz->set(i, i, A_bz->get(i, i));
 
-    for (j = 0; j < Norb; j++) {
+    for (int j = 0; j < Norb; j++) {
       if (i != j) {
         double dEa = (el.E_alp->get(j, j) - el.E_alp->get(i, i));
         if (fabs(dEa) > 1e-12) {
@@ -1041,7 +1038,7 @@ VECTOR force_extended(Electronic_Structure &el, System &syst,
   MATRIX *Ob;
   Ob = new MATRIX(Norb, Norb);
 
-  for (i = 0; i < Norb; i++) {
+  for (int i = 0; i < Norb; i++) {
     Oa->set(el.occ_alp[i].first, el.occ_alp[i].first, el.occ_alp[i].second);
     Ob->set(el.occ_bet[i].first, el.occ_bet[i].first, el.occ_bet[i].second);
   }
@@ -1219,13 +1216,12 @@ double energy_and_forces(Electronic_Structure &el, System &syst,
 
   int opt = 1; // 1 - for INDO, 0 - for CNDO/CNDO2
 
-  int i;
 
   //=========== STEP 1: Update positions of the basis AOs ================
   /// Update positions of the basis AOs to those given by the syst variables
   /// (atomic centers)
 
-  for (i = 0; i < el.Norb; i++) {
+  for (int i = 0; i < el.Norb; i++) {
     int at_indx = ao_to_atom_map[i];
     VECTOR at_r;
     at_r = syst.Atoms[at_indx].Atom_RB.rb_cm;
@@ -1243,7 +1239,7 @@ double energy_and_forces(Electronic_Structure &el, System &syst,
   if (prms.hamiltonian == "eht") {
 
     vector<string> mol_at_types;
-    for (i = 0; i < syst.Number_of_atoms; i++) {
+    for (int i = 0; i < syst.Number_of_atoms; i++) {
       mol_at_types.push_back(syst.Atoms[i].Atom_element);
     }
 
@@ -1349,7 +1345,7 @@ double energy_and_forces(Electronic_Structure &el, System &syst,
   vector<double> Zeff;
   vector<VECTOR> G;
   vector<VECTOR> R;
-  for (i = 0; i < syst.Number_of_atoms; i++) {
+  for (int i = 0; i < syst.Number_of_atoms; i++) {
     R.push_back(syst.Atoms[i].Atom_RB.rb_cm);
     Zeff.push_back(modprms.PT[syst.Atoms[i].Atom_element].Zeff);
   }

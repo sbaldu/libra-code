@@ -42,7 +42,6 @@ DIIS::DIIS(int _N_diis_max, int Norb) {
     Norb is just the size of the problem
   */
 
-  int n;
 
   // Setup parmeters and variables
   N_diis = 0;
@@ -59,13 +58,13 @@ DIIS::DIIS(int _N_diis_max, int Norb) {
 
   // Allocate memory
   diis_c = vector<double>(N_diis_max, 0.0);
-  for (n = 0; n < N_diis_max; n++) {
+  for (int n = 0; n < N_diis_max; n++) {
     MATRIX *x;
     x = new MATRIX(Norb, Norb);
     *x = 0.0;
     diis_X.push_back(x);
   }
-  for (n = 0; n < N_diis_max; n++) {
+  for (int n = 0; n < N_diis_max; n++) {
     MATRIX *x;
     x = new MATRIX(Norb, Norb);
     *x = 0.0;
@@ -85,7 +84,6 @@ void DIIS::update_diis_coefficients() {
 
   int N_diis_curr;
   int rank;
-  int i, j;
   int debug_flag = 0;
   double diis_damp =
       0.0; // see [Hamilton,Pulay, JCP 84, 5728 (1986) ] - scale diagonal
@@ -108,8 +106,8 @@ void DIIS::update_diis_coefficients() {
   // Initial guess
   A = new MatrixXd(N_diis + 2, N_diis + 2);
 
-  for (i = 0; i <= N_diis; i++) {
-    for (j = 0; j <= N_diis; j++) {
+  for (int i = 0; i <= N_diis; i++) {
+    for (int j = 0; j <= N_diis; j++) {
       (*A)(i, j) = ((*diis_err[i]).T() * (*diis_err[j])).tr();
 
       if (i == j) {
@@ -146,8 +144,8 @@ void DIIS::update_diis_coefficients() {
 
       MatrixXd tempA(N_diis + 2, N_diis + 2);
 
-      for (i = 0; i <= N_diis; i++) {
-        for (j = 0; j <= N_diis; j++) {
+      for (int i = 0; i <= N_diis; i++) {
+        for (int j = 0; j <= N_diis; j++) {
           tempA(i, j) =
               ((*diis_err[min_indx + i]).T() * (*diis_err[min_indx + j])).tr();
 
@@ -180,7 +178,7 @@ void DIIS::update_diis_coefficients() {
   } // else rank!=Ndiis+2
 
   b = new VectorXd(N_diis + 2);
-  for (i = 0; i <= N_diis; i++) {
+  for (int i = 0; i <= N_diis; i++) {
     (*b)(i) = 0.0;
   }
   (*b)(N_diis + 1) = -1.0;
@@ -188,7 +186,7 @@ void DIIS::update_diis_coefficients() {
 
   // Solve linear algebra to get coefficients
   *x = A->lu().solve(*b);
-  for (i = 0; i <= N_diis; i++) {
+  for (int i = 0; i <= N_diis; i++) {
     diis_c[i] = (*x)[i];
   }
 
@@ -228,7 +226,6 @@ void DIIS::add_diis_matrices(MATRIX *X, MATRIX *err) {
   */
 
   //  cout<<"Starting add_diis_matrices\n  N_diis = "<<N_diis<<endl;
-  int i;
   //  int N_diis_curr;
 
   if (N_diis == 0) { // The very first iterate (most likely this will be used
@@ -253,7 +250,7 @@ void DIIS::add_diis_matrices(MATRIX *X, MATRIX *err) {
       // Rotate matrices
       // so only last entry X[N_diis_max-1] is old
       // in the following sections we will update it
-      for (i = 0; i < N_diis; i++) {
+      for (int i = 0; i < N_diis; i++) {
 
         *diis_X[i] = *diis_X[i + 1];
         *diis_err[i] = *diis_err[i + 1];

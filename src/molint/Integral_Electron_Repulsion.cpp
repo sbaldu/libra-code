@@ -31,7 +31,7 @@ void eri_aux1
 ){
 
   int maxL = (l1+l2); // this is correct
-  int L,i,r;
+  int L;
 
   binomial_expansion(l1,l2,a,b,f,dfda,dfdb, 1); // 1 - is_derivs
 
@@ -40,8 +40,8 @@ void eri_aux1
   zero_array(dHdb,n_aux);
 
   
-  for(i=0;i<=maxL;i++){
-    for(r=0;r<=(i/2);r++){   //!!! Integer division
+  for(int i=0;i<=maxL;i++){
+    for(int r=0;r<=(i/2);r++){   //!!! Integer division
       L = i - 2*r;    
       if(L>=0){
   
@@ -94,11 +94,10 @@ void eri_aux2
 
   double d = 0.25*((1.0/gamma1) + (1.0/gamma2));
 
-  int L,M,u;
-  for(L=0;L<=maxL;L++){
-    for(M=0;M<=maxM;M++){
+  for(int L=0;L<=maxL;L++){
+    for(int M=0;M<=maxM;M++){
       int maxU = ((L+M)/2);  //INTEGER_DIVISION!!! "largest integer less of equal (L+M)/2"
-      for(u=0;u<=maxU;u++){
+      for(int u=0;u<=maxU;u++){
         int I = L + M - u;
         if(I>=0){
           double prefac = FAST_POW(-1.0,(M+u)) * FACTORIAL(L+M)/ (1.0*FACTORIAL(u) * FACTORIAL(L+M-2*u) * FAST_POW(d,(L+M-u)));
@@ -357,13 +356,12 @@ double electron_repulsion_integral
 ){
 
   // Allocate working memory
-  int i;
   int n_aux = 40;
   int n_auxv = 40;
   vector<double*> auxd(30);
-  for(i=0;i<30;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<30;i++){ auxd[i] = new double[n_aux]; }
   vector<VECTOR*> auxv(5);
-  for(i=0;i<5;i++){ auxv[i] = new VECTOR[n_auxv]; }
+  for(int i=0;i<5;i++){ auxv[i] = new VECTOR[n_auxv]; }
 
   // Do computations
   double res = electron_repulsion_integral(nxa,nya,nza,alp_a,Ra, nxb,nyb,nzb,alp_b,Rb,
@@ -371,9 +369,9 @@ double electron_repulsion_integral
                                            is_normalize, is_derivs, DA, DB, DC, DD,
                                            auxd, n_aux, auxv, n_auxv);
   // Clean working memory
-  for(i=0;i<30;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<30;i++){ delete [] auxd[i]; }  
   auxd.clear();
-  for(i=0;i<5;i++){ delete [] auxv[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxv[i]; }  
   auxv.clear();
 
   return res;

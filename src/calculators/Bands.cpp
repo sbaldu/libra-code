@@ -104,23 +104,22 @@ void order_bands(MATRIX* E, vector< pair<int,double> >& bands){
 
   std::vector< pair<int,double> > in;
   std::pair<int,double> x;
-  int i;
 
-  for(i=0;i<Norb;i++){
+  for(int i=0;i<Norb;i++){
     x = make_pair(i, E->M[i*Norb+i]);
     in.push_back(x);
   }
 
   if(0){ // For debug
     cout<<"Unordered bands:\n";
-    for(i=0;i<Norb;i++){  cout<<"i= "<<i<<" orb_indx = "<<in[i].first<<" E[i]= "<<in[i].second<<endl; }
+    for(int i=0;i<Norb;i++){  cout<<"i= "<<i<<" orb_indx = "<<in[i].first<<" E[i]= "<<in[i].second<<endl; }
   }
 
   libspecialfunctions::merge_sort(in,bands);  
 
   if(0){ // For debug
     cout<<"Ordered bands:\n";
-    for(i=0;i<Norb;i++){  cout<<"i= "<<i<<" orb_indx = "<<in[i].first<<" E[i]= "<<in[i].second<<endl; }
+    for(int i=0;i<Norb;i++){  cout<<"i= "<<i<<" orb_indx = "<<in[i].first<<" E[i]= "<<in[i].second<<endl; }
   }
 
   
@@ -169,13 +168,12 @@ void populate_bands(double Nel, double degen, double kT, double etol, int pop_op
 */
 
   int Norb = bands.size();
-  int i;
   occ = bands;    // maybe not the best way, but it allocates memory
 
   if(pop_opt==0){  // integer populations - populate first Nocc bands
 
     double sum = 0.0;
-    for(i=0;i<Norb;i++){
+    for(int i=0;i<Norb;i++){
       occ[i].first = bands[i].first;
 
       if(sum<Nel){ occ[i].second = degen; sum+= degen; }
@@ -186,11 +184,11 @@ void populate_bands(double Nel, double degen, double kT, double etol, int pop_op
 
   else if(pop_opt==1){  // Fermi distribution (fractional populations possible)
 
-    vector<double> e(Norb,0.0);  for(i=0;i<Norb;i++){ e[i] = bands[i].second; }
+    vector<double> e(Norb,0.0);  for(int i=0;i<Norb;i++){ e[i] = bands[i].second; }
  
     double E_f = fermi_energy(e, Nel, degen, kT, etol);
 
-    for(i=0;i<Norb;i++){
+    for(int i=0;i<Norb;i++){
       occ[i].first = bands[i].first;
       occ[i].second = fermi_population(e[i],E_f,degen,kT);
 
@@ -201,7 +199,7 @@ void populate_bands(double Nel, double degen, double kT, double etol, int pop_op
   if(0){  // for debug, now inactive
     cout<<"In populate:\n";
     cout<<"Occupation numbers:\n";
-    for(i=0;i<Norb;i++){
+    for(int i=0;i<Norb;i++){
       cout<<"i= "<<i<<" orbital index= "<<occ[i].first<<" occupation_number= "<<occ[i].second<<endl;
     }
   }// if 

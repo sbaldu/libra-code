@@ -49,7 +49,6 @@ void solve_eigen_nosort(CMATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
 */
 
 
-  int i,j;
 
   if(H->n_cols!=C->n_rows){  // N_bas
     std::cout<<"Error in solve_eigen: The # of cols of H and the # of rows of C matrices must be equal\n";
@@ -75,8 +74,8 @@ void solve_eigen_nosort(CMATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
   MatrixXcd A(N_bas,N_bas);
 
   if(symm==0){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = H->M[i*N_bas+j];     
       }// for j
@@ -84,8 +83,8 @@ void solve_eigen_nosort(CMATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
   }// no symmetrization
 
   else if(symm==1){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = 0.5*(H->M[i*N_bas+j] + std::conj(H->M[j*N_bas+i]));     
       }// for j
@@ -99,10 +98,10 @@ void solve_eigen_nosort(CMATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
 
 
   // Copy results into output matrices
-  for(i=0;i<N_mo;i++){
+  for(int i=0;i<N_mo;i++){
 
      E->M[i*N_mo+i] = solution.eigenvalues()[i]; 
-     for(j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
+     for(int j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
 
   }// for i
 
@@ -162,7 +161,6 @@ void solve_eigen_nosort(MATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
 */
 
 
-  int i,j;
 
   if(H->n_cols!=C->n_rows){  // N_bas
     std::cout<<"Error in solve_eigen: The # of cols of H and the # of rows of C matrices must be equal\n";
@@ -191,8 +189,8 @@ void solve_eigen_nosort(MATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
   MatrixXd A(N_bas,N_bas);
 
   if(symm==0){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = H->M[i*N_bas+j];     
       }// for j
@@ -200,8 +198,8 @@ void solve_eigen_nosort(MATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
   }// no symmetrization
 
   else if(symm==1){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = 0.5*(H->M[i*N_bas+j] + H->M[j*N_bas+i]);     
       }// for j
@@ -215,10 +213,10 @@ void solve_eigen_nosort(MATRIX* H, CMATRIX* E, CMATRIX* C, int symm){
 
 
   // Copy results into output matrices
-  for(i=0;i<N_mo;i++){
+  for(int i=0;i<N_mo;i++){
 
      E->M[i*N_mo+i] = solution.eigenvalues()[i]; 
-     for(j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
+     for(int j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j];    }// for j
 
   }// for i
 
@@ -282,7 +280,6 @@ void solve_eigen_nosort(MATRIX* H, MATRIX* E, MATRIX* C, int symm){
 */
 
 
-  int i,j;
 
   if(H->n_cols!=C->n_rows){  // N_bas
     std::cout<<"Error in solve_eigen: The # of cols of H and the # of rows of C matrices must be equal\n";
@@ -311,8 +308,8 @@ void solve_eigen_nosort(MATRIX* H, MATRIX* E, MATRIX* C, int symm){
   MatrixXd A(N_bas,N_bas);
 
   if(symm==0){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = H->M[i*N_bas+j];     
       }// for j
@@ -320,8 +317,8 @@ void solve_eigen_nosort(MATRIX* H, MATRIX* E, MATRIX* C, int symm){
   }// no symmetrization
 
   else if(symm==1){
-    for(i=0;i<N_bas;i++){
-      for(j=0;j<N_bas;j++){
+    for(int i=0;i<N_bas;i++){
+      for(int j=0;j<N_bas;j++){
         // Symmetrize, to reduce numerical errors:
         A(i,j) = 0.5*(H->M[i*N_bas+j] + H->M[j*N_bas+i]);     
       }// for j
@@ -335,10 +332,10 @@ void solve_eigen_nosort(MATRIX* H, MATRIX* E, MATRIX* C, int symm){
 
 
   // Copy results into output matrices
-  for(i=0;i<N_mo;i++){
+  for(int i=0;i<N_mo;i++){
 
      E->M[i*N_mo+i] = solution.eigenvalues()[i].real(); 
-     for(j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j].real();    }// for j
+     for(int j=0;j<N_bas;j++){  C->M[j*N_mo+i] = solution.eigenvectors().col(i)[j].real();    }// for j
 
   }// for i
 

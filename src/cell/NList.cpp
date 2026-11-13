@@ -170,10 +170,9 @@ void apply_pbc(MATRIX3x3 &H, int sz, VECTOR *in, VECTOR *out,
 
 boost::python::list apply_pbc(MATRIX3x3 H, boost::python::list in,
                               boost::python::list t) {
-  int i;
   vector<quartet> T;
   int sz1 = boost::python::len(t);
-  for (i = 0; i < sz1; i++) {
+  for (int i = 0; i < sz1; i++) {
     quartet tx;
     tx.is_central = boost::python::extract<int>(t[i][0]);
     tx.j = boost::python::extract<int>(t[i][1]);
@@ -190,14 +189,14 @@ boost::python::list apply_pbc(MATRIX3x3 H, boost::python::list in,
   VECTOR *rp;
   rp = new VECTOR[sz2];
 
-  for (i = 0; i < sz2; i++) {
+  for (int i = 0; i < sz2; i++) {
     r[i] = boost::python::extract<VECTOR>(in[i]);
   }
 
   apply_pbc(H, sz2, r, rp, T);
 
   boost::python::list res;
-  for (i = 0; i < sz2; i++) {
+  for (int i = 0; i < sz2; i++) {
     res.append(rp[i]);
   }
 
@@ -403,10 +402,10 @@ void form_neibc(int c, vector<int> &neibc, int Nx, int Ny, int Nz, double cellx,
   rz = (nz + az);
   rz = (rz >= Nz) ? (Nz - 1) : rz;
 
-  int ix, iy, iz, nc;
-  for (ix = lx; ix <= rx; ix++) {
-    for (iy = ly; iy <= ry; iy++) {
-      for (iz = lz; iz <= rz; iz++) {
+  int nc;
+  for (int ix = lx; ix <= rx; ix++) {
+    for (int iy = ly; iy <= ry; iy++) {
+      for (int iz = lz; iz <= rz; iz++) {
 
         nc = Nz * Ny * ix + Nz * iy + iz;
         neibc.push_back(nc);
@@ -477,12 +476,12 @@ void find_min_shell(VECTOR &t1, VECTOR &t2, VECTOR &t3, VECTOR &g1, VECTOR &g2,
   vector<VECTOR> cell_corners(8, zero);
   vector<triple> cell_corners_int(8, tzero);
   vector<VECTOR> cube_corners(8, zero);
-  int v1, v2, v3, cnt1, cnt2;
+  int cnt1, cnt2;
 
   cnt1 = 0;
-  for (v1 = 0; v1 <= 1; v1++) {
-    for (v2 = 0; v2 <= 1; v2++) {
-      for (v3 = 0; v3 <= 1; v3++) {
+  for (int v1 = 0; v1 <= 1; v1++) {
+    for (int v2 = 0; v2 <= 1; v2++) {
+      for (int v3 = 0; v3 <= 1; v3++) {
         cell_corners[cnt1] = (v1 * t1 + v2 * t2 + v3 * t3);
         cell_corners_int[cnt1].n1 = v1;
         cell_corners_int[cnt1].n2 = v2;
@@ -494,9 +493,9 @@ void find_min_shell(VECTOR &t1, VECTOR &t2, VECTOR &t3, VECTOR &g1, VECTOR &g2,
 
   cnt2 = 0;
   VECTOR a(Roff, 0.0, 0.0), b(0.0, Roff, 0.0), c(0.0, 0.0, Roff);
-  for (v1 = -1; v1 <= 1; v1 += 2) {
-    for (v2 = -1; v2 <= 1; v2 += 2) {
-      for (v3 = -1; v3 <= 1; v3 += 2) {
+  for (int v1 = -1; v1 <= 1; v1 += 2) {
+    for (int v2 = -1; v2 <= 1; v2 += 2) {
+      for (int v3 = -1; v3 <= 1; v3 += 2) {
         cube_corners[cnt2] = (v1 * a + v2 * b + v3 * c);
         cnt2++;
       } // v3
@@ -797,17 +796,17 @@ void make_nlist_auto(int Nat, VECTOR *r, MATRIX3x3 &H, double cellx,
   //  cout<<"b in range ["<<minb.n2<<","<<maxb.n2<<"]\n";
   //  cout<<"c in range ["<<minb.n3<<","<<maxb.n3<<"]\n";
 
-  int a, b, c, i;
+  int c;
 
   // Bounding box is based on maximal atomic displacements
   int indx = 0;
   vector<quartet> globqt;
   VECTOR minr, maxr;
   minr = maxr = r[0];
-  for (a = minb.n1; a <= maxb.n1; a++) {
-    for (b = minb.n2; b <= maxb.n2; b++) {
+  for (int a = minb.n1; a <= maxb.n1; a++) {
+    for (int b = minb.n2; b <= maxb.n2; b++) {
       for (c = minb.n3; c <= maxb.n3; c++) {
-        for (i = 0; i < Nat; i++) {
+        for (int i = 0; i < Nat; i++) {
 
           t = tmp[i] + a * t1 + b * t2 + c * t3;
           R.push_back(t);
@@ -884,7 +883,7 @@ void make_nlist_auto(int Nat, VECTOR *r, MATRIX3x3 &H, double cellx,
   }
 
   // Calculate mappings between atom indexes and cell (sub-cell) indexes
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     VECTOR diff = R[i] - minr; // position of
     triple trp;
     trp.n1 = floor(diff.x / cellx);
@@ -923,7 +922,7 @@ void make_nlist_auto(int Nat, VECTOR *r, MATRIX3x3 &H, double cellx,
       int sz2 =
           cell2at[ci2].size(); // number of atoms in the cell with index ci2
 
-      for (a = 0; a < sz2; a++) { // iterations over atoms in cell ci2
+      for (int a = 0; a < sz2; a++) { // iterations over atoms in cell ci2
         int i2 = cell2at[ci2][a]; // complex intex of atom a of the cell ci2
         int at_indx2 = i2 % Nat;  // real index of atom, corresponding to the
                                   // atom with complex index i2

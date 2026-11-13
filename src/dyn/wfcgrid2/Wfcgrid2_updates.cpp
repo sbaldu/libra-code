@@ -40,13 +40,13 @@ void Wfcgrid2::update_Hamiltonian(bp::object py_funct, bp::object params, int re
   working in atomic units: hbar = 1
 */
 
-  int idof, ipt;
+  int ipt;
   int has_attr;
 
   for(int npt1=0; npt1<Npts; npt1++){
 
     MATRIX q(ndof, 1);
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       ipt = gmap[npt1][idof];
       q.set(idof, rgrid[idof]->get(ipt) );
     }
@@ -80,7 +80,7 @@ void Wfcgrid2::update_Hamiltonian(bp::object py_funct, bp::object params, int re
         vector<CMATRIX> _dc1_adi(ndof, CMATRIX(nstates,nstates));
         _dc1_adi = extract<CMATRIXList>(obj.attr("dc1_adi"));    
 
-        for(idof=0; idof<ndof; idof++){  NAC1[npt1][idof] = _dc1_adi[idof];  }
+        for(int idof=0; idof<ndof; idof++){  NAC1[npt1][idof] = _dc1_adi[idof];  }
       }
 
     }// rep == 1

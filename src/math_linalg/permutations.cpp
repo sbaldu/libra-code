@@ -89,14 +89,13 @@ void update_permutation(vector<int>& perm_t, vector<int>* perm_cum){
     (perm_t * perm_cum)(1) = perm_t( perm_cum(1) ) = perm_t(0) = 0
     */
 
-    int i;
     int n = perm_cum[0].size();
     vector<int> tmp(n, 0);
 
-    for(i=0;i<n;i++){  tmp[i] = perm_t[ perm_cum[0][i] ];    }
+    for(int i=0;i<n;i++){  tmp[i] = perm_t[ perm_cum[0][i] ];    }
  
     // Copy the temporary vector into the input one:
-    for(i=0;i<n;i++){  perm_cum[0][i] = tmp[i];   }
+    for(int i=0;i<n;i++){  perm_cum[0][i] = tmp[i];   }
 
 
 }

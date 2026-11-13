@@ -84,7 +84,7 @@ void rescale_along_vector(double E_old, double E_new, MATRIX& p, MATRIX& invM, M
   or reverse the momentum along the vector t
 
 */
-  int idof, dof; 
+  int dof; 
   int ndof = which_dofs.size();
 
   // According to Fabiano
@@ -92,7 +92,7 @@ void rescale_along_vector(double E_old, double E_new, MATRIX& p, MATRIX& invM, M
   double b_ij = 0.0;
   double c_ij = E_old - E_new;
     
-  for(idof=0; idof < ndof; idof++){  
+  for(int idof=0; idof < ndof; idof++){  
 
     dof = which_dofs[idof];
 
@@ -172,7 +172,6 @@ vector<double> Boltz_quant_prob(vector<double>& E, double T){
             energy E_i at given temperature T, considering a number of selected energy
             levels as given by the list E
     */
-    int n;
  
     double kB = boltzmann/hartree; 
     double b = 1.0/(kB * T);
@@ -181,12 +180,12 @@ vector<double> Boltz_quant_prob(vector<double>& E, double T){
     double Z = 0.0;  // partition function
     vector<double> prob(nstates, 0.0);
 
-    for(n=0; n<nstates; n++){
+    for(int n=0; n<nstates; n++){
       prob[n] = exp(-E[n]*b);
       Z += prob[n];
     }
     
-    for(n=0; n<nstates; n++){
+    for(int n=0; n<nstates; n++){
       prob[n] = prob[n] / Z;
     }
 
@@ -458,7 +457,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
   int ntraj = q.n_cols;
   int ntraj_active = which_trajectories.size();
   int nst = C.n_rows;    
-  int itraj, traj, dof, idof;
+  int traj, dof;
   int isNBRA = prms.isNBRA;
 
   vector<int> fstates(ntraj, -1); 
@@ -474,7 +473,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
   if(prms.hop_acceptance_algo==0){  // Just accept all the proposed hops
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       fstates[traj] = proposed_states[traj];
@@ -484,7 +483,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
   else if(prms.hop_acceptance_algo==10){  // Just based on the adiabatic energy levels
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       int old_st = initial_states[traj];
@@ -531,7 +530,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
   else if(prms.hop_acceptance_algo==11){  // Just based on the diabatic energy levels
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       int old_st = initial_states[traj];
@@ -564,7 +563,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
     MATRIX dNAC(ndof, 1);
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       int old_st = initial_states[traj];
@@ -588,7 +587,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
         dNAC = 0.0;
         //for(dof = 0; dof < ndof; dof++){
-        for(idof = 0; idof < ndof_active; idof++){
+        for(int idof = 0; idof < ndof_active; idof++){
           dof = which_dofs[idof];
           nac = ham.children[traj]->get_dc1_adi(dof);
           U = *dyn_var.proj_adi[traj];
@@ -626,7 +625,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 */
 
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       int old_st = initial_states[traj];
@@ -649,7 +648,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
         //for(dof = 0; dof < ndof; dof++){
         dF = 0.0;
-        for(idof = 0; idof < ndof_active; idof++){
+        for(int idof = 0; idof < ndof_active; idof++){
           dof = which_dofs[idof];
           df = ham.children[traj]->get_d1ham_adi(dof);
           //df = projectors[traj].H() * df * projectors[traj];
@@ -676,7 +675,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
   else if(prms.hop_acceptance_algo==31){  // stochastic decision based on quantum Boltzmann factors
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       int old_st = initial_states[traj];
@@ -711,7 +710,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
   else if(prms.hop_acceptance_algo==32){  // stochastic decision based on classical Maxwell-Boltzmann factors
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       int old_st = initial_states[traj];
@@ -747,7 +746,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
   else if(prms.hop_acceptance_algo==33){  // stochastic decision based on quantum probabilities
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
 
       int old_st = initial_states[traj];
@@ -783,7 +782,7 @@ vector<int> accept_hops(dyn_variables& dyn_var, nHamiltonian& ham, vector<int>& 
 
   else if(prms.hop_acceptance_algo==40){  // based on tcnbra_ekin
 
-    for(itraj=0; itraj<ntraj_active; itraj++){
+    for(int itraj=0; itraj<ntraj_active; itraj++){
       traj = which_trajectories[itraj];
       hvib = ham.children[traj]->get_hvib_adi();
 
@@ -922,7 +921,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
   int n_active_dof = which_dofs.size(); 
   int ntraj = q.n_cols;
   int nst = C.n_rows;    
-  int traj, idof, dof;
+  int dof;
   int isNBRA = prms.isNBRA;
   MATRIX p_tr(ndof, 1);
   CMATRIX hvib(nst, nst);
@@ -938,7 +937,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
 
   else if(prms.momenta_rescaling_algo==100 || prms.momenta_rescaling_algo==101){  // rescale momenta uniformly based on adiabatic energies
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
 
       int old_st = old_states[traj];
       int new_st = new_states[traj];
@@ -972,7 +971,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
         }      
 
         //for(dof = 0; dof < ndof; dof++){   p.scale(dof, traj, scl_fac);  }
-        for(idof = 0; idof < n_active_dof; idof++){   
+        for(int idof = 0; idof < n_active_dof; idof++){   
           dof = which_dofs[idof];
           p.scale(dof, traj, scl_fac);  
         }
@@ -982,7 +981,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
 
   else if(prms.momenta_rescaling_algo==110 || prms.momenta_rescaling_algo==111){  // rescale momenta uniformly based on diabatic energies
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
 
       int old_st = old_states[traj];
       int new_st = new_states[traj];
@@ -1004,7 +1003,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
         }      
 
         //for(dof = 0; dof < ndof; dof++){   p.scale(dof, traj, scl_fac);  }
-        for(idof = 0; idof < n_active_dof; idof++){   
+        for(int idof = 0; idof < n_active_dof; idof++){   
           dof = which_dofs[idof];
           p.scale(dof, traj, scl_fac);  
         }
@@ -1024,7 +1023,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
     if(prms.momenta_rescaling_algo==200){ do_reverse = 0; }
     else if(prms.momenta_rescaling_algo==201){ do_reverse = 1; }
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
 
       int old_st = old_states[traj];
       int new_st = new_states[traj];
@@ -1042,7 +1041,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
         F_old = 0.0;
         F_new = 0.0;
 
-        for(idof = 0; idof < n_active_dof; idof++){
+        for(int idof = 0; idof < n_active_dof; idof++){
           dof = which_dofs[idof];
           nac = ham.children[traj]->get_dc1_adi(dof);
 
@@ -1101,7 +1100,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
     else if(prms.momenta_rescaling_algo==211){ do_reverse = 1; }
 
 
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
 
       int old_st = old_states[traj];
       int new_st = new_states[traj];
@@ -1123,7 +1122,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
         double E_f = hvib.get(new_st, new_st).real();  // final potential energy        
 
         dF = 0.0;
-        for(idof = 0; idof < n_active_dof; idof++){
+        for(int idof = 0; idof < n_active_dof; idof++){
           dof = which_dofs[idof];
           df = ham.children[traj]->get_d1ham_adi(dof);
           //df = projectors[traj].H() * df * projectors[traj];
@@ -1141,7 +1140,7 @@ vector<int>& new_states, vector<int>& old_states, dyn_control_params& prms){
   }// algo = 210 || 211
 
   else if(prms.momenta_rescaling_algo==40){  // based on tcnbra_ekin
-    for(traj=0; traj<ntraj; traj++){
+    for(int traj=0; traj<ntraj; traj++){
 
       int old_st = old_states[traj];
       int new_st = new_states[traj];

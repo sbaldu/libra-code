@@ -50,7 +50,6 @@ void solve_linsys(CMATRIX& C,CMATRIX& D, CMATRIX& X,double eps,int maxiter,doubl
 /// procedure for each column
 
 
-  int i,j,k;   // counters
   int n,m,p;   // dimetions
   complex<double> s;    // sums
   double error;// error
@@ -87,21 +86,21 @@ void solve_linsys(CMATRIX& C,CMATRIX& D, CMATRIX& X,double eps,int maxiter,doubl
 
   error = 0.0;
 
-  for( k = 0; k < p; k++ ){
+  for( int k = 0; k < p; k++ ){
 
     //------- Matrix preparation step -----------
 
-    for(i = 0;i<n;i++){ d.M[i] = D.M[i*p+k]; }
-    for(i = 0;i<m;i++){ x.M[i] = X.M[i*p+k]; }
+    for(int i = 0;i<n;i++){ d.M[i] = D.M[i*p+k]; }
+    for(int i = 0;i<m;i++){ x.M[i] = X.M[i*p+k]; }
     xprev = x;
     b = C.H() * d;
 
     //------- Gauss-Seidel step -----------------
 
-    for( i = 0; i < m; i++ ){
+    for( int i = 0; i < m; i++ ){
       s = 0.0;
-      for( j = 0; j < i; j++ ){ s += A.M[i*m + j]*x.M[j]; }
-      for( j = i+1; j < m; j++ ){ s += A.M[i*m + j]*xprev.M[j]; }
+      for( int j = 0; j < i; j++ ){ s += A.M[i*m + j]*x.M[j]; }
+      for( int j = i+1; j < m; j++ ){ s += A.M[i*m + j]*xprev.M[j]; }
       x.M[i] = (b.M[i] - s)/A.M[i*m + i];
 
     }// for i - all elements of vector x
@@ -109,7 +108,7 @@ void solve_linsys(CMATRIX& C,CMATRIX& D, CMATRIX& X,double eps,int maxiter,doubl
 
     //-------- Now calculate the error and update X ---------
 
-    for( i = 0; i < m; i++ ){
+    for( int i = 0; i < m; i++ ){
       int indx = i*p+k;
       error += ((std::conj(x.M[i] - xprev.M[i]))*(x.M[i] - xprev.M[i])).real();
       X.M[indx] = omega*x.M[i] + (1.0-omega)*X.M[indx]; 
@@ -165,7 +164,6 @@ void solve_linsys1(CMATRIX& C, CMATRIX& X,double eps,int maxiter,double omega){
 /// procedure for each column
 
 
-  int i,j,k;   // counters
   int n,m,p;   // dimetions
   complex<double> s;    // sums
   complex<double> diff;
@@ -199,18 +197,18 @@ void solve_linsys1(CMATRIX& C, CMATRIX& X,double eps,int maxiter,double omega){
 
   error = 0.0;
 
-  for( k = 0; k < p; k++ ){
+  for( int k = 0; k < p; k++ ){
 
       //------- Matrix preparation step -----------
 
-      for(i = 0;i<m;i++){ xprev.M[i] = x.M[i] = X.M[i*p+k]; }
+      for(int i = 0;i<m;i++){ xprev.M[i] = x.M[i] = X.M[i*p+k]; }
 
       //------- Gauss-Seidel step -----------------
       im = 0;
-      for( i = 0; i < m; i++ ){
+      for( int i = 0; i < m; i++ ){
         s = 0.0;
-        for( j = 0; j < i; j++ ){ s += A.M[im + j]*x.M[j];  }
-        for( j = i+1; j < m; j++ ){ s += A.M[im + j]*xprev.M[j]; }
+        for( int j = 0; j < i; j++ ){ s += A.M[im + j]*x.M[j];  }
+        for( int j = i+1; j < m; j++ ){ s += A.M[im + j]*xprev.M[j]; }
         x.M[i] = (-s)/A.M[im + i];
         im += m;
 
@@ -218,7 +216,7 @@ void solve_linsys1(CMATRIX& C, CMATRIX& X,double eps,int maxiter,double omega){
 
       //-------- Now calculate the error and update X ---------
 
-      for( i = 0; i < m; i++ ){
+      for( int i = 0; i < m; i++ ){
         error += ((std::conj(x.M[i] - xprev.M[i]))*(x.M[i] - xprev.M[i])).real();
         X.M[i] = omega*x.M[i] + (1.0-omega)*X.M[i];  // k takes value of only 0, p = 1, so i*p+k = i
       }// for i
@@ -278,12 +276,11 @@ void inv_dft(CMATRIX& in,CMATRIX& out){
 
 */
 
-  int k;
   int N = in.n_elts; // <in> and <out> are the vectors with n elements: n x 1
   complex<double> f,mul;
   double argg;
 
-  for(k=0;k<N;k++){
+  for(int k=0;k<N;k++){
 
     out.M[k] = 0.0;
     argg = 2.0*M_PI*k/((double)N);
@@ -299,7 +296,7 @@ void inv_dft(CMATRIX& in,CMATRIX& out){
 
   argg = 1.0/((double)N);
   
-  for(k=0;k<N;k++){ out.M[k] *= argg; }
+  for(int k=0;k<N;k++){ out.M[k] *= argg; }
 
 }
 
@@ -849,13 +846,12 @@ void inv_cft(CMATRIX& in,CMATRIX& out,double xmin,double dx){
   \param[in] dx Spacing between points in the real space, along the X direction
 
 */
-  int n;
   int N = in.n_elts; // <in> and <out> are the vectors with n elements: n x 1
   complex<double> f,mul;
   double arg;
   double L = N*dx;
 
-  for(n=0;n<N;n++){
+  for(int n=0;n<N;n++){
 
     double r_n = xmin + dx*n;
 
@@ -873,7 +869,7 @@ void inv_cft(CMATRIX& in,CMATRIX& out,double xmin,double dx){
 
   arg = (1.0/L);
 
-  for(n=0;n<N;n++){ out.M[n] *= arg; }
+  for(int n=0;n<N;n++){ out.M[n] *= arg; }
 
 }
 
@@ -895,13 +891,12 @@ void inv_cft1(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx){
   k  - double, continuous representation
 
 */
-  int n;
   int N = in.n_elts; // <in> and <out> are the vectors with n elements: n x 1
   complex<double> f,f1,mul;
   double argg;
   double L = N*dx;   // dk = 1/L,   kmin<= k < kmin + 1/dx
 
-  for(n=0;n<N;n++){
+  for(int n=0;n<N;n++){
 
     double r_n = xmin + dx*n;
     out.M[n] = 0.0;
@@ -921,7 +916,7 @@ void inv_cft1(CMATRIX& in,CMATRIX& out,double xmin,double kmin,double dx){
 
   argg = (1.0/L);
 
-  for(n=0;n<N;n++){ out.M[n] *= argg; }
+  for(int n=0;n<N;n++){ out.M[n] *= argg; }
 
 }
 

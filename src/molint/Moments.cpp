@@ -66,7 +66,6 @@ double gaussian_moment(int nxa, double alp_a, double Xa,
 ****************************************************************************/
 
 
-  int k;
   double gamma_cb = alp_c + alp_b;
   double Xcb = (alp_c * Xc + alp_b * Xb )/gamma_cb;
   double dX = Xcb - Xc;
@@ -83,7 +82,7 @@ double gaussian_moment(int nxa, double alp_a, double Xa,
   double pwk = 1.0;
   double pwk_prev = 0.0;
   // Compute Gaussian integrals
-  for(k=0; k<=nxc; k++){
+  for(int k=0; k<=nxc; k++){
     double bink = BINOM(k,nxc);
     double g, dSdXa, dSdXcb; 
     //============= Function itself ===============
@@ -136,16 +135,15 @@ double gaussian_moment(int nxa, double alp_a, double Xa,
                       ){
 
   // Allocate working memory
-  int i;
   int n_aux = 20; //nxa+nxb+1;
   vector<double*> auxd(10);
-  for(i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = gaussian_moment(nxa, alp_a, Xa,  nxc, alp_c,Xc,  nxb,alp_b,Xb, is_normalize, is_derivs, dI_dXa, dI_dXc, dI_dXb, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<10;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<10;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
   return res;
@@ -262,16 +260,15 @@ double gaussian_moment(int nxa,int nya, int nza, double alp_a, const VECTOR& Ra,
                        int is_derivs, VECTOR& dIdA, VECTOR& dIdR, VECTOR& dIdB
                       ){
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double*> auxd(10);
-  for(i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = gaussian_moment(nxa,nya,nza,alp_a,Ra, nx,ny,nz,alp,R, nxb,nyb,nzb,alp_b,Rb, is_normalize, is_derivs, dIdA, dIdR, dIdB, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<10;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<10;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
 

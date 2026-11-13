@@ -144,7 +144,6 @@ CMATRIX nHamiltonian::QTSH_forces_dia(CMATRIX &ampl_dia, int lvl, int option) {
 
 
   */
-  int i;
 
   if (lvl == 1) {
     // Check whether we have enough sub-Hamiltonians
@@ -170,15 +169,15 @@ CMATRIX nHamiltonian::QTSH_forces_dia(CMATRIX &ampl_dia, int lvl, int option) {
 
   // The indicies in stenc_frc reflects which indicies are to be updated in the
   // final F matrix
-  for (i = 0; i < nnucl; i++) {
+  for (int i = 0; i < nnucl; i++) {
     stenc_frc[i] = i;
   }
 
-  for (i = 0; i < ampl_dia.n_rows; i++) {
+  for (int i = 0; i < ampl_dia.n_rows; i++) {
     stenc_ampl[i] = i;
   }
 
-  for (i = 0; i < ampl_dia.n_cols; i++) {
+  for (int i = 0; i < ampl_dia.n_cols; i++) {
     stenc_col[0] = i;
 
     pop_submatrix(ampl_dia, ampl_tmp, stenc_ampl, stenc_col);
@@ -361,7 +360,6 @@ CMATRIX nHamiltonian::QTSH_forces_adi(CMATRIX &ampl_adi, int lvl, int option,
     trajectories
 
   */
-  int i;
 
   if (lvl == 1) {
     // Check whether we have enough sub-Hamiltonians
@@ -387,15 +385,15 @@ CMATRIX nHamiltonian::QTSH_forces_adi(CMATRIX &ampl_adi, int lvl, int option,
 
   // The indicies in stenc_frc reflects which indicies are to be updated in the
   // final F matrix
-  for (i = 0; i < nnucl; i++) {
+  for (int i = 0; i < nnucl; i++) {
     stenc_frc[i] = i;
   }
 
-  for (i = 0; i < ampl_adi.n_rows; i++) {
+  for (int i = 0; i < ampl_adi.n_rows; i++) {
     stenc_ampl[i] = i;
   }
 
-  for (i = 0; i < ampl_adi.n_cols; i++) {
+  for (int i = 0; i < ampl_adi.n_cols; i++) {
     stenc_col[0] = i;
 
     pop_submatrix(ampl_adi, ampl_tmp, stenc_ampl, stenc_col);

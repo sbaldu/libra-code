@@ -53,7 +53,7 @@ void Hamiltonian_core_eht
 */
 
            
-  int i,j, a, b;
+  int a, b;
   double delt, delt2, delt4;
 
   int Norb = basis_ao.size(); // how many AOs are included in this fragment
@@ -64,7 +64,7 @@ void Hamiltonian_core_eht
  
   //========================= Core diagonal elements ==========================  
   // Diagonal elements = set to IPs
-  for(i=0;i<Norb;i++){                                              //    old
+  for(int i=0;i<Norb;i++){                                              //    old
     Hao->M[i*Norb+i] = modprms.orb_params[i].IP; //modprms.PT[basis_ao[i].element].IP[basis_ao[i].ao_shell];
   }// for i
 
@@ -73,9 +73,9 @@ void Hamiltonian_core_eht
   double K_const = 0.0;// default value
 
   // Off-diagonal elements
-  for(i=0;i<Norb;i++){
+  for(int i=0;i<Norb;i++){
     a = ao_to_atom_map[i];
-    for(j=i+1;j<Norb;j++){          
+    for(int j=i+1;j<Norb;j++){          
         b = ao_to_atom_map[j];
         // This is old and slow version
         //K_const = modprms.eht_k.get_K_value(basis_ao[i].element,basis_ao[i].ao_shell,basis_ao[j].element,basis_ao[j].ao_shell);
@@ -247,7 +247,7 @@ void Hamiltonian_core_deriv_eht
 
   //================ Basically, here we compute derivatives of the core Hamiltonian ========================
 
-  int i,j,a,b;
+  int a,b;
   double delt, delt2, delt4;
   VECTOR dIdA,dIdB;
 
@@ -292,7 +292,7 @@ void Hamiltonian_core_deriv_eht
   *dSao_dz = 0.0;
 
 
-  for(i=0;i<Norb;i++){  // global orbital indices
+  for(int i=0;i<Norb;i++){  // global orbital indices
 
     // Diagonal elements = set to IPs
     // No contributions to diagonal elements of gradients
@@ -302,7 +302,7 @@ void Hamiltonian_core_deriv_eht
     
     
     //-------------- Off-diagonal terms of the core matrix ---------
-    for(j=0;j<Norb;j++){
+    for(int j=0;j<Norb;j++){
 
       if(j!=i){
         b = ao_to_atom_map[j];
@@ -549,7 +549,7 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
 */
 
 
-  int i,j,a,b;
+  int a,b;
   double delt, delt2, delt4;
 
   int Norb = basis_ao.size(); // how many AOs are included in this fragment
@@ -611,9 +611,9 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
     // Off-diagonal elements
     double K_const = 0.0;// default value
   
-    for(i=0;i<Norb;i++){
+    for(int i=0;i<Norb;i++){
       a = ao_to_atom_map[i];
-      for(j=i+1;j<Norb;j++){          
+      for(int j=i+1;j<Norb;j++){          
           b = ao_to_atom_map[j];
           // This is old and slow version
           //K_const = modprms.eht_k.get_K_value(basis_ao[i].element,basis_ao[i].ao_shell,basis_ao[j].element,basis_ao[j].ao_shell);
@@ -733,8 +733,8 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
       double Qa = syst.Atoms[a].Atom_mull_charge_gross;
 
     
-      for(i=0;i<static_cast<int>(atom_to_ao_map[a].size());i++){  // over all orbitals on a
-        for(j=0;j<static_cast<int>(atom_to_ao_map[a].size());j++){  // over all orbitals on a
+      for(int i=0;i<static_cast<int>(atom_to_ao_map[a].size());i++){  // over all orbitals on a
+        for(int j=0;j<static_cast<int>(atom_to_ao_map[a].size());j++){  // over all orbitals on a
     
   
           //************ INDO-type on-site exchange *************   
@@ -776,8 +776,8 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
       int orb_a = atom_to_ao_map[a][0];  // first orbital of the atom a - assume that coefficients do not depend on orbital, only
                                          // on atom type
 
-      for(i=0;i<static_cast<int>(atom_to_ao_map[a].size());i++){  // over all orbitals on a
-        for(j=0;j<static_cast<int>(atom_to_ao_map[a].size());j++){  // over all orbitals on a
+      for(int i=0;i<static_cast<int>(atom_to_ao_map[a].size());i++){  // over all orbitals on a
+        for(int j=0;j<static_cast<int>(atom_to_ao_map[a].size());j++){  // over all orbitals on a
 
 
           for(b=0;b<syst.Number_of_atoms;b++){  // over all atoms - effects of electronegativities
@@ -819,8 +819,8 @@ void Hamiltonian_Fock_eht(Electronic_Structure* el, System& syst, vector<AO>& ba
       int orb_b = atom_to_ao_map[b][0];  // first orbital of the atom b - assume that coefficients do not depend on orbital, only
                                          // on atom type
 
-      for(i=0;i<static_cast<int>(atom_to_ao_map[b].size());i++){  // over all orbitals on b
-        for(j=0;j<static_cast<int>(atom_to_ao_map[b].size());j++){  // over all orbitals on b
+      for(int i=0;i<static_cast<int>(atom_to_ao_map[b].size());i++){  // over all orbitals on b
+        for(int j=0;j<static_cast<int>(atom_to_ao_map[b].size());j++){  // over all orbitals on b
 
 
           for(a=0;a<syst.Number_of_atoms;a++){  // over all atoms - effects of electronegativities

@@ -30,7 +30,6 @@ void set_parameters_eht(Control_Parameters &prms, Model_Parameters &modprms) {
   //---------------------------- Reading parameters file
   //--------------------------------------
 
-  int i, k;
   std::string filename = prms.parameters;
   std::string st;
   vector<vector<std::string>> file;
@@ -59,7 +58,7 @@ void set_parameters_eht(Control_Parameters &prms, Model_Parameters &modprms) {
 
   cout << "Echo tokenized EHT parameters file content\n";
   int sz = file.size();
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     for (auto j = 0u; j < file[i].size(); j++) {
       cout << file[i][j] << "  ";
     }
@@ -93,7 +92,7 @@ void set_parameters_eht(Control_Parameters &prms, Model_Parameters &modprms) {
   }
   //------------------------------------
 
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
 
     //>>>>>>>>>>> Reading atomic parameters <<<<<<<<<<<<<<
     if (file[i].size() > 0) {
@@ -158,7 +157,7 @@ void set_parameters_eht(Control_Parameters &prms, Model_Parameters &modprms) {
                  << " IP= " << modprms.PT[elt].IP[sh] / eV
                  << " eV Nzeta= " << modprms.PT[elt].Nzeta[sh] << "  ";
 
-            for (k = 0; k < modprms.PT[elt].Nzeta[sh]; k++) {
+            for (int k = 0; k < modprms.PT[elt].Nzeta[sh]; k++) {
               modprms.PT[elt].coeffs[sh][k] =
                   atof(file[i1 + j][6 + 2 * k].c_str());
               modprms.PT[elt].zetas[sh][k] =

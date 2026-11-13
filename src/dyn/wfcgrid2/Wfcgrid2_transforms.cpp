@@ -32,7 +32,7 @@ namespace libwfcgrid2{
 void Wfcgrid2::update_reciprocal(int rep){
   // PSI(r)->PSI(k)=reciPSI
 
-  int ipt, ipt2, istate, indx;
+  int indx;
 
   vector<int> point(ndof,0); 
 
@@ -41,10 +41,10 @@ void Wfcgrid2::update_reciprocal(int rep){
     CMATRIX in(npts[0],1);
     CMATRIX out(npts[0],1);
 
-    for(istate=0;istate<nstates;istate++){ 
+    for(int istate=0;istate<nstates;istate++){ 
 
       ///< PSI to internal input
-      for(ipt=0; ipt<npts[0]; ipt++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
         point[0] = ipt;
         indx = imap(point);
         if(rep==0){
@@ -60,7 +60,7 @@ void Wfcgrid2::update_reciprocal(int rep){
       cfft1(in,out,rmin[0],kmin[0],dr[0]);
 
       ///< Internal output to reciPSI
-      for(ipt=0; ipt<npts[0]; ipt++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
         point[0] = ipt;
         indx = imap(point);
 
@@ -81,11 +81,11 @@ void Wfcgrid2::update_reciprocal(int rep){
     CMATRIX in(npts[0], npts[1]);
     CMATRIX out(npts[0], npts[1]);
 
-    for(istate=0;istate<nstates;istate++){ 
+    for(int istate=0;istate<nstates;istate++){ 
 
       ///< PSI to internal input
-      for(ipt=0; ipt<npts[0]; ipt++){
-        for(ipt2=0; ipt2<npts[1]; ipt2++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
+        for(int ipt2=0; ipt2<npts[1]; ipt2++){
 
           point[0] = ipt;
           point[1] = ipt2;
@@ -105,8 +105,8 @@ void Wfcgrid2::update_reciprocal(int rep){
       cfft1_2D(in,out,rmin[0],rmin[1], kmin[0], kmin[1], dr[0],dr[1]);
 
       ///< Internal output to reciPSI
-      for(ipt=0; ipt<npts[0]; ipt++){
-        for(ipt2=0; ipt2<npts[1]; ipt2++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
+        for(int ipt2=0; ipt2<npts[1]; ipt2++){
 
           point[0] = ipt;
           point[1] = ipt2;
@@ -138,7 +138,7 @@ void Wfcgrid2::update_reciprocal(int rep){
 void Wfcgrid2::update_real(int rep){
   // reciPSI = PSI(k) -> PSI(r)
 
-  int ipt, ipt2, istate, indx;
+  int indx;
 
   vector<int> point(ndof,0); 
 
@@ -147,10 +147,10 @@ void Wfcgrid2::update_real(int rep){
     CMATRIX in(npts[0],1);
     CMATRIX out(npts[0],1);
 
-    for(istate=0;istate<nstates;istate++){ 
+    for(int istate=0;istate<nstates;istate++){ 
 
       ///< PSI to internal input
-      for(ipt=0; ipt<npts[0]; ipt++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
         point[0] = ipt;
         indx = imap(point);
 
@@ -166,7 +166,7 @@ void Wfcgrid2::update_real(int rep){
       inv_cfft1(in,out,rmin[0],kmin[0],dr[0]);
 
       ///< Internal output to reciPSI
-      for(ipt=0; ipt<npts[0]; ipt++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
         point[0] = ipt;
         indx = imap(point);
         if(rep==0){
@@ -186,11 +186,11 @@ void Wfcgrid2::update_real(int rep){
     CMATRIX in(npts[0], npts[1]);
     CMATRIX out(npts[0], npts[1]);
 
-    for(istate=0;istate<nstates;istate++){ 
+    for(int istate=0;istate<nstates;istate++){ 
 
       ///< PSI to internal input
-      for(ipt=0; ipt<npts[0]; ipt++){
-        for(ipt2=0; ipt2<npts[1]; ipt2++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
+        for(int ipt2=0; ipt2<npts[1]; ipt2++){
 
           point[0] = ipt;
           point[1] = ipt2;
@@ -211,8 +211,8 @@ void Wfcgrid2::update_real(int rep){
       inv_cfft1_2D(in,out,rmin[0],rmin[1], kmin[0], kmin[1], dr[0],dr[1]);
 
       ///< Internal output to reciPSI
-      for(ipt=0; ipt<npts[0]; ipt++){
-        for(ipt2=0; ipt2<npts[1]; ipt2++){
+      for(int ipt=0; ipt<npts[0]; ipt++){
+        for(int ipt2=0; ipt2<npts[1]; ipt2++){
 
           point[0] = ipt;
           point[1] = ipt2;

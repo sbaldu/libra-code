@@ -64,14 +64,14 @@ void Wfcgrid2::direct_propagate_adi2(double dt, vector<double>& mass){
 
 */
 
-  int idof, ipt, npt1, npt2;
+  int ipt, npt2;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
   complex<double> one(1.0, 0.0);
   complex<double> eye(0.0, 1.0);
 
   vector< complex<double> > A(ndof, complex<double>(0.0, 0.0));
-  for(idof=0; idof<ndof; idof++){  
+  for(int idof=0; idof<ndof; idof++){  
     A[idof] = 0.25 * eye * dt / (mass[idof] * dr[idof]*dr[idof]);
   }
 
@@ -86,13 +86,13 @@ void Wfcgrid2::direct_propagate_adi2(double dt, vector<double>& mass){
   vector<CMATRIX> PSI_tmp(PSI_adi_past);
 
 
-  for(npt1=0; npt1<Npts; npt1++){
+  for(int npt1=0; npt1<Npts; npt1++){
 
 
     pt1 = gmap[npt1];
 
 
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       ipt = pt1[idof];
 
       /** =============== Second terms ================ */
@@ -157,10 +157,10 @@ void Wfcgrid2::direct_propagate_adi2(double dt, vector<double>& mass){
 
 
   /// Copy the current wavefunction into the previous one
-  for(npt1=0; npt1<Npts; npt1++){ PSI_adi_past[npt1] = PSI_adi[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_adi_past[npt1] = PSI_adi[npt1];  }
 
   /// Copy the temporary results into the current wavefunction
-  for(npt1=0; npt1<Npts; npt1++){ PSI_adi[npt1] = PSI_tmp[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_adi[npt1] = PSI_tmp[npt1];  }
 
 }
 
@@ -173,14 +173,14 @@ void Wfcgrid2::direct_propagate_adi1(double dt, vector<double>& mass){
 
 */
 
-  int idof, ipt, npt1, npt2;
+  int ipt, npt2;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
   complex<double> one(1.0, 0.0);
   complex<double> eye(0.0, 1.0);
 
   vector< complex<double> > A(ndof, complex<double>(0.0, 0.0));
-  for(idof=0; idof<ndof; idof++){  
+  for(int idof=0; idof<ndof; idof++){  
     A[idof] = 0.25 * eye * dt / (mass[idof] * dr[idof]*dr[idof]);
   }
 
@@ -195,13 +195,13 @@ void Wfcgrid2::direct_propagate_adi1(double dt, vector<double>& mass){
   vector<CMATRIX> PSI_tmp(PSI_adi);
 
 
-  for(npt1=0; npt1<Npts; npt1++){
+  for(int npt1=0; npt1<Npts; npt1++){
 
 
     pt1 = gmap[npt1];
 
 
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       ipt = pt1[idof];
 
       /** =============== Second terms ================ */
@@ -266,10 +266,10 @@ void Wfcgrid2::direct_propagate_adi1(double dt, vector<double>& mass){
 
 
   /// Copy the current wavefunction into the previous one
-  for(npt1=0; npt1<Npts; npt1++){ PSI_adi_past[npt1] = PSI_adi[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_adi_past[npt1] = PSI_adi[npt1];  }
 
   /// Copy the temporary results into the current wavefunction
-  for(npt1=0; npt1<Npts; npt1++){ PSI_adi[npt1] = PSI_tmp[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_adi[npt1] = PSI_tmp[npt1];  }
 
 }
 
@@ -288,14 +288,14 @@ void Wfcgrid2::direct_propagate_dia2(double dt, vector<double>& mass){
 
 */
 
-  int idof, ipt, npt1, npt2;
+  int ipt, npt2;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
   complex<double> one(1.0, 0.0);
   complex<double> eye(0.0, 1.0);
 
   vector< complex<double> > A(ndof, complex<double>(0.0, 0.0));
-  for(idof=0; idof<ndof; idof++){  
+  for(int idof=0; idof<ndof; idof++){  
     A[idof] = 0.25 * eye * dt / (mass[idof] * dr[idof]*dr[idof]);
   }
 
@@ -310,13 +310,13 @@ void Wfcgrid2::direct_propagate_dia2(double dt, vector<double>& mass){
   vector<CMATRIX> PSI_tmp(PSI_dia_past);
 
 
-  for(npt1=0; npt1<Npts; npt1++){
+  for(int npt1=0; npt1<Npts; npt1++){
 
 
     pt1 = gmap[npt1];
 
 
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       ipt = pt1[idof];
 
       /** =============== Second terms ================ */
@@ -354,10 +354,10 @@ void Wfcgrid2::direct_propagate_dia2(double dt, vector<double>& mass){
 
 
   /// Copy the current wavefunction into the previous one
-  for(npt1=0; npt1<Npts; npt1++){ PSI_dia_past[npt1] = PSI_dia[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_dia_past[npt1] = PSI_dia[npt1];  }
 
   /// Copy the temporary results into the current wavefunction
-  for(npt1=0; npt1<Npts; npt1++){ PSI_dia[npt1] = PSI_tmp[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_dia[npt1] = PSI_tmp[npt1];  }
 
 }
 
@@ -370,14 +370,14 @@ void Wfcgrid2::direct_propagate_dia1(double dt, vector<double>& mass){
 
 */
 
-  int idof, ipt, npt1, npt2;
+  int ipt, npt2;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
   complex<double> one(1.0, 0.0);
   complex<double> eye(0.0, 1.0);
 
   vector< complex<double> > A(ndof, complex<double>(0.0, 0.0));
-  for(idof=0; idof<ndof; idof++){  
+  for(int idof=0; idof<ndof; idof++){  
     A[idof] = 0.25 * eye * dt / (mass[idof] * dr[idof]*dr[idof]);
   }
 
@@ -392,13 +392,13 @@ void Wfcgrid2::direct_propagate_dia1(double dt, vector<double>& mass){
   vector<CMATRIX> PSI_tmp(PSI_dia);
 
 
-  for(npt1=0; npt1<Npts; npt1++){
+  for(int npt1=0; npt1<Npts; npt1++){
 
 
     pt1 = gmap[npt1];
 
 
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       ipt = pt1[idof];
 
       /** =============== Second terms ================ */
@@ -436,10 +436,10 @@ void Wfcgrid2::direct_propagate_dia1(double dt, vector<double>& mass){
 
 
   /// Copy the current wavefunction into the previous one
-  for(npt1=0; npt1<Npts; npt1++){ PSI_dia_past[npt1] = PSI_dia[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_dia_past[npt1] = PSI_dia[npt1];  }
 
   /// Copy the temporary results into the current wavefunction
-  for(npt1=0; npt1<Npts; npt1++){ PSI_dia[npt1] = PSI_tmp[npt1];  }
+  for(int npt1=0; npt1<Npts; npt1++){ PSI_dia[npt1] = PSI_tmp[npt1];  }
 
 }
 

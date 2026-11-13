@@ -77,7 +77,6 @@ vector<MATRIX> NeuralNetwork::propagate(MATRIX& input){
 
 */
 
-  int i, j, L;  
 
   if(input.n_rows!=sz_x){
     std::cout<<"Error: Size of the input "<<input.n_rows<<" does not match the ANN architecture "<<sz_x<<std::endl;
@@ -104,14 +103,14 @@ vector<MATRIX> NeuralNetwork::propagate(MATRIX& input){
   Y.push_back(input);
 
   /// L = 1, 2... Nlayers -1
-  for(L = 1; L < Nlayers; L++){
+  for(int L = 1; L < Nlayers; L++){
 
     Y.push_back(MATRIX(Npe[L], sz)); 
     Y[L] = W[L] * Y[L-1];
 
     /// Transfer function and bias
-    for(i=0; i<Npe[L]; i++){ 
-      for(j=0; j<sz; j++){ 
+    for(int i=0; i<Npe[L]; i++){ 
+      for(int j=0; j<sz; j++){ 
         Y[L].set(i, j, tanh( Y[L].get(i, j) +  B[L].get(i, 0)) );
       }
     }
@@ -139,7 +138,6 @@ vector<MATRIX> NeuralNetwork::derivatives(MATRIX& input){
 
 */
 
-  int i, p, L;  
 
   if(input.n_rows!=sz_x){
     std::cout<<"Error: Size of the input "<<input.n_rows<<" does not match the ANN architecture "<<sz_x<<std::endl;
@@ -168,20 +166,20 @@ vector<MATRIX> NeuralNetwork::derivatives(MATRIX& input){
   /// ksi[L].get(i,j) - is basically dx_L[i]/dx_0[j] - temporary variables for a given pattern
   vector<MATRIX> ksi;
 
-  for(L = 0; L < Nlayers; L++){  
+  for(int L = 0; L < Nlayers; L++){  
     ksi.push_back(MATRIX(Npe[L], sz_x));
   }// for L
 
   /// Repeat for all patterns 
-  for(p = 0; p < sz; p++){
+  for(int p = 0; p < sz; p++){
 
     // Initialize
     ksi[0].Init_Unit_Matrix(1.0);  
     
-    for(L = 1; L < Nlayers; L++){            
+    for(int L = 1; L < Nlayers; L++){            
 
       MATRIX D_L(Npe[L],Npe[L]); 
-      for(i = 0; i<Npe[L]; i++){  D_L.set(i,i, 1.0 - Y[L].get(i, p) * Y[L].get(i, p));   }
+      for(int i = 0; i<Npe[L]; i++){  D_L.set(i,i, 1.0 - Y[L].get(i, p) * Y[L].get(i, p));   }
 
       ksi[L] = D_L * W[L] * ksi[L-1]; 
 
@@ -215,7 +213,6 @@ double NeuralNetwork::back_propagate(vector<MATRIX>& Y, MATRIX& target){
 
 */
 
-  int i, j, L;  
 
   if(target.n_rows!=sz_y){
     std::cout<<"Error: Size of the target output "<<target.n_rows<<" does not match the ANN architecture "<<sz_y<<std::endl;
@@ -242,7 +239,7 @@ double NeuralNetwork::back_propagate(vector<MATRIX>& Y, MATRIX& target){
   vector<MATRIX> delta;
 
   /// Allocate deltas:
-  for(L = 0; L < Nlayers; L++){  delta.push_back(MATRIX(Npe[L], sz));  }
+  for(int L = 0; L < Nlayers; L++){  delta.push_back(MATRIX(Npe[L], sz));  }
 
 
   //====== Back-propagate deltas =============
@@ -250,13 +247,13 @@ double NeuralNetwork::back_propagate(vector<MATRIX>& Y, MATRIX& target){
   delta[Nlayers-1] = target - Y[Nlayers-1];
 
   /// L = Nlayers - 2, Nlayers-3, ..., 1
-  for(L = Nlayers-2; L > 0; L--){
+  for(int L = Nlayers-2; L > 0; L--){
 
     delta[L] = W[L+1].T() * delta[L+1];
 
     /// This is the effect of the transfer function derivative
-    for(i=0; i<Npe[L]; i++){ 
-      for(j=0; j<sz; j++){ 
+    for(int i=0; i<Npe[L]; i++){ 
+      for(int j=0; j<sz; j++){ 
         delta[L].scale(i, j,  (1.0 - Y[L].get(i, j) * Y[L].get(i, j))  );
       }
     }
@@ -265,11 +262,11 @@ double NeuralNetwork::back_propagate(vector<MATRIX>& Y, MATRIX& target){
 
  
   //========= Compute weight and bias gradients =======
-  for(L = 1; L < Nlayers; L++){
+  for(int L = 1; L < Nlayers; L++){
     grad_w[L] = 0.0;
     grad_b[L] = 0.0;
 
-    for(j = 0; j<sz; j++){
+    for(int j = 0; j<sz; j++){
       grad_w[L] -=  delta[L].col(j) * Y[L-1].col(j).T();
       grad_b[L] -=  delta[L].col(j);
     }// for j
@@ -282,8 +279,8 @@ double NeuralNetwork::back_propagate(vector<MATRIX>& Y, MATRIX& target){
 
   // Compute error
   double err = 0.0;
-  for(i=0; i<Npe[Nlayers-1]; i++){ 
-    for(j=0; j<sz; j++){ 
+  for(int i=0; i<Npe[Nlayers-1]; i++){ 
+    for(int j=0; j<sz; j++){ 
       err += delta[Nlayers-1].get(i,j) * delta[Nlayers-1].get(i,j);
     }// for j
   }// for i
@@ -309,7 +306,6 @@ double NeuralNetwork::error(MATRIX& inputs, MATRIX& target){
 
 */
 
-  int i, j;  
 
   if(target.n_cols!=inputs.n_cols){    
     std::cout<<"Error: The number of patterns is different for inputs "<<inputs.n_cols<<" and targets "<<target.n_cols<<std::endl;
@@ -343,8 +339,8 @@ double NeuralNetwork::error(MATRIX& inputs, MATRIX& target){
 
   // Compute error
   double err = 0.0;
-  for(i=0; i<Npe[Nlayers-1]; i++){ 
-    for(j=0; j<sz; j++){ 
+  for(int i=0; i<Npe[Nlayers-1]; i++){ 
+    for(int j=0; j<sz; j++){ 
       err += delta.get(i,j) * delta.get(i,j);
     }// for j
   }// for i
@@ -366,7 +362,7 @@ vector<double> NeuralNetwork::train(Random& rnd, bp::dict params, MATRIX& inputs
 
 */
 
-  int i, epoch, L, a1, a2;
+  int L, a1, a2;
 
   ///============ Get the parameters ==================
   /**
@@ -506,8 +502,8 @@ vector<double> NeuralNetwork::train(Random& rnd, bp::dict params, MATRIX& inputs
   MATRIX input_subset(sz_x, epoch_size);
   MATRIX target_subset(sz_y, epoch_size);
   vector<int> subset(epoch_size);
-  vector<int> inp_dim(sz_x); for(i=0; i<sz_x; i++){ inp_dim[i] = i; }
-  vector<int> tar_dim(sz_y); for(i=0; i<sz_y; i++){ tar_dim[i] = i; }
+  vector<int> inp_dim(sz_x); for(int i=0; i<sz_x; i++){ inp_dim[i] = i; }
+  vector<int> tar_dim(sz_y); for(int i=0; i<sz_y; i++){ tar_dim[i] = i; }
   vector<MATRIX> Y;
 
   int counter = 0;
@@ -542,9 +538,9 @@ vector<double> NeuralNetwork::train(Random& rnd, bp::dict params, MATRIX& inputs
 
   //===================================================================
    
-  for(epoch = 0; epoch < num_epochs; epoch++){    
+  for(int epoch = 0; epoch < num_epochs; epoch++){    
 
-    for(i = 0; i < steps_per_epoch; i++){
+    for(int i = 0; i < steps_per_epoch; i++){
             
         // Make a random selection of the training patterns
         randperm(epoch_size, n_patterns, subset);

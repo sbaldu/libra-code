@@ -138,11 +138,10 @@ void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,  ivr_params
 
 */
 
-  int i;
   int Ndof = q[0].n_rows;
   int Ntime = TCF.size();
 
-  for(i = 0; i < Ntime; i++){   MCnum[i] += status[i] * statusp[i];     }
+  for(int i = 0; i < Ntime; i++){   MCnum[i] += status[i] * statusp[i];     }
 
 
   MATRIX qIn(prms.get_qIn());
@@ -163,7 +162,7 @@ void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,  ivr_params
 
     MATRIX norm(Ndof, Ndof); norm  = invTuningQ * invTuningP;
     double normC = 1.0;
-    for(i = 0; i<Ndof; i++){   normC = normC * norm.get(i,i);   }
+    for(int i = 0; i<Ndof; i++){   normC = normC * norm.get(i,i);   }
     normC = sqrt(normC);
 
 
@@ -185,7 +184,7 @@ void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,  ivr_params
     int Maslov  = 0;
     complex<double> prev(1.0, 0.0);
 
-    for(i = 0; i < Ntime; i++){  
+    for(int i = 0; i < Ntime; i++){  
 
       if(status[i]==1 && statusp[i]==1){
 
@@ -241,7 +240,7 @@ void compute_tcf(vector< complex<double> >& TCF, vector<int>& MCnum,  ivr_params
 
 
 
-    for(i = 0; i < Ntime; i++){  
+    for(int i = 0; i < Ntime; i++){  
 
       if(status[i]==1 && statusp[i]==1){
 

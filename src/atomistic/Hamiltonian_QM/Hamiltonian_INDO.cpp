@@ -382,15 +382,14 @@ void compute_all_indo_core_parameters_derivs(
   aux6 = new MATRIX(N, N);
 
   // Memory for ERI computations
-  int i;
   int n_auxd = 40;
   int n_auxv = 40;
   vector<double *> auxd(30);
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     auxd[i] = new double[n_auxd];
   }
   vector<VECTOR *> auxv(5);
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     auxv[i] = new VECTOR[n_auxv];
   }
 
@@ -439,11 +438,11 @@ void compute_all_indo_core_parameters_derivs(
   } // for c
 
   // Clean working memory
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     delete[] auxv[i];
   }
   auxv.clear();
@@ -513,15 +512,14 @@ void compute_all_indo_core_parameters_derivs1(
   aux6 = new MATRIX(N, N);
 
   // Memory for ERI computations
-  int i;
   int n_auxd = 40;
   int n_auxv = 40;
   vector<double *> auxd(30);
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     auxd[i] = new double[n_auxd];
   }
   vector<VECTOR *> auxv(5);
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     auxv[i] = new VECTOR[n_auxv];
   }
 
@@ -578,11 +576,11 @@ void compute_all_indo_core_parameters_derivs1(
   } // for c
 
   // Clean working memory
-  for (i = 0; i < 30; i++) {
+  for (int i = 0; i < 30; i++) {
     delete[] auxd[i];
   }
   auxd.clear();
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     delete[] auxv[i];
   }
   auxv.clear();
@@ -622,7 +620,6 @@ void indo_core_parameters(System &syst, vector<AO> &basis_ao,
   modprms.indo_opt = opt;
 
   //  int DF = 0;
-  int a, b;
   VECTOR da, db, dc;
 
   if (DF) {
@@ -696,8 +693,8 @@ void indo_core_parameters(System &syst, vector<AO> &basis_ao,
 
   /// Compute ERIs and V_AB
 
-  for (a = 0; a < sz; a++) {
-    for (b = 0; b < sz; b++) {
+  for (int a = 0; a < sz; a++) {
+    for (int b = 0; b < sz; b++) {
 
       compute_indo_core_parameters(
           syst, basis_ao, modprms, atom_to_ao_map, ao_to_atom_map, sorb_indx,
@@ -739,7 +736,7 @@ void Hamiltonian_core_indo(System &syst, vector<AO> &basis_ao,
     Compute the core INDO Hamiltonian
   */
 
-  int i, j, a, b;
+  int a, b;
   VECTOR dIdA, dIdB;
   // cout<<"in Hamiltonian_core_indo\n";
 
@@ -767,7 +764,7 @@ void Hamiltonian_core_indo(System &syst, vector<AO> &basis_ao,
   //----------- Compute core terms of the Hamiltonian ------------
   *Hao = 0.0;
 
-  for (i = 0; i < Norb; i++) { // global orbital indices
+  for (int i = 0; i < Norb; i++) { // global orbital indices
     // values of IP are different for cndo (just IPs) and cndo2 and indo (
     // 0.5*(IP + EA) )
     a = ao_to_atom_map[i];
@@ -858,7 +855,7 @@ void Hamiltonian_core_indo(System &syst, vector<AO> &basis_ao,
     }
 
     //-------------- Off-diagonal terms of the core matrix ---------
-    for (j = 0; j < Norb; j++) {
+    for (int j = 0; j < Norb; j++) {
 
       if (j != i) {
         b = ao_to_atom_map[j];
@@ -962,7 +959,7 @@ void Hamiltonian_core_deriv_indo(
   //================ Basically, here we compute derivatives of the core
   // Hamiltonian ========================
 
-  int i, j, a, b;
+  int a, b;
   VECTOR dIdA, dIdB;
   //  cout<<"in Hamiltonian_core_deriv_indo\n";
 
@@ -1060,7 +1057,7 @@ void Hamiltonian_core_deriv_indo(
   sorb_indx =
       compute_sorb_indices(sz, basis_ao, atom_to_ao_map, ao_to_atom_map);
 
-  for (i = 0; i < Norb; i++) { // global orbital indices
+  for (int i = 0; i < Norb; i++) { // global orbital indices
     // values of IP are different for cndo (just IPs) and cndo2 and indo (
     // 0.5*(IP + EA) )
     a = ao_to_atom_map[i];
@@ -1176,7 +1173,7 @@ void Hamiltonian_core_deriv_indo(
     }
 
     //-------------- Off-diagonal terms of the core matrix ---------
-    for (j = 0; j < Norb; j++) {
+    for (int j = 0; j < Norb; j++) {
 
       if (j != i) {
         b = ao_to_atom_map[j];
@@ -1356,7 +1353,7 @@ void Hamiltonian_Fock_indo(Electronic_Structure *el, System &syst,
     Compute the INDO (or CNDO/2) Fock Hamiltonian. Unrestricted formulation
   */
 
-  int i, j, k, a, b;
+  int k, a, b;
 
   int Norb = basis_ao.size(); // how many AOs are included in this fragment
   if (Norb != el->Hao->n_cols) {
@@ -1393,10 +1390,10 @@ void Hamiltonian_Fock_indo(Electronic_Structure *el, System &syst,
   }
 
   // Formation of the Fock matrix: add Coulomb and Exchange parts
-  for (i = 0; i < Norb; i++) {
+  for (int i = 0; i < Norb; i++) {
     a = ao_to_atom_map[i];
 
-    for (j = 0; j < Norb; j++) {
+    for (int j = 0; j < Norb; j++) {
       b = ao_to_atom_map[j];
 
       if (i == j) { // Diagonal terms
@@ -1605,7 +1602,7 @@ void Hamiltonian_Fock_derivs_indo(
     the Fock matrix. Unrestricted formulation
   */
 
-  int i, j, k, a, b;
+  int k, a, b;
 
   Timer tim1;
 
@@ -1690,10 +1687,10 @@ void Hamiltonian_Fock_derivs_indo(
   }
 
   // Formation of the Fock matrix: add Coulomb and Exchange parts
-  for (i = 0; i < Norb; i++) {
+  for (int i = 0; i < Norb; i++) {
     a = ao_to_atom_map[i];
 
-    for (j = 0; j < Norb; j++) {
+    for (int j = 0; j < Norb; j++) {
       b = ao_to_atom_map[j];
 
       if (i == j) { // Diagonal terms

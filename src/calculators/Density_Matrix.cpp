@@ -43,17 +43,17 @@ void compute_density_matrix(vector< pair<int,double> >& occ, MATRIX* C, MATRIX* 
 */
 
 
-  int a,b,jj,j;
+  int j;
 
   int Norb = occ.size();
   *P = 0.0;
 
   int atab = 0;
-  for(a=0;a<Norb;a++){
+  for(int a=0;a<Norb;a++){
 
     int btab = 0;
-    for(b=0;b<Norb;b++){
-      for(jj=0;jj<Norb;jj++){ 
+    for(int b=0;b<Norb;b++){
+      for(int jj=0;jj<Norb;jj++){ 
 
         j = occ[jj].first;       
 //      P->M[a*Norb+b] += occ[jj].second*C->M[a*Norb+j]*C->M[b*Norb+j]; // this is what we do below
@@ -91,17 +91,17 @@ void compute_density_matrix(vector< pair<int,double> >& occ, CMATRIX* C, CMATRIX
 */
 
 
-  int a,b,jj,j;
+  int j;
 
   int Norb = occ.size();
   *P = 0.0;
 
   int atab = 0;
-  for(a=0;a<Norb;a++){
+  for(int a=0;a<Norb;a++){
 
     int btab = 0;
-    for(b=0;b<Norb;b++){
-      for(jj=0;jj<Norb;jj++){ 
+    for(int b=0;b<Norb;b++){
+      for(int jj=0;jj<Norb;jj++){ 
 
         j = occ[jj].first;       
 //      P->M[a*Norb+b] += occ[jj].second*C->M[a*Norb+j]*C->M[b*Norb+j]; // this is what we do below

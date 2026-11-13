@@ -36,11 +36,10 @@ void FullPivLU_rank_invertible(MATRIX& A, int& rank, int& is_inver){
 */
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -64,11 +63,10 @@ void FullPivLU_rank_invertible(CMATRIX& A, int& rank, int& is_inver){
 
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -118,11 +116,10 @@ void FullPivLU_inverse(MATRIX& A, MATRIX& invA){
 /** A wrapper of the Eigen::FullPivLU<MatrixXcd>.inverse() method */
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -131,8 +128,8 @@ void FullPivLU_inverse(MATRIX& A, MATRIX& invA){
 
   MatrixXd inva; inva = lu.inverse();
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       invA.M[i*N+j] = inva(i,j);
     }// for j
   }// for i
@@ -145,11 +142,10 @@ void FullPivLU_inverse(CMATRIX& A, CMATRIX& invA){
 /** A wrapper of the Eigen::FullPivLU<MatrixXcd>.inverse() method */
 
   int N = A.n_cols;
-  int i,j;
 
   MatrixXcd a(N,N);
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       a(i,j) = A.M[i*N+j];
     }// for j
   }// for i
@@ -158,8 +154,8 @@ void FullPivLU_inverse(CMATRIX& A, CMATRIX& invA){
 
   MatrixXcd inva; inva = lu.inverse();
 
-  for(i=0;i<N;i++){
-    for(j=0;j<N;j++){
+  for(int i=0;i<N;i++){
+    for(int j=0;j<N;j++){
       invA.M[i*N+j] = inva(i,j);
     }// for j
   }// for i
@@ -192,7 +188,6 @@ void inv_matrix(MATRIX& S, MATRIX& S_inv, double thresh, int do_phase_correction
   }
 
 
-  int i;
  
   // Let us first diagonalize the overlap matrix S
   int sz = S.n_cols;  
@@ -207,7 +202,7 @@ void inv_matrix(MATRIX& S, MATRIX& S_inv, double thresh, int do_phase_correction
   //if(do_phase_correction){   correct_phase(C);  }
 
 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     complex<double> val = Seig->get(i,i);
     double nrm = std::abs(val);
     if(nrm<thresh){  
@@ -273,7 +268,6 @@ void inv_matrix(CMATRIX& S, CMATRIX& S_inv, double thresh, int do_phase_correcti
   }
 
 
-  int i;
  
   // Let us first diagonalize the overlap matrix S
   int sz = S.n_cols;  
@@ -290,7 +284,7 @@ void inv_matrix(CMATRIX& S, CMATRIX& S_inv, double thresh, int do_phase_correcti
   S_inv = complex<double>(0.0,0.0);  // S^{-1}
 
 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     complex<double> val = Seig->get(i,i);
     double nrm = std::abs(val);
     if(nrm<thresh){  

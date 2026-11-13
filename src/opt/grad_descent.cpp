@@ -90,7 +90,6 @@ void grad_step(MATRIX& A, MATRIX& x, MATRIX& x_new, double dt, double& L, MATRIX
 
 
     */
-    int i, j;
     int n = A.n_cols;
 
     //*****************************************
@@ -107,7 +106,7 @@ void grad_step(MATRIX& A, MATRIX& x, MATRIX& x_new, double dt, double& L, MATRIX
     if(approach_option==1 or approach_option==2){
       y = (x_new-x)/dT;
 
-      for(j=0;j<n;j++){
+      for(int j=0;j<n;j++){
         double prob = 0.0;
         if(x.get(j,0)>0.0){ prob = -dT*y.get(j,0)/x.get(j,0); }
         else{ prob = 0.0; }
@@ -116,7 +115,7 @@ void grad_step(MATRIX& A, MATRIX& x, MATRIX& x_new, double dt, double& L, MATRIX
         if(prob>1.0){ prob = 1.0; }
         J_out[j] = prob;
 
-        for(i=0;i<n;i++){
+        for(int i=0;i<n;i++){
           if(i==j){  num_coeff.set(i, j, 0.0);  denom_coeff.set(i,j, 0.0); }
           else{  num_coeff.set(i, j, prob);  denom_coeff.set(i,j, 1.0);}
         }
@@ -174,19 +173,19 @@ void grad_step(MATRIX& A, MATRIX& x, MATRIX& x_new, double dt, double& L, MATRIX
     if(opt==4 or opt==5 or opt==6){
 
       MATRIX s(n,n);
-      if(opt==4){   for(i=0;i<n;i++){  for(j=0;j<n;j++){  s.set(i,j, 1.0); }  }      }
+      if(opt==4){   for(int i=0;i<n;i++){  for(int j=0;j<n;j++){  s.set(i,j, 1.0); }  }      }
       else if(opt==6){
 
-        for(i=0;i<n;i++){  for(j=0;j<n;j++){  s.set(i,j, 1.0); }  }
+        for(int i=0;i<n;i++){  for(int j=0;j<n;j++){  s.set(i,j, 1.0); }  }
 
         if(approach_option==1 or approach_option==2){
-          for(i=0;i<n;i++){
+          for(int i=0;i<n;i++){
             double prob = 0.0; // total outflux from the state i
             if(x.get(i,0)>0.0){ prob = -dT*y.get(i,0)/x.get(i,0); }
             if(prob<0.0){ prob = 0.0; }
             if(prob>1.0){ prob = 1.0; }
 
-            for(j=0;j<n;j++){
+            for(int j=0;j<n;j++){
               if(j==i){ s.set(j, j, 0.0); }
               else{  s.set(j, i, prob); }
             }// for j
@@ -245,18 +244,18 @@ MATRIX run_opt(MATRIX& x, MATRIX& y, double dt, double nsteps, double err_tol, i
 
 */
 
-    int i,j;
+    int i;
     int n = x.n_rows;
     MATRIX A(n,n);  A = 0.0;
     if(approach_option==0){  A.identity(); }
     else if(approach_option==1){
       for(i=0;i<n;i++){
-        for(j=0;j<n;j++){  A.set(i,j, 0.0 ); }
+        for(int j=0;j<n;j++){  A.set(i,j, 0.0 ); }
       }
     }
     else if(approach_option==2){
       for(i=0;i<n;i++){
-        for(j=0;j<n;j++){  
+        for(int j=0;j<n;j++){  
           if(j-i==1){  A.set(i,j, 1.0); }
           else if(j-i==-1){ A.set(i,j, -1.0); }
           else{         A.set(i,j, 0.0 );  }

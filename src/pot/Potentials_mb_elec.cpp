@@ -54,7 +54,6 @@ double Elec_Ewald3D(vector<VECTOR *> &r, vector<double> &q,
   //*  b = 1/2*h*etha                                                      *
   //************************************************************************
 
-  int Lx, Ly, Lz;
   double a, b, hmod, fact;
   double Qij, r2;
   double etha_13;
@@ -190,9 +189,9 @@ double Elec_Ewald3D(vector<VECTOR *> &r, vector<double> &q,
   // ================== S2 =======================
   // Reciprocal summ contribution
   E2 = 0.0;
-  for (Lx = -rec_deg; Lx <= rec_deg; Lx++) {
-    for (Ly = -rec_deg; Ly <= rec_deg; Ly++) {
-      for (Lz = -rec_deg; Lz <= rec_deg; Lz++) {
+  for (int Lx = -rec_deg; Lx <= rec_deg; Lx++) {
+    for (int Ly = -rec_deg; Ly <= rec_deg; Ly++) {
+      for (int Lz = -rec_deg; Lz <= rec_deg; Lz++) {
 
         //  Note: It is very important that the translation vectors are
         //  symmetric, leading to: summ (over h)  is equivalent to summ (over
@@ -516,7 +515,6 @@ double Elec_Ewald3D(VECTOR *r, /* Inputs */
   //*  b = 1/2*h*etha                                                      *
   //************************************************************************
 
-  int Lx, Ly, Lz;
   double a, b, hmod, fact;
   double Qij, r2;
   double etha_13;
@@ -867,9 +865,9 @@ double Elec_Ewald3D(VECTOR *r, /* Inputs */
   // ================== S2 =======================
   // Reciprocal summ contribution
   E2 = 0.0;
-  for (Lx = -rec_deg; Lx <= rec_deg; Lx++) {
-    for (Ly = -rec_deg; Ly <= rec_deg; Ly++) {
-      for (Lz = -rec_deg; Lz <= rec_deg; Lz++) {
+  for (int Lx = -rec_deg; Lx <= rec_deg; Lx++) {
+    for (int Ly = -rec_deg; Ly <= rec_deg; Ly++) {
+      for (int Lz = -rec_deg; Lz <= rec_deg; Lz++) {
 
         //  Note: It is very important that the translation vectors are
         //  symmetric, leading to: summ (over h)  is equivalent to summ (over

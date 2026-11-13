@@ -71,12 +71,11 @@ MATRIX RPMD_internal_force(const MATRIX& q, const MATRIX& invM, double beta){
 
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
-  int dof;
 
   MATRIX f(ndof, ntraj);
 
   if(ntraj==1){
-    for(dof=0; dof<ndof; dof++){   
+    for(int dof=0; dof<ndof; dof++){   
       f.set(dof, 0, 0.0);
     }// for dof
   }

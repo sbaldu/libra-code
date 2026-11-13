@@ -1463,11 +1463,10 @@ int merge_sort(vector< pair<int,double> >& in, vector< pair<int,double> >& out){
 
 
 boost::python::list merge_sort(boost::python::list inp){
-  int i;
   int sz = len(inp);
   vector< pair<int,double> > inp1, out;
 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
      int indx = boost::python::extract<int>(inp[i][0]);
      double val = boost::python::extract<double>(inp[i][1]);
 
@@ -1480,7 +1479,7 @@ boost::python::list merge_sort(boost::python::list inp){
 
   boost::python::list res;
 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     boost::python::list ri;
     ri.append(out[i].first);
     ri.append(out[i].second);
@@ -1549,17 +1548,16 @@ vector< vector<int> > permutations_reiteration(vector<int>& given_list, int size
     */
 
     vector<int> one_permutation;
-    int i;
 
     if(size == 1){
         one_permutation.clear();
-        for(i = 0; i<num_elements; i++)
+        for(int i = 0; i<num_elements; i++)
             one_permutation.push_back(given_list[i]);
         list_of_permutations.push_back(one_permutation);
         return list_of_permutations;
     } // if
 
-    for(i=0;i<size;i++){
+    for(int i=0;i<size;i++){
         list_of_permutations = permutations_reiteration(given_list, size-1, num_elements, list_of_permutations);
 
         if(size%2==0) // if even

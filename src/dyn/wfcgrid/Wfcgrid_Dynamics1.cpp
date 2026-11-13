@@ -221,7 +221,6 @@ void Wfcgrid::update_propagator_1D(double dt,double m0){
   working in atomic units: hbar = 1
 */
 
-  int nst, nst1;
 
   MATRIX* diaH; diaH = new MATRIX(nstates,nstates);
   MATRIX* adiH; adiH = new MATRIX(nstates,nstates);
@@ -236,8 +235,8 @@ void Wfcgrid::update_propagator_1D(double dt,double m0){
   for(int nx=0;nx<Nx;nx++){
 
     // Get diabatic Hamiltonian (in real form)
-    for(nst=0;nst<nstates;nst++){  
-      for(nst1=0;nst1<nstates;nst1++){  
+    for(int nst=0;nst<nstates;nst++){  
+      for(int nst1=0;nst1<nstates;nst1++){  
         diaH->M[nst*nstates+nst1] = H[nst][nst1].M[nx].real();
       }
     }
@@ -259,8 +258,8 @@ void Wfcgrid::update_propagator_1D(double dt,double m0){
     //----------- Explicit computation of exponent of a complex matrix -i*diaH*dt -----------
 
     // Finally construct complex exp(-i*dt*H) matrix from real cs and si matrices
-    for(nst=0;nst<nstates;nst++){  
-      for(nst1=0;nst1<nstates;nst1++){  
+    for(int nst=0;nst<nstates;nst++){  
+      for(int nst1=0;nst1<nstates;nst1++){  
           expH[nst][nst1].M[nx] = complex<double>(cs->M[nst*nstates+nst1], si->M[nst*nstates+nst1]);  // exp(-i*H*dt)
       }
     }//for nst
@@ -287,7 +286,6 @@ void Wfcgrid::update_propagator_2D(double dt,double m0){
   working in atomic units: hbar = 1
 */
 
-  int nst, nst1;
 
   MATRIX* diaH; diaH = new MATRIX(nstates,nstates);
   MATRIX* adiH; adiH = new MATRIX(nstates,nstates);
@@ -304,8 +302,8 @@ void Wfcgrid::update_propagator_2D(double dt,double m0){
 
 
       // Get diabatic Hamiltonian (in real form)
-      for(nst=0;nst<nstates;nst++){  
-        for(nst1=0;nst1<nstates;nst1++){  
+      for(int nst=0;nst<nstates;nst++){  
+        for(int nst1=0;nst1<nstates;nst1++){  
           diaH->M[nst*nstates+nst1] = H[nst][nst1].M[nx*Ny+ny].real();
         }
       }
@@ -328,8 +326,8 @@ void Wfcgrid::update_propagator_2D(double dt,double m0){
 
 
       // Finally construct complex exp(-i*dt*H) matrix from real cs and si matrices
-      for(nst=0;nst<nstates;nst++){  
-        for(nst1=0;nst1<nstates;nst1++){  
+      for(int nst=0;nst<nstates;nst++){  
+        for(int nst1=0;nst1<nstates;nst1++){  
 
           expH[nst][nst1].M[nx*Ny+ny] = complex<double>(cs->M[nst*nstates+nst1], si->M[nst*nstates+nst1]);  // exp(-i*H*dt)
 
@@ -420,7 +418,6 @@ void Wfcgrid::propagate_exact_1D(int Nmts){
   \param[in] Nmts The number of sub-integration loops in the nonadiabatic term interations (not presently used)
 */
 
-  int nst,nst1,nx;
 
   // Auxiliary object
   CMATRIX psi(Nx,1);   psi  = 0.0; // is a matrix placeholder
@@ -432,14 +429,14 @@ void Wfcgrid::propagate_exact_1D(int Nmts){
   //===================== Wavefunction propagation part ==============================
   //--------------------- exp(-0.5*dt*i/hbar*H_loc) ---------------------
   // For each point on the 1D grid
-  for(nx=0;nx<Nx;nx++){
+  for(int nx=0;nx<Nx;nx++){
 
     // For each new state
-    for(nst=0;nst<nstates;nst++){
+    for(int nst=0;nst<nstates;nst++){
 
       complex<double> res(0.0, 0.0);     
       // Is a sum over all states for this point
-      for(nst1=0;nst1<nstates;nst1++){      
+      for(int nst1=0;nst1<nstates;nst1++){      
         res += expH[nst][nst1].M[nx] * PSI[nst1].M[nx];
       }
     
@@ -456,7 +453,7 @@ void Wfcgrid::propagate_exact_1D(int Nmts){
 
 
   // Propagate in reciprocal space
-  for(nst=0;nst<nstates;nst++){   psi.dot_product(reciPSI[nst],expK[nst]);  reciPSI[nst] = psi;   }// for nst
+  for(int nst=0;nst<nstates;nst++){   psi.dot_product(reciPSI[nst],expK[nst]);  reciPSI[nst] = psi;   }// for nst
 
 
   // PSI(k)=reciPSI -> PSI(r)
@@ -465,14 +462,14 @@ void Wfcgrid::propagate_exact_1D(int Nmts){
 
   //--------------------- exp(-0.5*dt*i/hbar*H_loc) ---------------------
   // For each point on the 1D grid
-  for(nx=0;nx<Nx;nx++){
+  for(int nx=0;nx<Nx;nx++){
 
     // For each new state
-    for(nst=0;nst<nstates;nst++){
+    for(int nst=0;nst<nstates;nst++){
 
       complex<double> res(0.0, 0.0);     
       // Is a sum over all states for this point
-      for(nst1=0;nst1<nstates;nst1++){      
+      for(int nst1=0;nst1<nstates;nst1++){      
         res += expH[nst][nst1].M[nx] * PSI[nst1].M[nx];
       }
     
@@ -493,7 +490,6 @@ void Wfcgrid::propagate_exact_2D(int Nmts){
 */
 
 
-  int nst,nst1, nx, ny;
 
   // Auxiliary object
   CMATRIX psi(Nx,Ny);   psi  = 0.0; // is a matrix placeholder
@@ -505,15 +501,15 @@ void Wfcgrid::propagate_exact_2D(int Nmts){
   //===================== Wavefunction propagation part ==============================
   //--------------------- exp(-0.5*dt*i/hbar*H_loc) ---------------------
   // For each point on the 2D grid
-  for(nx=0;nx<Nx;nx++){
-    for(ny=0;ny<Ny;ny++){
+  for(int nx=0;nx<Nx;nx++){
+    for(int ny=0;ny<Ny;ny++){
 
       // For each new state
-      for(nst=0;nst<nstates;nst++){
+      for(int nst=0;nst<nstates;nst++){
 
         complex<double> res(0.0, 0.0);     
         // Is a sum over all states for this point
-        for(nst1=0;nst1<nstates;nst1++){      
+        for(int nst1=0;nst1<nstates;nst1++){      
           res += expH[nst][nst1].M[nx*Ny+ny] * PSI[nst1].M[nx*Ny+ny];
         }
       
@@ -531,7 +527,7 @@ void Wfcgrid::propagate_exact_2D(int Nmts){
 
 
   // Propagate in reciprocal space
-  for(nst=0;nst<nstates;nst++){   psi.dot_product(reciPSI[nst],expK[nst]);  reciPSI[nst] = psi;   }// for nst
+  for(int nst=0;nst<nstates;nst++){   psi.dot_product(reciPSI[nst],expK[nst]);  reciPSI[nst] = psi;   }// for nst
 
 
   // PSI(k)=reciPSI -> PSI(r)
@@ -540,15 +536,15 @@ void Wfcgrid::propagate_exact_2D(int Nmts){
 
   //--------------------- exp(-0.5*dt*i/hbar*H_loc) ---------------------
   // For each point on the 2D grid
-  for(nx=0;nx<Nx;nx++){
-    for(ny=0;ny<Ny;ny++){
+  for(int nx=0;nx<Nx;nx++){
+    for(int ny=0;ny<Ny;ny++){
 
       // For each new state
-      for(nst=0;nst<nstates;nst++){
+      for(int nst=0;nst<nstates;nst++){
 
         complex<double> res(0.0, 0.0);     
         // Is a sum over all states for this point
-        for(nst1=0;nst1<nstates;nst1++){      
+        for(int nst1=0;nst1<nstates;nst1++){      
           res += expH[nst][nst1].M[nx*Ny+ny] * PSI[nst1].M[nx*Ny+ny];
         }
       
@@ -570,7 +566,6 @@ void Wfcgrid::absorb_1D(double dL,vector<double>& Pops_l,vector<double>& Pops_r)
   \param[out] Pops_l Population in the left trapping region (absorbing layer)
   \param[out] Pops_r Population in the right trapping region (absorbing layer)
 */
-  int i;
   int nL = dL/dx;  // how many points from each boundary to set to zero
 
   if(Pops_l.size()<static_cast<std::size_t>(nstates)){ Pops_l = vector<double>(nstates,0.0);  } // Population in the left trapping region
@@ -579,13 +574,13 @@ void Wfcgrid::absorb_1D(double dL,vector<double>& Pops_l,vector<double>& Pops_r)
   for(int nst=0;nst<nstates;nst++){
 
     // On the left
-    for(i=0;i<=nL;i++){
+    for(int i=0;i<=nL;i++){
       Pops_l[nst] += dx*real(std::conj(PSI[nst].M[i])*PSI[nst].M[i]);
       PSI[nst].M[i] = 0.0;
     }
 
     // On the right
-    for(i=0;i<=nL;i++){
+    for(int i=0;i<=nL;i++){
       Pops_r[nst] += dx*real(std::conj(PSI[nst].M[(Nx-1-i)])*PSI[nst].M[(Nx-1-i)]);
       PSI[nst].M[Nx-1-i] = 0.0;
     }

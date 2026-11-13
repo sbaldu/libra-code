@@ -617,15 +617,14 @@ public:
   void permute_cols(vector<int> &perm) { ///< Permute columns according to the
                                          ///< given permutation
 
-    int col;
     check_permutation(perm, n_cols);
 
     vector<T1> tmp(n_cols);
     for (int row = 0; row < n_rows; row++) {
-      for (col = 0; col < n_cols; col++) {
+      for (int col = 0; col < n_cols; col++) {
         tmp[col] = M[row * n_cols + perm[col]];
       }
-      for (col = 0; col < n_cols; col++) {
+      for (int col = 0; col < n_cols; col++) {
         M[row * n_cols + col] = tmp[col];
       }
     }
@@ -634,15 +633,14 @@ public:
   void permute_rows(
       vector<int> &perm) { ///< Permute rows according to the given permutation
 
-    int row;
     check_permutation(perm, n_rows);
 
     vector<T1> tmp(n_rows);
     for (int col = 0; col < n_cols; col++) {
-      for (row = 0; row < n_rows; row++) {
+      for (int row = 0; row < n_rows; row++) {
         tmp[row] = M[perm[row] * n_cols + col];
       }
-      for (row = 0; row < n_rows; row++) {
+      for (int row = 0; row < n_rows; row++) {
         M[row * n_cols + col] = tmp[row];
       }
     }
@@ -1055,11 +1053,11 @@ void pop_submatrix(base_matrix<T1> *X, base_matrix<T1> *x,
     exit(0);
   }
 
-  int i, j, a, b;
+  int a, b;
 
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     a = subset[i];
-    for (j = 0; j < n; j++) {
+    for (int j = 0; j < n; j++) {
       b = subset[j];
       x->M[i * n + j] = X->M[a * N + b];
     } // j
@@ -1131,11 +1129,11 @@ void pop_submatrix(base_matrix<T1> *X, base_matrix<T1> *x, vector<int> &subset,
     exit(0);
   }
 
-  int i, j, a, b;
+  int a, b;
 
-  for (i = 0; i < x->n_rows; i++) {
+  for (int i = 0; i < x->n_rows; i++) {
     a = subset[i];
-    for (j = 0; j < x->n_cols; j++) {
+    for (int j = 0; j < x->n_cols; j++) {
       b = subset2[j];
       x->M[i * x->n_cols + j] = X->M[a * X->n_cols + b];
     } // j
@@ -1213,11 +1211,11 @@ void push_submatrix(base_matrix<T1> *X, base_matrix<T1> *x,
     exit(0);
   }
 
-  int i, j, a, b;
+  int a, b;
 
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     a = subset[i];
-    for (j = 0; j < n; j++) {
+    for (int j = 0; j < n; j++) {
       b = subset[j];
       X->M[a * N + b] = x->M[i * n + j];
     } // j
@@ -1288,11 +1286,11 @@ void push_submatrix(base_matrix<T1> *X, base_matrix<T1> *x, vector<int> &subset,
     exit(0);
   }
 
-  int i, j, a, b;
+  int a, b;
 
-  for (i = 0; i < x->n_rows; i++) {
+  for (int i = 0; i < x->n_rows; i++) {
     a = subset[i];
-    for (j = 0; j < x->n_cols; j++) {
+    for (int j = 0; j < x->n_cols; j++) {
       b = subset2[j];
       X->M[a * X->n_cols + b] = x->M[i * x->n_cols + j];
     } // j
@@ -1375,11 +1373,11 @@ void add_submatrix(base_matrix<T1> *X, base_matrix<T1> *x, vector<int> &subset,
     exit(0);
   }
 
-  int i, j, a, b;
+  int a, b;
 
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     a = subset[i];
-    for (j = 0; j < n; j++) {
+    for (int j = 0; j < n; j++) {
       b = subset[j];
       X->M[a * N + b] += alpha * x->M[i * n + j];
     } // j
@@ -1452,11 +1450,11 @@ void add_submatrix(base_matrix<T1> *X, base_matrix<T1> *x, vector<int> &subset,
     exit(0);
   }
 
-  int i, j, a, b;
+  int a, b;
 
-  for (i = 0; i < x->n_rows; i++) {
+  for (int i = 0; i < x->n_rows; i++) {
     a = subset[i];
-    for (j = 0; j < x->n_cols; j++) {
+    for (int j = 0; j < x->n_cols; j++) {
       b = subset2[j];
       X->M[a * X->n_cols + b] += alpha * x->M[i * x->n_cols + j];
     } // j

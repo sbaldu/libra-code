@@ -599,7 +599,6 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
   It connects them. Other connections also taken into account - thus
   we create not only bonds (pairs of atoms), but also angles, dihedrals, etc.
 */
-  int i;
   // Here are some control parameters which then should be made user-definable
   // They control if we want to exclude 1,2, 1,3 and 1,4 - pairs from the pair list
   // This is related to force field specifications
@@ -642,7 +641,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
      //os.ObjectSpace_Molecules[max].Molecule_id = 
      
      // Molecule
-     for(i=0;i<Molecules[max].Molecule_Size;i++){
+     for(int i=0;i<Molecules[max].Molecule_Size;i++){
          /* AAAAA Due to cancellation of .globGroup_Index member in Molecule class
          // Copy and reindex Fragments
          int gr_indx = Molecules[max].globGroup_Index[i];        
@@ -658,7 +657,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
      }// for i
      
      // Fragments
-     for(i=0;i<Number_of_fragments;i++){
+     for(int i=0;i<Number_of_fragments;i++){
        
         if(Fragments[i].globMolecule_Index==max){
            Fragments[i].globMolecule_Index=min;           
@@ -670,7 +669,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
      }// for i
 
      // Atoms
-     for(i=0;i<Number_of_atoms;i++){
+     for(int i=0;i<Number_of_atoms;i++){
 
         if(Atoms[i].globMolecule_Index==max){
            Atoms[i].globMolecule_Index=min;                     
@@ -681,7 +680,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
      }// for i
 
      // Bonds
-     for(i=0;i<Number_of_bonds;i++){
+     for(int i=0;i<Number_of_bonds;i++){
 
         if(Bonds[i].globMolecule_Index==max){
            Bonds[i].globMolecule_Index=min;
@@ -693,7 +692,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
      }// for i
 
      // Angles
-     for(i=0;i<Number_of_angles;i++){
+     for(int i=0;i<Number_of_angles;i++){
        if(Angles[i].globMolecule_Index==max){
   	  Angles[i].globMolecule_Index=min;
           Angles[i].locGroup_Index += Molecules[min].Molecule_Number_of_angles;
@@ -704,7 +703,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
      }// for i
 
      // Dihedrals
-     for(i=0;i<Number_of_dihedrals;i++){
+     for(int i=0;i<Number_of_dihedrals;i++){
        if(Dihedrals[i].globMolecule_Index==max){
   	  Dihedrals[i].globMolecule_Index=min;
           Dihedrals[i].locGroup_Index += Molecules[min].Molecule_Number_of_dihedrals;
@@ -716,7 +715,7 @@ void System::LINK_ATOMS(Atom& at1,Atom& at2){
 
      //****************************************************************
      // Decrement id's of those molecules for which globMolecule_Index is bigger than max
-     for(i=max+1;i<Number_of_molecules;i++){
+     for(int i=max+1;i<Number_of_molecules;i++){
          Molecules[i].globMolecule_Index--;
          Molecules[i].locMolecule_Index = Molecules[i].globMolecule_Index;
          Molecules[i].Molecule_id--;
@@ -835,14 +834,13 @@ void System::UPDATE_FRAG_TOPOLOGY(){
   It simply excludes frag_bonds, frag_angles and frag_dihedrals. 
   Note it does not add these topological elements. 
 */
-  int i,j;
   int a1,a2,a3,a4;
   int g1,g2,g3,g4;
   int indx1,indx2;
   vector<int>::iterator it;
   //------------------ Update bonds ------------------------
   it = Frag_bonds.begin();
-  for(i=0;i<Number_of_bonds;i++){
+  for(int i=0;i<Number_of_bonds;i++){
     a1 = Bonds[i].globAtom_Index[0];
     a2 = Bonds[i].globAtom_Index[1];
     g1 = Atoms[a1].globGroup_Index;
@@ -851,7 +849,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
     if(g1==g2){
       indx1 = Bonds[i].globGroup_Index;
       // Check if this group exist
-      for(j=0;j<Number_of_frag_bonds;j++){
+      for(int j=0;j<Number_of_frag_bonds;j++){
         indx2 = Frag_bonds[j];
         if(indx1==indx2){ // this group still exist in frag topology
                           // we need to delete it
@@ -866,7 +864,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
 
   //--------------------- Update angles ------------------------
   it = Frag_angles.begin();
-  for(i=0;i<Number_of_angles;i++){
+  for(int i=0;i<Number_of_angles;i++){
     a1 = Angles[i].globAtom_Index[0];
     a2 = Angles[i].globAtom_Index[1];
     a3 = Angles[i].globAtom_Index[2];
@@ -877,7 +875,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
     if((g1==g2)&&(g2==g3)){
       indx1 = Angles[i].globGroup_Index;
       // Check if this group exist
-      for(j=0;j<Number_of_frag_angles;j++){
+      for(int j=0;j<Number_of_frag_angles;j++){
         indx2 = Frag_angles[j];
         if(indx1==indx2){ // this group still exist in frag topology
                           // we need to delete it
@@ -892,7 +890,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
 
   //--------------------- Update dihedrals ------------------------
   it = Frag_dihedrals.begin();
-  for(i=0;i<Number_of_dihedrals;i++){
+  for(int i=0;i<Number_of_dihedrals;i++){
     a1 = Dihedrals[i].globAtom_Index[0];
     a2 = Dihedrals[i].globAtom_Index[1];
     a3 = Dihedrals[i].globAtom_Index[2];
@@ -920,7 +918,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
 
   //--------------------- Update impropers ------------------------
   it = Frag_impropers.begin();
-  for(i=0;i<Number_of_impropers;i++){
+  for(int i=0;i<Number_of_impropers;i++){
     a1 = Impropers[i].globAtom_Index[0];
     a2 = Impropers[i].globAtom_Index[1];
     a3 = Impropers[i].globAtom_Index[2];
@@ -933,7 +931,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
     if((g1==g2)&&(g2==g3)&&(g3==g4)){
       indx1 = Impropers[i].globGroup_Index;
       // Check if this group exist
-      for(j=0;j<Number_of_frag_impropers;j++){
+      for(int j=0;j<Number_of_frag_impropers;j++){
         indx2 = Frag_impropers[j];
         if(indx1==indx2){ // this group still exist in frag topology
                           // we need to delete it
@@ -949,7 +947,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
   //------------------ Update frag pairs ------------------------
   vector<int>::iterator it1;
   it1 = Frag_pairs.begin();
-  for(i=0;i<Number_of_frag_pairs;i++){
+  for(int i=0;i<Number_of_frag_pairs;i++){
     int fp = Frag_pairs[i];
     a1 = Pairs[fp].globAtom_Index[0];
     a2 = Pairs[fp].globAtom_Index[1];
@@ -977,7 +975,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
   }// for i
 
   //----------------- Update excluded pairs ------------------------
-  for(i=0;i<Number_of_pairs;i++){
+  for(int i=0;i<Number_of_pairs;i++){
     a1 = Pairs[i].globAtom_Index[0];
     a2 = Pairs[i].globAtom_Index[1];
     g1 = Atoms[a1].globGroup_Index;
@@ -991,8 +989,8 @@ void System::UPDATE_FRAG_TOPOLOGY(){
     }else{
       //------- Check if these atoms form interfragmental bond -------
       int res = 0;
-      int b, b_indx;
-      for(b=0;b<Number_of_frag_bonds;b++){
+      int b_indx;
+      for(int b=0;b<Number_of_frag_bonds;b++){
         b_indx = Frag_bonds[b];
         if((  (Bonds[b_indx].globAtom_Index[0]==a1)
             &&(Bonds[b_indx].globAtom_Index[1]==a2)
@@ -1010,7 +1008,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
       }else{
 
       //------ Check if these atoms form interfragmental angle ----------
-      for(b=0;b<Number_of_frag_angles;b++){
+      for(int b=0;b<Number_of_frag_angles;b++){
         b_indx = Frag_angles[b];
         if((  (Angles[b_indx].globAtom_Index[0]==a1)
             &&(Angles[b_indx].globAtom_Index[2]==a2)
@@ -1027,7 +1025,7 @@ void System::UPDATE_FRAG_TOPOLOGY(){
       }else{
 
       //------- Check if these atoms form interfragmental dihedral -----------
-      for(b=0;b<Number_of_frag_dihedrals;b++){
+      for(int b=0;b<Number_of_frag_dihedrals;b++){
         b_indx = Frag_dihedrals[b];
         if((  (Dihedrals[b_indx].globAtom_Index[0]==a1)
             &&(Dihedrals[b_indx].globAtom_Index[3]==a2)

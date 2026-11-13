@@ -133,11 +133,9 @@ void apply_afssh(dyn_variables &dyn_var, CMATRIX &C, vector<int> &act_states,
   dyn_control_params prms;
   prms.set_parameters(dyn_params);
 
-  int i;
   int ndof = invM.n_rows;
   int nst = C.n_rows;
   int ntraj = C.n_cols;
-  int traj, idof;
   int num_el = prms.num_electronic_substeps;
   double dt_el = prms.dt / num_el;
 
@@ -152,16 +150,16 @@ void apply_afssh(dyn_variables &dyn_var, CMATRIX &C, vector<int> &act_states,
 
   // cout<<"Propagating moments...\n";
   //=========================== Propagate moments ===============
-  for (traj = 0; traj < ntraj; traj++) {
+  for (int traj = 0; traj < ntraj; traj++) {
 
     hvib_curr = ham.children[traj]->get_hvib_adi();
     c_traj = C.col(traj);
 
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
 
       force_full = -1.0 * ham.children[traj]->get_d1ham_adi(idof);
 
-      for (i = 0; i < nst; i++) {
+      for (int i = 0; i < nst; i++) {
         force_diag.set(i, i, force_full.get(i, i));
       }
 
@@ -185,13 +183,13 @@ void apply_afssh(dyn_variables &dyn_var, CMATRIX &C, vector<int> &act_states,
   MATRIX gamma_reset(nst, ntraj);
   MATRIX gamma_collapse(nst, ntraj);
 
-  for (traj = 0; traj < ntraj; traj++) {
-    for (i = 0; i < nst; i++) {
+  for (int traj = 0; traj < ntraj; traj++) {
+    for (int i = 0; i < nst; i++) {
 
       double gamma_reset_i = 0.0;
       double gamma_collapse_i = 0.0;
 
-      for (idof = 0; idof < ndof; idof++) {
+      for (int idof = 0; idof < ndof; idof++) {
 
         double dx_ii = dR_afssh.get(i, i).real();
         int as = act_states[traj];
@@ -219,9 +217,9 @@ void apply_afssh(dyn_variables &dyn_var, CMATRIX &C, vector<int> &act_states,
 
   complex<double> zero(0.0, 0.0);
 
-  for (traj = 0; traj < ntraj; traj++) {
+  for (int traj = 0; traj < ntraj; traj++) {
 
-    for (i = 0; i < nst; i++) {
+    for (int i = 0; i < nst; i++) {
 
       if (i != act_states[traj]) {
 
@@ -229,7 +227,7 @@ void apply_afssh(dyn_variables &dyn_var, CMATRIX &C, vector<int> &act_states,
         double ksi = rnd.uniform(0.0, 1.0);
 
         if (ksi < gamma_reset.get(i, traj)) {
-          for (idof = 0; idof < ndof; idof++) {
+          for (int idof = 0; idof < ndof; idof++) {
             dyn_var.dR[traj][idof]->scale(-1, i, zero);
             dyn_var.dR[traj][idof]->scale(i, -1, zero);
             dyn_var.dP[traj][idof]->scale(-1, i, zero);
@@ -256,10 +254,9 @@ void apply_projectors(CMATRIX &C, vector<CMATRIX> &proj) {
   int ntraj = proj.size();
   int nst = C.n_rows;
 
-  int i;
   vector<int> t2(1, 0);
   vector<int> t3(nst, 0);
-  for (i = 0; i < nst; i++) {
+  for (int i = 0; i < nst; i++) {
     t3[i] = i;
   }
   CMATRIX c_tmp(nst, 1);
@@ -428,7 +425,7 @@ void apply_thermal_correction(dyn_variables &dyn_var, nHamiltonian &ham,
   int nadi = dyn_var.nadi;
   int ndia = dyn_var.ndia;
 
-  int nst, a, b;
+  int nst;
   if (prms.rep_tdse == 0 || prms.rep_tdse == 2) {
     nst = ndia;
   } else if (prms.rep_tdse == 1 || prms.rep_tdse == 3 || prms.rep_tdse == 4) {
@@ -488,8 +485,8 @@ void apply_thermal_correction(dyn_variables &dyn_var, nHamiltonian &ham,
       dyn_var.thermal_correction_factors[itraj] = alp;
 
       // Scale hvib_adi, and nac_adi by the alp parameter
-      for (a = 0; a < nst; a++) {
-        for (b = 0; b < nst; b++) {
+      for (int a = 0; a < nst; a++) {
+        for (int b = 0; b < nst; b++) {
 
           if (a != b) {
             ham.children[itraj]->nac_adi->scale(a, b, alp);
@@ -513,7 +510,7 @@ void remove_thermal_correction(dyn_variables &dyn_var, nHamiltonian &ham,
   int nadi = dyn_var.nadi;
   int ndia = dyn_var.ndia;
 
-  int nst, a, b;
+  int nst;
   if (prms.rep_tdse == 0 || prms.rep_tdse == 2) {
     nst = ndia;
   } else if (prms.rep_tdse == 1 || prms.rep_tdse == 3) {
@@ -525,8 +522,8 @@ void remove_thermal_correction(dyn_variables &dyn_var, nHamiltonian &ham,
     double alp = dyn_var.thermal_correction_factors[itraj];
 
     // Scale hvib_adi, and nac_adi by the alp parameter
-    for (a = 0; a < nst; a++) {
-      for (b = 0; b < nst; b++) {
+    for (int a = 0; a < nst; a++) {
+      for (int b = 0; b < nst; b++) {
 
         if (a != b) {
           ham.children[itraj]->nac_adi->scale(a, b, 1.0 / alp);
@@ -666,7 +663,6 @@ int need_active_states_diff_rep(dyn_control_params &prms) {
 void propagate_electronic(dyn_variables &dyn_var, nHamiltonian *Ham,
                           nHamiltonian *Ham_prev, dyn_control_params &prms) {
 
-  int itraj;
 
   int num_el = prms.num_electronic_substeps;
   double dt = prms.dt / num_el;
@@ -706,7 +702,7 @@ void propagate_electronic(dyn_variables &dyn_var, nHamiltonian *Ham,
 
   ///======================== Now do the integration of the TD-SE
   ///===================
-  for (itraj = 0; itraj < ntraj; itraj++) {
+  for (int itraj = 0; itraj < ntraj; itraj++) {
 
     C = Coeff.col(itraj);
 
@@ -1404,7 +1400,7 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
 
   //  cout<<"In compute_dynamics\n";
   //======== General variables =======================
-  int i, j, traj, dof, idof, ntraj1;
+  int dof, ntraj1;
 
   //========= Control parameters variables ===========
   dyn_control_params prms;
@@ -1456,7 +1452,7 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
   }
   vector<int> t2(1, 0);
   vector<int> t3(nst, 0);
-  for (i = 0; i < nst; i++) {
+  for (int i = 0; i < nst; i++) {
     t3[i] = i;
   }
 
@@ -1498,17 +1494,17 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
   MATRIX extra_momentum(ndof, ntraj);
   if (prms.ensemble == 1) {
     if (therm[0].thermostat_type == "Nose-Hoover") {
-      for (idof = 0; idof < n_therm_dofs; idof++) {
+      for (int idof = 0; idof < n_therm_dofs; idof++) {
         dof = prms.thermostat_dofs[idof];
-        for (traj = 0; traj < ntraj; traj++) {
+        for (int traj = 0; traj < ntraj; traj++) {
           dyn_var.p->scale(dof, traj, therm[traj].vel_scale(0.5 * prms.dt));
         } // traj
       } // idof
     } // Nose-Hoover
     else if (therm[0].thermostat_type == "Langevin") {
-      for (idof = 0; idof < n_therm_dofs; idof++) {
+      for (int idof = 0; idof < n_therm_dofs; idof++) {
         dof = prms.thermostat_dofs[idof];
-        for (traj = 0; traj < ntraj; traj++) {
+        for (int traj = 0; traj < ntraj; traj++) {
           sigma_therm.set(
               dof, traj,
               sqrt(2 * invM.get(dof, traj) * therm[traj].nu_therm / beta));
@@ -1555,7 +1551,7 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
                            prms.ETHD3_beta);
   }
   // Update coordinates of nuclei for all trajectories
-  for (traj = 0; traj < ntraj; traj++) {
+  for (int traj = 0; traj < ntraj; traj++) {
     for (dof = 0; dof < ndof; dof++) {
       dyn_var.q->add(dof, traj,
                      invM.get(dof, 0) * dyn_var.p->get(dof, traj) * prms.dt +
@@ -1596,7 +1592,7 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
 
   // Propagate electronic coefficients in the [t, t + dt] interval, this also
   // updates the basis re-projection matrices
-  for (i = 0; i < num_el; i++) {
+  for (int i = 0; i < num_el; i++) {
     if (prms.decoherence_algo == 5 or prms.decoherence_algo == 6) {
       update_ham_xf(dyn_var);
       propagate_half_xf(dyn_var, ham, prms);
@@ -1660,7 +1656,7 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
   // NVT dynamics
   if (prms.ensemble == 1) {
     if (therm[0].thermostat_type == "Nose-Hoover") {
-      for (traj = 0; traj < ntraj; traj++) {
+      for (int traj = 0; traj < ntraj; traj++) {
         t2[0] = traj;
         pop_submatrix(p, p_traj, t1, t2);
         double ekin =
@@ -1669,9 +1665,9 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
       } // traj
     } // Nose-Hoover
     else if (therm[0].thermostat_type == "Langevin") {
-      for (idof = 0; idof < n_therm_dofs; idof++) {
+      for (int idof = 0; idof < n_therm_dofs; idof++) {
         dof = prms.thermostat_dofs[idof];
-        for (traj = 0; traj < ntraj; traj++) {
+        for (int traj = 0; traj < ntraj; traj++) {
           extra_force.set(
               dof, traj,
               0.5 * xi_therm.get(dof, traj) * sigma_therm.get(dof, traj) /
@@ -1717,9 +1713,9 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
   // NVT dynamics
   if (prms.ensemble == 1) {
     if (therm[0].thermostat_type == "Nose-Hoover") {
-      for (idof = 0; idof < n_therm_dofs; idof++) {
+      for (int idof = 0; idof < n_therm_dofs; idof++) {
         dof = prms.thermostat_dofs[idof];
-        for (traj = 0; traj < ntraj; traj++) {
+        for (int traj = 0; traj < ntraj; traj++) {
           dyn_var.p->scale(dof, traj, therm[traj].vel_scale(0.5 * prms.dt));
         } // traj
       } // idof
@@ -1739,13 +1735,13 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
   //================= Update decoherence rates & times ================
   /// Effectively turn off decoherence effects
   if (prms.decoherence_times_type == -1) {
-    for (traj = 0; traj < ntraj1; traj++) {
+    for (int traj = 0; traj < ntraj1; traj++) {
       decoherence_rates[traj] = 0.0;
     }
   }
   /// Just use the plain times given from the input, usually the mSDM formalism
   else if (prms.decoherence_times_type == 0) {
-    for (traj = 0; traj < ntraj1; traj++) {
+    for (int traj = 0; traj < ntraj1; traj++) {
       decoherence_rates[traj] = *prms.decoherence_rates;
     }
   }
@@ -1859,9 +1855,9 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
 
   // Simple decoherence
   else if (prms.decoherence_algo == 9) {
-    for (traj = 0; traj < ntraj; traj++) {
-      for (i = 0; i < nadi; i++) {
-        for (j = 0; j < nadi; j++) {
+    for (int traj = 0; traj < ntraj; traj++) {
+      for (int i = 0; i < nadi; i++) {
+        for (int j = 0; j < nadi; j++) {
           double argg = decoherence_rates[traj].get(i, j) * prms.dt;
           dyn_var.coherence_factors[traj][i][j] *= exp(-argg * argg);
         } // for j
@@ -2041,7 +2037,7 @@ void compute_dynamics(dyn_variables &dyn_var, bp::dict dyn_params,
   // GFSH (original)
   dyn_var.save_curr_dm_into_prev();
 
-  for (traj = 0; traj < ntraj; traj++) {
+  for (int traj = 0; traj < ntraj; traj++) {
     *dyn_var.ave_decoherence_rates += decoherence_rates[traj];
   }
   *dyn_var.ave_decoherence_rates /= ntraj;

@@ -46,16 +46,15 @@ double transition_dipole_moment
 ){
 
   // Allocate working memory
-  int i;
   int n_aux = 20; 
   vector<double*> auxd(10);
-  for(i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = transition_dipole_moment(nxa,alp_a,Xa,  nxb,alp_b,Xb, is_normalize, is_derivs, dI_dXa, dI_dXb, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<10;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<10;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
   return res;
@@ -183,16 +182,15 @@ VECTOR transition_dipole_moment
 ){
 
   // Allocate working memory
-  int i;
   int n_aux = 20; 
   vector<double*> auxd(10);
-  for(i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<10;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   VECTOR M; M = transition_dipole_moment(nxa,nya,nza,alp_a,Ra,  nxb,nyb,nzb,alp_b,Rb, is_normalize, is_derivs, dMdA, dMdB, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<10;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<10;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
   return M;

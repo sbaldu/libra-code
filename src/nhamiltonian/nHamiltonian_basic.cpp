@@ -171,7 +171,6 @@ void nHamiltonian::init_mem_status(int ndia_, int nadi_, int nnucl_) {
 
   //  nHamiltonian();
 
-  int n;
 
   level = 0;
   id = 0;
@@ -217,7 +216,7 @@ void nHamiltonian::init_mem_status(int ndia_, int nadi_, int nnucl_) {
   nnucl = nnucl_;
 
   ordering_adi = new vector<int>(nadi, 0);
-  for (n = 0; n < nadi; n++) {
+  for (int n = 0; n < nadi; n++) {
     ordering_adi[0][n] = n;
   }
 
@@ -251,7 +250,6 @@ nHamiltonian::~nHamiltonian() {
 
     //  id = 0;
     //  level = 0;
-    auto n = 0u;
 
     delete ordering_adi;
     ordering_adi = nullptr;
@@ -262,7 +260,7 @@ nHamiltonian::~nHamiltonian() {
       ovlp_dia_mem_status = 0;
     }
 
-    for (n = 0u; n < dc1_dia.size(); n++) {
+    for (auto n = 0u; n < dc1_dia.size(); n++) {
       if (dc1_dia_mem_status[n] == 1) {
         delete dc1_dia[n];
         dc1_dia[n] = nullptr;
@@ -288,7 +286,7 @@ nHamiltonian::~nHamiltonian() {
       hvib_dia_mem_status = 0;
     }
 
-    for (n = 0u; n < d1ham_dia.size(); n++) {
+    for (auto n = 0u; n < d1ham_dia.size(); n++) {
       if (d1ham_dia_mem_status[n] == 1) {
         delete d1ham_dia[n];
         d1ham_dia[n] = nullptr;
@@ -298,7 +296,7 @@ nHamiltonian::~nHamiltonian() {
     d1ham_dia.clear();
     d1ham_dia_mem_status.clear();
 
-    for (n = 0u; n < d2ham_dia.size(); n++) {
+    for (auto n = 0u; n < d2ham_dia.size(); n++) {
       if (d2ham_dia_mem_status[n] == 1) {
         delete d2ham_dia[n];
         d2ham_dia[n] = nullptr;
@@ -308,7 +306,7 @@ nHamiltonian::~nHamiltonian() {
     d2ham_dia.clear();
     d2ham_dia_mem_status.clear();
 
-    for (n = 0u; n < dc1_adi.size(); n++) {
+    for (auto n = 0u; n < dc1_adi.size(); n++) {
       if (dc1_adi_mem_status[n] == 1) {
         delete dc1_adi[n];
         dc1_adi[n] = nullptr;
@@ -334,7 +332,7 @@ nHamiltonian::~nHamiltonian() {
       hvib_adi_mem_status = 0;
     }
 
-    for (n = 0u; n < d1ham_adi.size(); n++) {
+    for (auto n = 0u; n < d1ham_adi.size(); n++) {
       if (d1ham_adi_mem_status[n] == 1) {
         delete d1ham_adi[n];
         d1ham_adi[n] = nullptr;
@@ -344,7 +342,7 @@ nHamiltonian::~nHamiltonian() {
     d1ham_adi.clear();
     d1ham_adi_mem_status.clear();
 
-    for (n = 0u; n < d2ham_adi.size(); n++) {
+    for (auto n = 0u; n < d2ham_adi.size(); n++) {
       if (d2ham_adi_mem_status[n] == 1) {
         delete d2ham_adi[n];
         d2ham_adi[n] = nullptr;
@@ -379,7 +377,7 @@ nHamiltonian::~nHamiltonian() {
     }
 
     /// Deallocate children if they aren't deallocated yet
-    for (n = 0u; n < children.size(); n++) {
+    for (auto n = 0u; n < children.size(); n++) {
       if (children[n] != nullptr) {
         children[n]->~nHamiltonian();
       }
@@ -418,7 +416,6 @@ void nHamiltonian::copy_level_content(nHamiltonian *src) {
   */
 
   // cout<<"in copy_level_content "<<this<<endl;
-  auto n = 0u;
 
   if (ovlp_dia_mem_status != 0 && src->ovlp_dia_mem_status != 0) {
     *ovlp_dia = *(src->ovlp_dia);
@@ -433,17 +430,17 @@ void nHamiltonian::copy_level_content(nHamiltonian *src) {
     *hvib_dia = *(src->hvib_dia);
   }
 
-  for (n = 0u; n < dc1_dia.size(); ++n) {
+  for (auto n = 0u; n < dc1_dia.size(); ++n) {
     if (dc1_dia_mem_status[n] != 0 && src->dc1_dia_mem_status[n] != 0) {
       *dc1_dia[n] = *(src->dc1_dia[n]);
     }
   }
-  for (n = 0u; n < d1ham_dia.size(); ++n) {
+  for (auto n = 0u; n < d1ham_dia.size(); ++n) {
     if (d1ham_dia_mem_status[n] != 0 && src->d1ham_dia_mem_status[n] != 0) {
       *d1ham_dia[n] = *(src->d1ham_dia[n]);
     }
   }
-  for (n = 0u; n < d2ham_dia.size(); ++n) {
+  for (auto n = 0u; n < d2ham_dia.size(); ++n) {
     if (d2ham_dia_mem_status[n] != 0 && src->d2ham_dia_mem_status[n] != 0) {
       *d2ham_dia[n] = *(src->d2ham_dia[n]);
     }
@@ -461,17 +458,17 @@ void nHamiltonian::copy_level_content(nHamiltonian *src) {
     *hvib_adi = *(src->hvib_adi);
   }
 
-  for (n = 0u; n < dc1_adi.size(); ++n) {
+  for (auto n = 0u; n < dc1_adi.size(); ++n) {
     if (dc1_adi_mem_status[n] != 0 && src->dc1_adi_mem_status[n] != 0) {
       *dc1_adi[n] = *(src->dc1_adi[n]);
     }
   }
-  for (n = 0u; n < d1ham_adi.size(); ++n) {
+  for (auto n = 0u; n < d1ham_adi.size(); ++n) {
     if (d1ham_adi_mem_status[n] != 0 && src->d1ham_adi_mem_status[n] != 0) {
       *d1ham_adi[n] = *(src->d1ham_adi[n]);
     }
   }
-  for (n = 0u; n < d2ham_adi.size(); ++n) {
+  for (auto n = 0u; n < d2ham_adi.size(); ++n) {
     if (d2ham_adi_mem_status[n] != 0 && src->d2ham_adi_mem_status[n] != 0) {
       *d2ham_adi[n] = *(src->d2ham_adi[n]);
     }

@@ -42,12 +42,11 @@ MATRIX edc_rates(CMATRIX &Hvib, double Ekin, double C_param, double eps_param,
      calculations
   */
 
-  int i, j;
   int nst = Hvib.n_cols;
   MATRIX decoh_rates(nst, nst);
 
-  for (i = 0; i < nst; i++) {
-    for (j = 0; j < nst; j++) {
+  for (int i = 0; i < nst; i++) {
+    for (int j = 0; j < nst; j++) {
 
       double itau = fabs(Hvib.get(i, i).real() - Hvib.get(j, j).real()) /
                     (C_param + (eps_param / Ekin));
@@ -121,11 +120,10 @@ void dephasing_informed_correction(MATRIX &decoh_rates, CMATRIX &Hvib,
 
   */
 
-  int i, j;
   int nst = Hvib.n_cols;
 
-  for (i = 0; i < nst; i++) {
-    for (j = 0; j < nst; j++) {
+  for (int i = 0; i < nst; i++) {
+    for (int j = 0; j < nst; j++) {
 
       double dE_ij = fabs(Hvib.get(i, i).real() - Hvib.get(j, j).real());
 
@@ -254,7 +252,6 @@ MATRIX coherence_intervals(CMATRIX &Coeff, vector<MATRIX> &rates) {
     trajectory
 
   */
-  int i, traj;
   int nstates = Coeff.n_rows;
   int ntraj = Coeff.n_cols;
 
@@ -272,12 +269,12 @@ MATRIX coherence_intervals(CMATRIX &Coeff, vector<MATRIX> &rates) {
   MATRIX tau_m(nstates, 1);
 
   vector<int> stenc_x(nstates, 0);
-  for (i = 0; i < nstates; i++) {
+  for (int i = 0; i < nstates; i++) {
     stenc_x[i] = i;
   }
   vector<int> stenc_y(1, 0);
 
-  for (traj = 0; traj < ntraj; traj++) {
+  for (int traj = 0; traj < ntraj; traj++) {
 
     stenc_y[0] = traj;
     pop_submatrix(Coeff, coeff, stenc_x, stenc_y);

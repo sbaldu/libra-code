@@ -43,12 +43,11 @@ int points_on_same_line(int idof, vector<int> &pt1, vector<int> &pt2) {
 
   */
 
-  int dof;
   int res = 1;
 
   int ndof = pt1.size();
 
-  for (dof = 0; dof < ndof && res == 1; dof++) {
+  for (int dof = 0; dof < ndof && res == 1; dof++) {
 
     if (dof != idof) {
 
@@ -68,7 +67,6 @@ void dvr0(MATRIX &T, int npts, double rmin, double rmax, double mass) {
     J. Chem. Phys. 1992, 96, 1982,  Eq. A6a, A6b
   */
 
-  int i, j;
 
   double L = rmax - rmin;
   double A = 0.25 * M_PI * M_PI / (mass * L * L);
@@ -77,9 +75,9 @@ void dvr0(MATRIX &T, int npts, double rmin, double rmax, double mass) {
 
   double T_ij;
 
-  for (i = 0; i < npts; i++) {
+  for (int i = 0; i < npts; i++) {
 
-    for (j = 0; j < npts; j++) {
+    for (int j = 0; j < npts; j++) {
 
       if (i == j) {
 
@@ -116,7 +114,6 @@ void dvr1(MATRIX &T, int npts, double dr, double mass) {
     J. Chem. Phys. 1992, 96, 1982,  Eq. A7
   */
 
-  int i, j;
 
   double A = 0.5 / (mass * dr * dr);
   double diag = M_PI * M_PI / 3.0;
@@ -125,8 +122,8 @@ void dvr1(MATRIX &T, int npts, double dr, double mass) {
 
   double T_ij;
 
-  for (i = 0; i < npts; i++) {
-    for (j = 0; j < npts; j++) {
+  for (int i = 0; i < npts; i++) {
+    for (int j = 0; j < npts; j++) {
 
       if (i == j) {
         T_ij = diag;
@@ -147,7 +144,6 @@ void dvr2(MATRIX &T, int npts, double dr, double mass) {
     J. Chem. Phys. 1992, 96, 1982,  Eq. A8
   */
 
-  int i, j;
 
   double A = 0.5 / (mass * dr * dr);
 
@@ -155,8 +151,8 @@ void dvr2(MATRIX &T, int npts, double dr, double mass) {
 
   auto T_ij = 0.;
 
-  for (i = 0; i < npts; i++) {
-    for (j = 0; j < npts; j++) {
+  for (int i = 0; i < npts; i++) {
+    for (int j = 0; j < npts; j++) {
 
       if (i == j) {
         if (i > 0) {
@@ -192,7 +188,7 @@ vector<CMATRIX> Wfcgrid2::T_PSI(vector<CMATRIX> &inp_psi, vector<int> &bc_type,
 
   */
 
-  int idof, ipt1, ipt2, istate, i, j;
+  int ipt2, i;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
 
@@ -201,7 +197,7 @@ vector<CMATRIX> Wfcgrid2::T_PSI(vector<CMATRIX> &inp_psi, vector<int> &bc_type,
   // Precompute 1D matrices for all dimensions
   vector<MATRIX> reT;
 
-  for (idof = 0; idof < ndof; idof++) {
+  for (int idof = 0; idof < ndof; idof++) {
 
     reT.push_back(MATRIX(npts[idof], npts[idof]));
 
@@ -215,21 +211,21 @@ vector<CMATRIX> Wfcgrid2::T_PSI(vector<CMATRIX> &inp_psi, vector<int> &bc_type,
   }
 
   // Matrix multiplication
-  for (ipt1 = 0; ipt1 < Npts; ipt1++) {
+  for (int ipt1 = 0; ipt1 < Npts; ipt1++) {
 
     pt1 = gmap[ipt1];
 
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
 
       pt2 = pt1;
       i = pt1[idof];
 
-      for (j = 0; j < npts[idof]; j++) {
+      for (int j = 0; j < npts[idof]; j++) {
 
         pt2[idof] = j;
         ipt2 = imap(pt2);
 
-        for (istate = 0; istate < nstates; istate++) {
+        for (int istate = 0; istate < nstates; istate++) {
           Tpsi[ipt1].add(istate, 0,
                          reT[idof].get(i, j) * inp_psi[ipt2].get(istate, 0));
         } // for istate
@@ -240,7 +236,7 @@ vector<CMATRIX> Wfcgrid2::T_PSI(vector<CMATRIX> &inp_psi, vector<int> &bc_type,
   } // for ipt1
 
   // Scale
-  for (ipt1 = 0; ipt1 < Npts; ipt1++) {
+  for (int ipt1 = 0; ipt1 < Npts; ipt1++) {
     Tpsi[ipt1] *= scaling;
   }
 
@@ -271,7 +267,7 @@ CMATRIX Wfcgrid2::operator_T(vector<int> &bc_type, vector<double> &mass,
 
   */
 
-  int idof, ipt1, ipt2, i, j;
+  int ipt2, i;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
 
@@ -280,7 +276,7 @@ CMATRIX Wfcgrid2::operator_T(vector<int> &bc_type, vector<double> &mass,
   // Precompute 1D matrices for all dimensions
   vector<MATRIX> reT;
 
-  for (idof = 0; idof < ndof; idof++) {
+  for (int idof = 0; idof < ndof; idof++) {
 
     reT.push_back(MATRIX(npts[idof], npts[idof]));
 
@@ -294,16 +290,16 @@ CMATRIX Wfcgrid2::operator_T(vector<int> &bc_type, vector<double> &mass,
   }
 
   // Matrix multiplication
-  for (ipt1 = 0; ipt1 < Npts; ipt1++) {
+  for (int ipt1 = 0; ipt1 < Npts; ipt1++) {
 
     pt1 = gmap[ipt1];
 
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
 
       pt2 = pt1;
       i = pt1[idof];
 
-      for (j = 0; j < npts[idof]; j++) {
+      for (int j = 0; j < npts[idof]; j++) {
 
         pt2[idof] = j;
         ipt2 = imap(pt2);
@@ -322,7 +318,6 @@ vector<CMATRIX> Wfcgrid2::expT_PSI(double dt, vector<double> &mass,
                                    int nterms) {
   //  Compute exp(-i*dt*T) operator in the real space
 
-  int i, j, term;
 
   complex<double> unit(1.0, 1.0);
   complex<double> scl(0.0, -dt);
@@ -332,16 +327,16 @@ vector<CMATRIX> Wfcgrid2::expT_PSI(double dt, vector<double> &mass,
   vector<CMATRIX> res(Npts, CMATRIX(nstates, 1));
 
   // Initialize it as the probe psi
-  for (i = 0; i < Npts; i++) {
-    for (j = 0; j < nstates; j++) {
+  for (int i = 0; i < Npts; i++) {
+    for (int j = 0; j < nstates; j++) {
       tpsi[i].set(j, 0, unit);
     }
   }
 
   double fact = 1.0;
-  for (term = 0; term < nterms; term++) {
+  for (int term = 0; term < nterms; term++) {
 
-    for (i = 0; i < Npts; i++) {
+    for (int i = 0; i < Npts; i++) {
       res[i] += fact * tpsi[i];
     }
 
@@ -352,13 +347,13 @@ vector<CMATRIX> Wfcgrid2::expT_PSI(double dt, vector<double> &mass,
 
   // Normalize  - the norm should be 2*Npts
   double nrm = 0.0;
-  for (i = 0; i < Npts; i++) {
+  for (int i = 0; i < Npts; i++) {
     nrm += (res[i].H() * res[i]).get(0, 0).real();
   }
 
   nrm = sqrt(2.0 * Npts / nrm);
 
-  for (i = 0; i < Npts; i++) {
+  for (int i = 0; i < Npts; i++) {
     res[i] *= complex<double>(nrm, 0.0);
   }
 
@@ -372,27 +367,26 @@ void Wfcgrid2::Colbert_Miller_SOFT(CMATRIX &expT, vector<CMATRIX> &expV,
      expV  - Npts x CMATRIX(nstates, nstates)
 
   */
-  int i, istate;
   CMATRIX psi_tmp(Npts, 1);
 
   if (opt == 0) {
-    for (i = 0; i < Npts; i++) {
+    for (int i = 0; i < Npts; i++) {
       PSI_dia[i] = expV[i] * PSI_dia[i];
     }
 
-    for (istate = 0; istate < nstates; istate++) {
+    for (int istate = 0; istate < nstates; istate++) {
 
-      for (i = 0; i < Npts; i++) {
+      for (int i = 0; i < Npts; i++) {
         psi_tmp.set(i, 0, PSI_dia[i].get(istate, 0));
       }
       psi_tmp = expT * psi_tmp;
-      for (i = 0; i < Npts; i++) {
+      for (int i = 0; i < Npts; i++) {
         PSI_dia[i].set(istate, 0, psi_tmp.get(i, 0));
       }
 
     } // for istate
 
-    for (i = 0; i < Npts; i++) {
+    for (int i = 0; i < Npts; i++) {
       PSI_dia[i] = expV[i] * PSI_dia[i];
     }
 
@@ -400,29 +394,29 @@ void Wfcgrid2::Colbert_Miller_SOFT(CMATRIX &expT, vector<CMATRIX> &expV,
 
   else if (opt == 1) {
 
-    for (istate = 0; istate < nstates; istate++) {
+    for (int istate = 0; istate < nstates; istate++) {
 
-      for (i = 0; i < Npts; i++) {
+      for (int i = 0; i < Npts; i++) {
         psi_tmp.set(i, 0, PSI_dia[i].get(istate, 0));
       }
       psi_tmp = expT * psi_tmp;
-      for (i = 0; i < Npts; i++) {
+      for (int i = 0; i < Npts; i++) {
         PSI_dia[i].set(istate, 0, psi_tmp.get(i, 0));
       }
 
     } // for istate
 
-    for (i = 0; i < Npts; i++) {
+    for (int i = 0; i < Npts; i++) {
       PSI_dia[i] = expV[i] * PSI_dia[i];
     }
 
-    for (istate = 0; istate < nstates; istate++) {
+    for (int istate = 0; istate < nstates; istate++) {
 
-      for (i = 0; i < Npts; i++) {
+      for (int i = 0; i < Npts; i++) {
         psi_tmp.set(i, 0, PSI_dia[i].get(istate, 0));
       }
       psi_tmp = expT * psi_tmp;
-      for (i = 0; i < Npts; i++) {
+      for (int i = 0; i < Npts; i++) {
         PSI_dia[i].set(istate, 0, psi_tmp.get(i, 0));
       }
 
@@ -433,7 +427,7 @@ void Wfcgrid2::Colbert_Miller_SOFT(CMATRIX &expT, vector<CMATRIX> &expV,
 vector<CMATRIX> Wfcgrid2::nubla_PSI(int idof, vector<CMATRIX> &inp_psi,
                                     complex<double> scaling) {
 
-  int ipt1, ipt2, i, j, istate;
+  int i, j;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
 
@@ -442,11 +436,11 @@ vector<CMATRIX> Wfcgrid2::nubla_PSI(int idof, vector<CMATRIX> &inp_psi,
 
   double T_ij = 0.0;
 
-  for (ipt1 = 0; ipt1 < Npts; ipt1++) {
+  for (int ipt1 = 0; ipt1 < Npts; ipt1++) {
 
     pt1 = gmap[ipt1];
 
-    for (ipt2 = 0; ipt2 < Npts; ipt2++) {
+    for (int ipt2 = 0; ipt2 < Npts; ipt2++) {
 
       pt2 = gmap[ipt2];
 
@@ -463,7 +457,7 @@ vector<CMATRIX> Wfcgrid2::nubla_PSI(int idof, vector<CMATRIX> &inp_psi,
           T_ij = pow(-1.0, i - j) / (dr[idof] * (i - j));
         }
 
-        for (istate = 0; istate < nstates; istate++) {
+        for (int istate = 0; istate < nstates; istate++) {
           T.set(istate, istate, complex<double>(T_ij, 0.0));
         }
 
@@ -474,7 +468,7 @@ vector<CMATRIX> Wfcgrid2::nubla_PSI(int idof, vector<CMATRIX> &inp_psi,
   } // for ipt1
 
   // Scale
-  for (ipt1 = 0; ipt1 < Npts; ipt1++) {
+  for (int ipt1 = 0; ipt1 < Npts; ipt1++) {
     res[ipt1] *= scaling;
   }
 
@@ -500,13 +494,12 @@ vector<CMATRIX> Wfcgrid2::V_PSI(vector<CMATRIX> &V, vector<CMATRIX> &inp_psi,
 
   */
 
-  int ipt1;
   vector<int> pt1(ndof, 0);
   vector<int> pt2(ndof, 0);
 
   vector<CMATRIX> res(Npts, CMATRIX(nstates, 1));
 
-  for (ipt1 = 0; ipt1 < Npts; ipt1++) {
+  for (int ipt1 = 0; ipt1 < Npts; ipt1++) {
     res[ipt1] = scaling * V[ipt1] * inp_psi[ipt1];
   }
 
@@ -532,7 +525,6 @@ vector<CMATRIX> Wfcgrid2::H_PSI_adi(vector<double> &mass) {
     m_{alp} } * nubla_{alp} psi +  psi * T + (V - nac2/2*m) * xi * psi )
   */
 
-  int ipt, idof;
   complex<double> one(1.0, 0.0);
   vector<int> bc_type(ndof, 1);
 
@@ -541,24 +533,24 @@ vector<CMATRIX> Wfcgrid2::H_PSI_adi(vector<double> &mass) {
 
   // Kinetic energy terms
   tmp_psi = T_PSI_adi(bc_type, mass, one);
-  for (ipt = 0; ipt < Npts; ipt++) {
+  for (int ipt = 0; ipt < Npts; ipt++) {
     res[ipt] += tmp_psi[ipt];
   }
 
   // Nonadiabatic coupling terms
-  for (idof = 0; idof < ndof; idof++) {
+  for (int idof = 0; idof < ndof; idof++) {
 
     tmp_psi = nubla_PSI_adi(idof, complex<double>(-1.0 / mass[idof], 0.0));
-    for (ipt = 0; ipt < Npts; ipt++) {
+    for (int ipt = 0; ipt < Npts; ipt++) {
       res[ipt] += NAC1[ipt][idof] * tmp_psi[ipt];
     }
   }
 
   // Potential and second-order NACs energy
-  for (ipt = 0; ipt < Npts; ipt++) {
+  for (int ipt = 0; ipt < Npts; ipt++) {
     CMATRIX tmp(nstates, nstates);
 
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
       tmp += 0.5 * NAC2[ipt][idof] / mass[idof];
     }
     res[ipt] += (Hadi[ipt] - tmp) * PSI_adi[ipt];
@@ -575,7 +567,6 @@ vector<CMATRIX> Wfcgrid2::H_PSI_dia(vector<double> &mass) {
     i * hbar * psi_a * d(xi_a)/dt  = (T xi * psi +  V * xi * psi )
   */
 
-  int ipt;
   complex<double> one(1.0, 0.0);
   vector<int> bc_type(ndof, 1);
 
@@ -585,7 +576,7 @@ vector<CMATRIX> Wfcgrid2::H_PSI_dia(vector<double> &mass) {
   res = T_PSI_dia(bc_type, mass, one);
 
   // Potential energy
-  for (ipt = 0; ipt < Npts; ipt++) {
+  for (int ipt = 0; ipt < Npts; ipt++) {
     res[ipt] += Hdia[ipt] * PSI_dia[ipt];
   }
 
@@ -603,24 +594,23 @@ void Wfcgrid2::Colbert_Miller_propagate_adi1(double dt, vector<double> &mass) {
 
   */
 
-  int npt1;
   complex<double> eye(0.0, 1.0);
   vector<CMATRIX> Hpsi(Npts, CMATRIX(nstates, 1));
   vector<CMATRIX> PSI_tmp(PSI_adi);
 
   Hpsi = H_PSI_adi(mass);
 
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_tmp[npt1] -= eye * dt * Hpsi[npt1];
   }
 
   /// Copy the current wavefunction into the previous one
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_adi_past[npt1] = PSI_adi[npt1];
   }
 
   /// Copy the temporary results into the current wavefunction
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_adi[npt1] = PSI_tmp[npt1];
   }
 }
@@ -636,24 +626,23 @@ void Wfcgrid2::Colbert_Miller_propagate_adi2(double dt, vector<double> &mass) {
 
   */
 
-  int npt1;
   complex<double> eye(0.0, 1.0);
   vector<CMATRIX> Hpsi(Npts, CMATRIX(nstates, 1));
   vector<CMATRIX> PSI_tmp(PSI_adi_past);
 
   Hpsi = H_PSI_adi(mass);
 
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_tmp[npt1] -= 2.0 * eye * dt * Hpsi[npt1];
   }
 
   /// Copy the current wavefunction into the previous one
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_adi_past[npt1] = PSI_adi[npt1];
   }
 
   /// Copy the temporary results into the current wavefunction
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_adi[npt1] = PSI_tmp[npt1];
   }
 }
@@ -669,24 +658,23 @@ void Wfcgrid2::Colbert_Miller_propagate_dia1(double dt, vector<double> &mass) {
 
   */
 
-  int npt1;
   complex<double> eye(0.0, 1.0);
   vector<CMATRIX> Hpsi(Npts, CMATRIX(nstates, 1));
   vector<CMATRIX> PSI_tmp(PSI_dia);
 
   Hpsi = H_PSI_dia(mass);
 
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_tmp[npt1] -= eye * dt * Hpsi[npt1];
   }
 
   /// Copy the current wavefunction into the previous one
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_dia_past[npt1] = PSI_dia[npt1];
   }
 
   /// Copy the temporary results into the current wavefunction
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_dia[npt1] = PSI_tmp[npt1];
   }
 }
@@ -702,24 +690,23 @@ void Wfcgrid2::Colbert_Miller_propagate_dia2(double dt, vector<double> &mass) {
 
   */
 
-  int npt1;
   complex<double> eye(0.0, 1.0);
   vector<CMATRIX> Hpsi(Npts, CMATRIX(nstates, 1));
   vector<CMATRIX> PSI_tmp(PSI_dia_past);
 
   Hpsi = H_PSI_dia(mass);
 
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_tmp[npt1] -= 2.0 * eye * dt * Hpsi[npt1];
   }
 
   /// Copy the current wavefunction into the previous one
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_dia_past[npt1] = PSI_dia[npt1];
   }
 
   /// Copy the temporary results into the current wavefunction
-  for (npt1 = 0; npt1 < Npts; npt1++) {
+  for (int npt1 = 0; npt1 < Npts; npt1++) {
     PSI_dia[npt1] = PSI_tmp[npt1];
   }
 }

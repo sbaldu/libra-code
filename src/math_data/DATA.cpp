@@ -316,7 +316,6 @@ int DATA::GetData(vector<double> &inp) {
 
 int DATA::Calculate_Estimators(double &Ave, double &Var, double &Sd, double &Se,
                                double &Mse, double &Mae, double &Rmse) {
-  int i;
   ave = 0.0;
   var = 0.0;
   mse = 0.0;
@@ -327,12 +326,12 @@ int DATA::Calculate_Estimators(double &Ave, double &Var, double &Sd, double &Se,
 
   if (sz > 1) {
 
-    for (i = 0; i < sz; i++) {
+    for (int i = 0; i < sz; i++) {
       ave += Data[i];
     }
     ave = ave / sz;
 
-    for (i = 0; i < sz; i++) {
+    for (int i = 0; i < sz; i++) {
       tmp = (Data[i] - ave);
       var += tmp * tmp;
       mae += fabs(tmp);
@@ -420,7 +419,6 @@ int DATA::Calculate_Distribution(vector<double> &Interval,
                                  vector<double> &Cumulative) {
   // Cumulative(x) - is the probability to find the point in the interval
   // (Intrval[0], x)
-  int i, j;
   int sz = Data.size();
   int szi = Interval.size(); // Number of sub-intervals
   double nrm = (1.0 / double(sz));
@@ -434,14 +432,14 @@ int DATA::Calculate_Distribution(vector<double> &Interval,
   }
 
   // Init results
-  for (i = 0; i < szi; i++) {
+  for (int i = 0; i < szi; i++) {
     Density.push_back(0.0);
     Cumulative.push_back(0.0);
   }
 
   // Count
-  for (j = 0; j < szi; j++) {
-    for (i = 0; i < sz; i++) {
+  for (int j = 0; j < szi; j++) {
+    for (int i = 0; i < sz; i++) {
       if (Data[i] <= Interval[j]) {
         Cumulative[j] += nrm;
       }
@@ -450,7 +448,7 @@ int DATA::Calculate_Distribution(vector<double> &Interval,
 
   // Probability density
   Density[0] = 0.0;
-  for (j = 1; j < szi; j++) {
+  for (int j = 1; j < szi; j++) {
     Density[j] =
         (Cumulative[j] - Cumulative[j - 1]) / (Interval[j] - Interval[j - 1]);
   }
@@ -460,12 +458,11 @@ int DATA::Calculate_Distribution(vector<double> &Interval,
 
 boost::python::list DATA::Calculate_Distribution(boost::python::list Interval) {
 
-  int i;
 
   // Convert input list to vector
   int sz = boost::python::len(Interval);
   vector<double> interval(sz, 0.0);
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     interval[i] = boost::python::extract<double>(Interval[i]);
   }
 
@@ -478,7 +475,7 @@ boost::python::list DATA::Calculate_Distribution(boost::python::list Interval) {
   boost::python::list Cumulant;
   sz = density.size();
 
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     Density.append(density[i]);
     Cumulant.append(cumulant[i]);
   }

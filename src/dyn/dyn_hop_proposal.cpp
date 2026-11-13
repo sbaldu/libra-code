@@ -61,7 +61,6 @@ MATRIX hopping_probabilities_fssh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
 
 */
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j;
   double sum,g_ij,argg;
 
   double dt = prms.dt;
@@ -76,11 +75,11 @@ MATRIX hopping_probabilities_fssh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
   denmat = Coeff * Coeff.H();
 
   // Now calculate the hopping probabilities
-  for(i=0;i<nstates;i++){
+  for(int i=0;i<nstates;i++){
     sum = 0.0;
     double a_ii = denmat.get(i,i).real(); 
 
-    for(j=0;j<nstates;j++){
+    for(int j=0;j<nstates;j++){
 
       if(i!=j){ 
         /**
@@ -169,7 +168,7 @@ vector<double> hopping_probabilities_fssh(dyn_control_params& prms, CMATRIX& den
 
 */
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j;
+  int i;
   double sum,g_ij,argg;
 
   double dt = prms.dt;
@@ -188,7 +187,7 @@ vector<double> hopping_probabilities_fssh(dyn_control_params& prms, CMATRIX& den
   double a_ii = denmat.get(i,i).real(); 
 //  cout<<"a_ii = "<<a_ii<<endl;
 
-  for(j=0;j<nstates;j++){
+  for(int j=0;j<nstates;j++){
  
     if(i!=j){ 
       /**
@@ -280,7 +279,6 @@ MATRIX hopping_probabilities_gfsh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
 */
 
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j;
   double g_ij,argg;
 
   double dt = prms.dt;
@@ -306,7 +304,7 @@ MATRIX hopping_probabilities_gfsh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
   vector<double> a_dot(nstates,0.0);
   double norm = 0.0; // normalization factor
 
-  for(i=0;i<nstates;i++){
+  for(int i=0;i<nstates;i++){
     a[i] = denmat.get(i,i).real();
     a_dot[i] = denmat_dot.get(i,i).real();
 
@@ -316,10 +314,10 @@ MATRIX hopping_probabilities_gfsh(dyn_control_params& prms, CMATRIX& Coeff, CMAT
 
 
   // Now calculate the hopping probabilities
-  for(i=0;i<nstates;i++){       
+  for(int i=0;i<nstates;i++){       
     double sumg = 0.0;
 
-    for(j=0;j<nstates;j++){
+    for(int j=0;j<nstates;j++){
 
       if(j!=i){  // off-diagonal = probabilities to hop to other states
 
@@ -397,7 +395,7 @@ vector<double> hopping_probabilities_gfsh(dyn_control_params& prms, CMATRIX& den
 */
 
   const double kb = 3.166811429e-6; // Hartree/K
-  int i,j;
+  int i;
   double g_ij,argg;
 
   double dt = prms.dt;
@@ -430,7 +428,7 @@ vector<double> hopping_probabilities_gfsh(dyn_control_params& prms, CMATRIX& den
   i = act_state_indx;
   double sumg = 0.0;
 
-  for(j=0;j<nstates;j++){
+  for(int j=0;j<nstates;j++){
 
     if(j!=i){  // off-diagonal = probabilities to hop to other states
 
@@ -496,7 +494,7 @@ vector<double> hopping_probabilities_gfsh_orig(dyn_control_params& prms, CMATRIX
 
 */
 
-  int i,j;
+  int i;
 
 
   int nstates = denmat.n_rows;
@@ -524,7 +522,7 @@ vector<double> hopping_probabilities_gfsh_orig(dyn_control_params& prms, CMATRIX
   i = act_state_indx;
   double sumg = 0.0;
 
-  for(j=0;j<nstates;j++){
+  for(int j=0;j<nstates;j++){
 
     if(j!=i){  // off-diagonal = probabilities to hop to other states
 
@@ -586,7 +584,7 @@ vector<double> hopping_probabilities_fssh2(dyn_control_params& prms, CMATRIX& de
 
 */
 
-  int i,j;
+  int i;
   double sum,g_ij;
 
   int version = prms.fssh2_revision;
@@ -606,7 +604,7 @@ vector<double> hopping_probabilities_fssh2(dyn_control_params& prms, CMATRIX& de
   if(P_out_ii < 0.0){ P_out_ii = 0.0; } // same as below - assume this is implied
 
   sum = 0.0;  
-  for(j=0;j<nstates;j++){
+  for(int j=0;j<nstates;j++){
 
     if(i!=j){
       double a_jj_old = denmat_old.get(j,j).real();
@@ -636,10 +634,10 @@ vector<double> hopping_probabilities_fssh2(dyn_control_params& prms, CMATRIX& de
 
     if(sum>0.0){
       g[i] = P_out_ii;
-      for(j=0;j<nstates;j++){  if(j!=i){  g[j] *= (1.0 - P_out_ii)/sum; }  }
+      for(int j=0;j<nstates;j++){  if(j!=i){  g[j] *= (1.0 - P_out_ii)/sum; }  }
     }else{
       g[i] = 1.0; 
-      for(j=0;j<nstates;j++){  if(j!=i){  g[j] = 0.0; }  }
+      for(int j=0;j<nstates;j++){  if(j!=i){  g[j] = 0.0; }  }
     }
 
   }// revised version
@@ -785,7 +783,7 @@ vector<double> hopping_probabilities_lz(nHamiltonian* ham, nHamiltonian* ham_pre
       A nstates-vector of hopping probabilities to all states from the current active state
 
 */
-  int i,j,k;
+  int i;
   int nstates;
   int ndof = ham->nnucl;
 
@@ -816,10 +814,10 @@ vector<double> hopping_probabilities_lz(nHamiltonian* ham, nHamiltonian* ham_pre
     MATRIX dham(nstates,nstates); // H'_ii * v
     MATRIX dHv(nstates,nstates); // |H'_ii - H'_jj| * v
 
-    for(k=0;k<ndof;k++){
+    for(int k=0;k<ndof;k++){
       dham = ham->get_d1ham_dia(k).real() * p.get(k,0) * invM.get(k,0);
 
-      for(j=0;j<nstates;j++){
+      for(int j=0;j<nstates;j++){
         double dmod = fabs(dham.get(i,i) - dham.get(j,j));
         dHv.add(i,j, dmod);
         dHv.add(j,i, dmod);
@@ -830,7 +828,7 @@ vector<double> hopping_probabilities_lz(nHamiltonian* ham, nHamiltonian* ham_pre
     //========== Now calculate the hopping probabilities ===========
     
     // Off-diagonal elements - only, if we meet the gap minimum
-    for(j=0; j<nstates; j++){
+    for(int j=0; j<nstates; j++){
 
       if(j!=i){
         double dh = ham_dia.get(i,i) - ham_dia.get(j,j);
@@ -875,7 +873,7 @@ vector<double> hopping_probabilities_lz(nHamiltonian* ham, nHamiltonian* ham_pre
     nac_adi_prev = ham_prev->get_nac_adi().real();
 
     // Off-diagonal elements
-    for(j=0;j<nstates;j++){
+    for(int j=0;j<nstates;j++){
       if(j!=i){
 
         int nonzero = 0;
@@ -906,7 +904,7 @@ vector<double> hopping_probabilities_lz(nHamiltonian* ham, nHamiltonian* ham_pre
 
   // Diagonal elements - common for both reps
   double sum = 0.0;
-  for(j=0;j<nstates;j++){
+  for(int j=0;j<nstates;j++){
     if(j!=i){  sum += g[j];   }
   }// for i
   g[i] = 1.0 - sum;
@@ -961,7 +959,7 @@ vector<double> hopping_probabilities_zn(nHamiltonian* ham, nHamiltonian* ham_pre
       A nstates-vector of hopping probabilities to all states from the current active state
 
 */
-  int i,j;
+  int i;
 
   int ndof = ham->nnucl;
   int nstates = ham->ndia; 
@@ -993,7 +991,7 @@ vector<double> hopping_probabilities_zn(nHamiltonian* ham, nHamiltonian* ham_pre
   Fi = F.col(i);
 
   // Off-diagonal elements - only, if we meet the gap minimum
-  for(j=0; j<nstates; j++){
+  for(int j=0; j<nstates; j++){
 
     if(j!=i){
       double dh = ham_dia.get(i,i) - ham_dia.get(j,j);
@@ -1035,7 +1033,7 @@ vector<double> hopping_probabilities_zn(nHamiltonian* ham, nHamiltonian* ham_pre
 
   // Diagonal elements - common for both reps
   double sum = 0.0;
-  for(j=0;j<nstates;j++){
+  for(int j=0;j<nstates;j++){
     if(j!=i){  sum += g[j];   }
   }// for i
   g[i] = 1.0 - sum;
@@ -1115,13 +1113,12 @@ vector<MATRIX> hop_proposal_probabilities(dyn_control_params& prms,
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
   int nst = C.n_rows;    
-  int traj, i;
   int isNBRA = prms.isNBRA;
 
 
-  vector<int> nucl_stenc_x(ndof, 0); for(i=0;i<ndof;i++){  nucl_stenc_x[i] = i; }
+  vector<int> nucl_stenc_x(ndof, 0); for(int i=0;i<ndof;i++){  nucl_stenc_x[i] = i; }
   vector<int> nucl_stenc_y(1, 0); 
-  vector<int> el_stenc_x(nst, 0); for(i=0;i<nst;i++){  el_stenc_x[i] = i; }
+  vector<int> el_stenc_x(nst, 0); for(int i=0;i<nst;i++){  el_stenc_x[i] = i; }
   vector<int> el_stenc_y(1, 0); 
   vector<int> full_id(2,0);
 
@@ -1135,7 +1132,7 @@ vector<MATRIX> hop_proposal_probabilities(dyn_control_params& prms,
   //============== Begin the TSH part ===================  
   // Proposed hops probabilities
 
-  for(traj=0; traj<ntraj; traj++){
+  for(int traj=0; traj<ntraj; traj++){
 
     nucl_stenc_y[0] = traj;
     el_stenc_y[0] = traj;
@@ -1213,11 +1210,10 @@ nHamiltonian& ham, nHamiltonian& ham_prev){
 
   int isNBRA = prms.isNBRA;
 
-  int traj, i;
 
-  vector<int> nucl_stenc_x(ndof, 0); for(i=0;i<ndof;i++){  nucl_stenc_x[i] = i; }
+  vector<int> nucl_stenc_x(ndof, 0); for(int i=0;i<ndof;i++){  nucl_stenc_x[i] = i; }
   vector<int> nucl_stenc_y(1, 0); 
-  vector<int> el_stenc_x(nst, 0); for(i=0;i<nst;i++){  el_stenc_x[i] = i; }
+  vector<int> el_stenc_x(nst, 0); for(int i=0;i<nst;i++){  el_stenc_x[i] = i; }
   vector<int> el_stenc_y(1, 0); 
   vector<int> full_id(2,0);
 
@@ -1231,7 +1227,7 @@ nHamiltonian& ham, nHamiltonian& ham_prev){
 
   //============== Begin the TSH part ===================  
   // Proposed hops probabilities
-  for(traj=0; traj<ntraj; traj++){
+  for(int traj=0; traj<ntraj; traj++){
 
     if(prms.rep_sh==1){
       dm = *dyn_var.dm_adi[traj];
@@ -1385,7 +1381,6 @@ int hop(vector<double>& prob, double ksi){
 
   Returned value: the index of the state to which we have hopped
 */
-  int i;
   int nstates = prob.size();
   double left, right; left = right = 0.0;
   int finstate = -1;
@@ -1395,10 +1390,10 @@ int hop(vector<double>& prob, double ksi){
   double nrm = 0.0;
   if(ksi >= 1){ finstate = nstates - 1; } // hops to highest state if ksi = 1 to avoid rounding errors
   else{
-    for(i=0;i<nstates;i++){  nrm += prob[i];  }
+    for(int i=0;i<nstates;i++){  nrm += prob[i];  }
 
     if(nrm>0.0){
-      for(i=0;i<nstates;i++){    
+      for(int i=0;i<nstates;i++){    
         if(i==0){left = 0.0; right = prob[i]/nrm; }
         else{  left = right; right = right + prob[i]/nrm; }
 
@@ -1432,7 +1427,6 @@ int hop(int initstate, MATRIX& g, double ksi){
 
   Returned value: the index of the state to which we have hopped
 */
-  int i;
   int nstates = g.n_cols;
   double left, right; left = right = 0.0;
   int finstate = -1;
@@ -1442,10 +1436,10 @@ int hop(int initstate, MATRIX& g, double ksi){
   double nrm = 0.0;
   if(ksi >= 1){ finstate = nstates - 1; } // hops to highest state if ksi = 1 to avoid rounding errors
   else{
-    for(i=0;i<nstates;i++){  nrm += g.get(initstate, i);  }
+    for(int i=0;i<nstates;i++){  nrm += g.get(initstate, i);  }
 
     if(nrm>0.0){
-      for(i=0;i<nstates;i++){    
+      for(int i=0;i<nstates;i++){    
         if(i==0){left = 0.0; right = g.get(initstate,i)/nrm; }
         else{  left = right; right = right + g.get(initstate,i)/nrm; }
 
@@ -1478,7 +1472,6 @@ int hop(int initstate, vector<double>& g, double ksi){
 
   Returned value: the index of the state to which we have hopped
 */
-  int i;
   int nstates = g.size();
   double left, right; left = right = 0.0;
   int finstate = -1;
@@ -1488,10 +1481,10 @@ int hop(int initstate, vector<double>& g, double ksi){
   double nrm = 0.0;
   if(ksi >= 1){ finstate = nstates - 1; } // hops to highest state if ksi = 1 to avoid rounding errors
   else{
-    for(i=0;i<nstates;i++){  nrm += g[i];  }
+    for(int i=0;i<nstates;i++){  nrm += g[i];  }
 
     if(nrm>0.0){
-      for(i=0;i<nstates;i++){    
+      for(int i=0;i<nstates;i++){    
         if(i==0){left = 0.0; right = g[i]/nrm; }
         else{  left = right; right = right + g[i]/nrm; }
 

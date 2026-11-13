@@ -133,7 +133,6 @@ double gaussian_overlap(int nxa,double alp_a, double Xa, int nxb,double alp_b, d
 ****************************************************************************/
 
 
-  int i;
   double gamma = alp_a + alp_b;
   double ag = alp_a/gamma;
   double bg = alp_b/gamma;
@@ -159,7 +158,7 @@ double gaussian_overlap(int nxa,double alp_a, double Xa, int nxb,double alp_b, d
   binomial_expansion(nxa, nxb, Xpa, Xpb, f, dfdXpa, dfdXpb, is_derivs); // (x+x1)^n1 * (x+x2)^n2 = summ_i { x^i * f_i (x1,x2,n1,n2) }
 
   // Compute Gaussian integrals
-  for(i=0;i<=(nxa+nxb+1);i++){ 
+  for(int i=0;i<=(nxa+nxb+1);i++){ 
     g[i] = gaussian_int(i, gamma);
   }
 
@@ -213,16 +212,15 @@ double gaussian_overlap(int nxa,double alp_a, double Xa, int nxb,double alp_b, d
                        ){
 
   // Allocate working memory
-  int i;
   int n_aux = 20; //nxa+nxb+1;
   vector<double*> auxd(5);
-  for(i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = gaussian_overlap(nxa,alp_a,Xa, nxb,alp_b,Xb, is_normalize, is_derivs, dI_dXa, dI_dXb, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<5;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
   return res;
@@ -318,16 +316,15 @@ double gaussian_overlap(int nxa,int nya, int nza, double alp_a, VECTOR& Ra,
                         VECTOR& dIdA, VECTOR& dIdB
                        ){
   // Allocate working memory
-  int i;
   int n_aux = 20;
   vector<double*> auxd(5);
-  for(i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<5;i++){ auxd[i] = new double[n_aux]; }
 
   // Do computations
   double res = gaussian_overlap(nxa,nya,nza,alp_a,Ra, nxb,nyb,nzb,alp_b,Rb, is_normalize, is_derivs, dIdA, dIdB, auxd, n_aux);
 
   // Clean working memory
-  for(i=0;i<5;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxd[i]; }  
   auxd.clear();
  
 

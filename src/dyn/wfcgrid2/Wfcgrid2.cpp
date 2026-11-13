@@ -40,7 +40,6 @@ void Wfcgrid2::init_numbers(const vector<double>& rmin_, const vector<double>& r
   of point is the lowest power of 2 needed to enclose the interval. Also sets other class variables.
 */
   cout<<" == in init_numbers ==\n";
-  int dof;
 
   nstates = nstates_;
   ndof = rmin_.size();
@@ -52,7 +51,7 @@ void Wfcgrid2::init_numbers(const vector<double>& rmin_, const vector<double>& r
   if(npts.size()>0){  npts.clear(); }
 
   Npts = 1;
-  for(dof=0; dof<ndof; dof++){
+  for(int dof=0; dof<ndof; dof++){
 
     // Expand the grid to be power of 2 along each dimension
     npts.push_back( libdyn::libwfcgrid::find_grid_size(rmin[dof],rmax[dof],dr[dof]) );
@@ -67,7 +66,7 @@ void Wfcgrid2::init_numbers(const vector<double>& rmin_, const vector<double>& r
 
 
   if(kmin.size()>0){  kmin.clear(); }
-  for(dof=0; dof<ndof; dof++){
+  for(int dof=0; dof<ndof; dof++){
     kmin.push_back( -0.5/dr[dof] );
     cout<<"Minimal wavevector along dimension "<<dof<<" is "<<kmin[dof]<<endl;  
   }
@@ -88,11 +87,10 @@ void Wfcgrid2::allocate(){
   all numbers are assumed to be defined by this time, so the init_numbers() function must have been called first
 */
 
-  int dof;
   cout<<" == in allocate ==\n";
   cout<<"nstates = "<<nstates<<endl;
   cout<<"ndof = "<<ndof<<endl;
-  for(dof=0; dof<ndof; dof++){  cout<<"Dimension "<<dof<<" has "<<npts[dof]<<" grid points"<<endl;   }
+  for(int dof=0; dof<ndof; dof++){  cout<<"Dimension "<<dof<<" has "<<npts[dof]<<" grid points"<<endl;   }
 
   // Allocate arrays
   PSI_dia = vector<CMATRIX>(Npts, CMATRIX(nstates, 1));          ///< wavefunction  Npts x nstates x 1
@@ -122,7 +120,7 @@ void Wfcgrid2::allocate(){
   
   rgrid = vector<MATRIX*>(ndof);
   kgrid = vector<MATRIX*>(ndof);
-  for(dof=0; dof<ndof; dof++){
+  for(int dof=0; dof<ndof; dof++){
       rgrid[dof] = new MATRIX(npts[dof], 1);
       kgrid[dof] = new MATRIX(npts[dof], 1);
   }
@@ -138,12 +136,11 @@ void Wfcgrid2::init_grids(){
 
   memory is assumed to be allocated by this time. If not, call allocate_1D() function first
 */
-  int dof;
 
   cout<<"In init_grids, ndof = "<<ndof<<endl;
 
   // Initialize grids
-  for(dof=0; dof<ndof; dof++){
+  for(int dof=0; dof<ndof; dof++){
 
       // Because init_grid returns data as CMATRIX(1 , npts[dof]) object
       *rgrid[dof]  = libdyn::libwfcgrid::init_grid(rmin[dof], rmax[dof] ,dr[dof]).real().T(); // real space
@@ -248,29 +245,28 @@ void Wfcgrid2::convert_PSI(int _rep, int _dir){
   _rep - representation: 0 - diabatic, 1 - adiabatic
   _dir - direction: 1 - forward: PSI -> lin_PSI;  -1 - backward: lin_PSI -> PSI
 */
-  int i, ipt;
   
   if(_rep==0 && _dir==1){ 
-    for(i=0; i<nstates; i++){ 
-      for(ipt=0;ipt<Npts;ipt++){ lin_PSI_dia->set(i*Npts + ipt, 0,  PSI_dia[ipt].get(i, 0) );  }
+    for(int i=0; i<nstates; i++){ 
+      for(int ipt=0;ipt<Npts;ipt++){ lin_PSI_dia->set(i*Npts + ipt, 0,  PSI_dia[ipt].get(i, 0) );  }
     }
   }// diabtic, direct-> lin
 
   if(_rep==1 && _dir==1){
-    for(i=0; i<nstates; i++){
-      for(ipt=0;ipt<Npts;ipt++){ lin_PSI_adi->set(i*Npts + ipt, 0,  PSI_adi[ipt].get(i, 0) );  }
+    for(int i=0; i<nstates; i++){
+      for(int ipt=0;ipt<Npts;ipt++){ lin_PSI_adi->set(i*Npts + ipt, 0,  PSI_adi[ipt].get(i, 0) );  }
     }
   }// adiabtic, direct-> lin
 
   if(_rep==0 && _dir==-1){
-    for(i=0; i<nstates; i++){
-      for(ipt=0;ipt<Npts;ipt++){ PSI_dia[ipt].set(i, 0, lin_PSI_dia->get(i*Npts + ipt, 0 ) );  }
+    for(int i=0; i<nstates; i++){
+      for(int ipt=0;ipt<Npts;ipt++){ PSI_dia[ipt].set(i, 0, lin_PSI_dia->get(i*Npts + ipt, 0 ) );  }
     }
   }// diabtic, lin -> direct
 
   if(_rep==1 && _dir==-1){
-    for(i=0; i<nstates; i++){
-      for(ipt=0;ipt<Npts;ipt++){ PSI_adi[ipt].set(i, 0, lin_PSI_adi->get(i*Npts + ipt, 0 ) );  }
+    for(int i=0; i<nstates; i++){
+      for(int ipt=0;ipt<Npts;ipt++){ PSI_adi[ipt].set(i, 0, lin_PSI_adi->get(i*Npts + ipt, 0 ) );  }
     }
   }// adiabtic, lin -> direct
 

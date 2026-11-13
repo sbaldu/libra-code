@@ -62,7 +62,7 @@ double Wfcgrid2::e_kin(vector<double> &mass, int rep) {
     Compute kinetic energy for nd-D wavefunction: <psi|T|psi> / <psi|psi>
 
   */
-  int idof, ipt;
+  int ipt;
   double k, kfactor;
   double res;
   res = 0.0;
@@ -73,7 +73,7 @@ double Wfcgrid2::e_kin(vector<double> &mass, int rep) {
 
     kfactor = 0.0;
 
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
       ipt = gmap[npt1][idof];
       k = kgrid[idof]->get(ipt);
       kfactor += k * k / mass[idof];
@@ -173,7 +173,7 @@ CMATRIX Wfcgrid2::get_pow_q(int rep, int n) {
 
   */
 
-  int idof, ipt;
+  int ipt;
   double q;
   double nrm;
   nrm = 0.0;
@@ -193,7 +193,7 @@ CMATRIX Wfcgrid2::get_pow_q(int rep, int n) {
       nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
     }
 
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
 
       ipt = gmap[npt1][idof];
       q = rgrid[idof]->get(ipt);
@@ -217,7 +217,7 @@ CMATRIX Wfcgrid2::get_pow_p(int rep, int n) {
 
   */
 
-  int idof, ipt;
+  int ipt;
   double k;
   double nrm;
   nrm = 0.0;
@@ -237,7 +237,7 @@ CMATRIX Wfcgrid2::get_pow_p(int rep, int n) {
       nrm += (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real();
     }
 
-    for (idof = 0; idof < ndof; idof++) {
+    for (int idof = 0; idof < ndof; idof++) {
       ipt = gmap[npt1][idof];
       k = kgrid[idof]->get(ipt);
 
@@ -246,7 +246,7 @@ CMATRIX Wfcgrid2::get_pow_p(int rep, int n) {
 
   } // for npt1
 
-  for (idof = 0; idof < ndof; idof++) {
+  for (int idof = 0; idof < ndof; idof++) {
     res *= dk[idof];
     nrm *= dr[idof];
   }
@@ -295,7 +295,6 @@ MATRIX Wfcgrid2::get_pops(int rep) {
 
   */
 
-  int istate;
   double pop_i;
 
   MATRIX res(nstates, 1);
@@ -304,7 +303,7 @@ MATRIX Wfcgrid2::get_pops(int rep) {
 
     if (rep == 0) {
 
-      for (istate = 0; istate < nstates; istate++) {
+      for (int istate = 0; istate < nstates; istate++) {
         pop_i = (PSI_dia[npt1].get(istate, 0) *
                  std::conj(PSI_dia[npt1].get(istate, 0)))
                     .real();
@@ -312,7 +311,7 @@ MATRIX Wfcgrid2::get_pops(int rep) {
       }
     } else if (rep == 1) {
 
-      for (istate = 0; istate < nstates; istate++) {
+      for (int istate = 0; istate < nstates; istate++) {
         pop_i = (PSI_adi[npt1].get(istate, 0) *
                  std::conj(PSI_adi[npt1].get(istate, 0)))
                     .real();
@@ -343,7 +342,6 @@ MATRIX Wfcgrid2::get_pops(int rep, vector<double> &bmin, vector<double> &bmax) {
 
   */
 
-  int istate, idof;
   double pop_i;
   vector<int> pt;
 
@@ -360,7 +358,7 @@ MATRIX Wfcgrid2::get_pops(int rep, vector<double> &bmin, vector<double> &bmax) {
 
     int is_included = 1;
 
-    for (idof = 0; idof < maxdim && is_included; idof++) {
+    for (int idof = 0; idof < maxdim && is_included; idof++) {
 
       double coord = rgrid[idof]->get(pt[idof]);
 
@@ -373,7 +371,7 @@ MATRIX Wfcgrid2::get_pops(int rep, vector<double> &bmin, vector<double> &bmax) {
 
       if (rep == 0) {
 
-        for (istate = 0; istate < nstates; istate++) {
+        for (int istate = 0; istate < nstates; istate++) {
           pop_i = (PSI_dia[npt1].get(istate, 0) *
                    std::conj(PSI_dia[npt1].get(istate, 0)))
                       .real();
@@ -381,7 +379,7 @@ MATRIX Wfcgrid2::get_pops(int rep, vector<double> &bmin, vector<double> &bmax) {
         }
       } else if (rep == 1) {
 
-        for (istate = 0; istate < nstates; istate++) {
+        for (int istate = 0; istate < nstates; istate++) {
           pop_i = (PSI_adi[npt1].get(istate, 0) *
                    std::conj(PSI_adi[npt1].get(istate, 0)))
                       .real();
@@ -412,27 +410,26 @@ MATRIX Wfcgrid2::get_coherences(int rep) {
   */
   MATRIX res(nstates, nstates);
 
-  int istate, jstate, npt1;
 
   MATRIX temp(Npts, 1);
   if (rep == 0) {
-    for (npt1 = 0; npt1 < Npts; npt1++) {
+    for (int npt1 = 0; npt1 < Npts; npt1++) {
       temp.set(npt1, 0, (PSI_dia[npt1].H() * PSI_dia[npt1]).get(0, 0).real());
     }
   } else if (rep == 1) {
-    for (npt1 = 0; npt1 < Npts; npt1++) {
+    for (int npt1 = 0; npt1 < Npts; npt1++) {
       temp.set(npt1, 0, (PSI_adi[npt1].H() * PSI_adi[npt1]).get(0, 0).real());
     }
   }
 
   double rho_i, rho_j, coh_ij;
   if (rep == 0) {
-    for (npt1 = 0; npt1 < Npts; npt1++) {
-      for (istate = 0; istate < nstates; istate++) {
+    for (int npt1 = 0; npt1 < Npts; npt1++) {
+      for (int istate = 0; istate < nstates; istate++) {
         rho_i = (PSI_dia[npt1].get(istate, 0) *
                  std::conj(PSI_dia[npt1].get(istate, 0)))
                     .real();
-        for (jstate = 0; jstate < nstates; jstate++) {
+        for (int jstate = 0; jstate < nstates; jstate++) {
           rho_j = (PSI_dia[npt1].get(jstate, 0) *
                    std::conj(PSI_dia[npt1].get(jstate, 0)))
                       .real();
@@ -442,12 +439,12 @@ MATRIX Wfcgrid2::get_coherences(int rep) {
       } // for istate
     } // for npt1
   } else if (rep == 1) {
-    for (npt1 = 0; npt1 < Npts; npt1++) {
-      for (istate = 0; istate < nstates; istate++) {
+    for (int npt1 = 0; npt1 < Npts; npt1++) {
+      for (int istate = 0; istate < nstates; istate++) {
         rho_i = (PSI_adi[npt1].get(istate, 0) *
                  std::conj(PSI_adi[npt1].get(istate, 0)))
                     .real();
-        for (jstate = 0; jstate < nstates; jstate++) {
+        for (int jstate = 0; jstate < nstates; jstate++) {
           rho_j = (PSI_adi[npt1].get(jstate, 0) *
                    std::conj(PSI_adi[npt1].get(jstate, 0)))
                       .real();

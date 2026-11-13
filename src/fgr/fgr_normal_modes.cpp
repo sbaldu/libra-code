@@ -256,7 +256,6 @@ vector<double> normal_modes(vector<double>& omega, vector<double>& coeff, MATRIX
 
 */
 
-    int i;
 
     /// Check the dimensions of the input and output
     int ndof = omega.size();
@@ -269,7 +268,7 @@ vector<double> normal_modes(vector<double>& omega, vector<double>& coeff, MATRIX
     MATRIX D(ndof, ndof);
 
     D.set(0, 0, omega[0]*omega[0]);
-    for(i=1; i<ndof; i++){  
+    for(int i=1; i<ndof; i++){  
       D.add(0, 0, coeff[i]*coeff[i]/(omega[i]*omega[i]) ); 
       D.set(i, i, omega[i]*omega[i] );
       D.set(0, i, coeff[i] );   
@@ -283,7 +282,7 @@ vector<double> normal_modes(vector<double>& omega, vector<double>& coeff, MATRIX
 
     /// Normal mode frequencies
     vector<double> omega_nm(ndof, 0.0);
-    for(i=0; i<ndof; i++){  omega_nm[i] = sqrt(W.get(i,i)); }
+    for(int i=0; i<ndof; i++){  omega_nm[i] = sqrt(W.get(i,i)); }
 
 
     return omega_nm;
@@ -305,7 +304,6 @@ vector<double> compute_req(vector<double>& omega, vector<double>& coeff, double 
 
 */
 
-    int i;
 
     /// Check the dimensions of the input and output
     int ndof = omega.size();
@@ -318,11 +316,11 @@ vector<double> compute_req(vector<double>& omega, vector<double>& coeff, double 
     /// mode coordinates - (acceptor's potential energy min shift) Eq. (51)
     MATRIX tmp(ndof, 1);
     tmp.set(0, 0, 1.0);
-    for(i=1; i<ndof; i++){ tmp.set(i, 0, -coeff[i]/(omega[i]*omega[i]));    }
+    for(int i=1; i<ndof; i++){ tmp.set(i, 0, -coeff[i]/(omega[i]*omega[i]));    }
     tmp = 2.0*y0*T.T()*tmp;
 
     vector<double> req(ndof, 0.0);
-    for(i=0; i<ndof; i++){ req[i] = tmp.get(i, 0);  }
+    for(int i=0; i<ndof; i++){ req[i] = tmp.get(i, 0);  }
     
     return req;
 }

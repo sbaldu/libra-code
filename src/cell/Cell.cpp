@@ -96,7 +96,6 @@ void Cell::calculate(VECTOR& rij,vector<triple>& res,triple& central_translation
 //  if(db){ cout<<"In Cell::calculate function\n"; }
 
   double nm,np,delta,det,det1,det2;
-  int n1,n2,n3;
   int N1_min,N1_max;
   int N2_min,N2_max;
   int N3_min,N3_max;
@@ -133,7 +132,7 @@ void Cell::calculate(VECTOR& rij,vector<triple>& res,triple& central_translation
 //    if(db){ cout<<" N1_min="<<N1_min<<" N1_max="<<N1_max<<endl; }
 
     // Now run loop in n1
-    for(n1=N1_min;n1<=N1_max;n1++){
+    for(int n1=N1_min;n1<=N1_max;n1++){
       Xb = n1*M+N;
       Xc = n1*n1*P - 2.0*Q*n1 - R;
       det1 = Xb*Xb - Xa*Xc;
@@ -146,7 +145,7 @@ void Cell::calculate(VECTOR& rij,vector<triple>& res,triple& central_translation
 //      if(db){cout<<"  n1="<<n1<<" N2_min="<<N2_min<<" N2_max="<<N2_max<<" delta^2="<<(Xb*Xb - Xa*Xc)<<" nm="<<nm<<" np="<<np<<" Xa="<<Xa<<endl; }
    
       // Now run loop in n2
-      for(n2=N2_min;n2<=N2_max;n2++){
+      for(int n2=N2_min;n2<=N2_max;n2++){
         Zb = (C - n1*T13 - n2*T23);
         Zc = (n1*n1*a2 - 2.0*A*n1 + n2*n2*b2 - 2.0*B*n2 - D + 2.0*n1*n2*T12);        
         det2 = Zb*Zb - Za*Zc;
@@ -159,7 +158,7 @@ void Cell::calculate(VECTOR& rij,vector<triple>& res,triple& central_translation
 //        if(db){ cout<<"    n2="<<n2<<" N3_min="<<N3_min<<" N3_max="<<N3_max<<" delta^2 = "<<(Zb*Zb - Za*Zc)<<" nm="<<nm<<" np="<<np<<" Za = "<<Za<<endl; }
 
         // Now run loop in n3
-        for(n3=N3_min;n3<=N3_max;n3++){
+        for(int n3=N3_min;n3<=N3_max;n3++){
 
           triple t;
           t.n1 = n1;

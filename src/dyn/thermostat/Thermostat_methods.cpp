@@ -35,26 +35,25 @@ double Thermostat::energy(){
 */
 
   double comp = 0.0;
-  int i;
   if(thermostat_type=="Nose-Hoover"){
 
   double kT = (boltzmann/hartree)*Temperature;
   if(Nf_t>0){
-  for(i=0;i<NHC_size;i++){
+  for(int i=0;i<NHC_size;i++){
       if(i==0){ comp += kT * Nf_t * s_t[i]; }
       else{     comp += kT * s_t[i]; }
       comp += ( 0.5*Q_t[i] * ksi_t[i] * ksi_t[i] );
   }  }
 
   if(Nf_r>0){
-  for(i=0;i<NHC_size;i++){
+  for(int i=0;i<NHC_size;i++){
       if(i==0){ comp += kT * Nf_r * s_r[i]; }
       else{     comp += kT * s_r[i]; }
       comp += ( 0.5*Q_r[i] * ksi_r[i] * ksi_r[i] );
   }  }
 
   if(Nf_b>0){
-  for(i=0;i<NHC_size;i++){
+  for(int i=0;i<NHC_size;i++){
       if(i==0){ comp += kT * Nf_b * s_b[i]; }
       else{     comp += kT * s_b[i]; }
       comp += ( 0.5*Q_b[i] * ksi_b[i] * ksi_b[i] );
@@ -202,7 +201,6 @@ void Thermostat::init_nhc(){
   
 */
 
-  int i;
   double Qt,Qr,Qb;
 
   if(thermostat_type=="Nose-Hoover"){
@@ -225,7 +223,7 @@ void Thermostat::init_nhc(){
   // Now calculate masses, initialize s and ksi
   // and allocate memory for G
   if(Nf_t>0){
-  for(i=0;i<NHC_size;i++){
+  for(int i=0;i<NHC_size;i++){
     if(i==0){   Qt = Nf_t * kTt;}
     else{ Qt = kTt; }
     Q_t.push_back(Qt);
@@ -240,7 +238,7 @@ void Thermostat::init_nhc(){
   }// if Nf_t>o
 
   if(Nf_r>0){
-  for(i=0;i<NHC_size;i++){
+  for(int i=0;i<NHC_size;i++){
     if(i==0){   Qr = Nf_r * kTt;}
     else{ Qr = kTt; }
     Q_r.push_back(Qr);
@@ -255,7 +253,7 @@ void Thermostat::init_nhc(){
   }// if Nf_r>o
 
   if(Nf_b>0){
-  for(i=0;i<NHC_size;i++){
+  for(int i=0;i<NHC_size;i++){
     if(i==0){   Qb = Nf_b * kTt;}
     else{ Qb = kTt; }
     Q_b.push_back(Qb);
@@ -297,14 +295,13 @@ void Thermostat::propagate_nhc(double dt,double ekin_tr, double ekin_rot,double 
 
   if(thermostat_type=="Nose-Hoover"){
   int M = NHC_size - 1;
-  int k;
 
   update_thermostat_forces(ekin_tr,ekin_rot,ekin_baro,M);
   if(Nf_t>0){ ksi_t[M] = ksi_t[M] + 0.5*dt*G_t[M]; }
   if(Nf_r>0){ ksi_r[M] = ksi_r[M] + 0.5*dt*G_r[M]; }
   if(Nf_b>0){ ksi_b[M] = ksi_b[M] + 0.5*dt*G_b[M]; }
 
-  for(k=1;k<=M;k++){
+  for(int k=1;k<=M;k++){
     update_thermostat_forces(ekin_tr,ekin_rot,ekin_baro,M-k);
     if(Nf_t>0){
       argt = 0.25*dt*ksi_t[M-k+1];  et = exp(-argt);  
@@ -320,13 +317,13 @@ void Thermostat::propagate_nhc(double dt,double ekin_tr, double ekin_rot,double 
     }
   }// for k
 
-  for(k=0;k<=M;k++){  
+  for(int k=0;k<=M;k++){  
     if(Nf_t>0){ s_t[k] = s_t[k] + dt*ksi_t[k]; }
     if(Nf_r>0){ s_r[k] = s_r[k] + dt*ksi_r[k]; }
     if(Nf_b>0){ s_b[k] = s_b[k] + dt*ksi_b[k]; }
   }
   
-  for(k=0;k<=(M-1);k++){
+  for(int k=0;k<=(M-1);k++){
     update_thermostat_forces(ekin_tr,ekin_rot,ekin_baro,k);
     if(Nf_t>0){
       argt = 0.25*dt*ksi_t[k+1];  et = exp(-argt);

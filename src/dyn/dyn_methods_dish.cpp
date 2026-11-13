@@ -50,7 +50,6 @@ vector<int> decoherence_event(MATRIX& coherence_time, MATRIX& coherence_interval
 
 */
 
-  int i,traj;
   int ntraj = coherence_time.n_cols;
   int nst = coherence_time.n_rows; 
   
@@ -59,12 +58,12 @@ vector<int> decoherence_event(MATRIX& coherence_time, MATRIX& coherence_interval
   /// and will simply continue the coherent evolution.
   vector<int> res(ntraj, -1); 
 
-  for(traj=0; traj < ntraj; traj++){
+  for(int traj=0; traj < ntraj; traj++){
 
     vector<int> which_decohere; /// which basis states shall experience the decoherence event
 
     /// Determine all basis states that may decohere at this point
-    for(i=0;i<nst;i++){
+    for(int i=0;i<nst;i++){
 
       /// The state i has evolved coherently for longer than the coherence interval
       /// so it has to experience a decoherence event 
@@ -108,7 +107,6 @@ vector<int> dish(dyn_variables& dyn_var, nHamiltonian& ham,
 
     int collapse_option = 0;
 
-    int traj;
     int nst = Coeff.n_rows; 
     int ntraj = Coeff.n_cols;
 
@@ -139,7 +137,7 @@ vector<int> dish(dyn_variables& dyn_var, nHamiltonian& ham,
 //    for(int a=0; a<decohered_states.size(); a++){ cout<<" "<<decohered_states[a]; } cout<<endl;
 //    cout<<"======= In dish... ==========\n";
 
-    for(traj=0; traj < ntraj; traj++){
+    for(int traj=0; traj < ntraj; traj++){
 
       int istate = decohered_states[traj];
 
@@ -298,7 +296,6 @@ void dish_rev2023(dyn_variables& dyn_var, nHamiltonian& ham,
 
   int collapse_option = 0;
 
-  int traj;
   int nst = Coeff.n_rows;
   int ntraj = Coeff.n_cols;
 
@@ -309,7 +306,7 @@ void dish_rev2023(dyn_variables& dyn_var, nHamiltonian& ham,
   MATRIX coherence_interval(nst, ntraj);
   // If it is Schwartz 1
   if(prms.decoherence_times_type==2 || prms.decoherence_times_type==4){
-    for(traj=0; traj < ntraj; traj++){
+    for(int traj=0; traj < ntraj; traj++){
       for(int i=0; i<nst; i++){
         double tt = 1e+10;
         if( fabs(decoherence_rates[traj].get(i,i))>0.0){ tt = 1.0/decoherence_rates[traj].get(i,i); }
@@ -327,7 +324,7 @@ void dish_rev2023(dyn_variables& dyn_var, nHamiltonian& ham,
 
 
   // Handle
-  for(traj=0; traj < ntraj; traj++){
+  for(int traj=0; traj < ntraj; traj++){
 
     int istate = decohered_states[traj];
 
@@ -358,7 +355,6 @@ void dish_rev2023(dyn_variables& dyn_var, nHamiltonian& ham,
 vector<int> dish_hop_proposal(vector<int>& act_states, CMATRIX& Coeff, 
   MATRIX& coherence_time, vector<MATRIX>& decoherence_rates, Random& rnd){
 
-    int traj;
     int nst = Coeff.n_rows; 
     int ntraj = Coeff.n_cols;
 
@@ -378,7 +374,7 @@ vector<int> dish_hop_proposal(vector<int>& act_states, CMATRIX& Coeff,
     vector<int> proposed_states(act_states);
 
 
-    for(traj=0; traj < ntraj; traj++){
+    for(int traj=0; traj < ntraj; traj++){
 
       int istate = decohered_states[traj];
 

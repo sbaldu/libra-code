@@ -60,7 +60,6 @@ void sqrt_matrix(CMATRIX& S, CMATRIX& S_half, CMATRIX& S_i_half, double thresh, 
   }
 
 
-  int i;
  
   // Let us first diagonalize the overlap matrix S
   int sz = S.n_cols;  
@@ -77,7 +76,7 @@ void sqrt_matrix(CMATRIX& S, CMATRIX& S_half, CMATRIX& S_i_half, double thresh, 
   S_i_half = complex<double>(0.0,0.0);  // S^{-1/2}
   S_half = complex<double>(0.0,0.0);    // S^{1/2}
 
-  for(i=0;i<sz;i++){
+  for(int i=0;i<sz;i++){
     complex<double> val = std::sqrt(Seig->get(i,i));
 
     double nrm  = std::abs(val);
@@ -132,7 +131,6 @@ void exp_matrix(CMATRIX& res, CMATRIX& S, complex<double> dt, int do_phase_corre
   }
 
 
-  int i;
  
   // Let us first diagonalize the input matrix x
   int sz = S.n_cols;  
@@ -146,7 +144,7 @@ void exp_matrix(CMATRIX& res, CMATRIX& S, complex<double> dt, int do_phase_corre
   //if(do_phase_correction){   correct_phase(C);  }
 
   
-  for(i=0;i<sz;i++){ res.M[i*sz+i]= std::exp(dt * Seig->get(i,i)); }
+  for(int i=0;i<sz;i++){ res.M[i*sz+i]= std::exp(dt * Seig->get(i,i)); }
 
   // Convert to the original basis
   res = (*C) * res * ((*C).H());

@@ -133,7 +133,6 @@ void State::init_md(Electronic &el, Hamiltonian &ham, Random &rnd) {
 }
 
 void State::run_md(Electronic &el, Hamiltonian &ham) {
-  int i;
   if (md == NULL) {
     std::cout << "Error: MD parameters have not been defined\n";
     exit(1);
@@ -245,7 +244,7 @@ void State::run_md(Electronic &el, Hamiltonian &ham) {
     sc3 = exp(-dt_half * ksi_r);
     sc4 = dt_half * exp(-0.5 * dt_half * ksi_r) * sinh_(0.5 * dt_half * ksi_r);
 
-    for (i = 0; i < syst->Number_of_fragments; i++) {
+    for (int i = 0; i < syst->Number_of_fragments; i++) {
       RigidBody &top = syst->Fragments[i].Group_RB;
       //-------------------- Linear momentum propagation --------------------
       top.scale_linear_(sc1);
@@ -275,7 +274,7 @@ void State::run_md(Electronic &el, Hamiltonian &ham) {
       sc2 = dt * barostat->vpos_scale(dt);
     }
 
-    for (i = 0; i < syst->Number_of_fragments; i++) {
+    for (int i = 0; i < syst->Number_of_fragments; i++) {
       RigidBody &top = syst->Fragments[i].Group_RB;
       if (is_thermostat) {
         thermostat->propagate_Ps(0.5 * dt_over_s2 *
@@ -370,7 +369,7 @@ void State::run_md(Electronic &el, Hamiltonian &ham) {
     }
 
     // Update atomic positions and calculate interactions
-    for (i = 0; i < syst->Number_of_fragments; i++) {
+    for (int i = 0; i < syst->Number_of_fragments; i++) {
       syst->update_atoms_for_fragment(i);
     }
     syst->zero_forces_and_torques();
@@ -422,7 +421,7 @@ void State::run_md(Electronic &el, Hamiltonian &ham) {
     sc3 = exp(-dt_half * ksi_r);
     sc4 = dt_half * exp(-0.5 * dt_half * ksi_r) * sinh_(0.5 * dt_half * ksi_r);
 
-    for (i = 0; i < syst->Number_of_fragments; i++) {
+    for (int i = 0; i < syst->Number_of_fragments; i++) {
       RigidBody &top = syst->Fragments[i].Group_RB;
       //-------------------- Linear momentum propagation --------------------
       top.scale_linear_(sc1);
@@ -526,7 +525,7 @@ void State::run_md(Electronic &el, Hamiltonian &ham) {
     //------------- Angular velocity --------------
     L_tot = 0.0;
     P_tot = 0.0;
-    for (i = 0; i < syst->Number_of_fragments; i++) {
+    for (int i = 0; i < syst->Number_of_fragments; i++) {
       RigidBody &top = syst->Fragments[i].Group_RB;
       VECTOR tmp;
       tmp.cross(top.rb_cm, top.rb_p);

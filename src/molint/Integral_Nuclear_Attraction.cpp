@@ -285,22 +285,21 @@ double nuclear_attraction_integral(int nxa,int nya, int nza, double alp_a, VECTO
                                   ){
 
   // Allocate working memory
-  int i;
   int n_aux = 20;
   int n_auxv = 10;
   vector<double*> auxd(20);
-  for(i=0;i<20;i++){ auxd[i] = new double[n_aux]; }
+  for(int i=0;i<20;i++){ auxd[i] = new double[n_aux]; }
   vector<VECTOR*> auxv(5);
-  for(i=0;i<5;i++){ auxv[i] = new VECTOR[n_auxv]; }
+  for(int i=0;i<5;i++){ auxv[i] = new VECTOR[n_auxv]; }
 
   // Do computations
   double res = nuclear_attraction_integral(nxa,nya,nza,alp_a,Ra, nxb,nyb,nzb,alp_b,Rb,
                                            Rc, is_normalize, is_derivs, DA, DB, DC, auxd, n_aux, auxv, n_auxv);
 
   // Clean working memory
-  for(i=0;i<20;i++){ delete [] auxd[i]; }  
+  for(int i=0;i<20;i++){ delete [] auxd[i]; }  
   auxd.clear();
-  for(i=0;i<5;i++){ delete [] auxv[i]; }  
+  for(int i=0;i<5;i++){ delete [] auxv[i]; }  
   auxv.clear();
 
   return res;

@@ -123,7 +123,6 @@ void dyn_variables::init_nuclear_dyn_var(bp::dict _params, Random& rnd){
   vector<double> q_width;
   vector<double> p_width;
 
-  int idof;
 
   std::string key;
   for(int i=0;i<len(params.values());i++){
@@ -192,7 +191,7 @@ void dyn_variables::init_nuclear_dyn_var(bp::dict _params, Random& rnd){
   }
 
   /// At this point, it is safe to define ndof:
-  for(idof=0; idof<ndof; idof++){
+  for(int idof=0; idof<ndof; idof++){
       iM->set(idof, 0, 1.0/_M[idof]);
   }
 
@@ -201,7 +200,7 @@ void dyn_variables::init_nuclear_dyn_var(bp::dict _params, Random& rnd){
   MATRIX mean_q(ndof, 1);
   MATRIX mean_p(ndof, 1);
 
-  for(idof=0; idof<ndof; idof++){
+  for(int idof=0; idof<ndof; idof++){
     mean_q.set(idof, 0, _Q[idof]);
     mean_p.set(idof, 0, _P[idof]);
   }
@@ -211,31 +210,31 @@ void dyn_variables::init_nuclear_dyn_var(bp::dict _params, Random& rnd){
   MATRIX sigma_p(ndof, 1);
 
   if(init_type==0){
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       sigma_q.set(idof, 0, 0.0);
       sigma_p.set(idof, 0, 0.0);
     }
   }
   else if(init_type==1){
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       sigma_q.set(idof, 0, 0.0);
       sigma_p.set(idof, 0, sqrt( 0.5*sqrt((force_constant[idof]*_M[idof])) ));
     }
   }
   else if(init_type==2){
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       sigma_q.set(idof, 0, sqrt( 0.5*sqrt(1.0/(force_constant[idof]*_M[idof])) ));
       sigma_p.set(idof, 0, 0.0);
     }
   }
   else if(init_type==3){
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       sigma_q.set(idof, 0, sqrt( 0.5*sqrt(1.0/(force_constant[idof]*_M[idof])) ));
       sigma_p.set(idof, 0, sqrt( 0.5*sqrt((force_constant[idof]*_M[idof])) ));
     }
   }
   else if(init_type==4){
-    for(idof=0; idof<ndof; idof++){
+    for(int idof=0; idof<ndof; idof++){
       sigma_q.set(idof, 0, q_width[idof]);
       sigma_p.set(idof, 0, p_width[idof]);
     }

@@ -34,17 +34,17 @@ void normalize_transition_matrix(MATRIX& flux, MATRIX& num_coeff, MATRIX& denom_
 
 */
 
-  int i,j,n,m;
+  int n,m;
   n = flux.n_rows; 
   m = flux.n_cols;
 
-  for(j=0;j<m;j++){  
+  for(int j=0;j<m;j++){  
 
     double sum = 0.0;
 
-    for(i=0;i<n;i++){  sum += denom_coeff.get(i,j)*flux.get(i,j);   }
+    for(int i=0;i<n;i++){  sum += denom_coeff.get(i,j)*flux.get(i,j);   }
     if( fabs(sum)>0.0){ 
-      for(i=0;i<n;i++){ flux.scale(i, j, num_coeff.get(i,j)/sum ); }
+      for(int i=0;i<n;i++){ flux.scale(i, j, num_coeff.get(i,j)/sum ); }
     }
   }// for j
 
@@ -75,12 +75,11 @@ void hyperbolic(double x, double alpha, double& val, double& deriv){
 }
 
 MATRIX transform_to_hyperbolic(MATRIX& A, double alp){
-  int i,j;
   int n = A.n_cols;
   MATRIX res(n,n);
 
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
       double aij = A.get(i,j);
       double val, deriv;
       hyperbolic(aij, alp, val, deriv);
@@ -138,17 +137,16 @@ double derivs1(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, double
 
 */
 
-  int i, j;
   int n = A.n_cols;
   double Lagrangian;
 
   MATRIX diagA(n,n);
   double sum = 0.0;
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){ if (i!=j){  sum += A.get(i,j)* A.get(i,j); }   }
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){ if (i!=j){  sum += A.get(i,j)* A.get(i,j); }   }
 
     diagA.set(i,i, A.get(i,i)); 
-    if(opt2==1){   for(i=0;i<n;i++){ sum += A.get(i,i)* A.get(i,i); }   }
+    if(opt2==1){   for(int i=0;i<n;i++){ sum += A.get(i,i)* A.get(i,i); }   }
   }
 
   if(opt2==0){   gradA = 2.0*(A - diagA).T(); }
@@ -189,7 +187,6 @@ double derivs1_new(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, do
 
 */
 
-  int i, j, a, b;
   int n = A.n_cols;
   double Lagrangian = 0.0;
 
@@ -198,8 +195,8 @@ double derivs1_new(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, do
   MATRIX f(n,n);
   MATRIX df(n,n);
 
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
       double aij = A.get(i,j);
       double val, deriv;
       hyperbolic(aij, alp, val, deriv);
@@ -212,20 +209,20 @@ double derivs1_new(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, do
   normalize_transition_matrix(J, num_coeff, denom_coeff);
 
   double sum = 0.0;
-  for(i=0;i<n;i++){ for(j=0;j<n;j++){  sum += J.get(i,j)*J.get(i,j);  }   }
+  for(int i=0;i<n;i++){ for(int j=0;j<n;j++){  sum += J.get(i,j)*J.get(i,j);  }   }
 
   vector<double> N(n, 0.0);
   MATRIX Delta(n,n);
 
-  for(b=0;b<n;b++){
-    for(a=0;a<n;a++){ N[b] +=  denom_coeff.get(a, b) * f.get(a, b);  }
+  for(int b=0;b<n;b++){
+    for(int a=0;a<n;a++){ N[b] +=  denom_coeff.get(a, b) * f.get(a, b);  }
   }// for b
 
-  for(a=0; a<n; a++){ 
-    for(b=0;b<n;b++){
+  for(int a=0; a<n; a++){ 
+    for(int b=0;b<n;b++){
 
       double val = 0.0;
-      for(i=0;i<n;i++){
+      for(int i=0;i<n;i++){
         double val1 = J.get(a,b)*num_coeff.get(a,b)*denom_coeff.get(i,b);
         double val2 = J.get(i,b)*num_coeff.get(i,b)*denom_coeff.get(a,b);
 
@@ -238,8 +235,8 @@ double derivs1_new(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, do
 
 
   gradA = 0.0;
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
 
       double val = Delta.get(i,j) * df.get(i,j) / (N[j] * N[j]);
 
@@ -278,7 +275,6 @@ double derivs2(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
    dL2/dmu_i = 2 mu_i * B_i^2 (for quadratic)
 
 */
-    int i, j;
     int n = A.n_cols;
     double Lagrangian = 0.0;
 
@@ -288,12 +284,12 @@ double derivs2(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
     else if(opt2==1){  a = A.T(); }
 
     vector<double> b(n, 0.0);
-    for(i=0;i<n;i++){  b[i] =  a.sum_col(i) - 1.0; }
+    for(int i=0;i<n;i++){  b[i] =  a.sum_col(i) - 1.0; }
 
     gradmu = 0.0; 
     gradA = 0.0;
 
-    for(i=0;i<n;i++){
+    for(int i=0;i<n;i++){
       double b2 =  b[i] * b[i];
       double mu2 = mu.get(i, 0) *  mu.get(i, 0);
 
@@ -301,14 +297,14 @@ double derivs2(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
         Lagrangian += mu.get(i, 0) * b2; 
         gradmu.set(i,0, b2); 
 
-        for(j=0;j<n;j++){ gradA.set(i,j, 2.0* mu.get(i, 0) * b[i]); }
+        for(int j=0;j<n;j++){ gradA.set(i,j, 2.0* mu.get(i, 0) * b[i]); }
 
       }
       else if(opt==1){  
         Lagrangian +=  mu2 * b2; 
         gradmu.set(i,0, 2.0*mu.get(i, 0)*b2);
 
-        for(j=0;j<n;j++){ gradA.set(i,j, 2.0* mu2 * b[i]); }
+        for(int j=0;j<n;j++){ gradA.set(i,j, 2.0* mu2 * b[i]); }
       }
     }// for i
 
@@ -355,7 +351,6 @@ double derivs3(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, double
 
 */
 
-  int i, j, k;
   int n = A.n_cols;
   double Lagrangian = 0.0;
 
@@ -364,8 +359,8 @@ double derivs3(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, double
   MATRIX f(n,n);
   MATRIX df(n,n);
 
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
       double aij = A.get(i,j);
       double val, deriv;
       hyperbolic(aij, alp, val, deriv);
@@ -378,8 +373,8 @@ double derivs3(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, double
 //  normalize_transition_matrix(J,1); SHOULD NORMALIZE IT!
 
   double sum = 0.0;
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
       double sij = s.get(i,j);
       if(opt2==0){ 
         if(i!=j){ sum += J.get(i,j)*J.get(i,j) * sij * sij; }
@@ -392,13 +387,13 @@ double derivs3(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, double
   vector<double> N(n, 0.0);
   MATRIX Delta(n,n);
 
-  for(i=0;i<n;i++){
+  for(int i=0;i<n;i++){
       N[i] = f.sum_col(i);
 //      I[i] = J.sum_col(i, 2) - J.get(i,i)*J.get(i,i);
 
-    for(j=0;j<n;j++){ 
+    for(int j=0;j<n;j++){ 
       double val = 0.0;
-      for(k=0;k<n;k++){
+      for(int k=0;k<n;k++){
         double sij = s.get(i,j);
         double skj = s.get(k,j);
         double val1, val2;
@@ -419,8 +414,8 @@ double derivs3(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, double& L, double
   }// for i
 
   gradA = 0.0;
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
 
       double val = Delta.get(i,j) * df.get(i,j) / N[j];
 
@@ -464,7 +459,6 @@ double derivs4(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
    dL4/dmu_i = 2.0 * mu_i * b_i^2 (opt = 1)
 
 */
-  int i, j, k;
   int n = A.n_cols;
 
   MATRIX f(n,n);
@@ -472,8 +466,8 @@ double derivs4(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
 
   double alp = 10.0; 
 
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
       double aij = A.get(i,j);
       double val, deriv;
       hyperbolic(aij, alp, val, deriv);
@@ -486,13 +480,13 @@ double derivs4(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
 //  normalize_transition_matrix(J,1); SHOULD NORMALIZE
 
   vector<double> b(n, 0.0);
-  for(i=0;i<n;i++){  b[i] =  J.sum_row(i) - 1.0; }
+  for(int i=0;i<n;i++){  b[i] =  J.sum_row(i) - 1.0; }
 
   gradmu = 0.0;
   gradA = 0.0;
   double Lagrangian = 0.0;
 
-  for(i=0;i<n;i++){
+  for(int i=0;i<n;i++){
     double b2 =  b[i] * b[i];
     double mu2 = mu.get(i, 0) *  mu.get(i, 0);
 
@@ -500,10 +494,10 @@ double derivs4(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
       Lagrangian += mu.get(i, 0) * b2;
       gradmu.set(i,0, b2);
 
-      for(j=0;j<n;j++){ 
+      for(int j=0;j<n;j++){ 
         double val = 0.0;
 
-        for(k=0;k<n;k++){ val += (mu.get(i,0) * b[i] - mu.get(k,0) * b[k]) * J.get(k,j);  }
+        for(int k=0;k<n;k++){ val += (mu.get(i,0) * b[i] - mu.get(k,0) * b[k]) * J.get(k,j);  }
 
         gradA.set(j, i, val);
       }// for j
@@ -513,10 +507,10 @@ double derivs4(MATRIX& x, MATRIX& y, MATRIX& A, MATRIX& gradA, MATRIX& mu, MATRI
       Lagrangian +=  mu2 * b2;
       gradmu.set(i,0, 2.0*mu.get(i, 0)*b2);
 
-      for(j=0;j<n;j++){ 
+      for(int j=0;j<n;j++){ 
         double val = 0.0;
 
-        for(k=0;k<n;k++){ val += (mu.get(i,0) * mu.get(i,0) * b[i] - mu.get(k,0) * mu.get(k,0) * b[k]) * J.get(k,j);  }
+        for(int k=0;k<n;k++){ val += (mu.get(i,0) * mu.get(i,0) * b[i] - mu.get(k,0) * mu.get(k,0) * b[k]) * J.get(k,j);  }
 
         gradA.set(j, i, val); 
       }// for j

@@ -39,15 +39,14 @@ void least_squares_solve(MATRIX& A, MATRIX& X, MATRIX& B, int option){
   int N = A.n_rows;
   int M = A.n_cols;
   int K = B.n_cols;
-  int i,j;
 
 
   Eigen::MatrixXd a(N,M);
   Eigen::MatrixXd x(M,K);
   Eigen::MatrixXd b(N,K);
 
-  for(i=0;i<N;i++){  for(j=0;j<M;j++){ a(i,j) = A.M[i*M+j]; }  }
-  for(i=0;i<N;i++){  for(j=0;j<K;j++){ b(i,j) = B.M[i*K+j]; }  }
+  for(int i=0;i<N;i++){  for(int j=0;j<M;j++){ a(i,j) = A.M[i*M+j]; }  }
+  for(int i=0;i<N;i++){  for(int j=0;j<K;j++){ b(i,j) = B.M[i*K+j]; }  }
 
   if(option==0){
   //  x = a.template bdcSvd<Eigen::ComputeThinU | Eigen::ComputeThinV>().solve(b);
@@ -64,7 +63,7 @@ void least_squares_solve(MATRIX& A, MATRIX& X, MATRIX& B, int option){
    x = a.completeOrthogonalDecomposition().solve(b);
   }
 
-  for(i=0;i<M;i++){  for(j=0;j<K;j++){ X.M[i*K+j] = x(i,j); }  }
+  for(int i=0;i<M;i++){  for(int j=0;j<K;j++){ X.M[i*K+j] = x(i,j); }  }
 
 }
 
@@ -175,7 +174,6 @@ void solve_linsys(MATRIX& C,MATRIX& D, MATRIX& X,double eps,int maxiter){
 // procedure for each column
 
 
-    int i,j,k;   // counters
     int n,m,p;   // dimetions
     double s;    // sums
     double error;// error
@@ -202,22 +200,22 @@ void solve_linsys(MATRIX& C,MATRIX& D, MATRIX& X,double eps,int maxiter){
 
     error = 0.0;
 
-    for( k = 0; k < p; k++ ){
+    for( int k = 0; k < p; k++ ){
 
         //------- Matrix preparation step -----------
 
-        MATRIX d(n,1);  for(i = 0;i<n;i++){ d.M[i] = D.M[i*p+k]; }
-        MATRIX x(m,1);  for(i = 0;i<m;i++){ x.M[i] = X.M[i*p+k]; }
+        MATRIX d(n,1);  for(int i = 0;i<n;i++){ d.M[i] = D.M[i*p+k]; }
+        MATRIX x(m,1);  for(int i = 0;i<m;i++){ x.M[i] = X.M[i*p+k]; }
         MATRIX xprev(m,1); xprev = x;
         MATRIX b(m,1);  b = C.T() * d;
 
         //------- Gauss-Seidel step -----------------
 
-        for( i = 0; i < m; i++ ){
+        for( int i = 0; i < m; i++ ){
 
             s = 0.0;
-            for( j = 0; j < i; j++ ){ s += A.M[i*m + j]*x.M[j];   }// for j
-            for( j = i+1; j < m; j++ ){ s += A.M[i*m + j]*xprev.M[j]; }// for j
+            for( int j = 0; j < i; j++ ){ s += A.M[i*m + j]*x.M[j];   }// for j
+            for( int j = i+1; j < m; j++ ){ s += A.M[i*m + j]*xprev.M[j]; }// for j
 
             x.M[i] = (b.M[i] - s)/A.M[i*m + i];
 
@@ -225,7 +223,7 @@ void solve_linsys(MATRIX& C,MATRIX& D, MATRIX& X,double eps,int maxiter){
 
 
         //-------- Now calculate the error and update X ---------
-        for( i = 0; i < m; i++ ){
+        for( int i = 0; i < m; i++ ){
             error += (x.M[i] - xprev.M[i])*(x.M[i] - xprev.M[i]);
             X.M[i*p + k] = x.M[i];
         }// for i

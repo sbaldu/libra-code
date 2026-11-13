@@ -60,7 +60,6 @@ Hamiltonian_Atomistic::Hamiltonian_Atomistic(int _nelec, int _nnucl) {
 
   _syst = NULL;
 
-  int i;
 
   nelec = _nelec;
   nnucl = _nnucl;
@@ -73,7 +72,7 @@ Hamiltonian_Atomistic::Hamiltonian_Atomistic(int _nelec, int _nnucl) {
   d1ham_dia = vector<MATRIX *>(nnucl);
   d1ham_adi = vector<MATRIX *>(nnucl);
 
-  for (i = 0; i < nnucl; i++) {
+  for (int i = 0; i < nnucl; i++) {
     d1ham_dia[i] = new MATRIX(nelec, nelec);
     *d1ham_dia[i] = 0.0;
     d1ham_adi[i] = new MATRIX(nelec, nelec);
@@ -81,7 +80,7 @@ Hamiltonian_Atomistic::Hamiltonian_Atomistic(int _nelec, int _nnucl) {
   }
 
   d2ham_dia = vector<MATRIX *>(nnucl * nnucl);
-  for (i = 0; i < nnucl * nnucl; i++) {
+  for (int i = 0; i < nnucl * nnucl; i++) {
     d2ham_dia[i] = new MATRIX(nelec, nelec);
     *d2ham_dia[i] = 0.0;
   }
@@ -210,16 +209,15 @@ Hamiltonian_Atomistic::~Hamiltonian_Atomistic() {
     d2ham_dia
   */
 
-  int i;
 
   delete ham_dia;
   delete ham_adi;
 
-  for (i = 0; i < nnucl; i++) {
+  for (int i = 0; i < nnucl; i++) {
     delete d1ham_dia[i];
     delete d1ham_adi[i];
   }
-  for (i = 0; i < nnucl * nnucl; i++) {
+  for (int i = 0; i < nnucl * nnucl; i++) {
     delete d2ham_dia[i];
   }
 
@@ -431,7 +429,6 @@ void Hamiltonian_Atomistic::compute_diabatic() {
     part). That part is left in the code for future developments.
   */
 
-  int i;
 
   // cout<<"in Hamiltonian_Atomistic::compute_diabatic()\n";
 
@@ -472,7 +469,7 @@ void Hamiltonian_Atomistic::compute_diabatic() {
         }
 
         // Second derivatives
-        for (i = 0; i < nnucl * nnucl; i++) {
+        for (int i = 0; i < nnucl * nnucl; i++) {
           d2ham_dia[i]->M[st * nelec + st] = 0.0;
         }
 

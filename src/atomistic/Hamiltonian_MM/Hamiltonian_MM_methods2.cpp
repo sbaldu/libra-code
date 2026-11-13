@@ -999,17 +999,17 @@ void listHamiltonian_MM::set_interactions_for_atoms(System &syst,
 
   // Transform the lists of id into vectors of indexes
   vector<int> vlst1, vlst2;
-  int i, id, indx, sz;
+  int id, indx, sz;
 
   sz = len(lst1);
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     id = extract<int>(lst1[i]);
     indx = syst.get_atom_index_by_atom_id(id);
     vlst1.push_back(indx);
   }
 
   sz = len(lst2);
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     id = extract<int>(lst2[i]);
     indx = syst.get_atom_index_by_atom_id(id);
     vlst2.push_back(indx);
@@ -1090,17 +1090,17 @@ void listHamiltonian_MM::set_interactions_for_fragments(
 
   // Transform the lists of id into vectors of indexes
   vector<int> vlst1, vlst2;
-  int i, id, indx, sz;
+  int id, indx, sz;
 
   sz = len(lst1);
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     id = extract<int>(lst1[i]);
     indx = syst.get_fragment_index_by_fragment_id(id);
     vlst1.push_back(indx);
   }
 
   sz = len(lst2);
-  for (i = 0; i < sz; i++) {
+  for (int i = 0; i < sz; i++) {
     id = extract<int>(lst2[i]);
     indx = syst.get_fragment_index_by_fragment_id(id);
     vlst2.push_back(indx);

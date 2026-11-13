@@ -308,7 +308,6 @@ void nHamiltonian::compute_adiabatic(int der_lvl, int lvl) {
 
   */
 
-  int i, j;
 
   if (level == lvl) {
 
@@ -417,15 +416,15 @@ void nHamiltonian::compute_adiabatic(int der_lvl, int lvl) {
 
           // Adiabatic "forces"
           *d1ham_adi[n] = 0.0;
-          for (i = 0; i < nadi; i++) {
+          for (int i = 0; i < nadi; i++) {
             d1ham_adi[n]->set(i, i, tmp->get(i, i));
           }
 
           // Adiabatic derivative couplings
           *dc1_adi[n] = 0.0;
 
-          for (i = 0; i < nadi; i++) {
-            for (j = i + 1; j < nadi; j++) {
+          for (int i = 0; i < nadi; i++) {
+            for (int j = i + 1; j < nadi; j++) {
 
               // if(i==j){  dc1_adi[n]->set(i,j, 0.0, 0.0); }
               // else{

@@ -359,7 +359,6 @@ void RigidBody::save(boost::property_tree::ptree& pt,std::string path){
   \param[in,out] pt The property tree to which the properties of the RigidBody are added
   \param[in] path The parameter controlling the level of the tree to which the RigidBody members will be added.
 */
-  int i;
 
   if(rb_centers_size>0){  liblinalg::save(pt,path+".rb_centers",rb_centers);    }
   if(is_rb_mass){  libio::save(pt,path+".rb_mass",rb_mass);    }
@@ -394,7 +393,7 @@ void RigidBody::save(boost::property_tree::ptree& pt,std::string path){
   libio::save(pt,path+".MAX_NO",MAX_NO);
   libio::save(pt,path+".minDet",minDet);
 
-  for(i=0;i<8;i++){
+  for(int i=0;i<8;i++){
     stringstream ss(stringstream::in | stringstream::out);
     std::string rt; ss<<i; ss>>rt;
     libio::save(pt,path+".U["+rt+"]",U[i]);
@@ -422,14 +421,14 @@ void RigidBody::save(boost::property_tree::ptree& pt,std::string path){
   libio::save(pt,path+".NT",NT);
 
   if(cr!=NULL){
-    for(i=0;i<NT;i++){
+    for(int i=0;i<NT;i++){
       stringstream ss(stringstream::in | stringstream::out);
       std::string rt; ss<<i; ss>>rt;
       libio::save(pt,path+".cr["+rt+"]",cr[i]);
     }
   }
   if(ci!=NULL){
-    for(i=0;i<NT;i++){
+    for(int i=0;i<NT;i++){
       stringstream ss(stringstream::in | stringstream::out);
       std::string rt; ss<<i; ss>>rt;
       libio::save(pt,path+".ci["+rt+"]",ci[i]);
@@ -440,7 +439,7 @@ void RigidBody::save(boost::property_tree::ptree& pt,std::string path){
   if(P2!=NULL){   liblinalg::save(pt,path+".*P2",*P2); }
   if(P3!=NULL){   liblinalg::save(pt,path+".*P3",*P3); }
   if(Coeffs!=NULL){
-    for(i=0;i<SERIES_EXPANSION;i++){
+    for(int i=0;i<SERIES_EXPANSION;i++){
       stringstream ss(stringstream::in | stringstream::out);
       std::string rt; ss<<i; ss>>rt;
       libio::save(pt,path+".Coeffs["+rt+"]",Coeffs[i]);

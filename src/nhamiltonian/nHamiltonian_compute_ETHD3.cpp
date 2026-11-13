@@ -57,26 +57,25 @@ double ETHD3_energy(const MATRIX& q, const MATRIX& invM, double alp){
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
 
-  int dof, traj_k, traj_j;
   MATRIX dq(ndof, 1);
 
   //============ Compute the energy =========  
   double en = 0.0;
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
 
 
     double rho_k = 0.0; // total density at the position of trajectory k (Q_k)
     MATRIX d1rho_k(ndof, 1); // derivatives of the total density at the position of trajectory k (Q_k) w.r.t. q_{dof}
     MATRIX d2rho_k(ndof, 1); // second derivatives of the total density at the position of trajectory k (Q_k) w.r.t. q_{dof}
     
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
       dq = q.col(traj_k) - q.col(traj_j); 
       double g_kj = exp(- alp * (dq.T() * dq).get(0) );
 
       rho_k += g_kj;
-      for(dof=0; dof<ndof; dof++){
+      for(int dof=0; dof<ndof; dof++){
         d1rho_k.add(dof, 0,  -2.0 * alp * dq.get(dof) * g_kj );
         d2rho_k.add(dof, 0,  (4.0 * alp * alp * dq.get(dof) * dq.get(dof) - 2.0 * alp) * g_kj );
       }// for dof
@@ -87,7 +86,7 @@ double ETHD3_energy(const MATRIX& q, const MATRIX& invM, double alp){
     double A_k = 0.0;
     double B_k = 0.0;
 
-    for(dof=0; dof<ndof; dof++){    
+    for(int dof=0; dof<ndof; dof++){    
 
       A_k += d1rho_k.get(dof, 0) * invM.get(dof, 0) * d1rho_k.get(dof, 0);
       B_k += invM.get(dof, 0) * d2rho_k.get(dof, 0);
@@ -124,28 +123,27 @@ double ETHD3_energy(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
 
-  int dof, traj_k, traj_j;
   MATRIX dq(ndof, 1);
   MATRIX dp(ndof, 1);
 
   //============ Compute the energy =========  
   double en = 0.0;
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
 
 
     double rho_k = 0.0; // total density at the position of trajectory k (Q_k)
     MATRIX d1rho_k(ndof, 1); // derivatives of the total density at the position of trajectory k (Q_k) w.r.t. q_{dof}
     MATRIX d2rho_k(ndof, 1); // second derivatives of the total density at the position of trajectory k (Q_k) w.r.t. q_{dof}
     
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
       dq = q.col(traj_k) - q.col(traj_j); 
       dp = p.col(traj_k) - p.col(traj_j); 
       double g_kj = exp(- alp * (dq.T() * dq).get(0) ) * exp(- bet * (dp.T() * dp).get(0) );
 
       rho_k += g_kj;
-      for(dof=0; dof<ndof; dof++){
+      for(int dof=0; dof<ndof; dof++){
         d1rho_k.add(dof, 0,  -2.0 * alp * dq.get(dof) * g_kj );
         d2rho_k.add(dof, 0,  (4.0 * alp * alp * dq.get(dof) * dq.get(dof) - 2.0 * alp) * g_kj );
       }// for dof
@@ -156,7 +154,7 @@ double ETHD3_energy(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
     double A_k = 0.0;
     double B_k = 0.0;
 
-    for(dof=0; dof<ndof; dof++){    
+    for(int dof=0; dof<ndof; dof++){    
 
       A_k += d1rho_k.get(dof, 0) * invM.get(dof, 0) * d1rho_k.get(dof, 0);
       B_k += invM.get(dof, 0) * d2rho_k.get(dof, 0);
@@ -191,7 +189,6 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& invM, double alp){
 
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
-  int dof_i, dof_a, traj_k, traj_j, traj_n;
 
   MATRIX f(ndof, ntraj);
   MATRIX dq(ndof, 1);
@@ -208,8 +205,8 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& invM, double alp){
 
   // Complexity: O(Ntraj^2 x Ndof)
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
       dq = q.col(traj_k) - q.col(traj_j); 
       double g_kj = exp(- alp * (dq.T() * dq).get(0) );
@@ -219,7 +216,7 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& invM, double alp){
 
       rho.add(0, traj_k, g_kj);
 
-      for(dof_i=0; dof_i<ndof; dof_i++){
+      for(int dof_i=0; dof_i<ndof; dof_i++){
         d1rho.add(dof_i, traj_k,  -2.0 * alp * dq.get(dof_i) * g_kj );
         d2rho.add(dof_i, traj_k,  (4.0 * alp * alp * dq.get(dof_i) * dq.get(dof_i) - 2.0 * alp) * g_kj );
       }// for dof
@@ -230,10 +227,10 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& invM, double alp){
 
   // Complexity: O(Ntraj^2 x Ndof)
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
-      for(dof_i=0; dof_i<ndof; dof_i++){    
+      for(int dof_i=0; dof_i<ndof; dof_i++){    
 
         A.add(0, traj_k, d1rho.get(dof_i, traj_j) * invM.get(dof_i, 0) * d1rho.get(dof_i, traj_j) );
         B.add(0, traj_k, invM.get(dof_i, 0) * d2rho.get(dof_i, traj_j));
@@ -247,17 +244,17 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& invM, double alp){
 
   // Complexity: O(Ntraj^3 x Ndof^2)
 
-  for(traj_n=0; traj_n<ntraj; traj_n++){    
-    for(dof_a=0; dof_a<ndof; dof_a++){    
+  for(int traj_n=0; traj_n<ntraj; traj_n++){    
+    for(int dof_a=0; dof_a<ndof; dof_a++){    
 
 
-      for(traj_k=0; traj_k<ntraj; traj_k++){    
+      for(int traj_k=0; traj_k<ntraj; traj_k++){    
 
 
         //========= Compute drho_k / dQ_an ===============
         double drhok_dQan = 0.0;
 
-        for(traj_j=0; traj_j<ntraj; traj_j++){    
+        for(int traj_j=0; traj_j<ntraj; traj_j++){    
           if(traj_n==traj_j || traj_n==traj_k){ 
 
             double pref = (q.get(dof_a, traj_k) - q.get(dof_a, traj_j)) * g.get(traj_k, traj_j);
@@ -277,13 +274,13 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& invM, double alp){
         //========= Compute dA_k / dQ_an ===============
         double dAk_dQan = 0.0;
 
-        for(dof_i=0; dof_i<ndof; dof_i++){
+        for(int dof_i=0; dof_i<ndof; dof_i++){
 
           //========= Compute drho'_ik / dQ_an ===============
 
           double drho_prime_ik_dQan = 0.0;          
 
-          for(traj_j=0; traj_j<ntraj; traj_j++){    
+          for(int traj_j=0; traj_j<ntraj; traj_j++){    
             if(traj_n==traj_j || traj_n==traj_k){ 
 
               double pref = -2.0*alp*(q.get(dof_i, traj_k) - q.get(dof_i, traj_j)) *  (q.get(dof_a, traj_k) - q.get(dof_a, traj_j)); 
@@ -310,13 +307,13 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& invM, double alp){
         //========= Compute dB_k / dQ_an ===============
         double dBk_dQan = 0.0;
 
-        for(dof_i=0; dof_i<ndof; dof_i++){
+        for(int dof_i=0; dof_i<ndof; dof_i++){
 
           //========= Compute drho''_ik / dQ_an ===============
 
           double drho_dprime_ik_dQan = 0.0;          
 
-          for(traj_j=0; traj_j<ntraj; traj_j++){    
+          for(int traj_j=0; traj_j<ntraj; traj_j++){    
             if(traj_n==traj_j || traj_n==traj_k){ 
 
               double pref = 0.0;
@@ -391,7 +388,6 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
 
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
-  int dof_i, dof_a, traj_k, traj_j, traj_n;
 
   MATRIX f(ndof, ntraj);
   MATRIX dq(ndof, 1);
@@ -409,8 +405,8 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
 
   // Complexity: O(Ntraj^2 x Ndof)
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
       dq = q.col(traj_k) - q.col(traj_j); 
       dp = p.col(traj_k) - p.col(traj_j); 
@@ -421,7 +417,7 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
 
       rho.add(0, traj_k, g_kj);
 
-      for(dof_i=0; dof_i<ndof; dof_i++){
+      for(int dof_i=0; dof_i<ndof; dof_i++){
         d1rho.add(dof_i, traj_k,  -2.0 * alp * dq.get(dof_i) * g_kj );
         d2rho.add(dof_i, traj_k,  (4.0 * alp * alp * dq.get(dof_i) * dq.get(dof_i) - 2.0 * alp) * g_kj );
       }// for dof
@@ -432,10 +428,10 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
 
   // Complexity: O(Ntraj^2 x Ndof)
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
-      for(dof_i=0; dof_i<ndof; dof_i++){    
+      for(int dof_i=0; dof_i<ndof; dof_i++){    
 
         A.add(0, traj_k, d1rho.get(dof_i, traj_j) * invM.get(dof_i, 0) * d1rho.get(dof_i, traj_j) );
         B.add(0, traj_k, invM.get(dof_i, 0) * d2rho.get(dof_i, traj_j));
@@ -449,17 +445,17 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
 
   // Complexity: O(Ntraj^3 x Ndof^2)
 
-  for(traj_n=0; traj_n<ntraj; traj_n++){    
-    for(dof_a=0; dof_a<ndof; dof_a++){    
+  for(int traj_n=0; traj_n<ntraj; traj_n++){    
+    for(int dof_a=0; dof_a<ndof; dof_a++){    
 
 
-      for(traj_k=0; traj_k<ntraj; traj_k++){    
+      for(int traj_k=0; traj_k<ntraj; traj_k++){    
 
 
         //========= Compute drho_k / dQ_an ===============
         double drhok_dQan = 0.0;
 
-        for(traj_j=0; traj_j<ntraj; traj_j++){    
+        for(int traj_j=0; traj_j<ntraj; traj_j++){    
           if(traj_n==traj_j || traj_n==traj_k){ 
 
             double pref = (q.get(dof_a, traj_k) - q.get(dof_a, traj_j)) * g.get(traj_k, traj_j);
@@ -479,13 +475,13 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
         //========= Compute dA_k / dQ_an ===============
         double dAk_dQan = 0.0;
 
-        for(dof_i=0; dof_i<ndof; dof_i++){
+        for(int dof_i=0; dof_i<ndof; dof_i++){
 
           //========= Compute drho'_ik / dQ_an ===============
 
           double drho_prime_ik_dQan = 0.0;          
 
-          for(traj_j=0; traj_j<ntraj; traj_j++){    
+          for(int traj_j=0; traj_j<ntraj; traj_j++){    
             if(traj_n==traj_j || traj_n==traj_k){ 
 
               double pref = -2.0*alp*(q.get(dof_i, traj_k) - q.get(dof_i, traj_j)) *  (q.get(dof_a, traj_k) - q.get(dof_a, traj_j)); 
@@ -512,13 +508,13 @@ MATRIX ETHD3_forces(const MATRIX& q, const MATRIX& p, const MATRIX& invM, double
         //========= Compute dB_k / dQ_an ===============
         double dBk_dQan = 0.0;
 
-        for(dof_i=0; dof_i<ndof; dof_i++){
+        for(int dof_i=0; dof_i<ndof; dof_i++){
 
           //========= Compute drho''_ik / dQ_an ===============
 
           double drho_dprime_ik_dQan = 0.0;          
 
-          for(traj_j=0; traj_j<ntraj; traj_j++){    
+          for(int traj_j=0; traj_j<ntraj; traj_j++){    
             if(traj_n==traj_j || traj_n==traj_k){ 
 
               double pref = 0.0;
@@ -594,7 +590,6 @@ MATRIX ETHD3_friction(const MATRIX& q, const MATRIX& p, const MATRIX& invM, doub
 
   int ndof = q.n_rows;
   int ntraj = q.n_cols;
-  int dof_i, dof_a, traj_k, traj_j, traj_n;
 
   MATRIX f(ndof, ntraj);
   MATRIX dq(ndof, 1);
@@ -612,8 +607,8 @@ MATRIX ETHD3_friction(const MATRIX& q, const MATRIX& p, const MATRIX& invM, doub
 
   // Complexity: O(Ntraj^2 x Ndof)
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
       dq = q.col(traj_k) - q.col(traj_j); 
       dp = p.col(traj_k) - p.col(traj_j); 
@@ -624,7 +619,7 @@ MATRIX ETHD3_friction(const MATRIX& q, const MATRIX& p, const MATRIX& invM, doub
 
       rho.add(0, traj_k, g_kj);
 
-      for(dof_i=0; dof_i<ndof; dof_i++){
+      for(int dof_i=0; dof_i<ndof; dof_i++){
         d1rho.add(dof_i, traj_k,  -2.0 * alp * dq.get(dof_i) * g_kj );
         d2rho.add(dof_i, traj_k,  (4.0 * alp * alp * dq.get(dof_i) * dq.get(dof_i) - 2.0 * alp) * g_kj );
       }// for dof
@@ -635,10 +630,10 @@ MATRIX ETHD3_friction(const MATRIX& q, const MATRIX& p, const MATRIX& invM, doub
 
   // Complexity: O(Ntraj^2 x Ndof)
 
-  for(traj_k=0; traj_k<ntraj; traj_k++){    
-    for(traj_j=0; traj_j<ntraj; traj_j++){    
+  for(int traj_k=0; traj_k<ntraj; traj_k++){    
+    for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
-      for(dof_i=0; dof_i<ndof; dof_i++){    
+      for(int dof_i=0; dof_i<ndof; dof_i++){    
 
         A.add(0, traj_k, d1rho.get(dof_i, traj_j) * invM.get(dof_i, 0) * d1rho.get(dof_i, traj_j) );
         B.add(0, traj_k, invM.get(dof_i, 0) * d2rho.get(dof_i, traj_j));
@@ -652,17 +647,17 @@ MATRIX ETHD3_friction(const MATRIX& q, const MATRIX& p, const MATRIX& invM, doub
 
   // Complexity: O(Ntraj^3 x Ndof^2)
 
-  for(traj_n=0; traj_n<ntraj; traj_n++){    
-    for(dof_a=0; dof_a<ndof; dof_a++){    
+  for(int traj_n=0; traj_n<ntraj; traj_n++){    
+    for(int dof_a=0; dof_a<ndof; dof_a++){    
 
 
-      for(traj_k=0; traj_k<ntraj; traj_k++){    
+      for(int traj_k=0; traj_k<ntraj; traj_k++){    
 
 
         //========= Compute drho_k / dP_an ===============
         double drhok_dPan = 0.0;
 
-        for(traj_j=0; traj_j<ntraj; traj_j++){    
+        for(int traj_j=0; traj_j<ntraj; traj_j++){    
           if(traj_n==traj_j || traj_n==traj_k){ 
 
             double pref = (p.get(dof_a, traj_k) - p.get(dof_a, traj_j)) * g.get(traj_k, traj_j);
@@ -682,13 +677,13 @@ MATRIX ETHD3_friction(const MATRIX& q, const MATRIX& p, const MATRIX& invM, doub
         //========= Compute dA_k / dP_an ===============
         double dAk_dPan = 0.0;
 
-        for(dof_i=0; dof_i<ndof; dof_i++){
+        for(int dof_i=0; dof_i<ndof; dof_i++){
 
           //========= Compute drho'_ik / dP_an ===============
 
           double drho_prime_ik_dPan = 0.0;          
 
-          for(traj_j=0; traj_j<ntraj; traj_j++){    
+          for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
             if(traj_n==traj_j || traj_n==traj_k){ 
 
@@ -716,13 +711,13 @@ MATRIX ETHD3_friction(const MATRIX& q, const MATRIX& p, const MATRIX& invM, doub
         //========= Compute dB_k / dQ_an ===============
         double dBk_dPan = 0.0;
 
-        for(dof_i=0; dof_i<ndof; dof_i++){
+        for(int dof_i=0; dof_i<ndof; dof_i++){
 
           //========= Compute drho''_ik / dP_an ===============
 
           double drho_dprime_ik_dPan = 0.0;          
 
-          for(traj_j=0; traj_j<ntraj; traj_j++){    
+          for(int traj_j=0; traj_j<ntraj; traj_j++){    
 
             if(traj_n==traj_j || traj_n==traj_k){ 
 

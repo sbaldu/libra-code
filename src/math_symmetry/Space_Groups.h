@@ -65,7 +65,7 @@ public:
         \param[in] space_group_name Self-explanatory. Examples: P_1, P_-1, C1_2_1, I_a_-3_d, etc.
       */
  
-      int sz,i;
+      int sz;
       MATRIX m(3,4);  // This is actually a temporary object = R(3,3) + T(3,1) 
       //================== TRICLINIC ========================
       if(space_group_name == "P_1"){
@@ -121,7 +121,7 @@ public:
                                         m.M[10] = -1.0;    operators.push_back(m);  // -x, y,  -z
          // + (0.5, 0.5, 0.0)
          sz = 2;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -161,7 +161,7 @@ public:
 
          // + (0.5, 0.5, 0.0)
          sz = 2;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -180,7 +180,7 @@ public:
          
          // + (0.5, 0.5, 0.0)
          sz = 2;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -245,7 +245,7 @@ public:
          
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -314,7 +314,7 @@ public:
 
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -396,7 +396,7 @@ public:
 
           // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -422,7 +422,7 @@ public:
 
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -448,21 +448,21 @@ public:
 
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
 
          // + (0.5, 0.0, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
 
          // + (0.0, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -489,7 +489,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -515,7 +515,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -731,7 +731,7 @@ public:
 
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -758,7 +758,7 @@ public:
 
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          } 
@@ -784,7 +784,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -809,7 +809,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.0, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -834,7 +834,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.0, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -859,7 +859,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.0, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -884,7 +884,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.0, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -909,21 +909,21 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.0, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
 
          // + (0.5, 0.0, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
 
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -948,19 +948,19 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.0, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
          // + (0.5, 0.0, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
          // + (0.5, 0.5, 0.0)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;   operators.push_back(m);
          }
@@ -986,7 +986,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.5, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -1011,7 +1011,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.5, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -1036,7 +1036,7 @@ public:
                                         m.M[10] = 1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.5, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;   operators.push_back(m);
          }
@@ -1649,7 +1649,7 @@ public:
                                         m.M[10] =  1.0; m.M[11] = 0.5;   operators.push_back(m);  // -x, -y, 1/2+z
          // + (0.5, 0.5, 0.0)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; operators.push_back(m);
          }
@@ -1690,7 +1690,7 @@ public:
                                         m.M[10] =  1.0; m.M[11]= 0.5;   operators.push_back(m);  // -x, 1/2-y, 1/2+z
          // + (0.5, 0.5, 0.0)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; operators.push_back(m);
          }
@@ -1731,7 +1731,7 @@ public:
                                         m.M[10] =  1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.5, 0.5, 0.0)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; operators.push_back(m);
          }
@@ -1787,19 +1787,19 @@ public:
                                         m.M[10] =  1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.5, 0.5, 0.0)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; operators.push_back(m);
          }
          // + (0.5, 0.0, 0.5)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
          // + (0.0, 0.5, 0.5)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
@@ -1846,7 +1846,7 @@ public:
                                         m.M[10] =  1.0;    operators.push_back(m);  // -x, -y, z
          // + (0.5, 0.5, 0.5)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -1887,7 +1887,7 @@ public:
                                         m.M[10] =  1.0; m.M[11] = 0.5;   operators.push_back(m);  // -x, -y, 1/2+z
          // + (0.5, 0.5, 0.5)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -2006,7 +2006,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -2057,7 +2057,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 4;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -2183,7 +2183,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -2395,7 +2395,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 8;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -3156,7 +3156,7 @@ public:
 
 	 // Add inversion
          sz = 6;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          operators.push_back((-m));
          }
@@ -3195,7 +3195,7 @@ public:
 
           // Add inversion
          sz = 6;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          operators.push_back((-m));
          }
@@ -3233,7 +3233,7 @@ public:
 
          // Add inversion
          sz = 6;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          operators.push_back((-m));
          }
@@ -3270,7 +3270,7 @@ public:
 
          // Add inversion
          sz = 6;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          operators.push_back((-m));
          }
@@ -4926,19 +4926,19 @@ public:
 
          // + (0.0, 0.5, 0.5)
          sz = 12;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.0, 0.5)
          sz = 12;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.5, 0.0)
          sz = 12;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -5002,7 +5002,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 12;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -5123,7 +5123,7 @@ public:
       
          // + (0.5, 0.5, 0.5)
          sz = 12;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -5367,19 +5367,19 @@ public:
  
          // + (0.0, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.0, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.5, 0.0)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -5507,7 +5507,7 @@ public:
  
          // + (0.5, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -5749,7 +5749,7 @@ public:
  
          // + (0.5, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -6107,19 +6107,19 @@ public:
  
          // + (0.0, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.0, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.5, 0.0)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -6243,19 +6243,19 @@ public:
 
          // + (0.0, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.0, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
          // + (0.5, 0.5, 0.0)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -6379,7 +6379,7 @@ public:
  
          // + (0.5, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5;  operators.push_back(m);
          }
@@ -6732,7 +6732,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
@@ -6975,21 +6975,21 @@ public:
 
          // + (0.0, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.0, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.5, 0.0)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -7113,7 +7113,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
@@ -7353,21 +7353,21 @@ public:
 
          // + (0.0, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.0, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.5, 0.0)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -7490,7 +7490,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 24;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
@@ -8219,21 +8219,21 @@ public:
 
          // + (0.0, 0.5, 0.5)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.0, 0.5)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.5, 0.0)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -8477,21 +8477,21 @@ public:
 
          // + (0.0, 0.5, 0.5)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.0, 0.5)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
 
          // + (0.5, 0.5, 0.0)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5;  operators.push_back(m);
          }
@@ -8748,7 +8748,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }
@@ -8993,7 +8993,7 @@ public:
 
          // + (0.5, 0.5, 0.5)
          sz = 48;
-         for(i=0;i<sz;i++){
+         for(int i=0;i<sz;i++){
          m = operators[i];
          m.M[3] = 0.5; m.M[7] = 0.5; m.M[11] = 0.5; operators.push_back(m);
          }

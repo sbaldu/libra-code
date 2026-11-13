@@ -975,7 +975,6 @@ void System::init_fragment_velocities(double Temp,VECTOR TOT_P,VECTOR TOT_L, Ran
 
   // Initialize random number generator
 //  srand( (unsigned)time(NULL) );
-  int i;
 
   VECTOR* temp_p;
   VECTOR* temp_l;
@@ -986,7 +985,7 @@ void System::init_fragment_velocities(double Temp,VECTOR TOT_P,VECTOR TOT_L, Ran
   VECTOR tot_l; tot_l = 0.0;
 
 //  Random rnd;
-  for(i=0;i<Number_of_fragments;i++){
+  for(int i=0;i<Number_of_fragments;i++){
     temp_p[i].x  = rnd.uniform(-0.5,0.5);
     temp_p[i].y  = rnd.uniform(-0.5,0.5);
     temp_p[i].z  = rnd.uniform(-0.5,0.5);
@@ -998,14 +997,14 @@ void System::init_fragment_velocities(double Temp,VECTOR TOT_P,VECTOR TOT_L, Ran
 
   double size = Number_of_fragments;
   tot_p = (TOT_P - tot_p)/size;
-  for(i=0;i<Number_of_fragments;i++){   temp_p[i] +=  tot_p; }
+  for(int i=0;i<Number_of_fragments;i++){   temp_p[i] +=  tot_p; }
   cout<<"size = "<<size<<endl;
   cout<<"tot_p = "<<tot_p<<endl;
 
   // Required temperature value scaling
   double temp_tr  = 0.0;
   double temp_rot = 0.0;
-  for(i=0;i<Number_of_fragments;i++){
+  for(int i=0;i<Number_of_fragments;i++){
     RigidBody& top = Fragments[i].Group_RB;
     top.set_momentum(temp_p[i]);
     temp_tr += top.ekin_tr();
@@ -1015,22 +1014,22 @@ void System::init_fragment_velocities(double Temp,VECTOR TOT_P,VECTOR TOT_L, Ran
   // Rescale linear momenta to satisfy the translational kinetic energy
   double target_ekin_tr = 0.5*((double)Nf_t)*(boltzmann*Temp)/hartree;  // in a.u. of energy
   double scaling_factor_tr = (temp_tr==0.0)?0.0:sqrt(target_ekin_tr/temp_tr);
-  for(i=0;i<Number_of_fragments;i++){  temp_p[i] *= scaling_factor_tr; }
+  for(int i=0;i<Number_of_fragments;i++){  temp_p[i] *= scaling_factor_tr; }
   cout<<"target_ekin_tr= "<<target_ekin_tr<<endl;
   cout<<"scaling_factor_tr = "<<scaling_factor_tr<<endl;
 
   // Angular momenta
-  for(i=0;i<Number_of_fragments;i++){
+  for(int i=0;i<Number_of_fragments;i++){
     RigidBody& top = Fragments[i].Group_RB;
     VECTOR tmp; tmp.cross(top.rb_cm,temp_p[i]);
     tot_l += tmp;
   }
   tot_l = (TOT_L - tot_l)/size;
-  for(i=0;i<Number_of_fragments;i++){  temp_l[i] =  Fragments[i].Group_RB.rb_A_I_to_e * tot_l;   }
+  for(int i=0;i<Number_of_fragments;i++){  temp_l[i] =  Fragments[i].Group_RB.rb_A_I_to_e * tot_l;   }
   cout<<"tot_l = "<<tot_l<<endl;
 
   temp_tr = 0.0;
-  for(i=0;i<Number_of_fragments;i++){
+  for(int i=0;i<Number_of_fragments;i++){
     RigidBody& top = Fragments[i].Group_RB;
     top.set_angular_momentum(temp_l[i]);
     top.set_momentum(temp_p[i]);
@@ -1046,7 +1045,7 @@ void System::init_fragment_velocities(double Temp,VECTOR TOT_P,VECTOR TOT_L, Ran
   cout<<"scaling_factor = "<<scaling_factor<<endl;
 
 
-  for(i=0;i<Number_of_fragments;i++){
+  for(int i=0;i<Number_of_fragments;i++){
       temp_p[i] *= scaling_factor;
       temp_l[i] *= scaling_factor;
   }
@@ -1055,7 +1054,7 @@ void System::init_fragment_velocities(double Temp,VECTOR TOT_P,VECTOR TOT_L, Ran
   double E_kin = 0.0;
   VECTOR L_tot; L_tot = 0.0;
   VECTOR P_tot; P_tot = 0.0;
-  for(i=0;i<Number_of_fragments;i++){
+  for(int i=0;i<Number_of_fragments;i++){
     RigidBody& top = Fragments[i].Group_RB; 
     top.set_momentum(temp_p[i]);
     top.set_angular_momentum(temp_l[i]);
@@ -1105,7 +1104,6 @@ void System::init_atom_velocities(double Temp,VECTOR TOT_P, Random& rnd){
 
   // Initialize random number generator
 //  srand( (unsigned)time(NULL) );
-  int i;
 
   VECTOR* temp_p;
   temp_p = new VECTOR[Number_of_atoms];
@@ -1113,7 +1111,7 @@ void System::init_atom_velocities(double Temp,VECTOR TOT_P, Random& rnd){
   VECTOR tot_p; tot_p = 0.0;
 
 //  Random rnd;
-  for(i=0;i<Number_of_atoms;i++){
+  for(int i=0;i<Number_of_atoms;i++){
     temp_p[i].x  = rnd.uniform(-0.5,0.5);
     temp_p[i].y  = rnd.uniform(-0.5,0.5);
     temp_p[i].z  = rnd.uniform(-0.5,0.5);
@@ -1122,13 +1120,13 @@ void System::init_atom_velocities(double Temp,VECTOR TOT_P, Random& rnd){
 
   double size = Number_of_atoms;
   tot_p = (TOT_P - tot_p)/size;
-  for(i=0;i<Number_of_atoms;i++){   temp_p[i] +=  tot_p; }
+  for(int i=0;i<Number_of_atoms;i++){   temp_p[i] +=  tot_p; }
   cout<<"size = "<<size<<endl;
   cout<<"tot_p = "<<tot_p<<endl;
 
   // Required temperature value scaling
   double temp_tr  = 0.0;
-  for(i=0;i<Number_of_atoms;i++){
+  for(int i=0;i<Number_of_atoms;i++){
     RigidBody& top = Atoms[i].Atom_RB;
     top.set_momentum(temp_p[i]);
     temp_tr += top.ekin_tr();
@@ -1138,7 +1136,7 @@ void System::init_atom_velocities(double Temp,VECTOR TOT_P, Random& rnd){
   // Rescale linear momenta to satisfy the translational kinetic energy
   double target_ekin_tr = 0.5*((double)Nf_t)*(boltzmann*Temp)/hartree;  // in a.u. of energy
   double scaling_factor_tr = (temp_tr==0.0)?0.0:sqrt(target_ekin_tr/temp_tr);
-  for(i=0;i<Number_of_atoms;i++){  temp_p[i] *= scaling_factor_tr; }
+  for(int i=0;i<Number_of_atoms;i++){  temp_p[i] *= scaling_factor_tr; }
 
   cout<<"target_ekin_tr= "<<target_ekin_tr<<endl;
   cout<<"scaling_factor_tr = "<<scaling_factor_tr<<endl;
@@ -1147,7 +1145,7 @@ void System::init_atom_velocities(double Temp,VECTOR TOT_P, Random& rnd){
   // Set corresponding variables
   double E_kin = 0.0;
   VECTOR P_tot; P_tot = 0.0;
-  for(i=0;i<Number_of_atoms;i++){
+  for(int i=0;i<Number_of_atoms;i++){
     RigidBody& top = Atoms[i].Atom_RB; 
     top.set_momentum(temp_p[i]);
     E_kin += top.ekin_tr();

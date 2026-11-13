@@ -95,16 +95,16 @@ void System::Assign_Rings(){
   g.FIND_SSSR(rings);
 
   // Now assign
-  int i,j,nrings,sz;
+  int nrings,sz;
   nrings = rings.size();
 //  cout<<"nrings = "<<nrings<<endl;
-  for(i=0;i<nrings;i++){
+  for(int i=0;i<nrings;i++){
     sz = rings[i].size();
     Group rng;
     int loc_indx = 0;
 //    cout<<"Ring "<<i<<" : ";
 
-    for(j=0;j<sz;j++){
+    for(int j=0;j<sz;j++){
       int indx1 = g.E[rings[i][j]].edge_vertex_id1;
       int indx2 = g.E[rings[i][j]].edge_vertex_id2;
 
@@ -142,13 +142,13 @@ void System::Assign_Rings(){
 
   }// for i
 
-  for(i=0;i<Number_of_atoms;i++){
+  for(int i=0;i<Number_of_atoms;i++){
     sz = Atoms[i].Atom_ring_sizes.size();
     cout<<"i= "<<i<<" number of rings this atom belong to = "<<sz<<endl;
     int min_sz=1;
     if(sz>=1){ min_sz = Atoms[i].Atom_ring_sizes[0];}
     else{
-      for(j=0;j<sz-1;j++){
+      for(int j=0;j<sz-1;j++){
         min_sz=(Atoms[i].Atom_ring_sizes[j]<=Atoms[i].Atom_ring_sizes[j+1])?Atoms[i].Atom_ring_sizes[j]:Atoms[i].Atom_ring_sizes[j+1];
       }
     }      

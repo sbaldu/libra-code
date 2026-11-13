@@ -31,7 +31,6 @@ void set_basis_STO_3G_DZ(vector<std::string>& at_type, vector<VECTOR>& R,  Model
 */
 
   // Initialization
-  int i;
   std::map<std::string,double>::iterator iter;
 
   Nelec = 0;
@@ -53,7 +52,7 @@ void set_basis_STO_3G_DZ(vector<std::string>& at_type, vector<VECTOR>& R,  Model
   if(verb){ cout<<"Setting STO-3G_DZ basis:\n"; }
 
 
-  for(i=0;i<Nat;i++){   
+  for(int i=0;i<Nat;i++){   
 
     // Compute the number of valence electrons
     Nelec += modpar.PT[at_type[i]].Nval;
@@ -95,7 +94,7 @@ void set_basis_STO_3G_DZ(vector<std::string>& at_type, vector<VECTOR>& R,  Model
 
   for(int a=0; a<Nat; a++){
     int norbs_a = atom_to_ao_map[a].size(); //  how many orbitals on the atoms a
-    for(i=0; i<norbs_a; i++){
+    for(int i=0; i<norbs_a; i++){
       int I = atom_to_ao_map[a][i]; // index of orbital i of atom a 
       ao_to_atom_map[I] = a;
     }// for i
@@ -109,14 +108,14 @@ void set_basis_STO_3G_DZ(vector<std::string>& at_type, vector<VECTOR>& R,  Model
   show_mapping(atom_to_ao_map);
 
   cout<<"AO to Atom mapping:\n";
-  for(i=0; i<Norb; i++){
+  for(int i=0; i<Norb; i++){
     cout<<"orbital "<< i << " is sitting on atom "<< ao_to_atom_map[i]<<endl;
   }
 
   // Now print all AOs:
   if(verb){
     cout<<"Printing atomic basis: \n";
-    for(i=0;i<Norb;i++){   cout<<"orbital"<<i<<endl;   basis_ao[i].show_info();  }
+    for(int i=0;i<Norb;i++){   cout<<"orbital"<<i<<endl;   basis_ao[i].show_info();  }
   }
 
 

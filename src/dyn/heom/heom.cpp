@@ -142,7 +142,6 @@ void gen_hierarchy(int d, int max_tier, int verbosity,
  
     */
 
-    int i, j, k;
 
  
     vector< vector<int> > all_coordinates; //  for each vector - the coordinates are (L, i)
@@ -155,7 +154,7 @@ void gen_hierarchy(int d, int max_tier, int verbosity,
         int iparent = 0;
         int num_parents = parents.size();
 
-        for(i=0; i<num_parents; i++){            
+        for(int i=0; i<num_parents; i++){            
             all_vectors.push_back( parents[i] );
             vector<int> coord(2,0);
             coord[0] = tier;
@@ -184,8 +183,8 @@ void gen_hierarchy(int d, int max_tier, int verbosity,
         vector_to_index[all_vectors[i]] = i;
     }
 
-    for(i=0; i<num_nodes; i++){
-        for(k=0; k<d; k++){
+    for(int i=0; i<num_nodes; i++){
+        for(int k=0; k<d; k++){
             vector<int> np = all_vectors[i];
             np[k] += 1;
             auto itp = vector_to_index.find(np);
@@ -212,12 +211,12 @@ void gen_hierarchy(int d, int max_tier, int verbosity,
     }
 
     if(verbosity>1){
-        for(i=0; i<num_nodes; i++){
+        for(int i=0; i<num_nodes; i++){
             cout<<"index= "<<i<<" ";    
-            cout<<" vector=["; for(j=0;j<d;j++){ cout<<all_vectors[i][j]<<","; } cout<<"] ";
+            cout<<" vector=["; for(int j=0;j<d;j++){ cout<<all_vectors[i][j]<<","; } cout<<"] ";
             cout<<" coordinates=["<<all_coordinates[i][0]<<","<<all_coordinates[i][1]<<"] ";
-            cout<<" vec_plus=["; for(j=0;j<d;j++){ cout<<vec_plus[i][j]<<","; } cout<<"] ";
-            cout<<" vec_minus=["; for(j=0;j<d;j++){ cout<<vec_minus[i][j]<<","; } cout<<"] ";
+            cout<<" vec_plus=["; for(int j=0;j<d;j++){ cout<<vec_plus[i][j]<<","; } cout<<"] ";
+            cout<<" vec_minus=["; for(int j=0;j<d;j++){ cout<<vec_minus[i][j]<<","; } cout<<"] ";
             cout<<"\n";
         }
     }
@@ -298,7 +297,7 @@ CMATRIX compute_deriv_n(int n, vector<CMATRIX>& rho, CMATRIX& Ham, vector<CMATRI
 
   int KK = gamma_matsubara.size() - 1; // KK+1 is the number of Matsubara freqs.
 
-  int m,k,nplus,nminus;
+  int nplus,nminus;
   CMATRIX drho_n_dt(nquant, nquant);
   CMATRIX commut(nquant, nquant);
   CMATRIX term1(nquant, nquant);
@@ -321,9 +320,9 @@ CMATRIX compute_deriv_n(int n, vector<CMATRIX>& rho, CMATRIX& Ham, vector<CMATRI
     //============= Friction ======================
     complex<double> pref; 
 
-    for(k=0; k<=KK; k++){
+    for(int k=0; k<=KK; k++){
       int sum_over_m = 0;
-      for(m=0; m<nquant; m++){  sum_over_m += nvectors[n][m*(KK+1) + k];  }
+      for(int m=0; m<nquant; m++){  sum_over_m += nvectors[n][m*(KK+1) + k];  }
       pref += static_cast<double>(sum_over_m) * gamma_matsubara[k];
     }// for k
     drho_n_dt -=  pref * rho[n];
@@ -347,7 +346,7 @@ CMATRIX compute_deriv_n(int n, vector<CMATRIX>& rho, CMATRIX& Ham, vector<CMATRI
       // is quite erratic
       //pref -= std::real( compute_matsubara_sum(gamma_matsubara, c_matsubara, KK) );
       
-      for(m=0; m<nquant; m++){         
+      for(int m=0; m<nquant; m++){         
         commut = el_phon_coupl[m] * rho[n] - rho[n] * el_phon_coupl[m];
         commut = el_phon_coupl[m] * commut - commut * el_phon_coupl[m];
         drho_n_dt -= truncation_prefactor *commut;
@@ -359,10 +358,10 @@ CMATRIX compute_deriv_n(int n, vector<CMATRIX>& rho, CMATRIX& Ham, vector<CMATRI
 
   //===================== rho_n_plus terms ================
 
-  for(m=0; m<nquant; m++){
+  for(int m=0; m<nquant; m++){
 
     sum_rho_over_k = 0.0;
-    for(k=0; k<=KK; k++){
+    for(int k=0; k<=KK; k++){
 
       nplus = vec_plus[n][m*(KK+1) + k];
       if(nplus!=-1){ 
@@ -385,11 +384,11 @@ CMATRIX compute_deriv_n(int n, vector<CMATRIX>& rho, CMATRIX& Ham, vector<CMATRI
 
   //===================== rho_n_minus terms ================
 
-  for(m=0; m<nquant; m++){
+  for(int m=0; m<nquant; m++){
     sum1_c_rho_over_k = 0.0;  
     sum2_c_rho_over_k = 0.0;
 
-    for(k=0; k<=KK; k++){
+    for(int k=0; k<=KK; k++){
       nminus = vec_minus[n][m*(KK+1) + k];
 
       if(nminus!=-1){
@@ -436,7 +435,6 @@ CMATRIX compute_heom_derivatives(CMATRIX& RHO, bp::dict prms){
     int do_scale = 1;
 
 
-    int i;
     int nquant = RHO.n_cols;
     int nn_tot = int(RHO.n_rows / nquant);
 
@@ -454,14 +452,14 @@ CMATRIX compute_heom_derivatives(CMATRIX& RHO, bp::dict prms){
     intList zero, nonzero, adm_list;
 
     adm_list = vector<int>(nn_tot, 0);
-    for(i=0;i<nn_tot; i++){ adm_list[i] = i; }
+    for(int i=0;i<nn_tot; i++){ adm_list[i] = i; }
 
     vector<CMATRIX> el_phon_couplings; 
     int el_phon_couplings_status = 0; // whether we have read them
 
     
     std::string key;
-    for(i=0;i<len(prms.values());i++){
+    for(int i=0;i<len(prms.values());i++){
 
       key = extract<std::string>(prms.keys()[i]);
 
@@ -614,7 +612,6 @@ void setup_bath(int KK, double eta, double gamma, double temperature,
   temperature - the bath temperature [K]
 */
 
-  int k;
 
   complex<double> one(1.0, 0.0);
   complex<double> iota(0.0, 1.0);
@@ -628,7 +625,7 @@ void setup_bath(int KK, double eta, double gamma, double temperature,
   gamma_matsubara[0] = gamma;
   c_matsubara[0] = 0.5*eta*gamma * ( 1.0/tan( 0.5 * gamma/kT )*one - iota );
 
-  for(k=1; k<=KK; k++){
+  for(int k=1; k<=KK; k++){
 
     gamma_matsubara[k] = 2.0*k*M_PI*kT;
 
@@ -646,7 +643,6 @@ void unpack_mtx(vector<CMATRIX>& rho_unpacked, CMATRIX& RHO){
     RHO = CMATRIX(num_adm * nquant , nquant)
 */
 
-    int i, n;
     int nquant = RHO.n_cols;
     int num_adm = int(RHO.n_rows / nquant);
 
@@ -654,12 +650,12 @@ void unpack_mtx(vector<CMATRIX>& rho_unpacked, CMATRIX& RHO){
     
     vector<int> sub_x(nquant, 0);
     vector<int> sub_y(nquant, 0);
-    for(i = 0; i < nquant; i++){    sub_y[i] = i;  }
+    for(int i = 0; i < nquant; i++){    sub_y[i] = i;  }
 
     
-    for(n = 0; n < num_adm; n++){
+    for(int n = 0; n < num_adm; n++){
 
-      for(i = 0; i<nquant; i++){    sub_x[i] = n*nquant + i;  }
+      for(int i = 0; i<nquant; i++){    sub_x[i] = n*nquant + i;  }
       pop_submatrix(RHO, rho_unpacked[n], sub_x, sub_y );
         
     }
@@ -669,7 +665,6 @@ void unpack_mtx(vector<CMATRIX>& rho_unpacked, CMATRIX& RHO){
 
 void pack_mtx(vector<CMATRIX>& rho_unpacked, CMATRIX& RHO){
 
-    int i, n;
     int nquant = RHO.n_cols;
     int num_adm = int(RHO.n_rows / nquant);
 
@@ -678,12 +673,12 @@ void pack_mtx(vector<CMATRIX>& rho_unpacked, CMATRIX& RHO){
 
     vector<int> sub_x(nquant, 0);
     vector<int> sub_y(nquant, 0);
-    for(i = 0; i<nquant; i++){    sub_y[i] = i;  }
+    for(int i = 0; i<nquant; i++){    sub_y[i] = i;  }
 
     
-    for(n = 0; n < num_adm; n++){
+    for(int n = 0; n < num_adm; n++){
 
-      for(i = 0; i < nquant; i++){    sub_x[i] = n*nquant + i;  }
+      for(int i = 0; i < nquant; i++){    sub_x[i] = n*nquant + i;  }
       push_submatrix(RHO, rho_unpacked[n], sub_x, sub_y );
         
     }
@@ -696,10 +691,9 @@ void scale_rho(vector<CMATRIX>& rho, vector<CMATRIX>& rho_scaled, bp::dict prms)
     vector< complex<double> > c_matsubara;
     intList2 nvec;
 
-    int i, n,m,k;
     std::string key;
 
-    for(i=0;i<len(prms.values());i++){
+    for(int i=0;i<len(prms.values());i++){
 
       key = extract<std::string>(prms.keys()[i]);
 
@@ -713,12 +707,12 @@ void scale_rho(vector<CMATRIX>& rho, vector<CMATRIX>& rho_scaled, bp::dict prms)
     int KK = c_matsubara.size() - 1; 
 
 
-    for(n=0; n<nn_tot; n++){
+    for(int n=0; n<nn_tot; n++){
 
       double scaling_factor = 1.0;
 
-      for(m=0; m<nquant; m++){
-        for(k=0; k<=KK; k++){
+      for(int m=0; m<nquant; m++){
+        for(int k=0; k<=KK; k++){
 
           int nn = nvec[n][m*(KK+1) + k];
           scaling_factor *= FACTORIAL( nn );
@@ -739,10 +733,9 @@ void inv_scale_rho(vector<CMATRIX>& rho, vector<CMATRIX>& rho_scaled, bp::dict p
     vector< complex<double> > c_matsubara;
     intList2 nvec;
 
-    int i, n,m,k;
     std::string key;
 
-    for(i=0;i<len(prms.values());i++){
+    for(int i=0;i<len(prms.values());i++){
 
       key = extract<std::string>(prms.keys()[i]);
 
@@ -756,12 +749,12 @@ void inv_scale_rho(vector<CMATRIX>& rho, vector<CMATRIX>& rho_scaled, bp::dict p
     int KK = c_matsubara.size() - 1; 
 
 
-    for(n=0; n<nn_tot; n++){
+    for(int n=0; n<nn_tot; n++){
 
       double scaling_factor = 1.0;
 
-      for(m=0; m<nquant; m++){
-        for(k=0; k<=KK; k++){
+      for(int m=0; m<nquant; m++){
+        for(int k=0; k<=KK; k++){
 
           int nn = nvec[n][m*(KK+1) + k];
           scaling_factor *= FACTORIAL( nn );
