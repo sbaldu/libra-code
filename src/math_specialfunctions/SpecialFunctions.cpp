@@ -1579,7 +1579,6 @@ vector< vector<int> > compute_all_permutations(vector<int>& given_list){
     */
     int num_elements;
     vector< vector<int> > list_of_permutations;
-    list_of_permutations.empty();
     num_elements= given_list.size();
 
     return permutations_reiteration(given_list, num_elements, num_elements, list_of_permutations);

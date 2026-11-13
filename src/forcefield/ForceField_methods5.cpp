@@ -74,40 +74,10 @@ int ForceField::get_oop_parameters(string ff_type1, string ff_type2, /*Inputs*/
 ******************************************************************/
 
   double K,C0,C1,C2;
-  int is_Vphi1,is_Vphi2,is_Vphi3,is_phi0,is_n,is_opt, is_K, is_C0, is_C1, is_C2;
-  is_Vphi1 = is_Vphi2 = is_Vphi3 = is_phi0 = is_n = is_opt = is_K = is_C0 = is_C1 = is_C2 = 0;
+  int is_K, is_C0, is_C1, is_C2;
+  is_K = is_C0 = is_C1 = is_C2 = 0;
   int status = 0;
   
-  //-------------- Start with looking the whole record ---------------------
-  // Find index of Dihedral_Record corresponding to the bond formed by atom types
-  // ff_type1, ff_type2, ff_type3 and ff_type4
-  int ff_dihedral_indx = Dihedral_Record_Index(ff_type1,ff_type2,ff_type3,ff_type4);
-
-  //------------- If not found - apply rules  ------------------------------
-  if(ff_dihedral_indx>-1){ // if the record has been found
-    // Force constant
-    if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_vphi1){
-      is_Vphi1 = 1;
-    }
-    // Force constant
-    if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_vphi2){
-      is_Vphi2 = 1;
-    }
-    // Force constant
-    if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_vphi3){
-      is_Vphi3 = 1;
-    }
-    // Phase shift - equilibrium dihedral/torsion angle
-    if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_phase){
-      is_phi0 = 1;
-    }
-    // Potntial periodicity/multiplicity
-    if(Dihedral_Records[ff_dihedral_indx].is_Dihedral_mult){
-      is_n = 1;
-    }
-
-  }
-
   //------------- Apply rules to calculate missing parameters --------------
   if(true){  
     oop_rule(ff_type1, ff_type2, ff_type3, ff_type4, K, is_K, C0, is_C0, C1, is_C1, C2, is_C2); 

@@ -411,14 +411,13 @@ void listHamiltonian_MM::set_atom_interactions_for_atoms(
     their properties
     \param[in] verb Determines the verbosity level
   */
-  int i, j;
   int sz = top_elt.size();
   int *at;
   at = new int[sz];
   int *id;
   id = new int[sz];
   bool x = true;
-  for (j = 0; j < sz; j++) {
+  for (auto j = 0; j < sz; j++) {
     at[j] = top_elt[j].globAtom_Index;
     id[j] = top_elt[j].Atom_id;
     x = (x && (is_in_vector(at[j], lst1) || is_in_vector(at[j], lst2)));
@@ -476,7 +475,7 @@ void listHamiltonian_MM::set_atom_interactions_for_atoms(
         //      double*  displT_2; displT_2 = &dT_2;
         vector<std::string> types;
 
-        for (i = 0; i < sz; i++) {
+        for (auto i = 0; i < sz; i++) {
           types.push_back(syst.Atoms[at[i]].Atom_ff_type);
           r[i] = &syst.Atoms[at[i]].Atom_RB.rb_cm;
           int g_indx = syst.Atoms[at[i]].globGroup_Index;
@@ -535,9 +534,9 @@ void listHamiltonian_MM::set_atom_interactions_for_atoms(
         }
 
         int num_excl = 0;
-        for (i = 0; i < sz; i++) {
+        for (auto i = 0; i < sz; i++) {
           vector<int> ve1, ve2, vs;
-          for (j = i; j < sz; j++) {
+          for (auto j = i; j < sz; j++) {
             if (syst.is_group_pair(at[i], at[j])) {
               vexcl1.push_back(at[i]);
               vexcl2.push_back(at[j]);
@@ -577,7 +576,7 @@ void listHamiltonian_MM::set_atom_interactions_for_atoms(
 
           // Add new entry in excl_scales:
           vector<excl_scale> excli;
-          for (j = 0; j < ve1.size(); j++) {
+          for (auto j = 0u; j < ve1.size(); j++) {
             excl_scale exclij;
             exclij.at_indx1 = ve1[j];
             exclij.at_indx2 = ve2[j];
@@ -610,7 +609,7 @@ void listHamiltonian_MM::set_atom_interactions_for_atoms(
           cout << " nexcl = " << nexcl << endl;
         }
 
-        for (i = 0; i < nexcl; i++) {
+        for (auto i = 0; i < nexcl; i++) {
           excl1[i] = vexcl1[i];
           excl2[i] = vexcl2[i];
           scale[i] = vscale[i];

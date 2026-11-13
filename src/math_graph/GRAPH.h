@@ -913,7 +913,7 @@ template <class VERTEX_DATA,class EDGE_DATA> int GRAPH<VERTEX_DATA,EDGE_DATA>::F
 
                 if(is_odd){  // Odd ring create
 
-                   for(int k=0;k<Pp[i][j].size();k++){
+                   for(auto k=0u;k<Pp[i][j].size();k++){
                        Path new_path;
                        merge_paths(new_path,P[i][j][0],Pp[i][j][k]);
                        is_in_sssr = is_included(new_path,sssr);
@@ -930,7 +930,7 @@ template <class VERTEX_DATA,class EDGE_DATA> int GRAPH<VERTEX_DATA,EDGE_DATA>::F
                 }
                 else{        // Even ring create
 
-                   for(int k=0;k<(P[i][j].size()-1);k++){
+                   for(auto k=0u;k<(P[i][j].size()-1);k++){
                        Path new_path;
                        merge_paths(new_path,P[i][j][k],P[i][j][k+1]);
 /*

@@ -32,7 +32,7 @@ void set_parameters_indo(Control_Parameters& prms, Model_Parameters& modprms){
 
   //---------------------------- Reading parameters file --------------------------------------
 
-  int i,j,k;
+  int k;
   std::string filename = prms.parameters;
   std::string st;
   vector< vector<std::string> > file;
@@ -59,8 +59,8 @@ void set_parameters_indo(Control_Parameters& prms, Model_Parameters& modprms){
 
   cout<<"Echo tokenized CNDO/CNDO2/INDO parameters file content\n";
   int sz = file.size();
-  for(i=0;i<sz;i++){
-    for(j=0;j<file[i].size();j++){
+  for(auto i=0;i<sz;i++){
+    for(auto j=0u;j<file[i].size();j++){
       cout<<file[i][j]<<"  ";
     }
     cout<<endl;
@@ -80,7 +80,7 @@ void set_parameters_indo(Control_Parameters& prms, Model_Parameters& modprms){
 
 
     
-  for(i=0;i<sz;i++){
+  for(auto i=0;i<sz;i++){
 
     //>>>>>>>>>>> Reading atomic parameters <<<<<<<<<<<<<<
     if(file[i].size()>0){
@@ -109,7 +109,7 @@ void set_parameters_indo(Control_Parameters& prms, Model_Parameters& modprms){
         cout<<"  reading parameters for "<<nsh<<" orbital shells"<<endl;
 
 
-        for(j=1;j<=nsh;j++){
+        for(auto j=1;j<=nsh;j++){
           // Example of format:
           //Li  1  2
           //1   2  0  2s    -5.342   1     1.0000  0.6450   0.000   0.000   0.000   0.000
@@ -160,7 +160,7 @@ void set_parameters_indo(Control_Parameters& prms, Model_Parameters& modprms){
   
           if(modprms.PT[elt].Nzeta[sh]==1){    
   
-            if(file[i1+j].size()>=(8+n_extra_params)){ ;; } // all is fine
+            if(file[i1+j].size()>=static_cast<std::size_t>(8+n_extra_params)){ ;; } // all is fine
             else{  cout<<"Error in parameters file: line \n"
                        <<file_raw[i1+j]
                        <<"\n is not complient with expected format which is = "
@@ -181,7 +181,7 @@ void set_parameters_indo(Control_Parameters& prms, Model_Parameters& modprms){
           }
           else if(modprms.PT[elt].Nzeta[sh]==2){
   
-            if(file[i1+j].size()>=(10+n_extra_params)){ ;; } // all is fine
+            if(file[i1+j].size()>=static_cast<std::size_t>(10+n_extra_params)){ ;; } // all is fine
             else{  cout<<"Error in parameters file: line \n"
                        <<file_raw[i1+j]
                        <<"\n is not complient with expected format which is = "

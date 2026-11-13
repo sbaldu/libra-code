@@ -573,8 +573,8 @@ void Wfcgrid::absorb_1D(double dL,vector<double>& Pops_l,vector<double>& Pops_r)
   int i;
   int nL = dL/dx;  // how many points from each boundary to set to zero
 
-  if(Pops_l.size()<nstates){ Pops_l = vector<double>(nstates,0.0);  } // Population in the left trapping region
-  if(Pops_r.size()<nstates){ Pops_r = vector<double>(nstates,0.0);  }
+  if(Pops_l.size()<static_cast<std::size_t>(nstates)){ Pops_l = vector<double>(nstates,0.0);  } // Population in the left trapping region
+  if(Pops_r.size()<static_cast<std::size_t>(nstates)){ Pops_r = vector<double>(nstates,0.0);  }
 
   for(int nst=0;nst<nstates;nst++){
 

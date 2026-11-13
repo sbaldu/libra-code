@@ -147,8 +147,6 @@ double gaussian_overlap(int nxa,double alp_a, double Xa, int nxb,double alp_b, d
   double dXpb_dXa = ag;
   double dXpa_dXb = bg;
   double dXpb_dXb = bg - 1.0;
-  double dXp_dXa = ag;
-  double dXp_dXb = bg;
 
 
   // Aliaces
@@ -422,6 +420,8 @@ double sto_overlap(int na, int la, int ma, double alp_a, int nb, int lb, int mb,
       double ra = 2.0*alp_a/(alp_a + alp_b); //(rhoA/sum);
       double rb = 2.0*alp_b/(alp_a + alp_b); //(rhoB/sum);
     
+      // FIXME: `pref` (STO overlap prefactor) is computed but never applied to I.
+      // Verify against the reference formula before removing it or using it.
       double pref = sqrt(ra*rb) * FAST_POW(ra,na) * FAST_POW(rb,nb);
     
       // Allocate memory for coefficients
@@ -488,6 +488,8 @@ double sto_overlap_fast(int na, int la, int ma, double alp_a, int nb, int lb, in
       double ra = 2.0*alp_a/(alp_a + alp_b); //(rhoA/sum);
       double rb = 2.0*alp_b/(alp_a + alp_b); //(rhoB/sum);
     
+      // FIXME: `pref` (STO overlap prefactor) is computed but never applied to I.
+      // Verify against the reference formula before removing it or using it.
       double pref = sqrt(ra*rb) * FAST_POW(ra,na) * FAST_POW(rb,nb);
     
       // Allocate memory for coefficients
